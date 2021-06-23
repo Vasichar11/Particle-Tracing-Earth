@@ -9,13 +9,13 @@
 #include <iomanip>  // std::setprecision()
 //#include <boost/math/special_functions/bessel.hpp>	//std::cyl_bessel_j didn't work well. throws domain error exception in some cases.
 //Same directory headers							    //Still boost's bessel gives 14 decimal accuracy relatively py results.
-#include "./headers/constants.hpp"
-#include "./headers/functions.hpp"
-#include "./headers/struct_Particles.hpp"   //Include libraries(with correct order).
-#include "./headers/struct_Species.hpp"
-#include "./headers/struct_Waves.hpp"
-//include "./headers/outfile.hpp"  
-#include "./headers/time_rates.hpp"
+#include "headers/constants.hpp"
+#include "headers/functions.hpp"
+#include "headers/struct_Particles.h"   //Include libraries(with correct order).
+#include "headers/struct_Species.hpp"
+#include "headers/struct_Waves.hpp"
+//include "/headers/outfile.hpp"  
+#include "headers/time_rates.hpp"
 
 //HDF5 I/O
 #include <highfive/H5File.hpp>          

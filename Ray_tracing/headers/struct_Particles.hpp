@@ -1,4 +1,5 @@
 //Struct for particle's state throughout the iterations
+#include "common.h"
 struct Particles
 { 				
 	std::vector<real> lamda , zeta, uper , upar, ppar, pper, alpha, aeq, aeqsu, eta, time; 
