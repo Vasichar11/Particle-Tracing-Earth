@@ -1,3 +1,3 @@
 #pragma once
 
-typedef double real;
+typedef double real;  //Clarifies quantities in whole program.
