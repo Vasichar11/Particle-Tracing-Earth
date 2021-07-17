@@ -2,30 +2,29 @@
 #include <cmath>                        
 #include <iostream>                 
 #include <tuple>
-#include <vector> 
-#include <string>   
+#include <vector>   
 #include <cinttypes>                     //int64_t type
 #include <chrono>
-#include <fstream>                       //file streaming
 #include <iomanip>                       //setprecision()
 #include <algorithm>                     //min_element, max_element for std vector. Is it slow?
 //Same directory functions and structs.
-#include "./headers/constants.hpp"
-#include "./headers/struct_Particles.hpp"   //Include libraries(with correct order).
-#include "./headers/readCSV.h" 
-#include "./headers/interpolate.h"
-#include "./headers/outfile.hpp"  
-#include "./headers/time_rates.hpp"
-#include "./headers/functions.hpp"
-#include "./headers/f_packet.hpp"
-#include "./headers/f_always.hpp"
-#include "./headers/is_in_packet.hpp"
+#include "headers/constants.h"
+#include "headers/struct_Particles.h"  
+#include "headers/readCSV.h" 
+#include "headers/interpolate.h" 
+#include "headers/time_rates.h"
+#include "headers/functions.h"
+#include "headers/is_in_packet.h"
+#include "headers/common.h"
 //HDF5 I/O
-#include <highfive/H5File.hpp>          //When compiling with g++: -I/usr/include/hdf5/serial/ -L/usr/lib/x86_64-linux-gnu/hdf5/serial/ -lhdf5 
-                                        //to include headers(.h files) and libraries(.so files) of hdf5 
+#include <highfive/H5File.hpp>                                      
 #include <highfive/H5DataSet.hpp>
 #include <highfive/H5DataSpace.hpp>
 namespace h5 = HighFive;
+
+
+
+
 
 int main()
 {
@@ -173,12 +172,12 @@ int main()
     //Interpolation not fast, have to change algorithm.
 //---------------------------------------------- INTERPOLATE RAY: DONE -----------------------------------------------//
 
-std::cout.precision(16);    //Output precision of 16 decimals
+std::cout.precision(32);    //Output precision of 16 decimals
 std::cout<<std::scientific; //Representation with e notation
 
 
 //------------------------------------------- OTHER VECTOR CALCULATIONS --------------------------------------------- //
-for(int i=0; i<time_new.size(); i++)
+for(uint i=0; i<time_new.size(); i++)
 {
     //Calculate more parameters #In[6]:
     mu_ray.push_back( sqrt(nx_int.at(i)*nx_int.at(i)+ny_int.at(i)*ny_int.at(i)+nz_int.at(i)*nz_int.at(i)) );
@@ -221,7 +220,7 @@ real Beq0    =  Bmag_dipole(0);
 real Blam0   =  Bmag_dipole(Constants::lamda0);          //lamda0 is in rads
 real salpha0 =  sin(Constants::aeq0)*sqrt(Blam0/Beq0);
 real alpha0  =  asin(salpha0);
-real w_h_0   =  (std::abs(Constants::q_e)*Blam0) / Constants::m_e;
+real w_h_0   =  (std::abs(Constants::q_e)*Blam0) / Constants::m_e;  //not used
 //std::cout << "\n" << Beq0 << " " << Blam0 << " " << Constants::lamda0 ;
 //std::cout << "\n" << Constants::aeq0*180/M_PI << "  " << salpha0 << "\n " << alpha0 <<"  "<< alpha0*180/M_PI <<"\n " ;
 
@@ -245,59 +244,40 @@ real mu_adiabatic_0 = (pper0*pper0) / (2*Constants::m_e*Blam0);
 
 //------------------------------------------- DECLARE VECTORS && VARIABLES -------------------------------------------//
 //Declaration of vectors
-std::vector<real> zeta;
-std::vector<real> time_sim;
-std::vector<real> Exw_out,Eyw_out,Ezw_out,Bxw_out,Byw_out,Bzw_out,Ew_out,Bw_out; 
-std::vector<real> mu_out;
-std::vector<real> mu_adiabatic;
-std::vector<real> mu_ad_li;
-std::vector<real> vresz_o;
-std::vector<real> Eres_o;
-std::vector<real> Ekin_li;
-std::vector<real> deta_dt;
-std::vector<real> kappa_out;
-std::vector<real> wh_out;
-std::vector<real> eps_res;
-std::vector<real> ind_reson;
-std::vector<real> Ftheta_o;
-std::vector<real> Fpar_o;
-std::vector<real> Fper_o;
-std::vector<real> gama_out;
-
-//Initializations of vectors #In[24]:
-zeta.resize((Constants::Nsteps) + 1);
-time_sim.resize((Constants::Nsteps) + 1);
-Exw_out.resize((Constants::Nsteps) + 1);
-Eyw_out.resize((Constants::Nsteps) + 1);
-Ezw_out.resize((Constants::Nsteps) + 1);
-Bxw_out.resize((Constants::Nsteps) + 1);
-Byw_out.resize((Constants::Nsteps) + 1);
-Bzw_out.resize((Constants::Nsteps) + 1);
-Ew_out.resize((Constants::Nsteps) + 1);
-Bw_out.resize((Constants::Nsteps) + 1); 
-mu_ad_li.resize((Constants::Nsteps) + 1);
-mu_out.resize((Constants::Nsteps) + 1);
-mu_adiabatic.resize((Constants::Nsteps) + 1);
-vresz_o.resize((Constants::Nsteps) + 1);
-Eres_o.resize((Constants::Nsteps) + 1);
-Ekin_li.resize((Constants::Nsteps) + 1);    //Not used
-deta_dt.resize((Constants::Nsteps) + 1);
-kappa_out.resize((Constants::Nsteps) + 1);
-eps_res.resize((Constants::Nsteps) + 1);
-ind_reson.resize((Constants::Nsteps) + 1);
-Ftheta_o.resize((Constants::Nsteps) + 1);
-Fpar_o.resize((Constants::Nsteps) + 1);
-Fper_o.resize((Constants::Nsteps) + 1);
-gama_out.resize((Constants::Nsteps) + 1);
-
+std::vector <std::vector<real>> zeta    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> time_sim(Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Exw_out(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Eyw_out(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Ezw_out(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Bxw_out(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Byw_out(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Bzw_out(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Ew_out(Constants::population,   std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Bw_out(Constants::population,   std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> mu_out(Constants::population,   std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> mu_ad_li(Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> vresz_o(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Eres_o(Constants::population,   std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Ekin_li(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> deta_dt(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> kappa_out(Constants::population,std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> wh_out(Constants::population,   std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> eps_res(Constants::population,  std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> ind_reson(Constants::population,std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Ftheta_o(Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Fpar_o(Constants::population,   std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> Fper_o(Constants::population,   std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector <std::vector<real>> gama_out(Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
+std::vector<std::vector<real>>mu_adiabatic(Constants::population,std::vector<real> (Constants::Nsteps + 1, 0) );
 
 
 std::vector <real>::iterator ptr, requested_index;    //To find requested index
-int index;
-real diff, min_diff;                                  //To find minimum difference between latitudes
+int index;                                            //To find minimum difference between latitudes
 
-Ekin_li[0]=Ejoule0;
-mu_ad_li[0]=mu_adiabatic_0;
+for(int p=0; p<Constants::population; p++)
+{
+    Ekin_li[p][0]=Ejoule0;
+}
 
 
 //Variables declaration
@@ -305,7 +285,7 @@ real min_lat,max_lat;
 int index_res;
 int i;
 real p_mag,gama,w_h,dwh_ds,kz,Bxw_o,Byw_o,Bzw_o,Exw_o,Eyw_o,Ezw_o,Bw_o,Ew_o,vresz;
-real Bmag,Beq,B_lam,aa,salphaeq,u_mag,Fpar,Fper,Ftheta;
+real Beq,B_lam,salphaeq,u_mag,Fpar,Fper,Ftheta;
 real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
 //--------------------------------------- DECLARE VECTORS && VARIABLES: DONE -----------------------------------------//
 
@@ -314,7 +294,7 @@ real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,
 
 //--------------------------- OBJECT CREATION FOR PARTICLES WITH DIFFERENT GYROPHASES --------------------------------//
 
-Particles single(Constants::lamda0, zeta0, upar0, uper0, ppar0, pper0, alpha0, Constants::aeq0, Constants::aeq0, 0);
+Particles single(Constants::lamda0, zeta0, upar0, uper0, ppar0, pper0, alpha0, Constants::aeq0, Constants::aeq0,mu_adiabatic_0, 0);
 
 std::vector<Particles> eql_dstr(Constants::population, single);
 
@@ -327,8 +307,7 @@ for(int p=0; p<Constants::population; p++)
 }
 
 //Temp variables that will be assigned in the structure
-real new_lamda , new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_alpha2, new_aeq, new_aeqsu, new_eta, new_time;
-
+real new_lamda , new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_aeq, new_aeqsu, new_eta, new_mu_ad_li, new_time;
 //----------------------- OBJECT CREATION FOR PARTICLES WITH DIFFERENT GYROPHASES: DONE ------------------------------//    
 
 
@@ -341,7 +320,7 @@ auto rk_start = std::chrono::high_resolution_clock::now();
 
 for(int p=0; p<Constants::population; p++)//Loop for all particle gyrophases
 {
-    //std::string filename,p_string;     //To store some plot data, before loop end(temp for txt). 
+
     i=0;
 
     while(i<Constants::Nsteps)           //Nsteps-1? 
@@ -349,8 +328,8 @@ for(int p=0; p<Constants::population; p++)//Loop for all particle gyrophases
         //Take the data from interpolation and return (pulse_dur) of them, moved by "i" each iteration.
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Minimum lat of wave(in pulse duration).
         max_lat=*max_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Max lat of wave.
-        //std::cout<<"\n" << lamda.at(i)*Constants::R2D << " " << lat_int.at(i) << " " << lat_int.back(); 
-        //std::cout << "\n" << min_lat << "" << max_lat; 
+        //std::cout<<"\n" << eql_dstr[p].lamda.at(i)*Constants::R2D << " " << min_lat << "" << max_lat << " "<< lat_int.at(i) << " " << lat_int.back(); 
+         
 
 
         f_always(p_mag, gama, w_h, dwh_ds, eql_dstr[p].lamda.at(i), eql_dstr[p].ppar.at(i), eql_dstr[p].pper.at(i));
@@ -363,11 +342,11 @@ for(int p=0; p<Constants::population; p++)//Loop for all particle gyrophases
         Bw_o  = 0;
         Ew_o  = 0;
         kz    = 0;
-        Ftheta= 0;
+        Ftheta= 0; 
         Fpar  = 0;
         Fper  = 0;
         vresz = 0;
-        eps_res.at(i) = 1;
+        eps_res[p][i] = 1;
         index_res = 0;
         q1 = 0;      
         //is_in_packet returns "if and where" WPI happens.  
@@ -384,22 +363,22 @@ for(int p=0; p<Constants::population; p++)//Loop for all particle gyrophases
             Ew_o=sqrt(Exw_o*Exw_o+Eyw_o*Eyw_o+Ezw_o*Ezw_o);//
             vresz = vres_f(Constants::w_wave,kz,w_h,eql_dstr[p].alpha.at(i));//
             index_res=1;//
-            eps_res.at(i)=std::abs((eql_dstr[p].upar.at(i)-vresz)/vresz); //Maybe one function for eps_res instead of vres_f?
+            eps_res[p][i]=std::abs((eql_dstr[p].upar.at(i)-vresz)/vresz); //Maybe one function for eps_res instead of vres_f?
         }
-        vresz_o.at(i)=vresz;
-        ind_reson.at(i)=index_res;
-        Ftheta_o.at(i)=Ftheta;
-        Fpar_o.at(i)=Fpar;
-        Fper_o.at(i)=Fper;
-        Exw_out.at(i)=Exw_o; 
-        Eyw_out.at(i)=Eyw_o;
-        Ezw_out.at(i)=Ezw_o;
-        Bxw_out.at(i)=Bxw_o; 
-        Byw_out.at(i)=Byw_o;
-        Bzw_out.at(i)=Bzw_o;
-        Bw_out.at(i)=Bw_o;
-        Ew_out.at(i)=Ew_o;
-        gama_out.at(i)=gama;
+        vresz_o[p][i]=vresz;
+        ind_reson[p][i]=index_res;
+        Ftheta_o[p][i]=Ftheta;
+        Fpar_o[p][i]=Fpar;
+        Fper_o[p][i]=Fper;
+        Exw_out[p][i]=Exw_o; 
+        Eyw_out[p][i]=Eyw_o;
+        Ezw_out[p][i]=Ezw_o;
+        Bxw_out[p][i]=Bxw_o; 
+        Byw_out[p][i]=Byw_o;
+        Bzw_out[p][i]=Bzw_o;
+        Bw_out[p][i]=Bw_o;
+        Ew_out[p][i]=Ew_o;
+        gama_out[p][i]=gama;
         slopes(k1,  l1,  m1,  n1,  o1,  p1, eql_dstr[p].ppar.at(i), eql_dstr[p].pper.at(i), eql_dstr[p].alpha.at(i), eql_dstr[p].lamda.at(i), eql_dstr[p].eta.at(i), Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz);
         //Check1
         //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn1 " << n1<< "\no1 " << o1 << "\np1 " << p1 <<"\nq1 " << q1 <<"\n";
@@ -458,7 +437,7 @@ for(int p=0; p<Constants::population; p++)//Loop for all particle gyrophases
         new_alpha  =  eql_dstr[p].alpha.at(i)  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
         new_aeqsu  =  eql_dstr[p].aeqsu.at(i)  +  (Constants::h/6)*(q1+2*q2+2*q3+q4);
         
-        deta_dt.at(i+1) = (Constants::h/6)*(n1+2*n2+2*n3+n4); //is this right ??
+        deta_dt[p][i+1] = (Constants::h/6)*(n1+2*n2+2*n3+n4); //is this right ??
 
         Beq      =  Bmag_dipole(0);
         B_lam    =  Bmag_dipole(new_lamda);
@@ -467,30 +446,21 @@ for(int p=0; p<Constants::population; p++)//Loop for all particle gyrophases
         
         new_upar = new_ppar / (Constants::m_e*gama);
         new_uper = new_pper / (Constants::m_e*gama);
-        u_mag    = sqrt(new_upar+pow(new_uper,2));
+        u_mag    = sqrt(new_upar+pow(new_uper,2));      //not used
         
-        mu_ad_li.at(i+1)=(new_pper*new_pper)/(2*Constants::m_e*B_lam); 
+        new_mu_ad_li=(new_pper*new_pper)/(2*Constants::m_e*B_lam); 
         
         i++;  
-        time_sim.at(i)=time_sim.at(i-1)+Constants::h; 
-        new_time = time_sim.at(i);
+        time_sim[p][i]=time_sim[p][i-1]+Constants::h; 
+        new_time = time_sim[p][i];
 
-        eql_dstr[p].update_state(new_lamda , new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_aeq, new_aeqsu, new_eta, new_time);
+        eql_dstr[p].update_state(new_lamda , new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_aeq, new_aeqsu, new_eta, new_mu_ad_li, new_time);
         //if(eql_dstr[p].lamda.at(i)>0)     //stop at equator
         //    break;
 
 
     }
-    /*
-    //ONLY FOR PLOTS(temp for txt files).
-    //Save some data in txt files.
-    filename.assign("./cc_text/varsOfpart"); //Replacing current content with this.
-    p_string = std::to_string(p);            //File specifier for particle.
-    filename.append(p_string);
-    filename.append(".txt");
-    outfile(mu_ad_li, Ftheta_o, Bxw_out, Byw_out, Bzw_out, gama_out, filename);    
-    //Columns: mu_ad_li->0 , Ftheta_o->1, Bxw_out->2, Byw_out->3, Bzw_out->4. gama_out-> 5.
-    */
+
 }
 
 
@@ -502,26 +472,14 @@ std::cout << "\nTime elapsed: " << std::setprecision(8) << rk_time <<" seconds" 
 //------------------------------------------------- WPI: END -------------------------------------------------//
 
 
-//-------------------------------------------------- OUTPUT DATA TXT -----------------------------------------------------//
-/*
-std::vector<real> eta0;
-
-for(int p=0; p<Constants::population; p++)
-{
-    eta0.push_back(eql_dstr[p].eta.at(0));  //Initial eta of particles in rads
-}
-
-//Write data in txt files. Imported in python code. Quantities in RADS
-outfile(eql_dstr,"./cc_text/particle.txt"); //Go to ./outfile.hpp to uncomment txt output quantities.
-outfile(time_sim, "./cc_text/time_sim.txt");
-outfile(eta0, "./cc_text/eta0.txt"); //rads
-*/
-//------------------------------------------------- OUTPUT DATA TXT : END -------------------------------------------------//
-
 //-------------------------------------------------- OUTPUT DATA HDF5 -----------------------------------------------------//
 std::vector<real> eta0;
-std::vector<std::vector<real>> aeqsu_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1) );
-std::vector<std::vector<real>> lamda_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1) );
+std::vector<std::vector<real>> aeqsu_plot   (Constants::population, std::vector<real> (Constants::Nsteps + 1) );
+std::vector<std::vector<real>> lamda_plot   (Constants::population, std::vector<real> (Constants::Nsteps + 1) );
+std::vector<std::vector<real>> mu_ad_li_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1) );
+std::vector<std::vector<real>> alpha_plot   (Constants::population, std::vector<real> (Constants::Nsteps + 1) );
+
+
 //ASSIGN FROM STRUCT INTO 2D VECTORS (TEMP)
 for(int p=0; p<Constants::population; p++)
 {
@@ -529,22 +487,40 @@ for(int p=0; p<Constants::population; p++)
 
     for(int j=0; j<Constants::Nsteps; j++)  //Fill 2D vector from vector of structs.
     {
-        aeqsu_plot[p][j] =  eql_dstr[p].aeqsu[j];  
-        lamda_plot[p][j] =  eql_dstr[p].lamda[j];  
+        aeqsu_plot[p][j]    =  eql_dstr[p].aeqsu[j];  
+        lamda_plot[p][j]    =  eql_dstr[p].lamda[j];
+        mu_ad_li_plot[p][j] =  eql_dstr[p].mu_ad_li[j];  
+        alpha_plot[p][j]    =  eql_dstr[p].alpha[j];
     }
 }
 //Create of hdf5 file.
-h5::File file("./h5files/particles.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+h5::File file("particles.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 //Create datasets.
-h5::DataSet dataset_aeqsu =  file.createDataSet <real> ("aeqsu 2D",         h5::DataSpace::From(aeqsu_plot));
-h5::DataSet dataset_lamda =  file.createDataSet <real> ("lamda 2D",         h5::DataSpace::From(lamda_plot));
-h5::DataSet dataset_eta   =  file.createDataSet <real> ("initial_etas",     h5::DataSpace::From(eta0));
-h5::DataSet dataset_time  =  file.createDataSet <real> ("simulation time",  h5::DataSpace::From(time_sim));
+h5::DataSet dataset_aeqsu     =  file.createDataSet <real> ("aeqsu 2D",         h5::DataSpace::From(aeqsu_plot));
+h5::DataSet dataset_lamda     =  file.createDataSet <real> ("lamda 2D",         h5::DataSpace::From(lamda_plot));
+h5::DataSet dataset_eta       =  file.createDataSet <real> ("initial_etas",     h5::DataSpace::From(eta0));
+h5::DataSet dataset_time      =  file.createDataSet <real> ("simulation time",  h5::DataSpace::From(time_sim));
+h5::DataSet dataset_mu_ad_li  =  file.createDataSet <real> ("mu_ad_li 2D",      h5::DataSpace::From(mu_ad_li_plot));
+h5::DataSet dataset_alpha     =  file.createDataSet <real> ("alpha 2D",         h5::DataSpace::From(alpha_plot));
+h5::DataSet dataset_Ftheta    =  file.createDataSet <real> ("Ftheta 2D",        h5::DataSpace::From(Ftheta_o));
+h5::DataSet dataset_gama      =  file.createDataSet <real> ("gamma 2D",         h5::DataSpace::From(gama_out));
+h5::DataSet dataset_Bxw       =  file.createDataSet <real> ("Bx 2D",            h5::DataSpace::From(Bxw_out));
+h5::DataSet dataset_Byw       =  file.createDataSet <real> ("By 2D",            h5::DataSpace::From(Byw_out));
+h5::DataSet dataset_Bzw       =  file.createDataSet <real> ("Bz 2D",            h5::DataSpace::From(Bzw_out));
+
 
 dataset_aeqsu.write(aeqsu_plot);
 dataset_lamda.write(lamda_plot);
 dataset_eta.write(eta0);
 dataset_time.write(time_sim);
+dataset_mu_ad_li.write(mu_ad_li_plot);
+dataset_alpha.write(alpha_plot);
+dataset_Ftheta.write(Ftheta_o);
+dataset_gama.write(gama_out);
+dataset_Bxw.write(Bxw_out);
+dataset_Byw.write(Byw_out);
+dataset_Bzw.write(Bzw_out);
+
 //------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------//
 
 std::cout << "\n\n";
