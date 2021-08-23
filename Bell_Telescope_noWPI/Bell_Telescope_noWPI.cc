@@ -422,8 +422,8 @@ int main()
 		        if( ODPT.crossing(new_lamda*Constants::R2D, eql_dstr[p].lamda.at(i-1)*Constants::R2D, Constants::L_shell) )	 
 		        {										//i was increased!
 					std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " just crossed the satellite, at: "<< new_time << " simulation seconds\n";
-		        	//Store it's state.
-		        	ODPT.store(p, new_lamda, new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_alpha2, new_aeq, new_aeq2, new_eta, new_M_adiabatic, new_time);  	
+		        	//Store it's state(it's before crossing the satellite!).
+		        	ODPT.store(p, eql_dstr[p].lamda.at(i-1), eql_dstr[p].lamda.at(i-1), eql_dstr[p].uper.at(i-1) , eql_dstr[p].upar.at(i-1), eql_dstr[p].ppar.at(i-1), eql_dstr[p].pper.at(i-1), eql_dstr[p].alpha.at(i-1), eql_dstr[p].alpha2.at(i-1), eql_dstr[p].aeq.at(i-1), eql_dstr[p].aeq2.at(i-1), eql_dstr[p].eta.at(i-1), eql_dstr[p].M_adiabatic.at(i-1), eql_dstr[p].time.at(i-1));  	
 		        	
 		        }
 //if particle crosses satellite//#################################################################################################################################################################################################################################################################################################

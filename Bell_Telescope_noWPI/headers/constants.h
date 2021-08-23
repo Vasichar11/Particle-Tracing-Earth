@@ -50,7 +50,7 @@ const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte in
 
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//not distributed in eta.											 
-const int64_t aeq_dstr    = 10;					//aeq distribution.
+const int64_t aeq_dstr    = 100;					//aeq distribution.
 const int64_t lamda_dstr  = 1;					//not distributed in lamda.
 const int64_t population = eta_dstr * aeq_dstr * lamda_dstr;
 
