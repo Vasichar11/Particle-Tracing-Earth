@@ -48,16 +48,20 @@ const real t=1;        				  			//Simulation duration in seconds.
 const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
 
+//--Satellite parameters--//
+const real telescope_lamda = 30;
+
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//not distributed in eta.											 
-const int64_t aeq_dstr    = 100;					//aeq distribution.
+const int64_t aeq_dstr    = 150;				//aeq distribution.
 const int64_t lamda_dstr  = 1;					//not distributed in lamda.
 const int64_t population = eta_dstr * aeq_dstr * lamda_dstr;
+
 
 //------------------------------ Eta distribution range and step. --------------------------------//
 //const real eta_start_d    = 0;     			//0 90 180 					//Degrees 	 
 //const real eta_end_d      = 180;   						 
-//const real eta_step_d 	  = (eta_end_d - eta_start_d)/(eta_dstr-1); 	//Step in degrees.
+//const real eta_step_d 	= (eta_end_d - eta_start_d)/(eta_dstr-1); 	//Step in degrees.
 
 //------------------------------ Aeq distribution range and step. --------------------------------//					 
 const real aeq_start_d    = 5;     			//5 15 25			 				

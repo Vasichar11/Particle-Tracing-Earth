@@ -47,7 +47,7 @@ int main()
 //Omni-Directional Particle-Telescope.	
 	
 	//real max_step = 8*pow(10,-5);  // max( |lamda.at(i+1)-lamda.at(i)| )			
-	Telescope ODPT(30, Constants::L_shell); //Satellite situated lat~ 30 deg, L_shell=5. Lamda tolerance = max step of particle. 		
+	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell); //Satellite situated lat~ 30 deg, L_shell=5. Lamda tolerance = max step of particle. 		
 					
 	//ODPT.view		    = 360;								//Detector's Angular coverage(degrees).
 	//ODPT.sector_range = 15;								//Sector's 	 Angular coverage(degrees).
@@ -69,7 +69,7 @@ int main()
 						//equally distributed
 	
 	real eta0,aeq0,lamda0;
-	real Beq0 = Bmag_dipole(0);
+	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
 	try //Exception handling. Check if initial parameters are valid.
 	{
@@ -161,8 +161,8 @@ int main()
 		std::vector <std::vector<real>>Ekin       (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
   		//std::vector <std::vector<real>>Phi_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0);
 
-		std::cout.precision(16);		//Output 16 decimal precise
-		std::cout<<std::scientific;		//For e notation representation
+		//std::cout.precision(16);		//Output 16 decimal precise
+		//std::cout<<std::scientific;		//For e notation representation
 		auto rk_start = std::chrono::high_resolution_clock::now();
 
 
@@ -416,7 +416,7 @@ int main()
 				new_time = time_sim[p][i];
 		        eql_dstr[p].update_state(new_lamda , new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_alpha2, new_aeq, new_aeq2, new_eta, new_M_adiabatic, new_time);
 				//std::cout<<"\n"<< new_alpha << " " << new_zeta << " " << new_ppar<< " " << new_pper<< " " << new_eta << " " <<new_lamda*Constants::R2D<< " " <<new_aeq ;
-				//std::cout<<"\nParticle "<<p<<" at: "<<new_lamda*Constants::R2D;
+				//std::cout<<"\nParticle "<<p<<" lamda: " << new_lamda*Constants::R2D<<" p.a: "<<new_alpha*Constants::R2D<< " upar: " << new_upar << " uper: "<<new_uper;
 				
 //if particle crosses satellite//#################################################################################################################################################################################################################################################################################################
 		        if( ODPT.crossing(new_lamda*Constants::R2D, eql_dstr[p].lamda.at(i-1)*Constants::R2D, Constants::L_shell) )	 
@@ -517,6 +517,7 @@ int main()
 	h5::DataSet dataset2_id    = file2.createDataSet("detected_id 1D",  ODPT.id);
 	h5::DataSet dataset2_aeq   = file2.createDataSet("detected_aeq 1D", ODPT.aeq);
 	h5::DataSet dataset2_alpha = file2.createDataSet("detected_alpha 1D", ODPT.alpha);
+	h5::DataSet telescope_lamda= file2.createDataSet("telescope_lamda scalar", ODPT.latitude);
 
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
 

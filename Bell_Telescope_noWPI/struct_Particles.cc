@@ -41,6 +41,7 @@ void Particles::calculations0(real Beq0, real initial_lamda, real initial_zeta, 
 	real Ejoule0=1.602176487E-16*initial_Ekev;
 	real gama0=(Ejoule0/(Constants::m_e*pow(Constants::c,2))) + 1;
 	real speed0=sqrt( 1 - (1/pow(gama0,2)) ) * Constants::c;
+	std::cout<<"\nBouncing period estimation: "<< (4*Constants::L_shell*Constants::Re/speed0)*(1.3 - 0.5*sin(initial_aeq)); //[Orlova1,Shprits2,2011]
 	real upar0=speed0*cos(alpha0);
 	real uper0=speed0*sin(alpha0);
 	real pper0=gama0*Constants::m_e*uper0;  //IF aeq=0->alpha0=0->pper=0 PROBLEM IN Bell_param, a2.(Exception 98)

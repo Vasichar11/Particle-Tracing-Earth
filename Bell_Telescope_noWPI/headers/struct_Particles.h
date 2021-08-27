@@ -2,9 +2,10 @@
 
 #include <vector>
 #include <stdlib.h>
+#include <iostream>
 #include "functions.h" 		//for Bmag_dipole in Particles::u_and_p
 #include "struct_Species.h"	//only for mass of electron
-#include "constants.h" 		//only for speed of light
+#include "constants.h" 		//only for speed of light(and L_shell, Re ->bounce period)
 #include "common.h"
 
 //Declaration of struct.
