@@ -1,0 +1,162 @@
+--------------------------------------------------------------------------------
+Profile data file 'callgrind.out.5130' (creator: callgrind-3.15.0)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 4751496858
+Trigger: Program termination
+Profiled target:  ./tracer (PID 5130, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  off
+
+--------------------------------------------------------------------------------
+Ir             
+--------------------------------------------------------------------------------
+40,260,266,105  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir              file:function
+--------------------------------------------------------------------------------
+
+40,260,266,105  *  ???:0x0000000000001100 [/lib/x86_64-linux-gnu/ld-2.31.so]
+40,257,214,680  >   ???:_start (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+
+40,257,214,680  < ???:0x0000000000001100 (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
+40,257,214,680  *  ???:_start [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+
+40,257,214,668  < ???:_start (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+40,254,623,163  >   ???:main (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+       109,904  >   ???:__libc_csu_init (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+
+40,254,623,163  *  ???:main [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+16,698,624,288  >   ???:Species::density(double) (79,999,200x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 6,179,122,300  >   ???:p_per_rk(double, double, double, double, double, double, double, double, double, double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 5,715,274,495  >   ???:Bmag_dipole(double) (19,999,801x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 3,355,299,064  >   ???:dwh_dsf(double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 3,215,300,464  >   ???:lamda_rk(double, double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+   459,995,400  >   ???:alpha_rk(double, double, double, double, double, double, double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+   379,996,200  >   ???:p_par_rk(double, double, double, double, double, double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+   319,996,800  >   ???:Species::wc(double) (79,999,200x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+   319,996,800  >   ???:aeq_rk(double, double, double, double, double, double, double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+   179,998,200  >   ???:eta_rk(double, double, double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+    80,051,182  >   ???:std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >::vector(unsigned long, std::vector<double, std::allocator<double> > const&, std::allocator<std::vector<double, std::allocator<double> > > const&) (2x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+    79,999,200  >   ???:z_rk(double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+    64,999,350  >   ???:Telescope::crossing(double, double, double) (4,999,950x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+     2,725,549  >   ???:HighFive::File::File(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, unsigned int, HighFive::PropertyList<(HighFive::PropertyType)2> const&) (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+     1,600,038  >   ???:0x000000000010c720 (2x) [???]
+       523,415  >   ???:HighFive::DataSet HighFive::NodeTraits<HighFive::File>::createDataSet<std::vector<double, std::allocator<double> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::vector<double, std::allocator<double> > const&, HighFive::PropertyList<(HighFive::PropertyType)3> const&, HighFive::PropertyList<(HighFive::PropertyType)4> const&, bool) (4x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+       385,993  >   ???:HighFive::DataSet HighFive::NodeTraits<HighFive::File>::createDataSet<double>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double const&, HighFive::PropertyList<(HighFive::PropertyType)3> const&, HighFive::PropertyList<(HighFive::PropertyType)4> const&, bool) (3x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+       133,526  >   ???:Particles::calculations0(double, double, double, double, double, double, double) (50x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+       127,405  >   ???:HighFive::NodeTraits<HighFive::File>::createDataSet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, HighFive::DataSpace const&, HighFive::DataType const&, HighFive::PropertyList<(HighFive::PropertyType)3> const&, HighFive::PropertyList<(HighFive::PropertyType)4> const&, bool) (2x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+       108,235  >   ???:HighFive::File::~File() (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        70,577  >   ???:HighFive::DataSet::~DataSet() (9x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        61,897  >   ???:std::vector<Particles, std::allocator<Particles> >::~vector() (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        32,775  >   ???:HighFive::Object::~Object() (14x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        32,681  >   ???:Telescope::store(int, double, double, double, double, double, double, double) (80x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        23,149  >   ???:0x000000000010c970 (2x) [???]
+        21,919  >   ???:0x000000000010ca10 (5x) [???]
+        17,375  >   ???:0x000000000010c8c0 (10x) [???]
+        13,161  >   ???:std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >::~vector() (2x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        12,300  >   ???:Particles::set_aeq(double) (50x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        12,300  >   ???:Particles::set_lamda(double) (50x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        12,300  >   ???:Particles::set_eta(double) (50x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        11,014  >   ???:HighFive::details::BufferInfo<long>::BufferInfo(HighFive::DataType const&) (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+        10,479  >   ???:HighFive::details::BufferInfo<std::vector<int, std::allocator<int> > >::BufferInfo(HighFive::DataType const&) (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+         7,322  >   ???:HighFive::DataType HighFive::create_and_check_datatype<int>() (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+         7,243  >   ???:HighFive::DataType HighFive::create_and_check_datatype<long>() (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+         6,624  >   ???:0x000000000010cae0 (4x) [???]
+         4,050  >   ???:0x000000000010c850 (5x) [???]
+         3,517  >   ???:0x000000000010c940 (2x) [???]
+         2,731  >   ???:0x000000000010c6f0 (2x) [???]
+         2,515  >   ???:0x000000000010c840 (2x) [???]
+         2,198  >   ???:std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<std::allocator<char> >(char const*, std::allocator<char> const&) [clone .constprop.0] (10x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+         1,929  >   ???:0x000000000010c640 (2x) [???]
+         1,891  >   ???:0x000000000010cad0 (2x) [???]
+         1,751  >   ???:0x000000000010c830 (9x) [???]
+         1,104  >   ???:0x000000000010c5d0 (2x) [???]
+           912  >   ???:0x000000000010c860 (4x) [???]
+           855  >   ???:HighFive::details::checkDimensions(HighFive::DataSpace const&, unsigned long) (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+           821  >   ???:0x000000000010c920 (1x) [???]
+           786  >   ???:Telescope::~Telescope() (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+           232  >   ???:HighFive::PropertyListBase::Default() (19x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+            38  >   ???:Particles::~Particles() (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+            20  >   ???:Species::Species(double, double, double) (4x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+            18  >   ???:Telescope::Telescope(double, double) (1x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+
+16,698,624,288  < ???:main (79,999,200x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+16,698,624,288  *  ???:Species::density(double) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+10,239,893,000  >   ???:0x000000000010ca70 (79,999,200x) [???]
+ 5,658,739,288  >   ???:0x000000000010cac0 (79,999,200x) [???]
+
+10,239,893,000  < ???:Species::density(double) (79,999,200x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,559,978,605  < ???:Bmag_dipole(double) (19,999,851x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+12,799,871,605  *  ???:0x000000000010ca70 [???]
+
+12,599,873,503  < ???:0x000000000010ca70 (99,999,051x) [???]
+10,699,891,534  >   ???:0x0000000004dc4310 (99,999,051x) [???]
+
+10,699,891,534  *  ???:0x0000000004dc4310 [???]
+
+10,499,893,432  < ???:0x0000000004dc4310 (99,999,051x) [???]
+
+ 2,635,308,814  < ???:Bmag_dipole(double) (19,999,851x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,635,306,264  < ???:lamda_rk(double, double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,635,306,264  < ???:dwh_dsf(double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+         7,182  < ???:Particles::calculations0(double, double, double, double, double, double, double) (50x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 7,905,928,524  *  ???:0x000000000010c750 [???]
+
+ 7,785,929,522  < ???:0x000000000010c750 (59,999,501x) [???]
+
+ 6,179,122,300  < ???:main (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 6,179,122,300  *  ???:p_per_rk(double, double, double, double, double, double, double, double, double, double, double) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,939,970,600  >   ???:0x000000000010c5f0 (39,999,600x) [???]
+ 2,059,163,500  >   ???:0x000000000010c610 (19,999,800x) [???]
+
+ 5,715,274,495  < ???:main (19,999,801x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+         9,050  < ???:Particles::calculations0(double, double, double, double, double, double, double) (50x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 5,715,283,545  *  ???:Bmag_dipole(double) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,635,308,814  >   ???:0x000000000010c750 (19,999,851x) [???]
+ 2,559,978,605  >   ???:0x000000000010ca70 (19,999,851x) [???]
+
+ 5,658,739,288  < ???:Species::density(double) (79,999,200x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 5,658,739,288  *  ???:0x000000000010cac0 [???]
+
+ 5,498,740,888  < ???:0x000000000010cac0 (79,999,200x) [???]
+
+
+ 3,355,299,064  < ???:main (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 3,355,299,064  *  ???:dwh_dsf(double, double) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,635,306,264  >   ???:0x000000000010c750 (19,999,800x) [???]
+
+ 3,215,300,464  < ???:main (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 3,215,300,464  *  ???:lamda_rk(double, double, double) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,635,306,264  >   ???:0x000000000010c750 (19,999,800x) [???]
+
+ 2,939,970,600  < ???:p_per_rk(double, double, double, double, double, double, double, double, double, double, double) (39,999,600x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,939,970,600  *  ???:0x000000000010c5f0 [???]
+
+ 2,859,971,400  < ???:0x000000000010c5f0 (39,999,600x) [???]
+
+
+ 2,059,163,500  < ???:p_per_rk(double, double, double, double, double, double, double, double, double, double, double) (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+         4,302  < ???:Particles::calculations0(double, double, double, double, double, double, double) (50x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+ 2,059,167,802  *  ???:0x000000000010c610 [???]
+
+ 2,019,168,102  < ???:0x000000000010c610 (19,999,850x) [???]
+
+
+
+
+
+   459,995,400  < ???:main (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+   459,995,400  *  ???:alpha_rk(double, double, double, double, double, double, double, double) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+
+   379,996,200  < ???:main (19,999,800x) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+   379,996,200  *  ???:p_par_rk(double, double, double, double, double, double, double) [/home/family/programms/Working_dir/Bell_Telescope_noWPI/tracer]
+
