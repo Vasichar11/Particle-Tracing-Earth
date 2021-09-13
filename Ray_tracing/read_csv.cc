@@ -1,4 +1,4 @@
-#include "headers/readCSV.h"
+#include "headers/read_csv.h"
 
 //Temporal, there are already algorithms for csv reading...
 
@@ -12,7 +12,7 @@ std::vector<std::pair<std::string, std::vector<double>>> rcsv(std::string filena
 	{
 		std::string line, column;
 		std::getline(file, line); 					//Gets the first line of the file, i.e names of variables
-		std::stringstream s_stream(line);			//As_streamociates line string with a stream we can read from
+		std::stringstream s_stream(line);			
 		while(std::getline(s_stream,column, ',')) 	//Extracts characters from s_stream, stores in column, until "," is met
 		{	//push back pairs into the output
 			output.push_back({column,std::vector<double> {}});

@@ -6,80 +6,50 @@ import math
 import matplotlib.animation as manimation
 from random import randint
 from matplotlib.ticker import MaxNLocator
-from collections import Counter
-import math as mt
 
 D2R=np.pi/180
 R2D=1/D2R
 
+#############################  READ DATA FOR ALL PARTICLES (IF NEEDED) ################################
+"""
+f1 = h5py.File("h5files/particles.h5","r")
+#print("Keys: %s" % f1.keys())
+lamda    = f1["lamda 2D"][()]
+aeq      = f1["aeq 2D"][()]
+eta      = f1["eta 2D"][()]
+time_sim = f1["simulation time"][()]
+upar     = f1["upar"][()]
+f1.close();
+lamda0 = lamda[:,0]
+eta0   = eta[:,0]
+aeq0   = aeq[:,0]
+eta0_deg = eta0*R2D
+aeq0_deg = aeq0*R2D
+lamda0_deg = lamda0*R2D
+"""
+################################# READ DATA FOR DETECTED PARTICLES ####################################
+f2 = h5py.File("h5files/detected.h5","r")
+#print("Keys: %s" % f2.keys())
+detected_lamda = f2["detected_lamda 1D"][()]
+detected_time  = f2["detected_time 1D"][()]
+detected_id    = f2["detected_id 1D"][()]
+detected_aeq   = f2["detected_aeq 1D"][()]
+detected_alpha = f2["detected_alpha 1D"][()]
+telescope_lamda= f2["telescope_lamda scalar"][()]
+population     = f2["whole population"][()]
+t              = f2["simulation time"][()]
+lamda0         = f2["initial latitude"][()]
 
-############################################# READ DATA ###################################################
-f = h5py.File("h5files/1000p_5s_aeq_time.h5","r")
-#print("Keys: %s" % f.keys())
-detected_lamda = f["ODPT.lamda"][()]
-detected_time  = f["ODPT.time"][()]
-detected_id    = f["ODPT.id"][()]
-detected_aeq   = f["ODPT.aeq"][()]
-detected_alpha = f["ODPT.alpha"][()]
-telescope_lamda= f["ODPT.latitude"][()]
-population     = f["population"][()]
-t              = f["t"][()]
-lamda0         = f["lamda0"][()]
-aeq            = f["aeq_plot"][()]
-alpha          = f["alpha_plot"][()]
-time           = f["time_plot"][()]
-deta_dt        = f["deta_dt"][()]
-
-f.close();
+f2.close();
 detected_pop   = len(detected_lamda)
 
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
 ##########################################################################################################
 
- 
-def leastFrequent(arr, n):
- 
-    Hash = dict()
-    for i in range(n):
-        if arr[i] in Hash.keys():
-            Hash[arr[i]] += 1
-        else:
-            Hash[arr[i]] = 1
- 
-    min_count = n + 1
-    res = -1
-    for i in Hash:
-        if (min_count >= Hash[i]):
-            res = i
-            min_count = Hash[i]
-         
-    return res
-
-
-least = leastFrequent(detected_id,len(detected_id))
-
-
-#PLOT PA-TIME
-fig, ax = plt.subplots()    
-ax.plot(time[least,:-1],alpha[least,:-1])
-ax.grid(alpha=.3)
-ax.set_xlabel('time (sec)')
-ax.set_ylabel('$ a_{eq}$ (deg)')
-fig.savefig('a_eq.png' , dpi=200, facecolor='white',transparent=False)
-
-#PLOT DETA_DT-TIME
-fig, ax = plt.subplots()    
-print(time[least],aeq[least],deta_dt[least])
-ax.plot(time[least,:-1],deta_dt[least,:-1])
-ax.grid(alpha=.3)
-ax.set_xlabel('time (sec)')
-ax.set_ylabel('deta_dt')
-fig.savefig('deta_dt.png' , dpi=200, facecolor='white',transparent=False)
 
 
 
-"""
 ####################################### TELESCOPE SPECIFICATION ##########################################
 time_bin  = 0.1                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
@@ -110,7 +80,6 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
 
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 fig, ax = plt.subplots()
-
 
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=1)
 
@@ -170,21 +139,6 @@ with writer.saving(fig, "simulation_MM/detected/Time_binning.mp4", 100):
 
         writer.grab_frame()
         ax.clear() #clear data 
-
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -5,10 +5,10 @@ OPT=-O3
 CXXFLAGS=-std=c++17 -lstdc++fs -Wall -pg
 
 
-INC_HIVIFE= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/family/HighFive/include/
+INC_HIVIFE= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
 
 
-INC_FAST= -I/usr/include/hdf5/serial -I/home/family/HighFive/include/ -L/usr/lib/x86_64-linux-gnu/hdf5/serial -lhdf5
+INC_FAST= -I/usr/include/hdf5/serial -I/home/vchariton/HighFive/include/ -L/usr/lib/x86_64-linux-gnu/hdf5/serial -lhdf5
 
 
 OBJ=  functions.o   time_rates.o   struct_Particles.o   struct_Species.o   struct_Telescope.o
@@ -22,7 +22,7 @@ clean:
 	rm  *.o 
 
 allclean:
-	rm *.o ${BIN} *.out
+	rm *.o ${BIN} *.out *.png
 
 struct_Particles.o: struct_Particles.cc
 	${CC} ${CXXFLAGS} ${OPT} -c struct_Particles.cc   

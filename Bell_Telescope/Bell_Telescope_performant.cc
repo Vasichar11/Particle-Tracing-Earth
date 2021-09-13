@@ -30,7 +30,7 @@ namespace h5 = HighFive;
 int main()
 {
 		
-	//std::cout.precision(32);			//Output 16 decimal precise
+	//std::cout.precision(8);		//Output 16 decimal precise
 	std::cout<<std::scientific;		//For e notation representation
 
 	//Objects for each specie.
@@ -62,7 +62,7 @@ int main()
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
 
-	for(int e=0, i=0; e<Constants::eta_dstr, i<Constants::population; e++)		
+	for(int e=0, i=0; e<Constants::eta_dstr; e++)		
 	{   																							 
 		eta0 = (Constants::eta_start_d + e*Constants::eta_step_d) * Constants::D2R;			   														
 		
@@ -83,7 +83,7 @@ int main()
 				//Exceptions are involved
 				try
 				{	
-					eql_dstr[i].calculations0(Beq0,lamda0,0,0,0,aeq0,Constants::Ekev0);
+					eql_dstr[i].calculations0(Beq0,lamda0,0,0,aeq0,Constants::Ekev0);
 				}					
 				catch(int exception)	 
 				{
@@ -101,7 +101,7 @@ int main()
 				
 				}		
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<i<<" with eta0: "<< eta0*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" and lamda0: "<<lamda0*Constants::R2D<< " in degrees.\n";				
+				//std::cout<<"\nParticle"<<i<<" with eta0: "<< eta0*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" and lamda0: "<<lamda0*Constants::R2D<< " in degrees, with upar "<<eql_dstr[i].upar.at(0)<<"\n";				
 			}
 		}	
 	}
@@ -112,8 +112,8 @@ int main()
 //--------------------------------------------------------------------RUNGE KUTTA-----------------------------------------------------------------------//
 
 	//Temp variables for Runge Kutta
-	real lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, time;
-	real new_lamda , new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_aeq, new_eta, new_M_adiabatic, new_time;
+	real lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, time;
+	real new_lamda;
 
 	real ns_e, wc_e, wps_e, ns_O, wc_O, wps_O ,ns_H, wc_H, wps_H, ns_He, wc_He, wps_He, w_h;
 	real Bmag;
@@ -167,7 +167,7 @@ int main()
 	//std::vector <std::vector<real>> vresz_o   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>> Eres_o	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>> gama_out  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> deta_dt   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
+	std::vector <std::vector<real>> deta_dt   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>>dwh_dt_out (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>>B_earth_out(Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>>Phi_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0);
@@ -176,10 +176,11 @@ int main()
 	
 	auto rk_start = std::chrono::high_resolution_clock::now();
 
-
+	int i;
+	
 	for(int p=0; p<Constants::population; p++)     //Loop for all particles
 	{
-		int i=0;
+		i=0;
 		lamda = eql_dstr[p].lamda.at(i);
 		alpha = eql_dstr[p].alpha.at(i);
 		aeq   = eql_dstr[p].aeq.at(i);
@@ -187,10 +188,10 @@ int main()
 		pper  = eql_dstr[p].pper.at(i);
 		upar  = eql_dstr[p].upar.at(i);
 		uper  = eql_dstr[p].uper.at(i);
-		M_adiabatic = eql_dstr[p].M_adiabatic.at(i);
 		eta   = eql_dstr[p].eta.at(i);
 		zeta   = eql_dstr[p].zeta.at(i);
 		time  = eql_dstr[p].time.at(i);
+		//M_adiabatic = eql_dstr[p].M_adiabatic.at(i);
 
 		while(i<Constants::Nsteps) 
 		{
@@ -235,7 +236,7 @@ int main()
 				disp = dispersion(S,P,R,L,D);
 				mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
 				//Fields.
-				whistlers(p,i,mu,P,D,S,kz,zeta,time_sim[p][i], Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
+				whistlers(p,i,mu,P,D,S,kz,zeta,time, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
 				//Total fields.
 				Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
 				Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
@@ -274,7 +275,7 @@ int main()
 			
 			}
 			//Check print parameters
-			//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " << lamda<< "\naeq " << eql_dstr[p].aeq2.at(i) << "\nBxw " << Bxwc << "\nByw "<<Bywc<< "\nBzw "<<Bzwc<< "\nBw " << Bw_out[p][i] << "\nExw " << Exwc<< "\nEyw " << Eywc << "\nEzw " << Ezwc << "\nEw " << Ew_out[p][i] << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nE_kin " <<  Ekin[p][i] << "\nmu_adiabatic" << eql_dstr[p].M_adiabatic.at(i);
+			//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nBwc " << Bwc <<"\nBxwc "<<Bxwc <<"\nBywc "<<Bywc<<"\nBzwc "<<Bzwc<< "\nEwc " << Ewc<<"\nExwc "<<Exwc<<"\nEywc "<<Eywc<<"\nEzwc "<<Ezwc<<"\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
 			
 			//RK step-1//#################################################################################################################################################################################################################################################################################################
 			k1=z_rk(ppar,gama);
@@ -309,11 +310,13 @@ int main()
 				S=std::get<0>(stix); D=std::get<1>(stix); P=std::get<2>(stix); R=std::get<3>(stix); L=std::get<4>(stix);
 				disp = dispersion(S,P,R,L,D);
 				mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
-				whistlers(p,i,mu,P,D,S,kz,zeta+0.5*Constants::h*k1,time_sim[p][i]+0.5*Constants::h*k1, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
+				whistlers(p,i,mu,P,D,S,kz,zeta+0.5*Constants::h*k1,time+0.5*Constants::h*k1, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
 				Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
 				Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
 				Bell_params(ppar+0.5*(Constants::h)*l1,pper+0.5*(Constants::h)*m1,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
 			}
+			//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nBwc " << Bwc <<"\nBxwc "<<Bxwc <<"\nBywc "<<Bywc<<"\nBzwc "<<Bzwc<< "\nEwc " << Ewc<<"\nExwc "<<Exwc<<"\nEywc "<<Eywc<<"\nEzwc "<<Ezwc<<"\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
+			
 			//RK step-2//#################################################################################################################################################################################################################################################################################################
 			k2=z_rk(ppar+0.5*(Constants::h)*l1,gama);  
 			l2=p_par_rk(pper+0.5*(Constants::h)*m1,eta+0.5*(Constants::h)*n1,kz,w_h,dwh_ds,gama,wtau_sq);
@@ -347,11 +350,12 @@ int main()
 				S=std::get<0>(stix); D=std::get<1>(stix); P=std::get<2>(stix); R=std::get<3>(stix); L=std::get<4>(stix);
 				disp = dispersion(S,P,R,L,D);
 				mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
-				whistlers(p,i,mu,P,D,S,kz,zeta+0.5*Constants::h*k2,time_sim[p][i]*0.5*Constants::h, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
+				whistlers(p,i,mu,P,D,S,kz,zeta+0.5*Constants::h*k2,time*0.5*Constants::h, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
 				Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
 				Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
 				Bell_params(ppar+0.5*(Constants::h)*l2,pper+0.5*(Constants::h)*m2,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
 			}			
+			//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nBwc " << Bwc <<"\nBxwc "<<Bxwc <<"\nBywc "<<Bywc<<"\nBzwc "<<Bzwc<< "\nEwc " << Ewc<<"\nExwc "<<Exwc<<"\nEywc "<<Eywc<<"\nEzwc "<<Ezwc<<"\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
 			
 			//RK step-3//#################################################################################################################################################################################################################################################################################################
 			k3=z_rk(ppar+0.5*(Constants::h)*l2,gama);  
@@ -386,11 +390,13 @@ int main()
 				S=std::get<0>(stix); D=std::get<1>(stix); P=std::get<2>(stix); R=std::get<3>(stix); L=std::get<4>(stix);
 				disp = dispersion(S,P,R,L,D);
 				mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
-				whistlers(p,i,mu,P,D,S,kz,zeta+Constants::h*k3,time_sim[p][i]+Constants::h, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
+				whistlers(p,i,mu,P,D,S,kz,zeta+Constants::h*k3,time+Constants::h, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
 				Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
 				Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
 				Bell_params(ppar+(Constants::h)*l3,pper+(Constants::h)*m3,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
 			}
+			//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nBwc " << Bwc <<"\nBxwc "<<Bxwc <<"\nBywc "<<Bywc<<"\nBzwc "<<Bzwc<< "\nEwc " << Ewc<<"\nExwc "<<Exwc<<"\nEywc "<<Eywc<<"\nEzwc "<<Ezwc<<"\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
+			
 			//RK step-4//#################################################################################################################################################################################################################################################################################################																								
 			k4=z_rk(ppar+(Constants::h)*l3,gama);  
 			l4=p_par_rk(pper+(Constants::h)*m3,eta+(Constants::h)*n3,kz,w_h,dwh_ds,gama,wtau_sq);
@@ -402,52 +408,57 @@ int main()
 			//std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\n";
 
 
-			//RK approx//#################################################################################################################################################################################################################################################################################################
-			new_zeta  = zeta  + ((Constants::h)/6)*(k1+2*k2+2*k3+k4); 
-			new_ppar  = ppar  + ((Constants::h)/6)*(l1+2*l2+2*l3+l4);
-			new_pper  = pper  + ((Constants::h)/6)*(m1+2*m2+2*m3+m4);
-			new_eta   = eta   + ((Constants::h)/6)*(n1+2*n2+2*n3+n4);
-			new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
-			new_alpha = alpha + ((Constants::h)/6)*(p1+2*p2+2*p3+p4);
-			new_aeq   = aeq   + ((Constants::h)/6)*(q1+2*q2+2*q3+q4);
-	
 
-			new_upar = new_ppar/(Constants::m_e*gama);
-			new_uper = new_pper/(Constants::m_e*gama);
-			new_M_adiabatic=(new_pper*new_pper)/std::abs(w_h);
+			//Approximate new lamda
+			new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
 			
-			i++;
-			time_sim[p][i] = time_sim[p][i-1]+(Constants::h);
-			new_time = time_sim[p][i];
-			
-			//Keep track of all particle characteristics only if needed.(3)
-			//eql_dstr[p].update_state(new_lamda , new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_aeq, new_eta, new_M_adiabatic, new_time);
-			
-			//std::cout<<"\n"<< new_alpha << " " << new_zeta << " " << new_ppar<< " " << new_pper<< " " << new_eta << " " <<new_lamda<< " " <<new_aeq ;
-			std::cout<<"\nParticle "<<p<<" lamda: " << new_lamda*Constants::R2D<<" p.a: "<<new_alpha*Constants::R2D<< " upar: " << new_upar << " uper: "<<new_uper;
-			
-			//if particle crosses satellite
+			//Check if NAN to break this particle. Why NAN ?
+			if(std::isnan(new_lamda))
+			{
+				std::cout<<"\n\nParticle "<<p<<" with aeq0="<<eql_dstr[p].aeq[0]*Constants::R2D<<" breaks.";
+				//std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
+				//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
+						
+				break;
+			}
+
+			//Check crossing. First estimate new latitude. 
 			if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-			{										//i was increased!
-				//std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " just crossed the satellite, at: "<< new_time << " simulation seconds\n";
-				//Store it's state(it's before crossing the satellite!).
-				ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time_sim[p][i-1]);  			        	
+			{										
+				//std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+				//Store its state(it's before crossing the satellite!).
+				ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
 			}
 			
-			//Update values of Runge Kutta's block.
-			zeta = new_zeta;  
-			ppar = new_ppar;  
-			pper = new_pper;  
-			upar = new_upar;  
-			uper = new_uper;  
-			eta = new_eta;   
-			lamda = new_lamda; 
-			alpha = new_alpha; 
-			aeq = new_aeq;   
+
+			//Now approximate all values of Runge Kutta's block.
+			lamda =  new_lamda;
+			zeta  =  zeta   +  (Constants::h/6)*(k1+2*k2+2*k3+k4);
+			ppar  =  ppar   +  (Constants::h/6)*(l1+2*l2+2*l3+l4);
+			pper  =  pper   +  (Constants::h/6)*(m1+2*m2+2*m3+m4);
+			eta   =  eta    +  (Constants::h/6)*(n1+2*n2+2*n3+n4);
+			alpha =  alpha  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
+			aeq   =  aeq    +  (Constants::h/6)*(q1+2*q2+2*q3+q4);
+			upar  =  ppar   /  (Constants::m_e*gama); //quite different from zeta?
+			uper  =  pper   /  (Constants::m_e*gama);
+
+			deta_dt[p][i+1] = (Constants::h/6)*(n1+2*n2+2*n3+n4);
+
+			//B_lam    =  Bmag_dipole(lamda);    
+			//M_adiabatic = (pper*pper)/(2*Constants::m_e*B_lam); 
+
+			//Go to next timestep
+			time  = time + Constants::h; 
+			
+			eql_dstr[p].update_state(aeq,alpha, time);
+
+			//std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
+
+			i++;  
 
 			//Stop at equator
 			//if(eql_dstr[p].lamda.at(i)>0) {	
-			//	break;}															
+			//	break;}																
 		
 		}				
 	}
@@ -465,49 +476,47 @@ int main()
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 ---------------------------------------------------------------------//
-	
-//-----------------------------------------------FOR ALL PARTICLES (IF NEEDED) ---------------------------------------------------//	
-/*
-	std::vector<std::vector<real>> aeq2_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+		
+
 	std::vector<std::vector<real>>  aeq_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>>  eta_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>>lamda_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	std::vector<std::vector<real>> lamda_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> time_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> upar_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	std::vector<std::vector<real>> alpha_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+
 	//ASSIGN FROM STRUCT INTO 2D VECTORS. BETTER WAY?
 	for(int p=0; p<Constants::population; p++)
 	{
-	    for(unsigned long int i=0; i<eql_dstr[p].lamda.size(); i++)  //Fill 2D vector from vector of structs.
+	    for(int i=0; i<Constants::Nsteps; i++)  //Fill 2D vector from vector of structs.
 	    {
-	        aeq_plot[p][i]  = eql_dstr[p].aeq.at(i);  
-	        eta_plot[p][i]  = eql_dstr[p].eta.at(i);  
-	        lamda_plot[p][i]= eql_dstr[p].lamda.at(i);  
+	        //aeq_plot[p][i]  = eql_dstr[p].aeq.at(i);  
 	    	time_plot[p][i] = eql_dstr[p].time.at(i);
-	    	upar_plot[p][i] = eql_dstr[p].upar.at(i);
+	    	aeq_plot[p][i] = eql_dstr[p].aeq.at(i);
+	    	alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
+
 	    }
 	}
-	//Create hdf5 file.
-	h5::File file1("particles.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
-	//Create datasets and write vectors to them(shortcut syntax).
-	h5::DataSet dataset1_lamda =  file1.createDataSet("lamda 2D",       	lamda_plot);
-	h5::DataSet dataset1_aeq   =  file1.createDataSet("aeq 2D",         	aeq_plot);
-	h5::DataSet dataset1_eta   =  file1.createDataSet("eta 2D",         	eta_plot);
-	h5::DataSet dataset1_time  =  file1.createDataSet("simulation time",	time_plot);
-	h5::DataSet dataset1_upar  =  file1.createDataSet("upar",	    		upar_plot);
-*/
-//--------------------------------------------FOR DETECTED PARTICLES------------------------------------------------//	
-	//Create hdf5 file for particles that cross the satellite.
-	h5::File file2("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
-	h5::DataSet dataset2_lamda = file2.createDataSet("detected_lamda 1D", ODPT.lamda);
-	h5::DataSet dataset2_time  = file2.createDataSet("detected_time 1D",  ODPT.time);
-	h5::DataSet dataset2_id    = file2.createDataSet("detected_id 1D",  ODPT.id);
-	h5::DataSet dataset2_aeq   = file2.createDataSet("detected_aeq 1D", ODPT.aeq);
-	h5::DataSet dataset2_alpha = file2.createDataSet("detected_alpha 1D", ODPT.alpha);
-	h5::DataSet telescope_lamda= file2.createDataSet("telescope_lamda scalar", ODPT.latitude);
-	h5::DataSet population     = file2.createDataSet("whole population", Constants::population);
-	h5::DataSet initial_lamda  = file2.createDataSet("initial latitude", Constants::lamda0);
-	h5::DataSet dataset_time   = file2.createDataSet("simulation time", Constants::t);
+
+	//Create hdf5 file for particles that cross the satellite.
+	h5::File file2("h5files/1000p_5s_aeq_time.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+
+	h5::DataSet dataset2_lamda = file2.createDataSet("ODPT.lamda", ODPT.lamda);
+	h5::DataSet dataset2_time  = file2.createDataSet("ODPT.time", ODPT.time);
+	h5::DataSet dataset2_id    = file2.createDataSet("ODPT.id", ODPT.id);
+	h5::DataSet dataset2_aeq   = file2.createDataSet("ODPT.aeq", ODPT.aeq);
+	h5::DataSet dataset2_alpha = file2.createDataSet("ODPT.alpha", ODPT.alpha);
+	h5::DataSet telescope_lamda= file2.createDataSet("ODPT.latitude", ODPT.latitude);
+	h5::DataSet population     = file2.createDataSet("population", Constants::population);
+	h5::DataSet initial_lamda  = file2.createDataSet("lamda0", Constants::lamda0);
+	h5::DataSet dataset_time   = file2.createDataSet("t", Constants::t);
+	
+	h5::DataSet dataset_alpha_all  = file2.createDataSet("alpha_plot", alpha_plot);
+	h5::DataSet dataset_deta_all   = file2.createDataSet("deta_dt", deta_dt);
+	h5::DataSet dataset_aeq_all    = file2.createDataSet("aeq_plot", aeq_plot);
+	h5::DataSet dataset_time_all   = file2.createDataSet("time_plot", time_plot);
+
+
+
 
 
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//

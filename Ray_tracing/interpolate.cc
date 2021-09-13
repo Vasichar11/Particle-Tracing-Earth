@@ -7,10 +7,9 @@ std::vector <real> interpolate(std::vector <real> time_new, std::vector <real> t
     int size = time_new.size();
     vector_int.reserve(size);
     
-    int x,p; 
-    x=1;
+    int x=1;
     real yp;
-	for(p=1; p<time_new.size(); p++)                        
+	for(size_t p=1; p<time_new.size(); p++)                        
     {             
 		if(timef[x-1]<=time_new[p] && time_new[p]<=timef[x])      
         {   //Independent variable: time_new -> x
@@ -31,7 +30,7 @@ std::vector <real> interpolate(std::vector <real> time_new, std::vector <real> t
         }
     }
 
-    vector_int.insert(vector_int.begin(),vector_csv[0]); //Inserting first value at start.
+    vector_int.insert(vector_int.begin(),vector_csv[0]); //Insert first value at start.
 
     return vector_int; 
 }

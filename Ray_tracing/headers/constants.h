@@ -26,34 +26,54 @@ const real ne_0=10*pow(10,6);          			//m-3 //e notations result in pico err
 
 //--Particle initial parameters--//
 const real L_shell=2; 				 			//L_shell of particle. Constant for now.
-const real aeq0_deg=70;  		     	 		//Initial equatorial pitch angle(defined as loss cone angle).
+const real aeq0_deg=70;  		     	 		//Initial equatorial pitch angle.
 const real aeq0=aeq0_deg*D2R;
-const real lamda0_deg=-2;//-9 					//resonance will occur at -5
+const real lamda0_deg=-2;    					
 const real lamda0=lamda0_deg*D2R;	     		//Initial latitude, rads.
 const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;       
+const real eta0_deg = 0;
+const real eta0 = eta0_deg*D2R;
+const real Ekev0=511.3; 			            //Initial energy keV.
 
 //---Wave parameters---//
-const real By_wave=1*pow(10,-12);       		//Byw=1pT.        
-const real Bw_tot_li=1.4142135*pow(10,-12);     
-const real Ekev0=511.3; 			            //Initial energy keV.
+//const real By_wave=1*pow(10,-12);       		//not used        
+//const real Bw_tot_li=1.4142135*pow(10,-12);     
 const real f_wave=2500; 			   		    //Wave frequency in Hz.
 const real w_wave=2*M_PI*f_wave;        		//Wave angular frequency.
-
 const real m_res=1;                             //WPI resonance number (0=Landau resonance).
 const real pwr = pow(10,-4);                    //Poynting flux [W/m 2].
 
-//--Simulation time--//
+//--Simulation parameters--//
 const real t=1;        				  			//Simulation duration in seconds.
 const real h=0.00001;							//Runge kutta stepsize.
+
 const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
 const int Nsteps=t/h; 			  				//Number of simulation steps, signed 8 byte integer.
 
-//--Particle distribution initializations--//
-const real population = 6;		//6,24
-const real start_d    = 0;      //degrees 
-const real end_d      = 361;                                 
-const real lin_step_d = (end_d - start_d)/(population-1);  //Linearly spaced                                               
+//--Satellite parameters--//
+const real telescope_lamda = 30; //90 //0,10,20,30
 
+
+//--Distribution parameters--//
+const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
+const int64_t aeq_dstr    = 10;  			    
+const int64_t lamda_dstr  = 1;					
+const int64_t population  = eta_dstr * aeq_dstr * lamda_dstr;
+
+//------------------------------ Eta distribution range and step. --------------------------------//
+const real eta_start_d    = eta0_deg;     //Degrees 	 
+const real eta_end_d      = eta0_deg;   						 
+const real eta_step_d     = 0;//(eta_end_d - eta_start_d)/(eta_dstr-1); 	//Step in degrees.
+
+//------------------------------ Aeq distribution range and step. --------------------------------//					 
+const real aeq_start_d    = 1;    					 				
+const real aeq_end_d      = 179;  			
+const real aeq_step_d	  =(aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	
+		                          
+//----------------------------- Lamda distribution range and step. -------------------------------//					 
+const real lamda_start_d  = lamda0_deg;     					 				
+const real lamda_end_d    = lamda0_deg;   			
+const real lamda_step_d	  = 0;//(lamda_end_d - lamda_start_d)/(lamda_dstr-1); 	
 };	

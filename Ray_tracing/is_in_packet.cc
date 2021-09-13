@@ -22,10 +22,11 @@ int is_in_packet(real min_lat, real max_lat, real lamda_tmp, int i, std::vector<
        	    }
        	}
 	index = distance(wave_lat.begin(), requested_index); //Final requested index
+	//std::cout<<"\nindex "<<int(index-Constants::puls_dur)<<"\n";
 	}
 	else
 	{
-		index = 0;	//Particle not in same latitude. No WPI.
+		index = -1;	//Particle not in same latitude. No WPI.
 	}
 
    

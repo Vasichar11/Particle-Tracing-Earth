@@ -27,7 +27,7 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6/m-3
 //--Particle initial parameters--//
 const real L_shell=5; 			 				//L_shell of particle. Constant for now.
 const real Ekev0=500;               			//Initial energy keV
-const real aeq0_deg=20; //0-180 		     	//Initial equatorial pitch angle, deg.
+const real aeq0_deg=40;            		     	//Initial equatorial pitch angle, deg.
 const real aeq0=aeq0_deg*D2R;
 const real lamda0_deg=0;						//Initial latitude, deg.
 const real lamda0=lamda0_deg*D2R;	     		
@@ -35,16 +35,16 @@ const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp
 const real eta0=eta0_deg*D2R;
 
 //---Wave parameters---//
-const real By_wave=40*pow(10,-12);       		//10pT	         
+const real By_wave=10*pow(10,-12);       		//10pT	         
 const real f_wave=2000; 			    		//Wave frequency in Hz. 2kHz
 const real w_wave=2*M_PI*f_wave;        		//Wave angular frequency.
 const real m_res=1;                           	//WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
 const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
-const bool interaction = 1;						//0 for no interaction
+const bool interaction = 0;						//0 for no interaction
 
 //--Simulation parameters--//
-const real t=1;        				  	        //Simulation duration in seconds.
+const real t=1;        				  	    //Simulation duration in seconds.
 const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
 
@@ -64,7 +64,7 @@ const real eta_step_d     = 0;//(eta_end_d - eta_start_d)/(eta_dstr-1); 	//Step 
 
 //------------------------------ Aeq distribution range and step. --------------------------------//					 
 const real aeq_start_d    = 1;    					 				
-const real aeq_end_d      = 4;  			
+const real aeq_end_d      = 179;  			
 const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	
 		                          
 //----------------------------- Lamda distribution range and step. -------------------------------//					 

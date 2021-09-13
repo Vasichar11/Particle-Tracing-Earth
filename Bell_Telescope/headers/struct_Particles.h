@@ -23,10 +23,10 @@ struct Particles
 	//Member function to push back initial latitudes.
 	void set_lamda(real initial_lamda);
 	
-	void calculations0(real Beq0, real initial_lamda,real initial_zeta, real initial_time, real initial_M_adiabatic, real initial_aeq, real initial_Ekev);
+	void calculations0(real Beq0, real initial_lamda,real initial_zeta, real initial_time, real initial_aeq, real initial_Ekev);
 
 	//Member function to push_back new state.
-	void update_state(real new_lamda, real new_zeta, real new_uper, real new_upar, real new_ppar, real new_pper, real new_alpha, real new_aeq, real new_eta, real new_M_adiabatic, real new_time);
+	void update_state(real new_aeq,real new_alpha, real new_time);
 
 	//Member variables.
 	std::vector<real> lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, time; 
