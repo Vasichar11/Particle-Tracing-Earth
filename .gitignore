@@ -1,7 +1,7 @@
-*.o
-*/*.o
-*/*.png
-*/*.mp4
-*/*.exe
-*/*.out
-*/*txt
+
+**/o
+**/png
+**/mp4
+**/exe
+**/out
+**/txt
