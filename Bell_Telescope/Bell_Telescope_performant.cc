@@ -29,6 +29,10 @@ namespace h5 = HighFive;
 
 int main()
 {
+		
+	//std::cout.precision(32);			//Output 16 decimal precise
+	std::cout<<std::scientific;		//For e notation representation
+
 	//Objects for each specie.
 	Species electron(Constants::m_e,  Constants::q_e, 1); 
 	Species oxygen  (Constants::m_O,  Constants::q_i, 0.006); 
@@ -42,7 +46,7 @@ int main()
 
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
-	std::cout<<"\n\nParticle population: " << Constants::population << "\n\nWave interaction(bool): "<<Constants::interaction ;
+	std::cout<<"\n\nParticle population: " << Constants::population << "\n\nWave interaction: "<<Constants::interaction*Constants::By_wave<< " T" ;
 	std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq distribution in degrees"<<"\n|From "<<" To|";
@@ -168,9 +172,7 @@ int main()
 	//std::vector <std::vector<real>>B_earth_out(Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>>Phi_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0);
 
-	
-	//std::cout.precision(32);			//Output 16 decimal precise
-	//std::cout<<std::scientific;		//For e notation representation
+
 	
 	auto rk_start = std::chrono::high_resolution_clock::now();
 
@@ -192,7 +194,6 @@ int main()
 
 		while(i<Constants::Nsteps) 
 		{
-			//void Function for particle's motion.
 			
 			Bmag=Bmag_dipole(lamda);
 			//Densities.
@@ -423,7 +424,7 @@ int main()
 			//eql_dstr[p].update_state(new_lamda , new_zeta, new_uper , new_upar, new_ppar, new_pper, new_alpha, new_aeq, new_eta, new_M_adiabatic, new_time);
 			
 			//std::cout<<"\n"<< new_alpha << " " << new_zeta << " " << new_ppar<< " " << new_pper<< " " << new_eta << " " <<new_lamda<< " " <<new_aeq ;
-			//std::cout<<"\nParticle "<<p<<" lamda: " << new_lamda*Constants::R2D<<" p.a: "<<new_alpha*Constants::R2D<< " upar: " << new_upar << " uper: "<<new_uper;
+			std::cout<<"\nParticle "<<p<<" lamda: " << new_lamda*Constants::R2D<<" p.a: "<<new_alpha*Constants::R2D<< " upar: " << new_upar << " uper: "<<new_uper;
 			
 			//if particle crosses satellite
 			if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
@@ -496,7 +497,7 @@ int main()
 */
 //--------------------------------------------FOR DETECTED PARTICLES------------------------------------------------//	
 	//Create hdf5 file for particles that cross the satellite.
-	h5::File file2("1000p_5s_20lat.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file2("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet dataset2_lamda = file2.createDataSet("detected_lamda 1D", ODPT.lamda);
 	h5::DataSet dataset2_time  = file2.createDataSet("detected_time 1D",  ODPT.time);

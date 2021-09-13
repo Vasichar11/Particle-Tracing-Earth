@@ -28,7 +28,7 @@ aeq0_deg = aeq0*R2D
 lamda0_deg = lamda0*R2D
 """
 ################################# READ DATA FOR DETECTED PARTICLES ####################################
-f2 = h5py.File("1000p_5s_30lat.h5","r")
+f2 = h5py.File("h5files/detected.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda = f2["detected_lamda 1D"][()]
 detected_time  = f2["detected_time 1D"][()]
@@ -91,7 +91,7 @@ plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="se
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
 
-plt.savefig("1000p_5s_30lat/Crossing_particles.png", dpi=100)
+plt.savefig("simulation_MM/detected/Crossing_particles.png", dpi=100)
 
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
 fig, ax = plt.subplots()
@@ -104,9 +104,9 @@ ax.set_xticklabels(labels=np.arange(0,timesteps,t).astype(int),color="red",minor
 ax.grid(alpha=0.8,axis="x")
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
-        ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep], s=2*sum_flux[timestep]/population )
+        ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep])
 
-plt.savefig("1000p_5s_30lat/Particle_sum.png", dpi=100)
+plt.savefig("simulation_MM/detected/Particle_sum.png", dpi=100)
 ####################################### (FLUX-TIME)*SECTORS  MOVIE ##########################################
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
@@ -116,7 +116,7 @@ writer = FFMpegWriter(fps=fps, metadata = metadata)
 print("Generating Time binning mp4 file...\nDuration of mp4 file will be:",(sectors*fps), "seconds")
 
 
-with writer.saving(fig, "1000p_5s_30lat/Time_binning.mp4", 100):
+with writer.saving(fig, "simulation_MM/detected/Time_binning.mp4", 100):
 
     for sector in range(0,sectors):
 
