@@ -500,15 +500,15 @@ int main()
 	//Create hdf5 file for particles that cross the satellite.
 	h5::File file2("h5files/1000p_5s_aeq_time.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
-	h5::DataSet dataset2_lamda = file2.createDataSet("ODPT.lamda", ODPT.lamda);
-	h5::DataSet dataset2_time  = file2.createDataSet("ODPT.time", ODPT.time);
-	h5::DataSet dataset2_id    = file2.createDataSet("ODPT.id", ODPT.id);
-	h5::DataSet dataset2_aeq   = file2.createDataSet("ODPT.aeq", ODPT.aeq);
-	h5::DataSet dataset2_alpha = file2.createDataSet("ODPT.alpha", ODPT.alpha);
-	h5::DataSet telescope_lamda= file2.createDataSet("ODPT.latitude", ODPT.latitude);
-	h5::DataSet population     = file2.createDataSet("population", Constants::population);
-	h5::DataSet initial_lamda  = file2.createDataSet("lamda0", Constants::lamda0);
-	h5::DataSet dataset_time   = file2.createDataSet("t", Constants::t);
+	//h5::DataSet dataset2_lamda = file2.createDataSet("ODPT.lamda", ODPT.lamda);
+	//h5::DataSet dataset2_time  = file2.createDataSet("ODPT.time", ODPT.time);
+	//h5::DataSet dataset2_id    = file2.createDataSet("ODPT.id", ODPT.id);
+	//h5::DataSet dataset2_aeq   = file2.createDataSet("ODPT.aeq", ODPT.aeq);
+	//h5::DataSet dataset2_alpha = file2.createDataSet("ODPT.alpha", ODPT.alpha);
+	//h5::DataSet telescope_lamda= file2.createDataSet("ODPT.latitude", ODPT.latitude);
+	//h5::DataSet population     = file2.createDataSet("population", Constants::population);
+	//h5::DataSet initial_lamda  = file2.createDataSet("lamda0", Constants::lamda0);
+	//h5::DataSet dataset_time   = file2.createDataSet("t", Constants::t);
 	
 	h5::DataSet dataset_alpha_all  = file2.createDataSet("alpha_plot", alpha_plot);
 	h5::DataSet dataset_deta_all   = file2.createDataSet("deta_dt", deta_dt);

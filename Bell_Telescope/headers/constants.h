@@ -44,7 +44,7 @@ const real theta0=theta0_deg*D2R;
 const bool interaction = 0;						//0 for no interaction
 
 //--Simulation parameters--//
-const real t=1;        				  	    //Simulation duration in seconds.
+const real t=5;        				  	    //Simulation duration in seconds.
 const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
 
@@ -53,7 +53,7 @@ const real telescope_lamda = 30; //90 //0,10,20,30
 
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 10;  			    
+const int64_t aeq_dstr    = 1000;  			    
 const int64_t lamda_dstr  = 1;					
 const int64_t population  = eta_dstr * aeq_dstr * lamda_dstr;
 

@@ -16,15 +16,16 @@ R2D=1/D2R
 ############################################# READ DATA ###################################################
 f = h5py.File("h5files/1000p_5s_aeq_time.h5","r")
 #print("Keys: %s" % f.keys())
-detected_lamda = f["ODPT.lamda"][()]
-detected_time  = f["ODPT.time"][()]
-detected_id    = f["ODPT.id"][()]
-detected_aeq   = f["ODPT.aeq"][()]
-detected_alpha = f["ODPT.alpha"][()]
-telescope_lamda= f["ODPT.latitude"][()]
-population     = f["population"][()]
-t              = f["t"][()]
-lamda0         = f["lamda0"][()]
+#detected_lamda = f["ODPT.lamda"][()]
+#detected_time  = f["ODPT.time"][()]
+#detected_id    = f["ODPT.id"][()]
+#detected_aeq   = f["ODPT.aeq"][()]
+#detected_alpha = f["ODPT.alpha"][()]
+#telescope_lamda= f["ODPT.latitude"][()]
+#population     = f["population"][()]
+#t              = f["t"][()]
+#lamda0         = f["lamda0"][()]
+
 aeq            = f["aeq_plot"][()]
 alpha          = f["alpha_plot"][()]
 time           = f["time_plot"][()]
