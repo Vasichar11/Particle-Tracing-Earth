@@ -173,6 +173,7 @@ int main()
 	//std::vector <std::vector<real>>Phi_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0);
 
 
+	std::cout<<"\n";
 	
 	auto rk_start = std::chrono::high_resolution_clock::now();
 
@@ -192,7 +193,9 @@ int main()
 		zeta   = eql_dstr[p].zeta.at(i);
 		time  = eql_dstr[p].time.at(i);
 		//M_adiabatic = eql_dstr[p].M_adiabatic.at(i);
-
+		
+		std::cout<<"\nParticle "<<p<<" is bouncing";
+		
 		while(i<Constants::Nsteps) 
 		{
 			
@@ -415,7 +418,8 @@ int main()
 			//Check if NAN to break this particle. Why NAN ?
 			if(std::isnan(new_lamda))
 			{
-				std::cout<<"\n\nParticle "<<p<<" with aeq0="<<eql_dstr[p].aeq[0]*Constants::R2D<<" breaks.";
+				
+				std::cout<<"\nParticle "<<p<<" with aeq0="<<eql_dstr[p].aeq[0]*Constants::R2D<<" breaks.\n";
 				//std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
 				//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
 						
@@ -450,7 +454,7 @@ int main()
 			//Go to next timestep
 			time  = time + Constants::h; 
 			
-			eql_dstr[p].update_state(aeq,alpha, time);
+			eql_dstr[p].update_state(aeq, alpha, lamda, time);
 
 			//std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
@@ -459,7 +463,7 @@ int main()
 			//Stop at equator
 			//if(eql_dstr[p].lamda.at(i)>0) {	
 			//	break;}																
-		
+
 		}				
 	}
 
@@ -483,33 +487,34 @@ int main()
 	std::vector<std::vector<real>> time_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> alpha_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 
-	//ASSIGN FROM STRUCT INTO 2D VECTORS. BETTER WAY?
+	//Assign from struct to 2d vectors.
 	for(int p=0; p<Constants::population; p++)
 	{
-	    for(int i=0; i<Constants::Nsteps; i++)  //Fill 2D vector from vector of structs.
+	    for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
 	    {
-	        //aeq_plot[p][i]  = eql_dstr[p].aeq.at(i);  
 	    	time_plot[p][i] = eql_dstr[p].time.at(i);
 	    	aeq_plot[p][i] = eql_dstr[p].aeq.at(i);
 	    	alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
+	    	lamda_plot[p][i] = eql_dstr[p].lamda.at(i);
 
 	    }
 	}
 
-
-	//Create hdf5 file for particles that cross the satellite.
-	h5::File file2("h5files/1000p_5s_aeq_time.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
-
-	//h5::DataSet dataset2_lamda = file2.createDataSet("ODPT.lamda", ODPT.lamda);
-	//h5::DataSet dataset2_time  = file2.createDataSet("ODPT.time", ODPT.time);
-	//h5::DataSet dataset2_id    = file2.createDataSet("ODPT.id", ODPT.id);
+	h5::File file2("h5files/100p_2s_1nT.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	
+	//Particles that cross the satellite
+	h5::DataSet dataset2_lamda = file2.createDataSet("ODPT.lamda", ODPT.lamda);
+	h5::DataSet dataset2_time  = file2.createDataSet("ODPT.time", ODPT.time);
+	h5::DataSet dataset2_id    = file2.createDataSet("ODPT.id", ODPT.id);
 	//h5::DataSet dataset2_aeq   = file2.createDataSet("ODPT.aeq", ODPT.aeq);
 	//h5::DataSet dataset2_alpha = file2.createDataSet("ODPT.alpha", ODPT.alpha);
-	//h5::DataSet telescope_lamda= file2.createDataSet("ODPT.latitude", ODPT.latitude);
-	//h5::DataSet population     = file2.createDataSet("population", Constants::population);
-	//h5::DataSet initial_lamda  = file2.createDataSet("lamda0", Constants::lamda0);
-	//h5::DataSet dataset_time   = file2.createDataSet("t", Constants::t);
+	h5::DataSet telescope_lamda= file2.createDataSet("ODPT.latitude", ODPT.latitude);
+	h5::DataSet population     = file2.createDataSet("population", Constants::population);
+	h5::DataSet initial_lamda  = file2.createDataSet("lamda0", Constants::lamda0);
+	h5::DataSet dataset_time   = file2.createDataSet("t", Constants::t);
 	
+	//All Particles
+	h5::DataSet dataset_lamda_all  = file2.createDataSet("lamda_plot", lamda_plot);
 	h5::DataSet dataset_alpha_all  = file2.createDataSet("alpha_plot", alpha_plot);
 	h5::DataSet dataset_deta_all   = file2.createDataSet("deta_dt", deta_dt);
 	h5::DataSet dataset_aeq_all    = file2.createDataSet("aeq_plot", aeq_plot);

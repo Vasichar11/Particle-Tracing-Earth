@@ -61,9 +61,9 @@ void Particles::calculations0(real Beq0, real initial_lamda, real initial_zeta, 
 }
 
 //Member function to push_back new state
-void Particles::update_state(real new_aeq,real new_alpha, real new_time)
+void Particles::update_state(real new_aeq, real new_alpha, real new_lamda, real new_time)
 {	//define size
-	//this->lamda.push_back(new_lamda);      				
+	this->lamda.push_back(new_lamda);      				
 	//this->zeta.push_back(new_zeta);
 	//this->upar.push_back(new_upar);
 	//this->uper.push_back(new_uper);	     
