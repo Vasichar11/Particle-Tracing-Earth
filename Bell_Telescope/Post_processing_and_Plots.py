@@ -18,8 +18,9 @@ np.set_printoptions(threshold=sys.maxsize)
 
 
 ############################################# READ DATA ###################################################
-f1 = h5py.File("h5files/100p_2s.h5","r")
 
+#noWPI
+f1 = h5py.File("h5files/100p_2s.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -30,17 +31,17 @@ telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
 lamda0         = f1["lamda0"][()]
-
 aeq            = f1["aeq_plot"][()]
-alpha          = f1["alpha_plot"][()]
+#alpha          = f1["alpha_plot"][()]
 lamda          = f1["lamda_plot"][()]
 time           = f1["time_plot"][()]
 deta_dt        = f1["deta_dt"][()]
+By_wave        = 0
 
 f1.close();
 #detected_pop   = len(detected_lamda)
 
-#COMPARE FOR WPI
+#WPI
 f2 = h5py.File("h5files/100p_2s_1nT.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_WPI = f2["ODPT.lamda"][()]
@@ -52,12 +53,13 @@ telescope_lamda_WPI= f2["ODPT.latitude"][()]
 population_WPI     = f2["population"][()]
 t_WPI              = f2["t"][()]
 lamda0_WPI         = f2["lamda0"][()]
-
 aeq_WPI            = f2["aeq_plot"][()]
-alpha_WPI          = f2["alpha_plot"][()]
+#alpha_WPI          = f2["alpha_plot"][()]
 lamda_WPI          = f2["lamda_plot"][()]
 time_WPI           = f2["time_plot"][()]
 deta_dt_WPI        = f2["deta_dt"][()]
+By_wave_WPI        = f2["By_wave"][()]
+
 
 f2.close();
 
@@ -100,7 +102,7 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
 detected_id     = list(detected_id)     #Turn into lists
 detected_id_WPI = list(detected_id_WPI)
 new_particles = list(set(detected_id_WPI) - set(detected_id))  #Particles that were detected with WPI but not before.
-print(new_particles)
+print("New id's when WPI",By_wave_WPI,"\n",new_particles)
 new_part = new_particles[2] #take one of them
 
 #most = max(set(detected_id_WPI), key = detected_id_WPI.count)  #One of the most detected particles(regularly bouncing whole time).

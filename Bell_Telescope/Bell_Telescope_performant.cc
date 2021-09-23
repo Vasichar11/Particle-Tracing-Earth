@@ -194,7 +194,7 @@ int main()
 		time  = eql_dstr[p].time.at(i);
 		//M_adiabatic = eql_dstr[p].M_adiabatic.at(i);
 		
-		std::cout<<"\nParticle "<<p<<" is bouncing";
+		std::cout<<"\rParticle "<<p<<" is bouncing"<<std::flush;
 		
 		while(i<Constants::Nsteps) 
 		{
@@ -480,12 +480,12 @@ int main()
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 ---------------------------------------------------------------------//
-		
-
+	
 	std::vector<std::vector<real>>  aeq_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> lamda_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> time_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> alpha_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	
 
 	//Assign from struct to 2d vectors.
 	for(int p=0; p<Constants::population; p++)
@@ -500,25 +500,28 @@ int main()
 	    }
 	}
 
-	h5::File file2("h5files/100p_2s_1nT.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/100p_2s_1nT.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
-	//Particles that cross the satellite
-	h5::DataSet dataset2_lamda = file2.createDataSet("ODPT.lamda", ODPT.lamda);
-	h5::DataSet dataset2_time  = file2.createDataSet("ODPT.time", ODPT.time);
-	h5::DataSet dataset2_id    = file2.createDataSet("ODPT.id", ODPT.id);
-	//h5::DataSet dataset2_aeq   = file2.createDataSet("ODPT.aeq", ODPT.aeq);
-	//h5::DataSet dataset2_alpha = file2.createDataSet("ODPT.alpha", ODPT.alpha);
-	h5::DataSet telescope_lamda= file2.createDataSet("ODPT.latitude", ODPT.latitude);
-	h5::DataSet population     = file2.createDataSet("population", Constants::population);
-	h5::DataSet initial_lamda  = file2.createDataSet("lamda0", Constants::lamda0);
-	h5::DataSet dataset_time   = file2.createDataSet("t", Constants::t);
+	//Detected particles
+	h5::DataSet dataset_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
+	h5::DataSet dataset_time       = file.createDataSet("ODPT.time", ODPT.time);
+	h5::DataSet dataset_id         = file.createDataSet("ODPT.id", ODPT.id);
+	//h5::DataSet dataset_aeq      = file.createDataSet("ODPT.aeq", ODPT.aeq);
+	//h5::DataSet dataset_alpha    = file.createDataSet("ODPT.alpha", ODPT.alpha);
+
+	//Simulation data and Telescope specification - Scalars 
+	h5::DataSet wave_magnitude     = file.createDataSet("By_wave",Constants::By_wave);
+	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
+	h5::DataSet population         = file.createDataSet("population", Constants::population);
+	h5::DataSet initial_lamda      = file.createDataSet("lamda0", Constants::lamda0);
+	h5::DataSet simulation_time    = file.createDataSet("t", Constants::t);
 	
 	//All Particles
-	h5::DataSet dataset_lamda_all  = file2.createDataSet("lamda_plot", lamda_plot);
-	h5::DataSet dataset_alpha_all  = file2.createDataSet("alpha_plot", alpha_plot);
-	h5::DataSet dataset_deta_all   = file2.createDataSet("deta_dt", deta_dt);
-	h5::DataSet dataset_aeq_all    = file2.createDataSet("aeq_plot", aeq_plot);
-	h5::DataSet dataset_time_all   = file2.createDataSet("time_plot", time_plot);
+	h5::DataSet dataset_lamda_all  = file.createDataSet("lamda_plot", lamda_plot);
+	h5::DataSet dataset_alpha_all  = file.createDataSet("alpha_plot", alpha_plot);
+	h5::DataSet dataset_deta_all   = file.createDataSet("deta_dt", deta_dt);
+	h5::DataSet dataset_aeq_all    = file.createDataSet("aeq_plot", aeq_plot);
+	h5::DataSet dataset_time_all   = file.createDataSet("time_plot", time_plot);
 
 
 
