@@ -20,7 +20,7 @@ np.set_printoptions(threshold=sys.maxsize)
 ############################################# READ DATA ###################################################
 
 #noWPI
-f1 = h5py.File("h5files/100p_2s.h5","r")
+f1 = h5py.File("h5files/detected.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -40,7 +40,7 @@ By_wave        = 0
 
 f1.close();
 #detected_pop   = len(detected_lamda)
-
+"""
 #WPI
 f2 = h5py.File("h5files/100p_2s_1nT.h5","r")
 #print("Keys: %s" % f2.keys())
@@ -60,45 +60,15 @@ time_WPI           = f2["time_plot"][()]
 deta_dt_WPI        = f2["deta_dt"][()]
 By_wave_WPI        = f2["By_wave"][()]
 
-
 f2.close();
-
+"""
 
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
 ##########################################################################################################
-"""
-####################################### TELESCOPE SPECIFICATION ##########################################
-time_bin  = 0.1                 #seconds to distinquish events(time resolution)
-timesteps = int (t / time_bin)
-view = 180 
-sector_range = 15
-sectors = int(view/sector_range)
-######################################### FONT DICT - COLORS  ############################################
-font = {'family': 'serif',
-        'color':  'blue',
-        'weight': 'medium',
-        'size': 10,
-        }
-colors = []
-for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
-    colors.append('#%06X' % randint(0, 0xFFFFFF))
-############################################## BINNING ####################################################
-sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
-sum_flux = [0 for i in range(timesteps)]
-
-for time,pa in zip(detected_time,detected_alpha): #Iterate in both array elements. No sorting required.
-    timestep = math.floor(time*10)
-    sector   = math.floor(pa*R2D/sector_range)
-    if(pa==180):
-        sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
-    sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-time_bin.
-    sum_flux[timestep] += 1
-
-"""
 
 ################################### CHECK NEW PARTICLES AFTER WPI ######################################
-
+"""
 detected_id     = list(detected_id)     #Turn into lists
 detected_id_WPI = list(detected_id_WPI)
 new_particles = list(set(detected_id_WPI) - set(detected_id))  #Particles that were detected with WPI but not before.
@@ -148,7 +118,7 @@ ax[2,1].set_xlabel('$time (sec)$',size="x-small")
 fig.savefig('simulation_MM/compare/aeq_deta_lamda.png' , dpi=200, facecolor='white',transparent=False)
 
 
-
+"""
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 
 #noWPI
@@ -160,8 +130,9 @@ plt.title("Detected particles in time. [Population: " +str(population)+ ", lamda
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
-plt.savefig("simulation_MM/compare/Crossing_particles.png", dpi=100)
+plt.savefig("simulation_MM/Crossing_particles.png", dpi=100)
 
+"""
 #WPI
 fig, ax = plt.subplots()
 ax.scatter(detected_time_WPI, detected_lamda_WPI*R2D, c = detected_id_WPI, s=7, cmap="viridis")
@@ -171,9 +142,8 @@ plt.title("Detected particles in time. [Population: " +str(population_WPI)+ ", l
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda_WPI+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_WPI ,color="b", linestyle="dashed")
-plt.savefig("simulation_MM/compare/Crossing_particles_WPI.png", dpi=100)
+plt.savefig("simulation_MM/Crossing_particles_WPI.png", dpi=100)
 
-"""
 #PLOT ONLY NEW PARTICLES #NOT VALID...
 fig, ax = plt.subplots()
 j=0
@@ -187,9 +157,33 @@ plt.annotate("SATELLITE",xy=(t/2,telescope_lamda_WPI+0.0002),color="blue",weight
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_WPI ,color="b", linestyle="dashed")
 
-plt.savefig("simulation_MM/compare/Crossing_particles_WPI_onlyNEW.png", dpi=100)
+plt.savefig("simulation_MM/Crossing_particles_WPI_onlyNEW.png", dpi=100)
 
+"""
+####################################### TELESCOPE SPECIFICATION ##########################################
+"""
+time_bin  = 0.1                 #seconds to distinquish events(time resolution)
+timesteps = int (t / time_bin)
+view = 180 
+sector_range = 15
+sectors = int(view/sector_range)
+"""
+############################################## BINNING ####################################################
+"""
+sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
+sum_flux = [0 for i in range(timesteps)]
+
+for time,pa in zip(detected_time,detected_alpha): #Iterate in both array elements. No sorting required.
+    timestep = math.floor(time*10)
+    sector   = math.floor(pa*R2D/sector_range)
+    if(pa==180):
+        sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
+    sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-time_bin.
+    sum_flux[timestep] += 1
+
+"""
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
+"""
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
 ax.set(xlabel="Time bins-Timesteps in red", ylabel="sum", xticks=np.arange(0,t+time_bin,time_bin))
@@ -203,7 +197,18 @@ for timestep in range(0,timesteps):
         ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep])
 
 plt.savefig("simulation_MM/detected/Particle_sum.png", dpi=100)
+"""
 ####################################### (FLUX-TIME)*SECTORS  MOVIE ##########################################
+"""
+font = {'family': 'serif',
+        'color':  'blue',
+        'weight': 'medium',
+        'size': 10,
+        }
+colors = []
+for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
+    colors.append('#%06X' % randint(0, 0xFFFFFF))
+
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
 metadata = dict(title="Time binning",comment="Time bins of 0.1s")
