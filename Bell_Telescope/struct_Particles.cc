@@ -27,15 +27,16 @@ void Particles::calculations0(real Beq0, real initial_lamda, real initial_zeta, 
 
 	//Find pitch angle at lamda0.
 	real Blam0=Bmag_dipole(initial_lamda);
-	real salpha0=sin(initial_aeq)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis. Is not true when M_adiabatic is "broken".
+	real salpha0=sin(initial_aeq)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis. is it ok ?
 	
 	//Check if valid
 	//std::cout<<"\nsalpha0: "<<salpha0<< " when aeq0: " << initial_aeq*Constants::R2D;
 	
-	if(salpha0>1 || salpha0<-1) { throw 99; } //sin() not valid
-	else if(salpha0 == 0) { throw 98; } 	  //a formula has no sense.
-											  //aeq0=0||180 => salpha0 = 0 => alpha0 = 0 => pper0 = 0 => PROBLEM IN Bell_param, a2.
-											  //sin(pi) is actually not zero in C++...
+	//if(salpha0>1 || salpha0<-1) { throw 99; } //sin() not valid
+	//else if(salpha0 == 0) { throw 98; } 	  //a formula has no sense.
+	//										  //aeq0=0||180 => salpha0 = 0 => alpha0 = 0 => pper0 = 0 => PROBLEM IN Bell_param, a2.
+	//										  //sin(pi) is actually not zero in C++...
+	
 	real alpha0=asin(salpha0);		//Change that, because if aeq0=150 => alpha0=30 for particle in equator			 	
 	//Find momentum from energy.
 	real Ejoule0=1.602176487E-16*initial_Ekev;

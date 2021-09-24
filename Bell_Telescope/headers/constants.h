@@ -41,10 +41,10 @@ const real w_wave=2*M_PI*f_wave;        		//Wave angular frequency.
 const real m_res=1;                           	//WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
 const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
-const bool interaction = 1;						//0 for no interaction
+const bool interaction = 0;						//0 for no interaction
 
 //--Simulation parameters--//
-const real t=2;        				  	    //Simulation duration in seconds.
+const real t=5;        				  	    //Simulation duration in seconds.
 const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
 
@@ -53,8 +53,8 @@ const real telescope_lamda = 30; //90 //0,10,20,30
 
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 100;  			    
-const int64_t lamda_dstr  = 1;					
+const int64_t aeq_dstr    = 10;  			    
+const int64_t lamda_dstr  = 10;					
 const int64_t population  = eta_dstr * aeq_dstr * lamda_dstr;
 
 //------------------------------ Eta distribution range and step. --------------------------------//
@@ -68,8 +68,8 @@ const real aeq_end_d      = 179;
 const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	
 		                          
 //----------------------------- Lamda distribution range and step. -------------------------------//					 
-const real lamda_start_d  = lamda0_deg;     					 				
-const real lamda_end_d    = lamda0_deg;   			
+const real lamda_start_d  =0;     					 				
+const real lamda_end_d    = 90;   			
 const real lamda_step_d	  = 0;//(lamda_end_d - lamda_start_d)/(lamda_dstr-1); 	
 };	
 

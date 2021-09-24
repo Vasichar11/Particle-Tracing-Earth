@@ -81,27 +81,13 @@ int main()
 				
 				//And push-back other resulting values.(P.A, speed, momentum)
 				//Exceptions are involved
-				try
-				{	
-					eql_dstr[i].calculations0(Beq0,lamda0,0,0,aeq0,Constants::Ekev0);
-				}					
-				catch(int exception)	 
-				{
 				
-					if(exception == 99)
-					{
-						std::cout<< "\n" << "Caught exception: |sinusoidal|>1. P.A out of domain.\n" ;
-						return EXIT_FAILURE;	
-					}
-					else if(exception == 98)	
-					{
-						std::cout<< "\n" << "Caught exception: aeq0=0||180.\n" ;
-						return EXIT_FAILURE;
-					}	
-				
-				}		
+					
+				eql_dstr[i].calculations0(Beq0,lamda0,0,0,aeq0,Constants::Ekev0);
+									
+	
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<i<<" with eta0: "<< eta0*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" and lamda0: "<<lamda0*Constants::R2D<< " in degrees, with upar "<<eql_dstr[i].upar.at(0)<<"\n";				
+				std::cout<<"\nParticle"<<i<<" with eta0: "<< eta0*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" and lamda0: "<<lamda0*Constants::R2D<< " in degrees, with alpha "<<eql_dstr[i].alpha.at(0)*Constants::R2D<<"\n";				
 			}
 		}	
 	}
@@ -120,7 +106,7 @@ int main()
 	real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
 	real gama,w1,w2,R1,R2,beta,wtau_sq;
 	real S,D,P,R,L,mu,dwh_ds,vresz,Eres,kappa,kx,kz;
-	real Bxwc,Bzwc,Bywc,Exwc,Eywc,Ezwc,Ewc,Bwc;
+	real Bxwc,Bzwc,Bywc,Exwc,Eywc,Ezwc,Bwc;
 	real p_mag;
 	std::tuple<real, real, real, real, real> stix;
 	std::tuple<real, real, real, real> disp;
@@ -178,7 +164,7 @@ int main()
 	auto rk_start = std::chrono::high_resolution_clock::now();
 
 	int i;
-	
+	int j=0;
 	for(int p=0; p<Constants::population; p++)     //Loop for all particles
 	{
 		i=0;
@@ -193,6 +179,18 @@ int main()
 		zeta   = eql_dstr[p].zeta.at(i);
 		time  = eql_dstr[p].time.at(i);
 		//M_adiabatic = eql_dstr[p].M_adiabatic.at(i);
+		
+
+		//Check if NAN from calculations0. If yes "break" this particle from start...
+		if(std::isnan(alpha) || pper == 0)
+		{
+			j++;
+			std::cout<<"\nParticle "<<p<<" with aeq0="<<eql_dstr[p].aeq[0]*Constants::R2D<<" breaks.\n";
+			//std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
+			//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
+					
+			continue;
+		}
 		
 		std::cout<<"\rParticle "<<p<<" is bouncing"<<std::flush;
 		
@@ -241,7 +239,7 @@ int main()
 				//Fields.
 				whistlers(p,i,mu,P,D,S,kz,zeta,time, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
 				//Total fields.
-				Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
+				//Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
 				Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
 
 				//Bell_params.
@@ -314,7 +312,7 @@ int main()
 				disp = dispersion(S,P,R,L,D);
 				mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
 				whistlers(p,i,mu,P,D,S,kz,zeta+0.5*Constants::h*k1,time+0.5*Constants::h*k1, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
-				Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
+				//Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
 				Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
 				Bell_params(ppar+0.5*(Constants::h)*l1,pper+0.5*(Constants::h)*m1,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
 			}
@@ -354,7 +352,7 @@ int main()
 				disp = dispersion(S,P,R,L,D);
 				mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
 				whistlers(p,i,mu,P,D,S,kz,zeta+0.5*Constants::h*k2,time*0.5*Constants::h, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
-				Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
+				//Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
 				Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
 				Bell_params(ppar+0.5*(Constants::h)*l2,pper+0.5*(Constants::h)*m2,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
 			}			
@@ -394,7 +392,7 @@ int main()
 				disp = dispersion(S,P,R,L,D);
 				mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
 				whistlers(p,i,mu,P,D,S,kz,zeta+Constants::h*k3,time+Constants::h, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
-				Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
+				//Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
 				Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
 				Bell_params(ppar+(Constants::h)*l3,pper+(Constants::h)*m3,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
 			}
@@ -422,7 +420,7 @@ int main()
 				std::cout<<"\nParticle "<<p<<" with aeq0="<<eql_dstr[p].aeq[0]*Constants::R2D<<" breaks.\n";
 				//std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
 				//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
-						
+				j++;		
 				break;
 			}
 
@@ -466,7 +464,7 @@ int main()
 
 		}				
 	}
-
+	std::cout<<"\n"<<j;
 	//std::cout<<"\nMin and max lat move "<<min_diff <<", "<<max_diff<<" respectively\n";
 	//std::cout<<"\n"<<ODPT.lamda.at(0)<<" " << ODPT.lamda.at(1);
 	auto rk_stop = std::chrono::high_resolution_clock::now();  
@@ -500,7 +498,7 @@ int main()
 	    }
 	}
 
-	h5::File file("h5files/100p_2s_1nT.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet dataset_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
