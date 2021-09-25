@@ -46,7 +46,7 @@ int main()
 
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
-	std::cout<<"\n\nParticle population: " << Constants::population << "\n\nWave interaction: "<<Constants::interaction*Constants::By_wave<< " T" ;
+	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n\nWave interaction: "<<Constants::interaction*Constants::By_wave<< " T" ;
 	std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq distribution in degrees"<<"\n|From "<<" To|";
@@ -55,14 +55,14 @@ int main()
 	std::cout<<"\n| "<<Constants::lamda_start_d << "  "<< " " << Constants::lamda_end_d <<"|\n";
 
 	Particles single; //Single particle struct.
-	std::vector<Particles> eql_dstr(Constants::population, single);	//Vector of structs for particle distribution.
+	std::vector<Particles> eql_dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
 						//equally distributed
 	
 	real eta0,aeq0,lamda0;
+	real Blam0,salpha0,alpha0;
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
-
-	for(int e=0, i=0; e<Constants::eta_dstr; e++)		
+	for(int e=0, p=0; e<Constants::eta_dstr; e++)		
 	{   																							 
 		eta0 = (Constants::eta_start_d + e*Constants::eta_step_d) * Constants::D2R;			   														
 		
@@ -70,27 +70,25 @@ int main()
 		{	
 			aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	         	  	    
 
-			for(int l=0; l<Constants::lamda_dstr; l++, i++)
+			for(int l=0; l<Constants::lamda_dstr; l++, p++)
 		    {
-		    	lamda0 = (Constants::lamda_start_d + l*Constants::lamda_step_d) * Constants::D2R; 
-			
-				//Now push-back initial values in RADS.
-			    eql_dstr[i].set_eta(eta0);  		
-			    eql_dstr[i].set_aeq(aeq0);  
-			    eql_dstr[i].set_lamda(lamda0);  
+		    	lamda0 = (Constants::lamda_start_d + l*Constants::lamda_step_d) * Constants::D2R;  	
 				
-				//And push-back other resulting values.(P.A, speed, momentum)
-				//Exceptions are involved
-				
-					
-				eql_dstr[i].calculations0(Beq0,lamda0,0,0,aeq0,Constants::Ekev0);
-									
-	
+				//Find P.A at lamda0.
+				Blam0=Bmag_dipole(lamda0);
+				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
+				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) {eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
+				alpha0=asin(salpha0);		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
+				std::cout<<salpha0;
+				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0);
+
 				//Print initial state of particles.
-				std::cout<<"\nParticle"<<i<<" with eta0: "<< eta0*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" and lamda0: "<<lamda0*Constants::R2D<< " in degrees, with alpha "<<eql_dstr[i].alpha.at(0)*Constants::R2D<<"\n";				
+				std::cout<<"\nParticle"<<p<<" with eta0: "<< eql_dstr[p].eta.at(0)*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<" and lamda0: "<<lamda0*Constants::R2D<<"\n";				
 			}
 		}	
 	}
+	int64_t track_pop = eql_dstr.size(); //Population of particles that will be tracked.
+	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
 
 
@@ -112,7 +110,7 @@ int main()
 	std::tuple<real, real, real, real> disp;
 
 	
-	std::vector <std::vector<real>> time_sim  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
+	std::vector <std::vector<real>> time_sim  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
 
 
 	//Temp check size of vectors and if it can be allocated. Overheads are not included.
@@ -131,32 +129,32 @@ int main()
 	//Create vectors instead of big arrays to allocate in heap.
 	//Each row(population) has a vector which has cols(Nsteps+1) number of elements, each element initialized to 0.
 	
-	//std::vector <std::vector<real>> Ekin      (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) ); 
-	//std::vector <std::vector<real>> Exw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> Eyw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> Ezw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> Bxw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> Byw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> Bzw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> Bw_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> Ew_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> kappa_out (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> kx_out	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> kz_out	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> L_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> S_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> D_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> P_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> R_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> wh_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> mu_out	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> vresz_o   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> Eres_o	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>> gama_out  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	std::vector <std::vector<real>> deta_dt   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>>dwh_dt_out (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>>B_earth_out(Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-	//std::vector <std::vector<real>>Phi_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0);
+	//std::vector <std::vector<real>> Ekin      (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) ); 
+	//std::vector <std::vector<real>> Exw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> Eyw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> Ezw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> Bxw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> Byw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> Bzw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> Bw_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> Ew_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> kappa_out (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> kx_out	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> kz_out	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> L_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> S_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> D_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> P_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> R_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> wh_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> mu_out	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> vresz_o   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> Eres_o	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> gama_out  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	std::vector <std::vector<real>> deta_dt   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>>dwh_dt_out (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>>B_earth_out(track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>>Phi_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0);
 
 
 	std::cout<<"\n";
@@ -164,9 +162,11 @@ int main()
 	auto rk_start = std::chrono::high_resolution_clock::now();
 
 	int i;
-	int j=0;
-	for(int p=0; p<Constants::population; p++)     //Loop for all particles
+	int broken=0;
+
+	for(int p=0; p<track_pop; p++)     //Loop for all particles
 	{
+		
 		i=0;
 		lamda = eql_dstr[p].lamda.at(i);
 		alpha = eql_dstr[p].alpha.at(i);
@@ -180,17 +180,6 @@ int main()
 		time  = eql_dstr[p].time.at(i);
 		//M_adiabatic = eql_dstr[p].M_adiabatic.at(i);
 		
-
-		//Check if NAN from calculations0. If yes "break" this particle from start...
-		if(std::isnan(alpha) || pper == 0)
-		{
-			j++;
-			std::cout<<"\nParticle "<<p<<" with aeq0="<<eql_dstr[p].aeq[0]*Constants::R2D<<" breaks.\n";
-			//std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
-			//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
-					
-			continue;
-		}
 		
 		std::cout<<"\rParticle "<<p<<" is bouncing"<<std::flush;
 		
@@ -420,7 +409,7 @@ int main()
 				std::cout<<"\nParticle "<<p<<" with aeq0="<<eql_dstr[p].aeq[0]*Constants::R2D<<" breaks.\n";
 				//std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
 				//std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
-				j++;		
+				broken++;		
 				break;
 			}
 
@@ -452,7 +441,7 @@ int main()
 			//Go to next timestep
 			time  = time + Constants::h; 
 			
-			eql_dstr[p].update_state(aeq, alpha, lamda, time);
+			//eql_dstr[p].save_state(aeq, alpha, lamda, time);
 
 			//std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
@@ -464,7 +453,7 @@ int main()
 
 		}				
 	}
-	std::cout<<"\n"<<j;
+	std::cout<<"\nParticles that went out of domain, inside the simulation: "<<broken;
 	//std::cout<<"\nMin and max lat move "<<min_diff <<", "<<max_diff<<" respectively\n";
 	//std::cout<<"\n"<<ODPT.lamda.at(0)<<" " << ODPT.lamda.at(1);
 	auto rk_stop = std::chrono::high_resolution_clock::now();  
@@ -479,14 +468,14 @@ int main()
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 ---------------------------------------------------------------------//
 	
-	std::vector<std::vector<real>>  aeq_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> lamda_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> time_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> alpha_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	std::vector<std::vector<real>>  aeq_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	std::vector<std::vector<real>> lamda_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	
 
 	//Assign from struct to 2d vectors.
-	for(int p=0; p<Constants::population; p++)
+	for(int p=0; p<track_pop; p++)
 	{
 	    for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
 	    {
@@ -510,17 +499,16 @@ int main()
 	//Simulation data and Telescope specification - Scalars 
 	h5::DataSet wave_magnitude     = file.createDataSet("By_wave",Constants::By_wave);
 	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
-	h5::DataSet population         = file.createDataSet("population", Constants::population);
+	h5::DataSet population         = file.createDataSet("population", track_pop);
 	h5::DataSet initial_lamda      = file.createDataSet("lamda0", Constants::lamda0);
 	h5::DataSet simulation_time    = file.createDataSet("t", Constants::t);
 	
-	//All Particles
-	h5::DataSet dataset_lamda_all  = file.createDataSet("lamda_plot", lamda_plot);
-	h5::DataSet dataset_alpha_all  = file.createDataSet("alpha_plot", alpha_plot);
-	h5::DataSet dataset_deta_all   = file.createDataSet("deta_dt", deta_dt);
-	h5::DataSet dataset_aeq_all    = file.createDataSet("aeq_plot", aeq_plot);
-	h5::DataSet dataset_time_all   = file.createDataSet("time_plot", time_plot);
-
+	//Saved Particles
+	h5::DataSet dataset_lamda_saved  = file.createDataSet("lamda_plot", lamda_plot);
+	//h5::DataSet dataset_alpha_saved  = file.createDataSet("alpha_plot", alpha_plot);
+	//h5::DataSet dataset_deta_saved   = file.createDataSet("deta_dt", deta_dt);
+	//h5::DataSet dataset_aeq_saved    = file.createDataSet("aeq_plot", aeq_plot);
+	//h5::DataSet dataset_time_saved   = file.createDataSet("time_plot", time_plot);
 
 
 

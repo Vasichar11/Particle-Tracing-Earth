@@ -13,20 +13,11 @@
 //Struct for particle's state throughout the iterations.
 struct Particles
 { 				
-	
-	//Member function to push back initial gyrophases.
-	void set_eta(real initial_eta);
-	
-	//Member function to push back initial equatorial pitch angles.
-	void set_aeq(real initial_aeq);
-
-	//Member function to push back initial latitudes.
-	void set_lamda(real initial_lamda);
-	
-	void calculations0(real Beq0, real initial_lamda,real initial_zeta, real initial_time, real initial_aeq, real initial_Ekev);
-
-	//Member function to push_back new state.
-	void update_state(real new_aeq, real new_alpha, real new_lamda, real new_time);
+	//Member function to initialize particle population.
+	void initialize(real eta0, real aeq0, real alpha0, real lamda0, real Ekev0, real Blam0, real zeta0, real time0);
+		
+	//Member function to push_back new state if needed.
+	void save_state(real new_aeq, real new_alpha, real new_lamda, real new_time);
 
 	//Member variables.
 	std::vector<real> lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, time; 
