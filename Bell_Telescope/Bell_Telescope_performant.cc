@@ -30,8 +30,7 @@ namespace h5 = HighFive;
 int main()
 {
 		
-	//std::cout.precision(8);		//Output 16 decimal precise
-	std::cout<<std::scientific;		//For e notation representation
+
 
 	//Objects for each specie.
 	Species electron(Constants::m_e,  Constants::q_e, 1); 
@@ -79,11 +78,10 @@ int main()
 				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
 				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) {eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
 				alpha0=asin(salpha0);		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
-				std::cout<<salpha0;
 				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0);
 
 				//Print initial state of particles.
-				std::cout<<"\nParticle"<<p<<" with eta0: "<< eql_dstr[p].eta.at(0)*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<" and lamda0: "<<lamda0*Constants::R2D<<"\n";				
+				//std::cout<<"\nParticle"<<p<<" with eta0: "<< eql_dstr[p].eta.at(0)*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<" and lamda0: "<<lamda0*Constants::R2D<<"\n";				
 			}
 		}	
 	}
@@ -91,7 +89,8 @@ int main()
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
 
-
+	std::cout.precision(8);			//Output 16 decimal precise
+	std::cout<<std::scientific;		//For e notation representation
 
 //--------------------------------------------------------------------RUNGE KUTTA-----------------------------------------------------------------------//
 
@@ -114,13 +113,13 @@ int main()
 
 
 	//Temp check size of vectors and if it can be allocated. Overheads are not included.
-	int64_t szv = ( (time_sim.size() * time_sim[0].size() * sizeof(real)) + (time_sim.size()*sizeof(time_sim[0])) + sizeof(time_sim) ) * 39 ; 
-	std::cout<< "\nTo allocate in memory all simulation's 2D Vectors you will need more than: ~ " << szv <<"B * (26+13) = " << szv*pow(10,-9) << " free GB \n";
+	int64_t szv = ( (time_sim.size() * time_sim[0].size() * sizeof(real)) + (time_sim.size()*sizeof(time_sim[0])) + sizeof(time_sim) ) * 40 ; 
+	std::cout<< "\nTo allocate in memory all simulation's 2D Vectors you will need more than: ~ " << szv <<"B * 40" << szv*pow(10,-9) << " free GB \n";
 	
-	//For performant, bounce is ~0.1s, therefore detection every 0.1s => simulation time/0.1 instead of vectors of Nsteps size.
-	int64_t szv_performant = ((time_sim.size() * (Constants::t/0.1) * sizeof(real)) + (time_sim.size()*sizeof(time_sim[0])) + sizeof(time_sim) ) * 9 + 2 * ( (time_sim.size() * time_sim[0].size() * sizeof(real)) + (time_sim.size()*sizeof(time_sim[0])) + sizeof(time_sim) )  ;
+	//bounce is ~1s, therefore detection every 0.1s => simulation time/0.1 instead of vectors of Nsteps size.
+	int64_t szv_performant = ((time_sim.size() * (Constants::t/1) * sizeof(real)) + (time_sim.size()*sizeof(time_sim[0])) + sizeof(time_sim) ) * 10 ;
 	
-	std::cout<< "\nTo allocate in memory only detected particles you will need more than: ~ " << szv_performant <<"B * (9+2) = " << szv_performant*pow(10,-9) << " free GB \n";
+	std::cout<< "\nTo allocate in memory only detected particles you will need more than: ~ " << szv_performant <<"B * 10 = " << szv_performant*pow(10,-9) << " free GB \n";
 
 
 	//Make vectors to save data throughout the Runge Kutta only if needed.(0) 
@@ -151,7 +150,7 @@ int main()
 	//std::vector <std::vector<real>> vresz_o   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>> Eres_o	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>> gama_out  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
-	std::vector <std::vector<real>> deta_dt   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+	//std::vector <std::vector<real>> deta_dt   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>>dwh_dt_out (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>>B_earth_out(track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
 	//std::vector <std::vector<real>>Phi_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0);
@@ -433,7 +432,7 @@ int main()
 			upar  =  ppar   /  (Constants::m_e*gama); //quite different from zeta?
 			uper  =  pper   /  (Constants::m_e*gama);
 
-			deta_dt[p][i+1] = (Constants::h/6)*(n1+2*n2+2*n3+n4);
+			//deta_dt[p][i+1] = (Constants::h/6)*(n1+2*n2+2*n3+n4);
 
 			//B_lam    =  Bmag_dipole(lamda);    
 			//M_adiabatic = (pper*pper)/(2*Constants::m_e*B_lam); 
@@ -474,7 +473,7 @@ int main()
 	std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	
 
-	//Assign from struct to 2d vectors.
+	/*//Assign from struct to 2d vectors.
 	for(int p=0; p<track_pop; p++)
 	{
 	    for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
@@ -486,15 +485,14 @@ int main()
 
 	    }
 	}
-
+	*/
 	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet dataset_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
 	h5::DataSet dataset_time       = file.createDataSet("ODPT.time", ODPT.time);
 	h5::DataSet dataset_id         = file.createDataSet("ODPT.id", ODPT.id);
-	//h5::DataSet dataset_aeq      = file.createDataSet("ODPT.aeq", ODPT.aeq);
-	//h5::DataSet dataset_alpha    = file.createDataSet("ODPT.alpha", ODPT.alpha);
+	h5::DataSet dataset_alpha      = file.createDataSet("ODPT.alpha", ODPT.alpha);
 
 	//Simulation data and Telescope specification - Scalars 
 	h5::DataSet wave_magnitude     = file.createDataSet("By_wave",Constants::By_wave);
@@ -504,7 +502,7 @@ int main()
 	h5::DataSet simulation_time    = file.createDataSet("t", Constants::t);
 	
 	//Saved Particles
-	h5::DataSet dataset_lamda_saved  = file.createDataSet("lamda_plot", lamda_plot);
+	//h5::DataSet dataset_lamda_saved  = file.createDataSet("lamda_plot", lamda_plot);
 	//h5::DataSet dataset_alpha_saved  = file.createDataSet("alpha_plot", alpha_plot);
 	//h5::DataSet dataset_deta_saved   = file.createDataSet("deta_dt", deta_dt);
 	//h5::DataSet dataset_aeq_saved    = file.createDataSet("aeq_plot", aeq_plot);
