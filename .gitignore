@@ -5,4 +5,5 @@
 */*.exe
 */*.out
 */*.txt
+*/*.h5
 */*tracer
