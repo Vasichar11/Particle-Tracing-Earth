@@ -10,7 +10,7 @@
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
 
-#include "headers/motion.h"
+#include "headers/wpi.h"
 #include "headers/common.h"
 
 #include "headers/struct_Particles.h"   		    	
@@ -85,10 +85,7 @@ int main()
 	{
 		//Void Function for particle's motion. Involves RK4 for Nsteps. 
 		//Detected particles are saved in ODPT object, which is passed here by reference.
-		motion(track_pop, p,eql_dstr[p], ODPT);
-        
-		//To save states:
-		//eql_dstr[p].save_state(aeq,alpha,lamda,time);
+		wpi(track_pop, p, eql_dstr[p], ODPT);   
 
 	}	
 	auto rk_stop = std::chrono::high_resolution_clock::now();  

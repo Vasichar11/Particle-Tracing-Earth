@@ -10,6 +10,7 @@
 #include <iostream>
 #include <cmath>
     
-//Function for particle's motion. Involves RK4 for Nsteps. 
-void motion(int64_t track_pop, int p, Particles &single, Telescope &ODPT);
+//Function for particle's adiabatic motion. Involves RK4 for Nsteps. 
+void adiabatic_motion(int64_t track_pop, int p, Particles &single, Telescope &ODPT);
+
 
