@@ -1,9 +1,9 @@
 #include "headers/motion.h"
 
-void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real upar, real uper, real zeta, real M_adiabatic, real eta, real time, Telescope &ODPT)
+void motion(int64_t track_pop,int p, real lamda, real alpha, real aeq, real ppar, real pper, real upar, real uper, real zeta, real M_adiabatic, real eta, real time, Telescope &ODPT)
 {
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
-    real new_lamdae;
+    real new_lamda;
     real ns_e, wc_e, wps_e, ns_O, wc_O, wps_O ,ns_H, wc_H, wps_H, ns_He, wc_He, wps_He, w_h;
     real Bmag;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
@@ -15,7 +15,10 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
     //Tuples
     std::tuple<real, real, real, real, real> stix;
     std::tuple<real, real, real, real> disp;
-
+        
+    //Assign no interaction values.
+    kz=wtau_sq=w1=w2=R1=R2=beta=kappa=Bwc=0;
+    
     //Objects for each specie. Used inside "motion" function. //Change that, it's called once for each particle...
     Species electron(Constants::m_e,  Constants::q_e, 1); 
     Species oxygen  (Constants::m_O,  Constants::q_i, 0.006); 
@@ -23,42 +26,43 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
 
 
-    std::vector <std::vector<real>> time_sim  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
+    std::vector <std::vector<real>> time_sim  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
     //Optional
 
     //Make vectors to save data throughout the Runge Kutta only if needed.(0) 
     //Create vectors instead of big arrays to allocate in heap.
     //Each row(population) has a vector which has cols(Nsteps+1) number of elements, each element initialized to 0.
 
-    //std::vector <std::vector<real>> Ekin      (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) ); 
-    //std::vector <std::vector<real>> Exw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> Eyw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> Ezw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> Bxw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> Byw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> Bzw_out   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> Bw_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> Ew_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> kappa_out (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> kx_out	  (Constants::population, std=::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> kz_out	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> L_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> S_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> D_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> P_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> R_stix	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> wh_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> mu_out	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> vresz_o   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> Eres_o	  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> gama_out  (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>> deta_dt   (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>>dwh_dt_out (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>>B_earth_out(Constants::population, std::vector<real> (Constants::Nsteps + 1, 0) );
-    //std::vector <std::vector<real>>Phi_out    (Constants::population, std::vector<real> (Constants::Nsteps + 1, 0);
+    //std::vector <std::vector<real>> Ekin      (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) ); 
+    //std::vector <std::vector<real>> Exw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> Eyw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> Ezw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> Bxw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> Byw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> Bzw_out   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> Bw_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> Ew_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> kappa_out (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> kx_out	  (track_pop, std=::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> kz_out	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> L_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> S_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> D_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> P_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> R_stix	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> wh_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> mu_out	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> vresz_o   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> Eres_o	  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> gama_out  (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>> deta_dt   (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>>dwh_dt_out (track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>>B_earth_out(track_pop, std::vector<real> (Constants::Nsteps + 1, 0) );
+    //std::vector <std::vector<real>>Phi_out    (track_pop, std::vector<real> (Constants::Nsteps + 1, 0);
     
-	//std::cout.precision(32);			//Output 16 decimal precise
-	//std::cout<<std::scientific;		//For e notation representation
+	std::cout.precision(8);			//Output 16 decimal precise
+	std::cout<<std::scientific;		//For e notation representation
+
     while(i<Constants::Nsteps) 
     {
         
@@ -72,17 +76,7 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
         //From bell parameters function(temp for no interaction).
         p_mag = sqrt(ppar*ppar+pper*pper);
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-        
-        //Assign no interaction values.
-        kz=0;
-        wtau_sq=0;
-        w1=0;
-        w2=0;
-        R1=0;
-        R2=0;
-        beta=0;
-        kappa=0;
-        Bwc=0;
+
 
         //Keep these values in arrays only if needed.(1)
         //B_earth_out[p][i]=Bmag; 
@@ -158,16 +152,8 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
         dwh_ds=dwh_dsf(w_h,lamda+0.5*(Constants::h)*o1);
         p_mag = sqrt((ppar+0.5*(Constants::h)*l1)*(ppar+0.5*(Constants::h)*l1)+(pper+0.5*(Constants::h)*m1)*(pper+0.5*(Constants::h)*m1));
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-        //Assign no interaction values.
-        kz=0;
-        wtau_sq=0;
-        w1=0;
-        w2=0;
-        R1=0;
-        R2=0;
-        beta=0;
-        kappa=0;
-        Bwc=0;
+        
+
         if(Constants::interaction)
         {
             wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
@@ -196,16 +182,7 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
         dwh_ds=dwh_dsf(w_h,lamda+0.5*(Constants::h)*o2);
         p_mag = sqrt((ppar+0.5*(Constants::h)*l2)*(ppar+0.5*(Constants::h)*l2)+(pper+0.5*(Constants::h)*m2)*(pper+0.5*(Constants::h)*m2));
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-        //Assign no interaction values.
-        kz=0;
-        wtau_sq=0;
-        w1=0;
-        w2=0;
-        R1=0;
-        R2=0;
-        beta=0;
-        kappa=0;
-        Bwc=0;
+
         if(Constants::interaction)
         {
             wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
@@ -235,16 +212,8 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
         dwh_ds=dwh_dsf(w_h,lamda+(Constants::h)*o3);
         p_mag = sqrt((ppar+(Constants::h)*l3)*(ppar+(Constants::h)*l3)+(pper+(Constants::h)*m3)*(pper+(Constants::h)*m3));
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-        //Assign no interaction values.
-        kz=0;
-        wtau_sq=0;
-        w1=0;
-        w2=0;
-        R1=0;
-        R2=0;
-        beta=0;
-        kappa=0;
-        Bwc=0;
+        
+
         if(Constants::interaction)
         {
             wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
@@ -274,10 +243,9 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
         //Check if NAN to break this particle. Why NAN ?
         if(std::isnan(new_lamda))
         {
-            std::cout<<"\n\nParticle "<<p<<" with aeq0="<<eql_dstr[p].aeq[0]*Constants::R2D<<" breaks.";
+            std::cout<<"\n\nParticle "<<p<<" with aeq0="<<" breaks.";
             //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
             //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
-                    
             break;
         }
 
@@ -301,7 +269,7 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
         upar  =  ppar   /  (Constants::m_e*gama);
         uper  =  pper   /  (Constants::m_e*gama);
 
-        deta_dt[p][i+1] = (Constants::h/6)*(n1+2*n2+2*n3+n4);
+        //deta_dt[p][i+1] = (Constants::h/6)*(n1+2*n2+2*n3+n4);
 
         //B_lam    =  Bmag_dipole(lamda);    
         //M_adiabatic = (pper*pper)/(2*Constants::m_e*B_lam); 
@@ -309,7 +277,7 @@ void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real 
         //Go to next timestep
         time  = time + Constants::h; 
         
-        eql_dstr[p].update_state(aeq, time);
+        //eql_dstr[p].save_state(aeq,alpha,lamda,time);
 
         //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 

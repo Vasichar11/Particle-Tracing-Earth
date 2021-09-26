@@ -11,5 +11,5 @@
     
 //Function for particle's motion. Involves RK4 for Nsteps. 
 
-void motion(int p, real lamda, real alpha, real aeq, real ppar, real pper, real upar, real uper, real zeta, real M_adiabatic, real eta, real time, Telescope &ODPT);
+void motion(int64_t track_pop, int p, real lamda, real alpha, real aeq, real ppar, real pper, real upar, real uper, real zeta, real M_adiabatic, real eta, real time, Telescope &ODPT);
 

@@ -38,10 +38,8 @@ int main()
 	Species hydrogen(Constants::m_H,  Constants::q_i, 0.94); 
 	Species helium  (Constants::m_He, Constants::q_i, 0.054);	
  
-	//Position of the Particle Telescope.	
-			
-	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell); //Satellite situated lat~ 30 deg, L_shell=5. Lamda tolerance = max step of particle. 		
-	//Size of vectors for detecting particles is unknown.			
+	//Position of the Particle Telescope.		
+	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
 
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
@@ -162,7 +160,10 @@ int main()
 
 	int i;
 	int broken=0;
-
+	
+	//Assign no interaction values.
+    kz=wtau_sq=w1=w2=R1=R2=beta=kappa=Bwc=0;
+	
 	for(int p=0; p<track_pop; p++)     //Loop for all particles
 	{
 		
@@ -196,16 +197,7 @@ int main()
 			p_mag = sqrt(ppar*ppar+pper*pper);
 			gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
 			
-			//Assign no interaction values.
-			kz=0;
-			wtau_sq=0;
-			w1=0;
-			w2=0;
-			R1=0;
-			R2=0;
-			beta=0;
-			kappa=0;
-			Bwc=0;
+
 
 			//Keep these values in arrays only if needed.(1)
 			//B_earth_out[p][i]=Bmag; 
@@ -282,16 +274,8 @@ int main()
 			dwh_ds=dwh_dsf(w_h,lamda+0.5*(Constants::h)*o1);
 			p_mag = sqrt((ppar+0.5*(Constants::h)*l1)*(ppar+0.5*(Constants::h)*l1)+(pper+0.5*(Constants::h)*m1)*(pper+0.5*(Constants::h)*m1));
 			gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-			//Assign no interaction values.
-			kz=0;
-			wtau_sq=0;
-			w1=0;
-			w2=0;
-			R1=0;
-			R2=0;
-			beta=0;
-			kappa=0;
-			Bwc=0;
+			
+
 			if(Constants::interaction)
 			{
 				wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
@@ -322,16 +306,8 @@ int main()
 			dwh_ds=dwh_dsf(w_h,lamda+0.5*(Constants::h)*o2);
 			p_mag = sqrt((ppar+0.5*(Constants::h)*l2)*(ppar+0.5*(Constants::h)*l2)+(pper+0.5*(Constants::h)*m2)*(pper+0.5*(Constants::h)*m2));
 			gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-			//Assign no interaction values.
-			kz=0;
-			wtau_sq=0;
-			w1=0;
-			w2=0;
-			R1=0;
-			R2=0;
-			beta=0;
-			kappa=0;
-			Bwc=0;
+			
+
 			if(Constants::interaction)
 			{
 				wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
@@ -362,16 +338,8 @@ int main()
 			dwh_ds=dwh_dsf(w_h,lamda+(Constants::h)*o3);
 			p_mag = sqrt((ppar+(Constants::h)*l3)*(ppar+(Constants::h)*l3)+(pper+(Constants::h)*m3)*(pper+(Constants::h)*m3));
 			gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-			//Assign no interaction values.
-			kz=0;
-			wtau_sq=0;
-			w1=0;
-			w2=0;
-			R1=0;
-			R2=0;
-			beta=0;
-			kappa=0;
-			Bwc=0;
+			
+
 			if(Constants::interaction)
 			{
 				wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
@@ -452,7 +420,7 @@ int main()
 
 		}				
 	}
-	std::cout<<"\nParticles that went out of domain, inside the simulation: "<<broken;
+	//std::cout<<"\nParticles that went out of domain, inside the simulation: "<<broken;
 	//std::cout<<"\nMin and max lat move "<<min_diff <<", "<<max_diff<<" respectively\n";
 	//std::cout<<"\n"<<ODPT.lamda.at(0)<<" " << ODPT.lamda.at(1);
 	auto rk_stop = std::chrono::high_resolution_clock::now();  
@@ -466,14 +434,14 @@ int main()
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 ---------------------------------------------------------------------//
-	
+/*	
 	std::vector<std::vector<real>>  aeq_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> lamda_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	
 
-	/*//Assign from struct to 2d vectors.
+	//Assign from struct to 2d vectors.
 	for(int p=0; p<track_pop; p++)
 	{
 	    for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
@@ -485,7 +453,7 @@ int main()
 
 	    }
 	}
-	*/
+*/
 	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
