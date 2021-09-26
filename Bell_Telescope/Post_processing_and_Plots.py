@@ -120,7 +120,7 @@ fig.savefig('simulation_MM/compare/aeq_deta_lamda.png' , dpi=200, facecolor='whi
 
 #noWPI
 fig, ax = plt.subplots()
-ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=7, cmap="viridis")
+ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=2, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
 plt.title("Detected particles in time. [Population: " +str(population)+ ", lamda0: " +str(round(lamda0*R2D))+ "]\n"+"Northward particles are captured below the satellite.\nSouthward particles are captured above the satellite.",size="medium")
@@ -191,7 +191,7 @@ ax.set_xticklabels(labels=np.arange(0,timesteps,t).astype(int),color="red",minor
 ax.grid(alpha=0.8,axis="x")
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
-        ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep])
+        ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep],s=10)
 
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
 
@@ -214,14 +214,14 @@ writer = FFMpegWriter(fps=fps, metadata = metadata)
 print("Generating Time binning mp4 file...\nDuration of mp4 file will be:",(sectors*fps), "seconds")
 
 
-with writer.saving(fig, "simulation_MM/detected/Time_binning.mp4", 100):
+with writer.saving(fig, "simulation_MM/Time_binning.mp4", 100):
 
     for sector in range(0,sectors):
 
         for timestep in range(0,timesteps):           
                 
             if sctr_flux[sector][timestep] !=0: #to show only non zero dots.
-                ax.scatter(timestep*time_bin+(time_bin/2),sctr_flux[sector][timestep],c=colors[timestep])
+                ax.scatter(timestep*time_bin+(time_bin/2),sctr_flux[sector][timestep],c=colors[timestep],s=10)
        
         ax.yaxis.set_major_locator(MaxNLocator(integer=True,nbins=5))
         #ax.set_xticks(ticks=np.arange(0,t+time_bin,time_bin)) 
@@ -232,7 +232,7 @@ with writer.saving(fig, "simulation_MM/detected/Time_binning.mp4", 100):
         ax.grid(alpha=0.8, axis="x" )
         ax.set_xlabel(xlabel="Time bins of "+str(time_bin)+"s-Timesteps in red")
         ax.set_ylabel(ylabel="Flux")
-        ax.set_ylim(0,max(sctr_flux))
+        ax.set_ylim(0,np.amax(sctr_flux))
         
         ax.set_title("Particle Flux in Sector "+str(sector)+" - Look direction: ("+str(180+sector*sector_range)+"\N{DEGREE SIGN},"+str(180+sector*sector_range+sector_range)+"\N{DEGREE SIGN}) Simulation time: "+str(t)+"s\n                                         -Detectable P.A: [ "+str(sector*sector_range)+"\N{DEGREE SIGN},"+str(sector*sector_range+sector_range)+"\N{DEGREE SIGN}) Satellite @"+str(telescope_lamda)+" deg",loc="left",fontdict=font)              
 
