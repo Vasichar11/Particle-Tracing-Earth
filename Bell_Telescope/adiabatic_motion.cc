@@ -1,4 +1,4 @@
-#include "headers/motion.h"
+#include "headers/adiabatic_motion.h"
 
 //Adiabatic motion.
 void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODPT)

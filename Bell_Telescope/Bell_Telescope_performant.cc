@@ -30,7 +30,7 @@ namespace h5 = HighFive;
 int main()
 {
 		
-
+	bool interaction = 0;
 
 	//Objects for each specie.
 	Species electron(Constants::m_e,  Constants::q_e, 1); 
@@ -43,7 +43,7 @@ int main()
 
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
-	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n\nWave interaction: "<<Constants::interaction*Constants::By_wave<< " T" ;
+	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n\nWave interaction: "<<interaction*Constants::By_wave<< " T" ;
 	std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq distribution in degrees"<<"\n|From "<<" To|";
@@ -206,7 +206,7 @@ int main()
 			//gama_out[p][i]=gama;
 		
 
-			if(Constants::interaction)
+			if(interaction)
 			{
 				//Plasma frequencies squared.
 				wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
@@ -276,7 +276,7 @@ int main()
 			gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
 			
 
-			if(Constants::interaction)
+			if(interaction)
 			{
 				wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
 				stix = stix_parameters(wc_e, wc_O, wc_H, wc_He, wps_e, wps_O, wps_H, wps_He);
@@ -308,7 +308,7 @@ int main()
 			gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
 			
 
-			if(Constants::interaction)
+			if(interaction)
 			{
 				wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
 				stix = stix_parameters(wc_e, wc_O, wc_H, wc_He, wps_e, wps_O, wps_H, wps_He);
@@ -340,7 +340,7 @@ int main()
 			gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
 			
 
-			if(Constants::interaction)
+			if(interaction)
 			{
 				wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
 				stix = stix_parameters(wc_e, wc_O, wc_H, wc_He, wps_e, wps_O, wps_H, wps_He);
