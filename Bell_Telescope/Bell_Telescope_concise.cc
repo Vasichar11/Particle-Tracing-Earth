@@ -84,7 +84,7 @@ int main()
 	for(int p=0; p<track_pop; p++)     //Loop for all particles
 	{
 		//Void Function for particle's motion. Involves RK4 for Nsteps. 
-		motion(track_pop, p, eql_dstr[p].lamda.front(), eql_dstr[p].alpha.front(), eql_dstr[p].aeq.front(), eql_dstr[p].ppar.front(), eql_dstr[p].pper.front(), eql_dstr[p].upar.front(), eql_dstr[p].uper.front(), eql_dstr[p].zeta.front(), eql_dstr[p].M_adiabatic.front(), eql_dstr[p].eta.front(), eql_dstr[p].time.front(), ODPT);
+		motion(track_pop, p,eql_dstr[p], ODPT);
 		//Detected particles are saved in ODPT object, which is passed here by reference.
 	}	
 	auto rk_stop = std::chrono::high_resolution_clock::now();  

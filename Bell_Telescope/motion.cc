@@ -1,7 +1,20 @@
 #include "headers/motion.h"
 
-void motion(int64_t track_pop,int p, real lamda, real alpha, real aeq, real ppar, real pper, real upar, real uper, real zeta, real M_adiabatic, real eta, real time, Telescope &ODPT)
+void motion(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 {
+    real lamda =  single.lamda.at(0);
+    real zeta  =  single.zeta.at(0); 
+    real ppar  =  single.ppar.at(0); 
+    real pper  =  single.pper.at(0); 
+    real eta   =  single.eta.at(0); 
+    real alpha =  single.alpha.at(0); 
+    real aeq   =  single.aeq.at(0); 
+    real upar  =  single.upar.at(0); 
+    real uper  =  single.uper.at(0); 
+    real time  =  single.time.at(0);
+
+	std::cout<<"\rParticle "<<p<<" is bouncing"<<std::flush;
+
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda;
     real ns_e, wc_e, wps_e, ns_O, wc_O, wps_O ,ns_H, wc_H, wps_H, ns_He, wc_He, wps_He, w_h;
@@ -279,7 +292,6 @@ void motion(int64_t track_pop,int p, real lamda, real alpha, real aeq, real ppar
         
         //eql_dstr[p].save_state(aeq,alpha,lamda,time);
 
-        //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
         i++;  
 
@@ -287,4 +299,6 @@ void motion(int64_t track_pop,int p, real lamda, real alpha, real aeq, real ppar
         //if(eql_dstr[p].lamda.at(i)>0) {	
         //	break;}	
     }
+    //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
+
 }
