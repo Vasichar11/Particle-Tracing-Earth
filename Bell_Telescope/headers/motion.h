@@ -11,6 +11,5 @@
 #include <cmath>
     
 //Function for particle's motion. Involves RK4 for Nsteps. 
-
 void motion(int64_t track_pop, int p, Particles &single, Telescope &ODPT);
 

@@ -290,7 +290,6 @@ void motion(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         //Go to next timestep
         time  = time + Constants::h; 
         
-        //eql_dstr[p].save_state(aeq,alpha,lamda,time);
 
 
         i++;  

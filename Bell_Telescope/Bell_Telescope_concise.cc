@@ -84,8 +84,12 @@ int main()
 	for(int p=0; p<track_pop; p++)     //Loop for all particles
 	{
 		//Void Function for particle's motion. Involves RK4 for Nsteps. 
-		motion(track_pop, p,eql_dstr[p], ODPT);
 		//Detected particles are saved in ODPT object, which is passed here by reference.
+		motion(track_pop, p,eql_dstr[p], ODPT);
+        
+		//To save states:
+		//eql_dstr[p].save_state(aeq,alpha,lamda,time);
+
 	}	
 	auto rk_stop = std::chrono::high_resolution_clock::now();  
 	auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(rk_stop - rk_start);
