@@ -20,7 +20,7 @@ np.set_printoptions(threshold=sys.maxsize)
 ############################################# READ DATA ###################################################
 
 #noWPI
-f1 = h5py.File("h5files/detected.h5","r")
+f1 = h5py.File("h5files/10000p_10s.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -40,7 +40,7 @@ lamda0         = f1["lamda0"][()]
 f1.close();
 """
 #WPI
-f2 = h5py.File("h5files/100p_2s_1nT.h5","r")
+f2 = h5py.File("h5files/1nT.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_WPI = f2["ODPT.lamda"][()]
 detected_time_WPI  = f2["ODPT.time"][()]
@@ -64,7 +64,7 @@ f2.close();
 ###################################### POST PROCESSING - PLOTS ###########################################
 ##########################################################################################################
 
-################################### CHECK NEW PARTICLES AFTER WPI ######################################
+########################################## COMPARE WPI - noWPI ###########################################
 """
 detected_id     = list(detected_id)     #Turn into lists
 detected_id_WPI = list(detected_id_WPI)
@@ -232,6 +232,8 @@ with writer.saving(fig, "simulation_MM/detected/Time_binning.mp4", 100):
         ax.grid(alpha=0.8, axis="x" )
         ax.set_xlabel(xlabel="Time bins of "+str(time_bin)+"s-Timesteps in red")
         ax.set_ylabel(ylabel="Flux")
+        ax.set_ylim(0,max(sctr_flux))
+        
         ax.set_title("Particle Flux in Sector "+str(sector)+" - Look direction: ("+str(180+sector*sector_range)+"\N{DEGREE SIGN},"+str(180+sector*sector_range+sector_range)+"\N{DEGREE SIGN}) Simulation time: "+str(t)+"s\n                                         -Detectable P.A: [ "+str(sector*sector_range)+"\N{DEGREE SIGN},"+str(sector*sector_range+sector_range)+"\N{DEGREE SIGN}) Satellite @"+str(telescope_lamda)+" deg",loc="left",fontdict=font)              
 
 
