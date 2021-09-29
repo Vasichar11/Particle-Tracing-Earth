@@ -26,7 +26,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real gama,w1,w2,R1,R2,beta,wtau_sq;
     real S,D,P,R,L,mu,dwh_ds,vresz,Eres,kappa,kx,kz;
-    real Bxwc,Bzwc,Bywc,Exwc,Eywc,Ezwc,Bwc;
+    real Bxwc,Bzwc,Bywc,Exwc,Eywc,Ezwc,Bwc,Ewc;
     real p_mag;
     //Tuples
     std::tuple<real, real, real, real, real> stix;
@@ -46,7 +46,6 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 
     while(i<Constants::Nsteps) 
     {
-        
         Bmag=Bmag_dipole(lamda);
         ns_e = electron.density(lamda); ns_O = oxygen.density(lamda);  ns_H = hydrogen.density(lamda); ns_He = helium.density(lamda);
         w_h = electron.wc(Bmag); wc_O = oxygen.wc(Bmag); wc_H = hydrogen.wc(Bmag);  wc_He = helium.wc(Bmag);
@@ -60,15 +59,15 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         disp = dispersion(S,P,R,L,D);
         mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
         whistlers(p,i,mu,P,D,S,kz,zeta,time, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
-        //Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
+        Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar,pper,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
         vres_f(kz,w_h,alpha,vresz,Eres); //Called only once in first step...
         //Check print parameters
-        //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " << lamda<< "\naeq " << eql_dstr[p].aeq2.at(i) << "\nBxw " << Bxwc << "\nByw "<<Bywc<< "\nBzw "<<Bzwc<< "\nBwc " << Bwc << "\nExw " << Exwc<< "\nEyw " << Eywc << "\nEzw " << Ezwc << "\nEwc " << Ewc<< "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nE_kin " <<  Ekin << "\nmu_adiabatic" << M_adiabatic;
+        //std::cout<<"\n"<< R1<<"\n"<< R2<<"\n"<< w1<<"\n"<< w2<<"\n"<< beta<<"\n"<< gama<<"\n"<< mu<<"\n"<< Bywc<<"\n"<< Bzwc<<"\n"<< Bwc<<"\n"<< S<<"\n"<< D<<"\n"<< P<<"\n"<< R<<"\n"<< L<<"\n"<< kappa<<"\n"<< kx<<"\n"<< kz<<"\n"<< w_h<<"\n"<< dwh_ds<<"\n"<< gama;
         
         //RK step-1//#################################################################################################################################################################################################################################################################################################
-        slopes(k1, l1, m1, n1, o1, p1, q1, p_mag, ppar, pper, lamda, eta, alpha, aeq, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
+        slopes(k1, l1, m1, n1, o1, p1, q1, ppar, pper, lamda, eta, alpha, aeq, p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn " << n1<< "\no1 " << o1 << "\np1 " << p1 << "\nq1 " << q1 <<"\n";	
         
         Bmag=Bmag_dipole(lamda+0.5*(Constants::h)*o1);
@@ -88,7 +87,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar+0.5*(Constants::h)*l1,pper+0.5*(Constants::h)*m1,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
         //RK step-2//#################################################################################################################################################################################################################################################################################################
-        slopes(k2, l2, m2, n2, o2, p2, q2, p_mag, ppar+(0.5*l1*Constants::h), pper+(0.5*m1*Constants::h), lamda+(0.5*o1*Constants::h), eta+(0.5*n1*Constants::h), alpha+(0.5*p1*Constants::h), aeq+(0.5*q1*Constants::h), w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
+        slopes(k2, l2, m2, n2, o2, p2, q2, ppar+(0.5*l1*Constants::h), pper+(0.5*m1*Constants::h), lamda+(0.5*o1*Constants::h), eta+(0.5*n1*Constants::h), alpha+(0.5*p1*Constants::h), aeq+(0.5*q1*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 << "\nn2 " << n2<< "\no2 " << o2 << "\np2 " << p2 << "\n";
         
 
@@ -109,7 +108,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar+0.5*(Constants::h)*l2,pper+0.5*(Constants::h)*m2,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);  
         //RK step-3//#################################################################################################################################################################################################################################################################################################
-        slopes(k3, l3, m3, n3, o3, p3, q3, p_mag, ppar+(0.5*l2*Constants::h), pper+(0.5*m2*Constants::h), lamda+(0.5*o2*Constants::h), eta+(0.5*n2*Constants::h), alpha+(0.5*p2*Constants::h), aeq+(0.5*q2*Constants::h), w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
+        slopes(k3, l3, m3, n3, o3, p3, q3, ppar+(0.5*l2*Constants::h), pper+(0.5*m2*Constants::h), lamda+(0.5*o2*Constants::h), eta+(0.5*n2*Constants::h), alpha+(0.5*p2*Constants::h), aeq+(0.5*q2*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 << "\nn3 " << n3<< "\no3 " << o3 << "\np3 " << p3 << "\n";
 
 
@@ -130,7 +129,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar+(Constants::h)*l3,pper+(Constants::h)*m3,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
         //RK step-4//#################################################################################################################################################################################################################################################################################################																								
-        slopes(k4, l4, m4, n4, o4, p4, q4, p_mag, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), eta+(n3*Constants::h), alpha+(p3*Constants::h), aeq+(q3*Constants::h), w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
+        slopes(k4, l4, m4, n4, o4, p4, q4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), eta+(n3*Constants::h), alpha+(p3*Constants::h), aeq+(q3*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\n";
 
         
@@ -180,11 +179,11 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 		single.save_state(aeq,alpha,lamda,deta_dt,time);
 
         i++;  
+        //std::cout<<"\n\nalpha "<<alpha<<"\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
 
         //Stop at equator
         //if(eql_dstr[p].lamda.at(i)>0) {	
         //	break;}	
     }
-    //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
 }
