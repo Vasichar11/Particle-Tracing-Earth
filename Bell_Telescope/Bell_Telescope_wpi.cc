@@ -66,10 +66,11 @@ int main()
 				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
 				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) {eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
 				alpha0=asin(salpha0);		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
-				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0);
+				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<p<<" with eta0: "<< eql_dstr[p].eta.at(0)*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<" and lamda0: "<<lamda0*Constants::R2D<<"\n";				
+				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D;				
+
 			}
 		}	
 	}
@@ -97,11 +98,13 @@ int main()
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
-/*
+
+
 	std::vector<std::vector<real>>  aeq_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> lamda_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	std::vector<std::vector<real>> deta_dt_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	
 
 	//Assign from struct to 2d vectors.
@@ -113,11 +116,12 @@ int main()
 	    	aeq_plot[p][i] = eql_dstr[p].aeq.at(i);
 	    	alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
 	    	lamda_plot[p][i] = eql_dstr[p].lamda.at(i);
+	    	deta_dt_plot[p][i] = eql_dstr[p].deta_dt.at(i);
 
 	    }
 	}
-*/
-	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+
+	h5::File file("h5files/100p_2s_1nT.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet dataset_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
@@ -133,11 +137,11 @@ int main()
 	h5::DataSet simulation_time    = file.createDataSet("t", Constants::t);
 	
 	//Saved Particles
-	//h5::DataSet dataset_lamda_saved  = file.createDataSet("lamda_plot", lamda_plot);
-	//h5::DataSet dataset_alpha_saved  = file.createDataSet("alpha_plot", alpha_plot);
-	//h5::DataSet dataset_deta_saved   = file.createDataSet("deta_dt", deta_dt);
-	//h5::DataSet dataset_aeq_saved    = file.createDataSet("aeq_plot", aeq_plot);
-	//h5::DataSet dataset_time_saved   = file.createDataSet("time_plot", time_plot);
+	h5::DataSet dataset_lamda_saved  = file.createDataSet("lamda_plot", lamda_plot);
+	h5::DataSet dataset_alpha_saved  = file.createDataSet("alpha_plot", alpha_plot);
+	h5::DataSet dataset_deta_saved   = file.createDataSet("deta_dt", deta_dt_plot);
+	h5::DataSet dataset_aeq_saved    = file.createDataSet("aeq_plot", aeq_plot);
+	h5::DataSet dataset_time_saved   = file.createDataSet("time_plot", time_plot);
 
 
 
