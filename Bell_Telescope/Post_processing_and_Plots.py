@@ -20,7 +20,7 @@ np.set_printoptions(threshold=sys.maxsize)
 ############################################# READ DATA ###################################################
 
 #noWPI
-f1 = h5py.File("h5files/10000p_10s.h5","r")
+f1 = h5py.File("h5files/100p_2s.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -30,47 +30,48 @@ telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
 lamda0         = f1["lamda0"][()]
-#aeq            = f1["aeq_plot"][()]
-#alpha          = f1["alpha_plot"][()]
-#lamda          = f1["lamda_plot"][()]
-#time           = f1["time_plot"][()]
-#deta_dt        = f1["deta_dt"][()]
-#By_wave        = 0
+aeq            = f1["aeq_plot"][()]
+alpha          = f1["alpha_plot"][()]
+lamda          = f1["lamda_plot"][()]
+time           = f1["time_plot"][()]
+deta_dt        = f1["deta_dt"][()]
+By_wave        = 0
 
 f1.close();
-"""
+
 #WPI
-f2 = h5py.File("h5files/1nT.h5","r")
+f2 = h5py.File("h5files/100p_2s_1nT.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_WPI = f2["ODPT.lamda"][()]
 detected_time_WPI  = f2["ODPT.time"][()]
 detected_id_WPI    = f2["ODPT.id"][()]
-#detected_alpha    = f2["ODPT.alpha"][()]
+detected_alpha    = f2["ODPT.alpha"][()]
 telescope_lamda_WPI= f2["ODPT.latitude"][()]
 population_WPI     = f2["population"][()]
 t_WPI              = f2["t"][()]
 lamda0_WPI         = f2["lamda0"][()]
 aeq_WPI            = f2["aeq_plot"][()]
-#alpha_WPI          = f2["alpha_plot"][()]
+alpha_WPI          = f2["alpha_plot"][()]
 lamda_WPI          = f2["lamda_plot"][()]
 time_WPI           = f2["time_plot"][()]
 deta_dt_WPI        = f2["deta_dt"][()]
 By_wave_WPI        = f2["By_wave"][()]
 
 f2.close();
-"""
+
 
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
 ##########################################################################################################
 
 ########################################## COMPARE WPI - noWPI ###########################################
-"""
+
 detected_id     = list(detected_id)     #Turn into lists
 detected_id_WPI = list(detected_id_WPI)
 new_particles = list(set(detected_id_WPI) - set(detected_id))  #Particles that were detected with WPI but not before.
 print("New id's when WPI",By_wave_WPI,"\n",new_particles)
-new_part = new_particles[2] #take one of them
+print(new_particles)
+new_part = new_particles[1] #take one of them
 
 #most = max(set(detected_id_WPI), key = detected_id_WPI.count)  #One of the most detected particles(regularly bouncing whole time).
 
@@ -112,12 +113,11 @@ ax[2,1].annotate("SATELLITE",xy=(0,telescope_lamda_WPI+0.8),color="blue",weight=
 ax[2,1].grid(alpha=.3)
 ax[2,1].set_xlabel('$time (sec)$',size="x-small")
 
-fig.savefig('simulation_MM/compare/aeq_deta_lamda.png' , dpi=200, facecolor='white',transparent=False)
+fig.savefig('simulation_MM/aeq_deta_lamda.png' , dpi=200, facecolor='white',transparent=False)
 
 
-"""
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
-
+"""
 #noWPI
 fig, ax = plt.subplots()
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=2, cmap="viridis")
@@ -129,7 +129,7 @@ ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles.png", dpi=100)
 
-"""
+
 #WPI
 fig, ax = plt.subplots()
 ax.scatter(detected_time_WPI, detected_lamda_WPI*R2D, c = detected_id_WPI, s=7, cmap="viridis")
@@ -158,14 +158,15 @@ plt.savefig("simulation_MM/Crossing_particles_WPI_onlyNEW.png", dpi=100)
 
 """
 ####################################### TELESCOPE SPECIFICATION ##########################################
-
+"""
 time_bin  = 0.1                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
 sector_range = 15
 sectors = int(view/sector_range)
-
+"""
 ############################################## BINNING ####################################################
+"""
 
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux = [0 for i in range(timesteps)]
@@ -178,8 +179,10 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
     sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-time_bin.
     sum_flux[timestep] += 1
 
+"""
 
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
+"""
 
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
@@ -194,8 +197,10 @@ for timestep in range(0,timesteps):
         ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep],s=10)
 
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
+"""
 
 ####################################### (FLUX-TIME)*SECTORS  MOVIE ##########################################
+"""
 
 font = {'family': 'serif',
         'color':  'blue',
@@ -239,6 +244,7 @@ with writer.saving(fig, "simulation_MM/Time_binning.mp4", 100):
 
         writer.grab_frame()
         ax.clear() #clear data 
+"""
 
 
 
