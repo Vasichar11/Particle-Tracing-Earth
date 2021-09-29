@@ -5,7 +5,6 @@ void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real 
 	//Find momentum from energy.
 	real Ejoule0=1.602176487E-16*Ekev0; //Kev to Joule
 	real gama0=(Ejoule0/(Constants::m_e*pow(Constants::c,2))) + 1;
-	std::cout<<"\n"<<Ekev0<<" "<<gama0;
 	real speed0=sqrt( 1 - (1/pow(gama0,2)) ) * Constants::c;
 	//std::cout<<"\nBouncing period estimation: "<< (4*Constants::L_shell*Constants::Re/speed0)*(1.3 - 0.5*sin(aeq0)); //[Orlova1,Shprits2,2011]
 	real upar0=speed0*cos(alpha0);
