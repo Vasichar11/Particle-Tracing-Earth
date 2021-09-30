@@ -3,7 +3,7 @@
 //Adiabatic motion.
 void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 {
-	std::cout<<"\rParticle "<<p<<" is bouncing"<<std::flush;
+	std::cout<<"\rBouncing particle "<<p<<std::flush;
     
     
     real lamda   =  single.lamda.at(0);

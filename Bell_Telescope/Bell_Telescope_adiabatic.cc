@@ -4,8 +4,9 @@
 #include <vector> 
 #include <chrono>	//For Execution time.
 #include <iomanip>  //For std::setprecision()
+#include <omp.h>
+#define THREADS 2 //define threads for OpenMP
 
-//#include <boost/math/special_functions/bessel.hpp>	//std::cyl_bessel_j didn't work well. throws domain error exception in some cases. Still boost's bessel gives 14 decimal accuracy relative to py results.
 
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
@@ -76,22 +77,35 @@ int main()
 	int64_t track_pop = eql_dstr.size(); //Population of particles that will be tracked.
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
-
-
+	
+    
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
-	auto rk_start = std::chrono::high_resolution_clock::now();
-	for(int p=0; p<track_pop; p++)     //Loop for all particles
-	{
-		//Void Function for particle's motion. Involves RK4 for Nsteps. 
-		//Detected particles are saved in ODPT object, which is passed here by reference.
-		adiabatic_motion(track_pop, p, eql_dstr[p], ODPT);   
+    auto rk_start = std::chrono::high_resolution_clock::now();
+    //---PARALLELISM SPMD---//
+    int realthreads;
+    omp_set_num_threads(THREADS);
+    
+	std::cout<<"\nForked..."<<std::endl;
+    #pragma omp parallel
+    {
+        int id = omp_get_thread_num();
+        if(id==0){ realthreads = omp_get_num_threads();} //In case less are given.
+		
+	    for(int p=id; p<track_pop; p=p+realthreads)     //Loop for all particles
+	    {
+	    	//Void Function for particle's motion. Involves RK4 for Nsteps. 
+	    	//Detected particles are saved in ODPT object, which is passed here by reference.
+	    	adiabatic_motion(track_pop, p, eql_dstr[p], ODPT);   
+	    }	
+    }
+    std::cout<<"\nJoined."<<std::endl;
 
-	}	
 	auto rk_stop = std::chrono::high_resolution_clock::now();  
 	auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(rk_stop - rk_start);
 	real rk_time = duration2.count() * pow(10,-6);
-	std::cout << "\nExecution time " << std::setprecision(8) << rk_time <<" seconds\n" ;
+	std::cout << "\nExecution time using "<<realthreads<<" threads, is "<< std::setprecision(8) << rk_time <<" seconds\n" ;
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
+
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
@@ -117,7 +131,7 @@ int main()
 	    }
 	}
 
-	h5::File file("h5files/100p_2s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_omp.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet dataset_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

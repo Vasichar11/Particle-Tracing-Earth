@@ -4,6 +4,8 @@
 #include <vector> 
 #include <chrono>	//For Execution time.
 #include <iomanip>  //For std::setprecision()
+#include <omp.h>
+#define THREADS 2 //define threads for OpenMP
 
 //#include <boost/math/special_functions/bessel.hpp>	//std::cyl_bessel_j didn't work well. throws domain error exception in some cases. Still boost's bessel gives 14 decimal accuracy relative to py results.
 
@@ -81,18 +83,30 @@ int main()
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
-	auto rk_start = std::chrono::high_resolution_clock::now();
-	for(int p=0; p<track_pop; p++)     //Loop for all particles
-	{
-		//Void Function for particle's motion. Involves RK4 for Nsteps. 
-		//Detected particles are saved in ODPT object, which is passed here by reference.
-		wpi(track_pop, p, eql_dstr[p], ODPT);   
+    auto rk_start = std::chrono::high_resolution_clock::now();
+    //---PARALLELISM SPMD---//
+    int realthreads;
+    omp_set_num_threads(THREADS);
+    
+	std::cout<<"\nForked..."<<std::endl;
+    #pragma omp parallel
+    {
+        int id = omp_get_thread_num();
+        if(id==0){ realthreads = omp_get_num_threads();} //In case less are given.
+		
+	    for(int p=id; p<track_pop; p=p+realthreads)     //Loop for all particles
+	    {
+	    	//Void Function for particle's motion. Involves RK4 for Nsteps. 
+	    	//Detected particles are saved in ODPT object, which is passed here by reference.
+	    	wpi(track_pop, p, eql_dstr[p], ODPT);   
+	    }	
+    }
+    std::cout<<"\nJoined."<<std::endl;
 
-	}	
 	auto rk_stop = std::chrono::high_resolution_clock::now();  
 	auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(rk_stop - rk_start);
 	real rk_time = duration2.count() * pow(10,-6);
-	std::cout << "\nExecution time " << std::setprecision(8) << rk_time <<" seconds\n" ;
+	std::cout << "\nExecution time using "<<realthreads<<" threads, is "<< std::setprecision(8) << rk_time <<" seconds\n" ;
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
 

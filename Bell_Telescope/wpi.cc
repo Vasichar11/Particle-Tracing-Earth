@@ -3,7 +3,7 @@
 //For wave-particle interaction
 void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 {
-	std::cout<<"\rParticle "<<p<<" is bouncing"<<std::flush;
+	std::cout<<"\rBouncing particle "<<p<<std::flush;
     
 
     real lamda    =  single.lamda.at(0);
@@ -26,7 +26,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real gama,w1,w2,R1,R2,beta,wtau_sq;
     real S,D,P,R,L,mu,dwh_ds,vresz,Eres,kappa,kx,kz;
-    real Bxwc,Bzwc,Bywc,Exwc,Eywc,Ezwc,Bwc,Ewc;
+    real Bxwc,Bzwc,Bywc,Exwc,Eywc,Ezwc,Bwc;
     real p_mag;
     //Tuples
     std::tuple<real, real, real, real, real> stix;
@@ -59,7 +59,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         disp = dispersion(S,P,R,L,D);
         mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
         whistlers(p,i,mu,P,D,S,kz,zeta,time, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
-        Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
+        //Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar,pper,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
         vres_f(kz,w_h,alpha,vresz,Eres); //Called only once in first step...
