@@ -3,7 +3,6 @@
 //Adiabatic motion.
 void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 {
-	//std::cout<<"\rBouncing particle "<<p<<std::flush; //Output race for multiple processors
     
     
     real lamda   =  single.lamda.at(0);
@@ -89,9 +88,10 @@ void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODP
             //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
             break;
         }
+        
         #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
-                            
+	    std::cout<<"\rBouncing particle "<<p<<std::flush;                     
         //Check crossing. First estimate new latitude. 
         if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
         {										

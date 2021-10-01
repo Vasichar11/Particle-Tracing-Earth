@@ -129,11 +129,10 @@ fig.savefig('simulation_MM/aeq_deta_lamda.png' , dpi=200, facecolor='white',tran
 
 #noWPI
 fig, ax = plt.subplots()
-print(len(detected_id),len(detected_lamda))
-ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=2, cmap="viridis")
+ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
-plt.title("Population: " +str(population)+ ", lamda: [" +str(lamda_start_d)+", "+str(lamda_end_d)+ "], aeq0: ["+str(aeq_start_d)+", "+str(aeq_end_d)+"], "+str(By_wave)+"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
+plt.title("$Population$: " +str(population)+ ", $lamda$: [" +str(lamda_start_d)+", "+str(lamda_end_d)+ "], $aeq0$: ["+str(aeq_start_d)+", "+str(aeq_end_d)+"], $By wave$: "+str(By_wave)+"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
@@ -195,11 +194,9 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
 
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
-ax.set(xlabel="Time divided in time_bins of "+str(time_bin)+" seconds", ylabel="sum", xticks=np.arange(0,t+time_bin,time_bin))
-#ax.set_xticklabels(labels=[])
-ax.set_xticks(ticks=np.arange(time_bin/2,t,t*time_bin),minor=True) #ticks for time_bin seperation
-#ax.set_xticklabels(labels=np.arange(0,timesteps,t).astype(int),color="red",minor=True)
-ax.grid(alpha=0.8,axis="x")
+ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flux")
+ax.set_xticks(ticks=np.arange(0,t+time_bin,time_bin),minor=True) #ticks for time_bin seperation
+ax.xaxis.grid(True, which='both')
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
         ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep],s=10)
@@ -234,15 +231,10 @@ with writer.saving(fig, "simulation_MM/Time_binning.mp4", 100):
             if sctr_flux[sector][timestep] !=0: #to show only non zero dots.
                 ax.scatter(timestep*time_bin+(time_bin/2),sctr_flux[sector][timestep],c=colors[timestep],s=10)
        
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True,nbins=5))
-        ax.set(xlabel="Time divided in time_bins of "+str(time_bin)+" seconds", ylabel="Flux", xticks=np.arange(0,t+time_bin,time_bin))
-        ax.set_xticks(ticks=np.arange(time_bin/2,t,t*time_bin),minor=True) #ticks for time_bin seperation
-        #ax.set_xticklabels(labels=np.arange(0,timesteps,t).astype(int),minor=True,c="red")  
-        ax.grid(alpha=0.8, axis="x" )
-        ax.set_xlabel(xlabel="Time bins of "+str(time_bin))
-        ax.set_ylabel(ylabel="Flux")
+        ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+" seconds", ylabel="Sector Flux")
+        ax.set_xticks(ticks=np.arange(0,t+time_bin,time_bin),minor=True) #ticks for time_bin seperation
+        ax.xaxis.grid(True, which='both')
         ax.set_ylim(0,np.amax(sctr_flux))
-        
         ax.set_title("Particle Flux in Sector "+str(sector)+" - Look direction: ("+str(180+sector*sector_range)+"\N{DEGREE SIGN},"+str(180+sector*sector_range+sector_range)+"\N{DEGREE SIGN}) Simulation time: "+str(t)+"s\n                                         -Detectable P.A: [ "+str(sector*sector_range)+"\N{DEGREE SIGN},"+str(sector*sector_range+sector_range)+"\N{DEGREE SIGN}) Satellite @"+str(telescope_lamda)+" deg",loc="left",fontdict=font)              
 
 

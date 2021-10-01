@@ -3,7 +3,6 @@
 //For wave-particle interaction
 void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 {
-	//std::cout<<"\rBouncing particle "<<p<<std::flush; //Output race for multiple processors
 	
 
     real lamda    =  single.lamda.at(0);
@@ -147,6 +146,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 
         #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
         {
+	    std::cout<<"\rBouncing particle "<<p<<std::flush;                     
         //Check crossing. First estimate new latitude. 
         if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
         {										
