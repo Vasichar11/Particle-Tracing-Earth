@@ -7,7 +7,6 @@
 #include <omp.h>
 #define THREADS 2 //define threads for OpenMP
 
-//#include <boost/math/special_functions/bessel.hpp>	//std::cyl_bessel_j didn't work well. throws domain error exception in some cases. Still boost's bessel gives 14 decimal accuracy relative to py results.
 
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
@@ -112,8 +111,7 @@ int main()
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
-
-
+/*
 	std::vector<std::vector<real>>  aeq_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> lamda_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
@@ -134,30 +132,35 @@ int main()
 
 	    }
 	}
-
-	h5::File file("h5files/100p_2s_1nT.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+*/
+	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
-	h5::DataSet dataset_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
-	h5::DataSet dataset_time       = file.createDataSet("ODPT.time", ODPT.time);
-	h5::DataSet dataset_id         = file.createDataSet("ODPT.id", ODPT.id);
-	h5::DataSet dataset_alpha      = file.createDataSet("ODPT.alpha", ODPT.alpha);
+	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
+	h5::DataSet detected_time       = file.createDataSet("ODPT.time", ODPT.time);
+	h5::DataSet detected_id         = file.createDataSet("ODPT.id", ODPT.id);
+	h5::DataSet detected_alpha      = file.createDataSet("ODPT.alpha", ODPT.alpha);
 
 	//Simulation data and Telescope specification - Scalars 
-	h5::DataSet wave_magnitude     = file.createDataSet("By_wave",Constants::By_wave);
 	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
 	h5::DataSet population         = file.createDataSet("population", track_pop);
-	h5::DataSet initial_lamda      = file.createDataSet("lamda0", Constants::lamda0);
-	h5::DataSet simulation_time    = file.createDataSet("t", Constants::t);
-	
+	h5::DataSet lamda_start_d      = file.createDataSet("lamda_start_d",Constants::lamda_start_d);
+	h5::DataSet lamda_end_d        = file.createDataSet("lamda_end_d",  Constants::lamda_end_d);
+	h5::DataSet aeq_start_d        = file.createDataSet("aeq_start_d",  Constants::aeq_start_d);
+	h5::DataSet aeq_end_d          = file.createDataSet("aeq_end_d",    Constants::aeq_end_d);
+	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
+	h5::DataSet t			       = file.createDataSet("t", Constants::t);
+	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
+/*	
 	//Saved Particles
-	h5::DataSet dataset_lamda_saved  = file.createDataSet("lamda_plot", lamda_plot);
-	h5::DataSet dataset_alpha_saved  = file.createDataSet("alpha_plot", alpha_plot);
-	h5::DataSet dataset_deta_saved   = file.createDataSet("deta_dt", deta_dt_plot);
-	h5::DataSet dataset_aeq_saved    = file.createDataSet("aeq_plot", aeq_plot);
-	h5::DataSet dataset_time_saved   = file.createDataSet("time_plot", time_plot);
+	h5::DataSet saved_lamda  = file.createDataSet("lamda_plot", lamda_plot);
+	h5::DataSet saved_alpha  = file.createDataSet("alpha_plot", alpha_plot);
+	h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
+	h5::DataSet saved_aeq    = file.createDataSet("aeq_plot", aeq_plot);
+	h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
 
 
+*/
 
 
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//

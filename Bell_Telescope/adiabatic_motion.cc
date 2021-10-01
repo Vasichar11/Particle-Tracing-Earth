@@ -3,7 +3,7 @@
 //Adiabatic motion.
 void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 {
-	std::cout<<"\rBouncing particle "<<p<<std::flush;
+	//std::cout<<"\rBouncing particle "<<p<<std::flush; //Output race for multiple processors
     
     
     real lamda   =  single.lamda.at(0);
@@ -15,7 +15,7 @@ void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODP
     real aeq     =  single.aeq.at(0); 
     real upar    =  single.upar.at(0); 
     real uper    =  single.uper.at(0);
-    real deta_dt =  single.deta_dt.at(0);
+    //real deta_dt =  single.deta_dt.at(0);
     //real Ekin    =  single.Ekin.at(0);
     real time    =  single.time.at(0);
 
@@ -89,7 +89,9 @@ void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODP
             //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
             break;
         }
-
+        #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
+        {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
+                            
         //Check crossing. First estimate new latitude. 
         if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
         {										
@@ -97,7 +99,7 @@ void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODP
             //Store its state(it's before crossing the satellite!).
             ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
         }
-        
+        }
 
         //Now approximate all values of Runge Kutta's block.
         lamda   =  new_lamda;
@@ -106,7 +108,7 @@ void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODP
         pper    =  pper   +  (Constants::h/6)*(m1+2*m2+2*m3+m4);
         eta     =  eta    +  (Constants::h/6)*(n1+2*n2+2*n3+n4);
         alpha   =  alpha  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
-        deta_dt =            (Constants::h/6)*(n1+2*n2+2*n3+n4);
+        //deta_dt =            (Constants::h/6)*(n1+2*n2+2*n3+n4);
         upar    =  ppar   /  (Constants::m_e*gama);
         uper    =  pper   /  (Constants::m_e*gama);
         
@@ -120,7 +122,7 @@ void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODP
         time  = time + Constants::h; 
         
 		//To save states:
-		single.save_state(aeq,alpha,lamda,deta_dt,time);
+		//single.save_state(aeq,alpha,lamda,deta_dt,time);
 
         i++;  
 

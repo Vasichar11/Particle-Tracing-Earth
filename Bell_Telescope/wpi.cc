@@ -3,8 +3,8 @@
 //For wave-particle interaction
 void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
 {
-	std::cout<<"\rBouncing particle "<<p<<std::flush;
-    
+	//std::cout<<"\rBouncing particle "<<p<<std::flush; //Output race for multiple processors
+	
 
     real lamda    =  single.lamda.at(0);
     real zeta     =  single.zeta.at(0); 
@@ -15,7 +15,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
     real aeq      =  single.aeq.at(0); 
     real upar     =  single.upar.at(0); 
     real uper     =  single.uper.at(0);
-    real deta_dt  =  single.deta_dt.at(0);
+    //real deta_dt  =  single.deta_dt.at(0);
     //real Ekin     =  single.Ekin.at(0);
     real time     =  single.time.at(0);
 
@@ -145,6 +145,8 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
             break;
         }
 
+        #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
+        {
         //Check crossing. First estimate new latitude. 
         if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
         {										
@@ -152,7 +154,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
             //Store its state(it's before crossing the satellite!).
             ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
         }
-        
+        }
 
         //Now approximate all values of Runge Kutta's block.
         lamda   =  new_lamda;
@@ -162,7 +164,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         eta     =  eta    +  (Constants::h/6)*(n1+2*n2+2*n3+n4);
         alpha   =  alpha  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
         aeq     =  aeq    +  (Constants::h/6)*(q1+2*q2+2*q3+q4);
-        deta_dt =            (Constants::h/6)*(n1+2*n2+2*n3+n4);
+        //deta_dt =            (Constants::h/6)*(n1+2*n2+2*n3+n4);
         upar    =  ppar   /  (Constants::m_e*gama);
         uper    =  pper   /  (Constants::m_e*gama);
 
@@ -176,7 +178,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         
 		//To save states:
-		single.save_state(aeq,alpha,lamda,deta_dt,time);
+		//single.save_state(aeq,alpha,lamda,deta_dt,time);
 
         i++;  
         //std::cout<<"\n\nalpha "<<alpha<<"\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
