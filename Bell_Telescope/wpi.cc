@@ -1,7 +1,7 @@
 #include"headers/wpi.h"
 
 //For wave-particle interaction
-void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
+void wpi(int p, Particles &single, Telescope &ODPT)
 {
 	
 
@@ -57,7 +57,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         S=std::get<0>(stix); D=std::get<1>(stix); P=std::get<2>(stix); R=std::get<3>(stix); L=std::get<4>(stix); //<get> efficiency comperable to accessing a member of a struct
         disp = dispersion(S,P,R,L,D);
         mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
-        whistlers(p,i,mu,P,D,S,kz,zeta,time, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
+        whistlers(p,i,mu,P,D,S,kz, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
         //Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar,pper,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
@@ -81,7 +81,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         S=std::get<0>(stix); D=std::get<1>(stix); P=std::get<2>(stix); R=std::get<3>(stix); L=std::get<4>(stix);
         disp = dispersion(S,P,R,L,D);
         mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
-        whistlers(p,i,mu,P,D,S,kz,zeta+0.5*Constants::h*k1,time+0.5*Constants::h*k1, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
+        whistlers(p,i,mu,P,D,S,kz, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
         //Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar+0.5*(Constants::h)*l1,pper+0.5*(Constants::h)*m1,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
@@ -102,7 +102,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         S=std::get<0>(stix); D=std::get<1>(stix); P=std::get<2>(stix); R=std::get<3>(stix); L=std::get<4>(stix);
         disp = dispersion(S,P,R,L,D);
         mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
-        whistlers(p,i,mu,P,D,S,kz,zeta+0.5*Constants::h*k2,time*0.5*Constants::h, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
+        whistlers(p,i,mu,P,D,S,kz, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
         //Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar+0.5*(Constants::h)*l2,pper+0.5*(Constants::h)*m2,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);  
@@ -123,7 +123,7 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         S=std::get<0>(stix); D=std::get<1>(stix); P=std::get<2>(stix); R=std::get<3>(stix); L=std::get<4>(stix);
         disp = dispersion(S,P,R,L,D);
         mu=std::get<0>(disp); kappa=std::get<1>(disp); kx=std::get<2>(disp); kz=std::get<3>(disp);
-        whistlers(p,i,mu,P,D,S,kz,zeta+Constants::h*k3,time+Constants::h, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
+        whistlers(p,i,mu,P,D,S,kz, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
         //Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
         Bell_params(ppar+(Constants::h)*l3,pper+(Constants::h)*m3,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
@@ -138,22 +138,21 @@ void wpi(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
         //Check if NAN to break this particle. Why NAN ?
         if(std::isnan(new_lamda))
         {
-            //std::cout<<"\rParticle "<<p<<" with aeq0="<<" breaks."<<std::flush;
+            std::cout<<"\nParticle "<<p<<" breaks";
             //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
             //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
             break;
         }
 
         #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
-        {
-	    std::cout<<"\rBouncing particle "<<p<<std::flush;                     
-        //Check crossing. First estimate new latitude. 
-        if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-        {										
-            //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-            //Store its state(it's before crossing the satellite!).
-            ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
-        }
+        {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
+            //Check crossing. First estimate new latitude. 
+            if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
+            {										
+                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+                //Store its state(it's before crossing the satellite!).
+                ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
+            }
         }
 
         //Now approximate all values of Runge Kutta's block.

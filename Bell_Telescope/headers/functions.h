@@ -25,7 +25,7 @@ real dwh_dsf(real w_h, real lamda);
     //returns dwh_ds.
 
 //Estimate Bell parameters.
-void Bell_params(const real ppar, const real pper, const real Bxw, const real Byw, const real Exw, const real Eyw, const real Ezw, const real kz, const real kx, const real w_h, real &gama, real &w1, real &w2, real &wtau_sq, real &R1, real &R2, real &beta);
+void Bell_params(const real ppar,const real pper, const real Bxw, const real Byw, const real Exw, const real Eyw, const real Ezw, const real kz, const real kx, const real w_h, real gama, real &w1, real &w2, real &wtau_sq, real &R1, real &R2, real &beta);
     //returns by reference  gama,  w1,  w2,  wtau_sq,  R1,  R2,  beta.
 
 //Estimate resonant velocity
@@ -33,7 +33,7 @@ void vres_f(const real kz, const real w_h, const real alpha, real &v_para_res, r
     //returns by reference v_para_res,  E_res.
 
 //Compute field components.
-void whistlers(int64_t p, int64_t i, real mu, real P, real D, real S, real kz, real zeta, real time, real &Bxw,real &Byw,real &Bzw, real &Exw,real &Eyw,real &Ezw);
+void whistlers(int64_t p, int64_t i, real mu, real P, real D, real S, real kz, real &Bxw,real &Byw,real &Bzw, real &Exw,real &Eyw,real &Ezw);
     //returns by reference  Bxw, Byw, Bzw,  Exw, Eyw, Ezw.
 
 

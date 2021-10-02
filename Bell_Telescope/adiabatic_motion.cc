@@ -1,10 +1,8 @@
 #include "headers/adiabatic_motion.h"
 
 //Adiabatic motion.
-void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODPT)
+void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
 {
-    
-    
     real lamda   =  single.lamda.at(0);
     real zeta    =  single.zeta.at(0); 
     real ppar    =  single.ppar.at(0); 
@@ -84,21 +82,21 @@ void adiabatic_motion(int64_t track_pop,int p, Particles &single, Telescope &ODP
         //Check if NAN to break this particle. Why NAN ?
         if(std::isnan(new_lamda))
         {
-            std::cout<<"\n\nParticle "<<p<<" with aeq0="<<" breaks.";
+            std::cout<<"\nParticle "<<p<<" breaks";
             //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
+            //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
             break;
         }
         
         #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
-	    std::cout<<"\rBouncing particle "<<p<<std::flush;                     
-        //Check crossing. First estimate new latitude. 
-        if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-        {										
-            //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-            //Store its state(it's before crossing the satellite!).
-            ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
-        }
+            //Check crossing. First estimate new latitude. 
+            if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
+            {										
+                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+                //Store its state(it's before crossing the satellite!).
+                ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
+            }
         }
 
         //Now approximate all values of Runge Kutta's block.

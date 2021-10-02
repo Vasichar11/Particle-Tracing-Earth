@@ -95,9 +95,10 @@ int main()
 		
 	    for(int p=id; p<track_pop; p=p+realthreads)     //Loop for all particles
 	    {
-	    	//Void Function for particle's motion. Involves RK4 for Nsteps. 
+	    	//std::cout<<"\rBouncing particle"<<p<<std::flush;
+			//Void Function for particle's motion. Involves RK4 for Nsteps. 
 	    	//Detected particles are saved in ODPT object, which is passed here by reference.
-	    	wpi(track_pop, p, eql_dstr[p], ODPT);   
+	    	wpi(p, eql_dstr[p], ODPT);   
 	    }	
     }
     std::cout<<"\nJoined."<<std::endl;

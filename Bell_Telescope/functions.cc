@@ -55,9 +55,7 @@ return dwh_ds;
 }
     
 //Estimate Bell parameters //In[10]:                //Bell[1984]
-void Bell_params(const real ppar, const real pper, const real Bxw, const real Byw, const real Exw, const real Eyw, const real Ezw, const real kz, const real kx, const real w_h, real &gama, real &w1, real &w2, real &wtau_sq, real &R1, real &R2, real &beta) {
-    real p_mag=sqrt(ppar*ppar+pper*pper);
-    gama=sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
+void Bell_params(const real ppar, const real pper, const real Bxw, const real Byw, const real Exw, const real Eyw, const real Ezw, const real kz, const real kx, const real w_h, real gama, real &w1, real &w2, real &wtau_sq, real &R1, real &R2, real &beta) {
     w1=(Constants::q_e/(2*Constants::m_e))*(Bxw+Byw); 
     w2=(Constants::q_e/(2*Constants::m_e))*(Bxw-Byw);
     real wtau0_sq=(w1*kz*pper)/(gama*Constants::m_e);  //Borntik thesis 2.25d
@@ -103,7 +101,7 @@ return;
 
 
 //Compute field components.([Bell 1984] 𝑧̂ ||𝐵0→ and 𝑥̂  pointing towards higher L-shells)
-void whistlers(int64_t p, int64_t i, real mu, real P, real D, real S, real kz, real zeta, real time, real &Bxw,real &Byw,real &Bzw, real &Exw,real &Eyw,real &Ezw)
+void whistlers(int64_t p, int64_t i, real mu, real P, real D, real S, real kz, real &Bxw,real &Byw,real &Bzw, real &Exw,real &Eyw,real &Ezw)
 {
 
     real mu_sq = pow(mu,2); //mu*mu inaccurate

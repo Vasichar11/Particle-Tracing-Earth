@@ -5,7 +5,7 @@
 #include <chrono>	//For Execution time.
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
-#define THREADS 8 //define threads for OpenMP
+#define THREADS 1 //define threads for OpenMP
 
 
 //Same directory headers							    
@@ -93,11 +93,10 @@ int main()
 		
 	    for(int p=id; p<track_pop; p=p+realthreads)     //Loop for all particles
 	    {
-	    	//Void Function for particle's motion. Involves RK4 for Nsteps. 
+	    	//std::cout<<"\rBouncing particle"<<p<<std::flush;
+			//Void Function for particle's motion. Involves RK4 for Nsteps. 
 	    	//Detected particles are saved in ODPT object, which is passed here by reference.
-	    	adiabatic_motion(track_pop, p, eql_dstr[p], ODPT);   
-	    
-		
+	    	adiabatic_motion(p, eql_dstr[p], ODPT);   
 		}	
     }
     std::cout<<"\nJoined."<<std::endl;
