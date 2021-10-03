@@ -52,7 +52,7 @@ const real telescope_lamda = 30; //90 //0,10,20,30
 
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 10;  			    
+const int64_t aeq_dstr    = 100;  			    
 const int64_t lamda_dstr  = 10;					
 const int64_t test_pop    = eta_dstr * aeq_dstr * lamda_dstr;   //Testing population. Not all of them will be tracked. Only those will valid initial state.
 

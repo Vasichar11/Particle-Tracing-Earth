@@ -3,7 +3,7 @@
 
 //Function to calculate all needed slopes for the particular step
 //(ADIABATIC MOTION)
-void slopes(real &k, real &l, real &m, real &n, real &o, real &p, real ppar_tmp, real pper_tmp, real lamda_tmp, real eta_tmp, real w_h, real dwh_ds, real gama)
+void slopes(real &k, real &l, real &m, real &o, real &p, real ppar_tmp, real pper_tmp, real lamda_tmp, real w_h, real dwh_ds, real gama)
 {
 //parallel(to B) speed uz=dz/dt, variation with time
     k = ppar_tmp/(gama*Constants::m_e);
@@ -13,9 +13,6 @@ void slopes(real &k, real &l, real &m, real &n, real &o, real &p, real ppar_tmp,
 
 //perpendicular momentum variation with time
     m = ((1/(Constants::m_e*gama))*(pper_tmp*ppar_tmp)/(2*w_h))*dwh_ds;
-
-//eta: angle between BwR and u_per variation with time
-    n = (((Constants::m_res)*w_h)/gama)-Constants::w_wave;
 
 //lamda variation with time
     o = ppar_tmp/(gama*Constants::m_e*Constants::L_shell*Constants::Re*sqrt(1+3*sin(lamda_tmp)*sin(lamda_tmp))* cos(lamda_tmp));

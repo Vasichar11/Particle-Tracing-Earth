@@ -12,8 +12,8 @@ void wpi(int p, Particles &single, Telescope &ODPT)
     real eta      =  single.eta.at(0); 
     real alpha    =  single.alpha.at(0); 
     real aeq      =  single.aeq.at(0); 
-    real upar     =  single.upar.at(0); 
-    real uper     =  single.uper.at(0);
+    //real upar     =  single.upar.at(0); 
+    //real uper     =  single.uper.at(0);
     //real deta_dt  =  single.deta_dt.at(0);
     //real Ekin     =  single.Ekin.at(0);
     real time     =  single.time.at(0);
@@ -151,7 +151,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
             {										
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
                 //Store its state(it's before crossing the satellite!).
-                ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
+                ODPT.store( p, lamda, alpha, aeq, time);  			        	
             }
         }
 
@@ -164,8 +164,8 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         alpha   =  alpha  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
         aeq     =  aeq    +  (Constants::h/6)*(q1+2*q2+2*q3+q4);
         //deta_dt =            (Constants::h/6)*(n1+2*n2+2*n3+n4);
-        upar    =  ppar   /  (Constants::m_e*gama);
-        uper    =  pper   /  (Constants::m_e*gama);
+        //upar    =  ppar   /  (Constants::m_e*gama);
+        //uper    =  pper   /  (Constants::m_e*gama);
 
         //p_mag = sqrt((ppar*ppar)+(pper*pper));
         //gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);

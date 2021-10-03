@@ -22,14 +22,14 @@ bool Telescope::crossing(real p1_lamda, real p2_lamda, real p_L_shell)
 	return crossed;
 }
 
-void Telescope::store(int id, real lamda, real uper, real upar, real alpha, real aeq, real eta, real time)
+void Telescope::store(int id, real lamda,real alpha, real aeq, real time)
 {
 	this->id.push_back(id);
 	this->lamda.push_back(lamda);      				
-	this->upar.push_back(upar);
-	this->uper.push_back(uper);	     
+	//this->upar.push_back(upar);
+	//this->uper.push_back(uper);	     
 	this->alpha.push_back(alpha);	
 	this->aeq.push_back(aeq);
-	this->eta.push_back(eta);			
+	//this->eta.push_back(eta);			
 	this->time.push_back(time);
 }

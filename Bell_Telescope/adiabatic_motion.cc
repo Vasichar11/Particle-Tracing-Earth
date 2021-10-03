@@ -4,22 +4,20 @@
 void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
 {
     real lamda   =  single.lamda.at(0);
-    real zeta    =  single.zeta.at(0); 
+    //real zeta    =  single.zeta.at(0); 
     real ppar    =  single.ppar.at(0); 
     real pper    =  single.pper.at(0); 
-    real eta     =  single.eta.at(0); 
     real alpha   =  single.alpha.at(0); 
     real aeq     =  single.aeq.at(0); 
-    real upar    =  single.upar.at(0); 
-    real uper    =  single.uper.at(0);
-    //real deta_dt =  single.deta_dt.at(0);
+    //real upar    =  single.upar.at(0); 
+    //real uper    =  single.uper.at(0);
     //real Ekin    =  single.Ekin.at(0);
     real time    =  single.time.at(0);
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda;
     real w_h, dwh_ds, Bmag, p_mag, gama;
-    real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4;
+    real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,o1,o2,o3,o4,p1,p2,p3,p4;
 
     //Objects for each specie. Used inside "motion" function. //Change that, it's called once for each particle...
     Species electron(Constants::m_e,  Constants::q_e, 1); 
@@ -42,7 +40,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         p_mag = sqrt(ppar*ppar+pper*pper);
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //RK step-1//#################################################################################################################################################################################################################################################################################################
-        slopes(k1, l1, m1, n1, o1, p1, ppar, pper, lamda, eta, w_h, dwh_ds, gama);
+        slopes(k1, l1, m1, o1, p1, ppar, pper, lamda, w_h, dwh_ds, gama);
         //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn " << n1<< "\no1 " << o1 << "\np1 " << p1 << "\nq1 " << q1 <<"\n";	
         
         
@@ -52,7 +50,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         p_mag = sqrt((ppar+0.5*(Constants::h)*l1)*(ppar+0.5*(Constants::h)*l1)+(pper+0.5*(Constants::h)*m1)*(pper+0.5*(Constants::h)*m1));
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //RK step-2//#################################################################################################################################################################################################################################################################################################
-        slopes(k2, l2, m2, n2, o2, p2, ppar+(0.5*l1*Constants::h), pper+(0.5*m1*Constants::h), lamda+(0.5*o1*Constants::h), eta+(0.5*n1*Constants::h), w_h, dwh_ds, gama);
+        slopes(k2, l2, m2, o2, p2, ppar+(0.5*l1*Constants::h), pper+(0.5*m1*Constants::h), lamda+(0.5*o1*Constants::h),w_h, dwh_ds, gama);
         //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 << "\nn2 " << n2<< "\no2 " << o2 << "\np2 " << p2 << "\n";
         
 
@@ -62,7 +60,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         p_mag = sqrt((ppar+0.5*(Constants::h)*l2)*(ppar+0.5*(Constants::h)*l2)+(pper+0.5*(Constants::h)*m2)*(pper+0.5*(Constants::h)*m2));
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //RK step-3//#################################################################################################################################################################################################################################################################################################
-        slopes(k3, l3, m3, n3, o3, p3, ppar+(0.5*l2*Constants::h), pper+(0.5*m2*Constants::h), lamda+(0.5*o2*Constants::h), eta+(0.5*n2*Constants::h), w_h, dwh_ds, gama);
+        slopes(k3, l3, m3, o3, p3, ppar+(0.5*l2*Constants::h), pper+(0.5*m2*Constants::h), lamda+(0.5*o2*Constants::h),w_h, dwh_ds, gama);
         //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 << "\nn3 " << n3<< "\no3 " << o3 << "\np3 " << p3 << "\n";
 
 
@@ -72,7 +70,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         p_mag = sqrt((ppar+(Constants::h)*l3)*(ppar+(Constants::h)*l3)+(pper+(Constants::h)*m3)*(pper+(Constants::h)*m3));
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //RK step-4//#################################################################################################################################################################################################################################################################################################																								
-        slopes(k4, l4, m4, n4, o4, p4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), eta+(n3*Constants::h), w_h, dwh_ds, gama);
+        slopes(k4, l4, m4, o4, p4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), w_h, dwh_ds, gama);
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\n";
 
 
@@ -83,7 +81,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         if(std::isnan(new_lamda))
         {
             std::cout<<"\nParticle "<<p<<" breaks";
-            //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
+            //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " <<lamda<< " " <<aeq ;
             //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
             break;
         }
@@ -95,20 +93,18 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
             {										
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
                 //Store its state(it's before crossing the satellite!).
-                ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
+                ODPT.store( p, lamda, alpha, aeq, time);  			        	
             }
         }
 
         //Now approximate all values of Runge Kutta's block.
         lamda   =  new_lamda;
-        zeta    =  zeta   +  (Constants::h/6)*(k1+2*k2+2*k3+k4);
+        //zeta    =  zeta   +  (Constants::h/6)*(k1+2*k2+2*k3+k4);
         ppar    =  ppar   +  (Constants::h/6)*(l1+2*l2+2*l3+l4);
         pper    =  pper   +  (Constants::h/6)*(m1+2*m2+2*m3+m4);
-        eta     =  eta    +  (Constants::h/6)*(n1+2*n2+2*n3+n4);
         alpha   =  alpha  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
-        //deta_dt =            (Constants::h/6)*(n1+2*n2+2*n3+n4);
-        upar    =  ppar   /  (Constants::m_e*gama);
-        uper    =  pper   /  (Constants::m_e*gama);
+        //upar    =  ppar   /  (Constants::m_e*gama);
+        //uper    =  pper   /  (Constants::m_e*gama);
         
         //p_mag = sqrt((ppar*ppar)+(pper*pper));
         //gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
@@ -120,7 +116,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         
 		//To save states:
-		//single.save_state(aeq,alpha,lamda,deta_dt,time);
+		//single.save_state(aeq,alpha,lamda,time);
 
         i++;  
 
@@ -128,7 +124,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         //if(lamda>0) {	
         //	break;}	
     }
-    //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
+    //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
 }
 
