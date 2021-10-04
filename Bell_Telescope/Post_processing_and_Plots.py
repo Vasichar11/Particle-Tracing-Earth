@@ -16,11 +16,16 @@ R2D=1/D2R
 
 np.set_printoptions(threshold=sys.maxsize)
 
+font = {'family': 'serif',
+        'color':  'blue',
+        'weight': 'bold',
+        'size': 12,
+        }
 
 ############################################# READ DATA ###################################################
 
 #noWPI
-f1 = h5py.File("h5files/detected.h5","r")
+f1 = h5py.File("h5files/all_lamda.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -136,7 +141,7 @@ plt.title("$Population$: " +str(population)+ ", $lamda$: [" +str(lamda_start_d)+
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
-plt.savefig("simulation_MM/Crossing_particles.png", dpi=100)
+plt.savefig("simulation_MM/all_lamda.png", dpi=100)
 """
 
 #WPI
@@ -167,31 +172,33 @@ plt.savefig("simulation_MM/Crossing_particles_WPI_onlyNEW.png", dpi=100)
 
 """
 ####################################### TELESCOPE SPECIFICATION ##########################################
-
+"""
 time_bin  = 0.1                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
 sector_range = 15
 sectors = int(view/sector_range)
-
+"""
 ############################################## BINNING ####################################################
-
-
+"""
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux = [0 for i in range(timesteps)]
 
 for time,pa in zip(detected_time,detected_alpha): #Iterate in both array elements. No sorting required.
-    timestep = math.floor(time*10)
+    timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    if(pa==180):
+    if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
-    sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-time_bin.
+    sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux[timestep] += 1
 
 
-
+colors = []
+for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
+    colors.append('#%06X' % randint(0, 0xFFFFFF))
+"""
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
-
+"""
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
 ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flux")
@@ -202,18 +209,9 @@ for timestep in range(0,timesteps):
         ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep],s=10)
 
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
-
+"""
 ####################################### (FLUX-TIME)*SECTORS  MOVIE ##########################################
-
-font = {'family': 'serif',
-        'color':  'blue',
-        'weight': 'medium',
-        'size': 10,
-        }
-colors = []
-for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
-    colors.append('#%06X' % randint(0, 0xFFFFFF))
-
+"""
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
 metadata = dict(title="Time binning",comment="Time bins of 0.1s")
@@ -242,11 +240,85 @@ with writer.saving(fig, "simulation_MM/Time_binning.mp4", 100):
         ax.clear() #clear data 
 
 
+"""
+###################################### (FLUX-P.A)*TIMESTEPS  MOVIE ##########################################
+"""
+fig,ax = plt.subplots()
+FFMpegWriter = manimation.writers["ffmpeg"]
+metadata2 = dict(title="P.A binning",comment="P.A bins of 15deg")
+fps = 1
+writer = FFMpegWriter(fps=fps, metadata = metadata2)
+print("Generating P.A binning mp4 file...\nDuration of mp4 file will be:",(timesteps*fps), "seconds")
+with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
+    for timestep in range(0,timesteps):           
+            
+        for sector in range(0,sectors): 
+                        
+            if sctr_flux[sector][timestep]!=0: #to show only non zero dots.
+                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c=colors[sector])  
+
+        ax.set_xticks(ticks=np.arange(0.5,sectors)) 
+        ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
+        ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
+        ax.set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
+        ax.set_ylim(0,np.amax(sctr_flux))
+        ax.set_xlim(0,sectors)
+        ax.set(xlabel="P.A bins",ylabel="count")
+        ax.set_title("P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", fontdict=font,x=-0.015)
+        ax.xaxis.grid(True, which='minor')
+
+        writer.grab_frame()
+        ax.clear() #clear data 
+
+"""
 
 
 
 
 
+######################################### LAST TIMESTEP - ALTER BINS ############################################
+fig,ax = plt.subplots()
 
+time_bin  = [0.05,0.1,0.2]  #Try these time bins    
+view = 180 
+sector_range = [7.5,15,30] #With these sector ranges
 
+FFMpegWriter = manimation.writers["ffmpeg"]
+metadata2 = dict(title="Alter binning")
+fps = 0.25
+writer = FFMpegWriter(fps=fps, metadata = metadata2)
+print("Generating alter binning mp4 file...\nDuration of mp4 file will be:",(len(time_bin)*len(sector_range)/fps), "seconds")
 
+with writer.saving(fig, "simulation_MM/all_lamda.mp4", 100):
+    for srange in sector_range:
+        sectors = int(view/srange)
+        for tbin in time_bin:  
+            timesteps = int (t / tbin)
+            sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
+            #Binning here
+            for time,pa in zip(detected_time,detected_alpha): #Iterate in both array elements. No sorting required.
+                timestep = math.floor(time/tbin)
+                sector   = math.floor(pa*R2D/srange)
+                if(pa*R2D==180):
+                    sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
+                sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
+            #Plot here
+            timestep = -1
+            for sector in range(0,sectors): 
+                            
+                if sctr_flux[sector][timestep]!=0: #to show only non zero dots.
+                    ax.scatter(sector+0.5, sctr_flux[sector][timestep])  
+
+            ax.set_xticks(ticks=np.arange(0.5,sectors)) 
+            ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
+            ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
+            if (srange>=15):            
+                ax.set_xticklabels(labels=np.arange(0,view,srange),minor=True,size="small") 
+            ax.set_ylim(0,population/4)
+            ax.set_xlim(0,sectors)
+            ax.set(xlabel="P.A bins",ylabel="count")
+            ax.set_title("Ending P.A dstr when\n$time$_$bin$: "+str(tbin)+"s, $sector$_$range$: "+str(srange)+"degrees", loc="left", fontdict=font,x=-0.015)
+            ax.xaxis.grid(True, which='minor')
+            
+            writer.grab_frame()
+            ax.clear() #clear data 
