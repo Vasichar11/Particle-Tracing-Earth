@@ -3,6 +3,8 @@
 //Adiabatic motion.
 void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
 {
+
+
     real lamda   =  single.lamda.at(0);
     //real zeta    =  single.zeta.at(0); 
     real ppar    =  single.ppar.at(0); 
@@ -13,6 +15,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
     //real uper    =  single.uper.at(0);
     //real Ekin    =  single.Ekin.at(0);
     real time    =  single.time.at(0);
+
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda;
@@ -124,7 +127,8 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         //if(lamda>0) {	
         //	break;}	
     }
-    //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
+    
+    //std::cout<<"\n" << "\nppar "<< ppar<< "\npper " << pper<< "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
 }
 

@@ -25,7 +25,7 @@ font = {'family': 'serif',
 ############################################# READ DATA ###################################################
 
 #noWPI
-f1 = h5py.File("h5files/all_lamda.h5","r")
+f1 = h5py.File("h5files/10lamda_true_aeq.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -141,7 +141,7 @@ plt.title("$Population$: " +str(population)+ ", $lamda$: [" +str(lamda_start_d)+
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
-plt.savefig("simulation_MM/all_lamda.png", dpi=100)
+plt.savefig("simulation_MM/10lamda_true_aeq.png", dpi=100)
 """
 
 #WPI
@@ -289,7 +289,7 @@ fps = 0.25
 writer = FFMpegWriter(fps=fps, metadata = metadata2)
 print("Generating alter binning mp4 file...\nDuration of mp4 file will be:",(len(time_bin)*len(sector_range)/fps), "seconds")
 
-with writer.saving(fig, "simulation_MM/all_lamda.mp4", 100):
+with writer.saving(fig, "simulation_MM/10lamda_true_aeq.mp4", 100):
     for srange in sector_range:
         sectors = int(view/srange)
         for tbin in time_bin:  

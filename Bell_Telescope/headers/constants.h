@@ -27,7 +27,7 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6/m-3
 //--Particle initial parameters--//
 const real L_shell=5; 			 				//L_shell of particle. Constant for now.
 const real Ekev0=500;               			//Initial energy keV
-const real aeq0_deg=40;            		     	//Initial equatorial pitch angle, deg.
+const real aeq0_deg=170;            		    //Initial equatorial pitch angle, deg.
 const real aeq0=aeq0_deg*D2R;
 const real lamda0_deg=0;						//Initial latitude, deg.
 const real lamda0=lamda0_deg*D2R;	     		
@@ -44,16 +44,16 @@ const real theta0=theta0_deg*D2R;
 
 //--Simulation parameters--//
 const real t=1;        				  	        //Simulation duration in seconds.
-const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
+const real h=0.1;							    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
 
 //--Satellite parameters--//
-const real telescope_lamda = 30; //90 //0,10,20,30
+const real telescope_lamda = 0; //90 //0,10,20,30
 
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
 const int64_t aeq_dstr    = 100;  			    
-const int64_t lamda_dstr  = 10;					
+const int64_t lamda_dstr  = 100;					
 const int64_t test_pop    = eta_dstr * aeq_dstr * lamda_dstr;   //Testing population. Not all of them will be tracked. Only those will valid initial state.
 
 //------------------------------ Eta distribution range and step. --------------------------------//
@@ -67,7 +67,7 @@ const real aeq_end_d      = 179;
 const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	
 		                          
 //----------------------------- Lamda distribution range and step. -------------------------------//					 
-const real lamda_start_d  =-90;     					 				
+const real lamda_start_d  = -90;     					 				
 const real lamda_end_d    = 90;    			
 const real lamda_step_d	  =(lamda_end_d - lamda_start_d)/(lamda_dstr-1); 	
 };	

@@ -46,7 +46,7 @@ int main()
 	std::vector<Particles> eql_dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
 						//equally distributed
 	
-	real eta0,aeq0,lamda0;
+	real eta0,aeq0,lamda0,k;
 	real Blam0,salpha0,alpha0;
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
@@ -66,11 +66,13 @@ int main()
 				Blam0=Bmag_dipole(lamda0);
 				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
 				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) {eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
-				alpha0=asin(salpha0);		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
+				k = ((aeq0*Constants::R2D>90) ? 1 : 0);
+				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
+				
 				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D;				
+				std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;				
 			}
 		}	
 	}
@@ -132,7 +134,7 @@ int main()
 	    }
 	}
 */
-	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/10lamda_true_aeq.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
