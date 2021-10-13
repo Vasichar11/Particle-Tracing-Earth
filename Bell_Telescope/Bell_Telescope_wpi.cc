@@ -2,18 +2,14 @@
 #include <iostream>
 #include <cinttypes>  
 #include <vector> 
-#include <chrono>	//For Execution time.
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
-#define THREADS 2 //define threads for OpenMP
-
 
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
 
 #include "headers/wpi.h"
 #include "headers/common.h"
-
 #include "headers/struct_Particles.h"   		    	
 #include "headers/struct_Telescope.h"  				
 #include "headers/constants.h"
@@ -82,31 +78,30 @@ int main()
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
-    auto rk_start = std::chrono::high_resolution_clock::now();
-    //---PARALLELISM SPMD---//
-    int realthreads;
-    omp_set_num_threads(THREADS);
-    
+    int realthreads;   
+	//---PARALLELISM Work sharing---//
+	double wtime = omp_get_wtime();
 	std::cout<<"\nForked..."<<std::endl;
-    #pragma omp parallel
+ 	#pragma omp parallel
     {
-        int id = omp_get_thread_num();
-        if(id==0){ realthreads = omp_get_num_threads();} //In case less are given.
+    	int id = omp_get_thread_num();
+		if(id==0){ realthreads = omp_get_num_threads();}
 		
-	    for(int p=id; p<track_pop; p=p+realthreads)     //Loop for all particles
-	    {
-	    	//std::cout<<"\rBouncing particle"<<p<<std::flush;
-			//Void Function for particle's motion. Involves RK4 for Nsteps. 
-	    	//Detected particles are saved in ODPT object, which is passed here by reference.
-	    	wpi(p, eql_dstr[p], ODPT);   
-	    }	
-    }
-    std::cout<<"\nJoined."<<std::endl;
+		#pragma omp for schedule(static)
+			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+			{
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//Void Function for particle's motion. Involves RK4 for Nsteps. 
+				//Detected particles are saved in ODPT object, which is passed here by reference.
+		    	wpi(p, eql_dstr[p], ODPT);   
 
-	auto rk_stop = std::chrono::high_resolution_clock::now();  
-	auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(rk_stop - rk_start);
-	real rk_time = duration2.count() * pow(10,-6);
-	std::cout << "\nExecution time using "<<realthreads<<" threads, is "<< std::setprecision(8) << rk_time <<" seconds\n" ;
+			}	
+	}
+    std::cout<<"\n"<<"Joined"<<std::endl;
+	wtime = omp_get_wtime()-wtime;
+
+
+	std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
 

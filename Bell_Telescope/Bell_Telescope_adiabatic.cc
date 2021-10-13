@@ -5,13 +5,10 @@
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
 
-
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
-
 #include "headers/adiabatic_motion.h"
 #include "headers/common.h"
-
 #include "headers/struct_Particles.h"   		    	
 #include "headers/struct_Telescope.h"  				
 #include "headers/constants.h"
@@ -26,10 +23,9 @@ namespace h5 = HighFive;
 
 int main()
 {
-
 	//Position of the Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
-
+	
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
 	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n";
@@ -92,7 +88,7 @@ int main()
 		#pragma omp for schedule(static)
 			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
 			{
-				std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
 				//Detected particles are saved in ODPT object, which is passed here by reference.
 				adiabatic_motion(p, eql_dstr[p], ODPT);   

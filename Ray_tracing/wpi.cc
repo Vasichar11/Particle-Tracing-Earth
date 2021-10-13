@@ -1,7 +1,7 @@
 #include "headers/wpi.h"
 
 
-void wpi(real p, real lamda, real alpha, real aeq, real ppar, real pper, real upar, real uper, real zeta, real M_adiabatic, real eta, real time, Telescope &ODPT)
+void wpi(real p, Particles &single, Telescope &ODPT)
 {
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
   
@@ -17,7 +17,20 @@ void wpi(real p, real lamda, real alpha, real aeq, real ppar, real pper, real up
     std::vector <real> w2            =   read_vector("w2",            "h5files/interpolated_ray.h5");
     std::vector <real> R1            =   read_vector("R1",            "h5files/interpolated_ray.h5");
     std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
-
+//---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
+    real lamda    =  single.lamda.at(0);
+    real zeta     =  single.zeta.at(0); 
+    real ppar     =  single.ppar.at(0); 
+    real pper     =  single.pper.at(0); 
+    real eta      =  single.eta.at(0); 
+    real alpha    =  single.alpha.at(0); 
+    real aeq      =  single.aeq.at(0); 
+    real upar     =  single.upar.at(0); 
+    real uper     =  single.uper.at(0);
+    //real deta_dt  =  single.deta_dt.at(0);
+    //real Ekin        =  single.Ekin.at(0);
+    //real M_adiabatic =  single.M_adiabatic.at(0);
+    real time     =  single.time.at(0);
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
    
     int index;                                            //To find minimum difference between latitudes
@@ -110,7 +123,7 @@ void wpi(real p, real lamda, real alpha, real aeq, real ppar, real pper, real up
         uper  =  pper   /  (Constants::m_e*gama);
 
         B_lam    =  Bmag_dipole(lamda);    
-        M_adiabatic = (pper*pper)/(2*Constants::m_e*B_lam); 
+        //M_adiabatic = (pper*pper)/(2*Constants::m_e*B_lam); 
 
         //Go to next timestep
         time  = time + Constants::h; 

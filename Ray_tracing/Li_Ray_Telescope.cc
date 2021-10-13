@@ -3,7 +3,6 @@
 #include <iostream>                 
 #include <vector>   
 #include <cinttypes>   //int64_t type
-#include <chrono>
 #include <iomanip>    //setprecision()
 
 //Function/Struct headers
@@ -21,12 +20,12 @@
 
 int main()
 {	
-    //Position of the Particle Telescope.				
-	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);	
+	//Position of the Particle Telescope.		
+	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
 
-//------------------------------------------------------ DISTRIBUTION OF PARTICLES--------------------------------------------------------//
-
-	std::cout<<"\n\nParticle population: " << Constants::population;
+//-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
+	//Object for particles.
+	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n\nWave interaction: "<<Constants::By_wave<< " T" ;
 	std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq distribution in degrees"<<"\n|From "<<" To|";
@@ -35,14 +34,14 @@ int main()
 	std::cout<<"\n| "<<Constants::lamda_start_d << "  "<< " " << Constants::lamda_end_d <<"|\n";
 
 	Particles single; //Single particle struct.
-	std::vector<Particles> eql_dstr(Constants::population, single);	//Vector of structs for particle distribution.
+	std::vector<Particles> eql_dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
 						//equally distributed
 	
 	real eta0,aeq0,lamda0;
+	real Blam0,salpha0,alpha0;
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
-
-	for(int e=0, i=0; e<Constants::eta_dstr; e++)		
+	for(int e=0, p=0; e<Constants::eta_dstr; e++)		
 	{   																							 
 		eta0 = (Constants::eta_start_d + e*Constants::eta_step_d) * Constants::D2R;			   														
 		
@@ -50,59 +49,55 @@ int main()
 		{	
 			aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	         	  	    
 
-			for(int l=0; l<Constants::lamda_dstr; l++, i++)
+			for(int l=0; l<Constants::lamda_dstr; l++, p++)
 		    {
-		    	lamda0 = (Constants::lamda_start_d + l*Constants::lamda_step_d) * Constants::D2R; 
-			
-				//Now push-back initial values in RADS.
-			    eql_dstr[i].set_eta(eta0);  		
-			    eql_dstr[i].set_aeq(aeq0);  
-			    eql_dstr[i].set_lamda(lamda0);  
+		    	lamda0 = (Constants::lamda_start_d + l*Constants::lamda_step_d) * Constants::D2R;  	
 				
-				//And push-back other resulting values.(P.A, speed, momentum)
-				//Exceptions are involved
-				try
-				{	
-					eql_dstr[i].calculations0(Beq0,lamda0,0,0,aeq0,Constants::Ekev0);
-				}					
-				catch(int exception)	 
-				{
-				
-					if(exception == 99)
-					{
-						std::cout<< "\n" << "Caught exception: |sinusoidal|>1. P.A out of domain.\n" ;
-						return EXIT_FAILURE;	
-					}
-					else if(exception == 98)	
-					{
-						std::cout<< "\n" << "Caught exception: aeq0=0||180.\n" ;
-						return EXIT_FAILURE;
-					}	
-				
-				}		
+				//Find P.A at lamda0.
+				Blam0=Bmag_dipole(lamda0);
+				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
+				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) {eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
+				alpha0=asin(salpha0);		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
+				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
+
 				//Print initial state of particles.
-				std::cout<<"\nParticle"<<i<<" with eta0: "<< eta0*Constants::R2D <<", aeq0: "<< aeq0*Constants::R2D <<" and lamda0: "<<lamda0*Constants::R2D<< " in degrees.\n";				
+				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D;				
+
 			}
 		}	
 	}
-
+	int64_t track_pop = eql_dstr.size(); //Population of particles that will be tracked.
+	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //------------------------------------------------------ DISTRIBUTION OF PARTICLES: END---------------------------------------------------//
     
     std::cout.precision(8);    //Output precision of 16 decimals
     std::cout<<std::scientific; //Representation with e notation
 
 //---------------------------------------------------------------SIMULATION---------------------------------------------------------------//
-	auto rk_start = std::chrono::high_resolution_clock::now();
-	for(int p=0; p<Constants::population; p++)     //Loop for all particles
-	{
-		//Void Function for particle's motion. Involves RK4 for Nsteps. 
-        wpi(p, eql_dstr[p].lamda.front(), eql_dstr[p].alpha.front(), eql_dstr[p].aeq.front(), eql_dstr[p].ppar.front(), eql_dstr[p].pper.front(), eql_dstr[p].upar.front(), eql_dstr[p].uper.front(), eql_dstr[p].zeta.front(), eql_dstr[p].M_adiabatic.front(), eql_dstr[p].eta.front(), eql_dstr[p].time.front(), ODPT);
-		//Detected particles are saved in ODPT object, which is passed here by reference.
-	}	
-	auto rk_stop = std::chrono::high_resolution_clock::now();  
-	auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(rk_stop - rk_start);
-	real rk_time = duration2.count() * pow(10,-6);
-	std::cout << "\nExecution time " << std::setprecision(8) << rk_time <<" seconds\n" ;
+    int realthreads;   
+	//---PARALLELISM Work sharing---//
+	double wtime = omp_get_wtime();
+	std::cout<<"\nForked..."<<std::endl;
+ 	#pragma omp parallel
+    {
+    	int id = omp_get_thread_num();
+		if(id==0){ realthreads = omp_get_num_threads();}
+		
+		#pragma omp for schedule(static)
+			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+			{
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//Void Function for particle's motion. Involves RK4 for Nsteps. 
+				//Detected particles are saved in ODPT object, which is passed here by reference.
+       	 		wpi(p, eql_dstr[p].lamda.front(), eql_dstr[p].alpha.front(), eql_dstr[p].aeq.front(), eql_dstr[p].ppar.front(), eql_dstr[p].pper.front(), eql_dstr[p].upar.front(), eql_dstr[p].uper.front(), eql_dstr[p].zeta.front(), eql_dstr[p].M_adiabatic.front(), eql_dstr[p].eta.front(), eql_dstr[p].time.front(), ODPT);
+
+			}	
+	}
+    std::cout<<"\n"<<"Joined"<<std::endl;
+	wtime = omp_get_wtime()-wtime;
+
+
+	std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 //--------------------------------------------------------------SIMULATION: END------------------------------------------------------------//
 
 
