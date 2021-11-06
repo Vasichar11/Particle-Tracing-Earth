@@ -7,7 +7,7 @@
 #include <omp.h>
 
 //Function/Struct headers
-#include "headers/wpi_ray.h"
+#include "headers/li_wpi.h"
 #include "headers/common.h"
 #include "headers/constants.h"
 #include "headers/struct_Particles.h"  

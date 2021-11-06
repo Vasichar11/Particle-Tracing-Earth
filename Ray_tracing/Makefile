@@ -10,8 +10,7 @@ INC_HIFIVE= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdeb
 
 INC_H5FAST= -I/usr/include/hdf5/serial -L/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/billy/HighFive/include/ -lhdf5
 
-
-OBJ= Li_Ray_Telescope.o  struct_Particles.o  struct_Telescope.o  wpi_ray.o  read_hdf5.o  functions.o  time_rates.o  is_in_packet.o 
+OBJ= Li_Ray_Telescope.o  struct_Particles.o  struct_Telescope.o  wpi.o  read_hdf5.o  functions.o  time_rates.o  is_in_packet.o 
 
 
 
@@ -42,8 +41,8 @@ functions.o: functions.cc
 time_rates.o: time_rates.cc
 	${CC} ${CXXFLAGS} ${OPT} -c time_rates.cc
 
-wpi_ray.o: wpi_ray.cc
-	${CC} ${CXXFLAGS} ${OPT} -c wpi_ray.cc ${INC_H5FAST}
+wpi.o: wpi.cc
+	${CC} ${CXXFLAGS} ${OPT} -c wpi.cc ${INC_H5FAST}
 
 Li_Ray_Telescope.o: Li_Ray_Telescope.cc
 	${CC} ${CXXFLAGS} ${OPT} -c Li_Ray_Telescope.cc  ${INC_H5FAST}

@@ -1,4 +1,4 @@
-#include "headers/wpi_ray.h"
+#include "headers/li_wpi.h"
 
 
 void wpi_ray(real p, Particles &single, Telescope &ODPT)

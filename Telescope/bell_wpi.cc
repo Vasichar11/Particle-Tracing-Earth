@@ -1,4 +1,4 @@
-#include"headers/wpi.h"
+#include"headers/bell_wpi.h"
 
 //For wave-particle interaction
 void wpi(int p, Particles &single, Telescope &ODPT)

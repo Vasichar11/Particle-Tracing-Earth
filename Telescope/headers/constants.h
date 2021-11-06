@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 #include <cmath>
+
 namespace Constants{
 
 //Define Universal Costants.
@@ -35,7 +36,7 @@ const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp
 const real eta0=eta0_deg*D2R;
 
 //---Wave parameters---//
-const real By_wave=1*pow(10,-12);       		 	         
+
 const real f_wave=2000; 			    		//Wave frequency in Hz. 2kHz
 const real w_wave=2*M_PI*f_wave;        		//Wave angular frequency.
 const real m_res=1;                           	//WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
@@ -46,6 +47,15 @@ const real theta0=theta0_deg*D2R;
 const real t=1;        				  	        //Simulation duration in seconds.
 const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
+
+
+//for Bell code
+const real By_wave=1*pow(10,-12);               
+
+//for Ray tracing
+const real pwr = pow(10,-4);                    //Poynting flux [W/m 2]. //for Ray tracing code  
+const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
+const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
 
 //--Satellite parameters--//
 const real telescope_lamda = 0; //90 //0,10,20,30

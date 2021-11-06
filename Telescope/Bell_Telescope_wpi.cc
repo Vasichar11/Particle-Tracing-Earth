@@ -8,7 +8,7 @@
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
 
-#include "headers/wpi.h"
+#include "headers/bell_wpi.h"
 #include "headers/common.h"
 #include "headers/struct_Particles.h"   		    	
 #include "headers/struct_Telescope.h"  				
