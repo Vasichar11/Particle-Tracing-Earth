@@ -25,8 +25,8 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6/m-3
 //Define "constant" Parameters.
 
 //--Particle initial parameters--//
-const real L_shell=5; 			 				//L_shell of particle. Constant for now.
-const real Ekev0=500;               			//Initial energy keV
+const real L_shell=4; 			 				//L_shell of particle. Constant for now.
+const real Ekev0=460;               			//Initial energy keV
 const real aeq0_deg=170;            		    //Initial equatorial pitch angle, deg.
 const real aeq0=aeq0_deg*D2R;
 const real lamda0_deg=0;						//Initial latitude, deg.
@@ -43,8 +43,8 @@ const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
 
 //--Simulation parameters--//
-const real t=5;        				  	        //Simulation duration in seconds.
-const real h=0.00001;							    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
+const real t=1;        				  	        //Simulation duration in seconds.
+const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
 
 //--Satellite parameters--//

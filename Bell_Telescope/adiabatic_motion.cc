@@ -119,7 +119,7 @@ void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         
 		//To save states:
-		//single.save_state(aeq,alpha,lamda,time);
+		//single.save_state(lamda,aeq,time);
 
         i++;  
 

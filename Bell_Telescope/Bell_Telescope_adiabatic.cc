@@ -104,29 +104,29 @@ int main()
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
-/*
+
 	std::vector<std::vector<real>>  aeq_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> lamda_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> deta_dt_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	
+	//std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	//std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	//std::vector<std::vector<real>> deta_dt_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	
 
 	//Assign from struct to 2d vectors.
 	for(int p=0; p<track_pop; p++)
 	{
-	    for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
-	    {
-	    	time_plot[p][i] = eql_dstr[p].time.at(i);
-	    	aeq_plot[p][i] = eql_dstr[p].aeq.at(i);
-	    	alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
-	    	lamda_plot[p][i] = eql_dstr[p].lamda.at(i);
-	    	deta_dt_plot[p][i] = eql_dstr[p].deta_dt.at(i);
-
-	    }
+	    //for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
+	    //{
+	    	//time_plot[p][0] = eql_dstr[p].time.at(0);  //take the initial values
+	    	aeq_plot[p][0] = eql_dstr[p].aeq.at(0);
+	    	//alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
+	    	lamda_plot[p][0] = eql_dstr[p].lamda.at(0);
+	    	//deta_dt_plot[p][i] = eql_dstr[p].deta_dt.at(i);
+	    //}
 	}
-*/
-	h5::File file("h5files/10lamda_true_aeq.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+
+	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
@@ -144,16 +144,16 @@ int main()
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
 	h5::DataSet t			       = file.createDataSet("t", Constants::t);
 	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
-/*	
+	
 	//Saved Particles
 	h5::DataSet saved_lamda  = file.createDataSet("lamda_plot", lamda_plot);
-	h5::DataSet saved_alpha  = file.createDataSet("alpha_plot", alpha_plot);
-	h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
+	//h5::DataSet saved_alpha  = file.createDataSet("alpha_plot", alpha_plot);
+	//h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
 	h5::DataSet saved_aeq    = file.createDataSet("aeq_plot", aeq_plot);
-	h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
+	//h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
 
 
-*/
+
 
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
 
