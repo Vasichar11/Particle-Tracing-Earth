@@ -2,13 +2,13 @@ BIN=tracer
 CC=g++ 
 LNK=g++ 
 OPT=-O3
-CXXFLAGS=-std=c++17 -lstdc++fs -Wall -g  -fopenmp
+CXXFLAGS=-std=c++17 -lstdc++fs -Wall -g -fopenmp
 
 
-INC_HIVIFE= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
+INC_HIFIVE= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/billy/HighFive/include/
 
 
-INC_FAST= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial  -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
+INC_H5FAST= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial  -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/billy/HighFive/include/
 
 
 OBJ=  functions.o   time_rates.o   struct_Particles.o   struct_Species.o   struct_Telescope.o
@@ -48,22 +48,22 @@ time_rates.o: time_rates.cc
 
 
 Bell_Telescope_performant.o: Bell_Telescope_performant.cc
-	${CC} ${CXXFLAGS} ${OPT} -c Bell_Telescope_performant.cc    ${INC_FAST}
+	${CC} ${CXXFLAGS} ${OPT} -c Bell_Telescope_performant.cc    ${INC_H5FAST}
 	
 Bell_Telescope_adiabatic.o: Bell_Telescope_adiabatic.cc
-	${CC} ${CXXFLAGS} ${OPT} -c Bell_Telescope_adiabatic.cc    ${INC_FAST}
+	${CC} ${CXXFLAGS} ${OPT} -c Bell_Telescope_adiabatic.cc    ${INC_H5FAST}
 
 Bell_Telescope_wpi.o: Bell_Telescope_wpi.cc
-	${CC} ${CXXFLAGS} ${OPT} -c Bell_Telescope_wpi.cc    ${INC_FAST}
+	${CC} ${CXXFLAGS} ${OPT} -c Bell_Telescope_wpi.cc    ${INC_H5FAST}
 
 
 
 performant: $(OBJ) Bell_Telescope_performant.o
-	${LNK} -o ${BIN} ${OBJ}  Bell_Telescope_performant.o ${INC_HIVIFE} ${CXXFLAGS} 
+	${LNK} -o ${BIN} ${OBJ}  Bell_Telescope_performant.o ${INC_HIFIVE} ${CXXFLAGS} 
 
 adiabatic: $(OBJ) Bell_Telescope_adiabatic.o adiabatic_motion.o #add adiabatic_motion function
-	${LNK} -o ${BIN} ${OBJ} Bell_Telescope_adiabatic.o adiabatic_motion.o ${INC_HIVIFE} ${CXXFLAGS} 
+	${LNK} -o ${BIN} ${OBJ} Bell_Telescope_adiabatic.o adiabatic_motion.o ${INC_HIFIVE} ${CXXFLAGS} 
 
 wpi: $(OBJ) Bell_Telescope_wpi.o wpi.o #add wpi function
-	${LNK} -o ${BIN} ${OBJ} Bell_Telescope_wpi.o wpi.o ${INC_HIVIFE} ${CXXFLAGS} 
+	${LNK} -o ${BIN} ${OBJ} Bell_Telescope_wpi.o wpi.o ${INC_HIFIVE} ${CXXFLAGS} 
 

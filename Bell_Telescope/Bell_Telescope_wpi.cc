@@ -30,7 +30,7 @@ int main()
 
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
-	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n\nWave interaction: "<<Constants::By_wave<< " T" ;
+	std::cout<<"\n\nParticle testing population: " << Constants::test_pop;
 	std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq distribution in degrees"<<"\n|From "<<" To|";
@@ -94,13 +94,10 @@ int main()
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
 				//Detected particles are saved in ODPT object, which is passed here by reference.
 		    	wpi(p, eql_dstr[p], ODPT);   
-
 			}	
 	}
     std::cout<<"\n"<<"Joined"<<std::endl;
 	wtime = omp_get_wtime()-wtime;
-
-
 	std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 

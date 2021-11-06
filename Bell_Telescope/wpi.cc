@@ -16,6 +16,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
     //real uper     =  single.uper.at(0);
     //real deta_dt  =  single.deta_dt.at(0);
     //real Ekin     =  single.Ekin.at(0);
+    //real M_adiabatic = single.M_adiabatic.at(0);
     real time     =  single.time.at(0);
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
