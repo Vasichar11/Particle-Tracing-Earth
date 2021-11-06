@@ -4,9 +4,10 @@
 #include <vector>   
 #include <cinttypes>   //int64_t type
 #include <iomanip>    //setprecision()
+#include <omp.h>
 
 //Function/Struct headers
-#include "headers/wpi.h"
+#include "headers/wpi_ray.h"
 #include "headers/common.h"
 #include "headers/constants.h"
 #include "headers/struct_Particles.h"  
@@ -25,7 +26,7 @@ int main()
 
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
-	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n\nWave interaction: "<<Constants::By_wave<< " T" ;
+	std::cout<<"\n\nParticle testing population: " << Constants::test_pop;
 	std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq distribution in degrees"<<"\n|From "<<" To|";
@@ -73,7 +74,7 @@ int main()
     std::cout.precision(8);    //Output precision of 16 decimals
     std::cout<<std::scientific; //Representation with e notation
 
-//---------------------------------------------------------------SIMULATION---------------------------------------------------------------//
+//--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
     int realthreads;   
 	//---PARALLELISM Work sharing---//
 	double wtime = omp_get_wtime();
@@ -89,16 +90,13 @@ int main()
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
 				//Detected particles are saved in ODPT object, which is passed here by reference.
-       	 		wpi(p, eql_dstr[p].lamda.front(), eql_dstr[p].alpha.front(), eql_dstr[p].aeq.front(), eql_dstr[p].ppar.front(), eql_dstr[p].pper.front(), eql_dstr[p].upar.front(), eql_dstr[p].uper.front(), eql_dstr[p].zeta.front(), eql_dstr[p].M_adiabatic.front(), eql_dstr[p].eta.front(), eql_dstr[p].time.front(), ODPT);
-
+				wpi_ray(p, eql_dstr[p], ODPT);   
 			}	
 	}
     std::cout<<"\n"<<"Joined"<<std::endl;
 	wtime = omp_get_wtime()-wtime;
-
-
 	std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
-//--------------------------------------------------------------SIMULATION: END------------------------------------------------------------//
+//------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
 
 
@@ -115,7 +113,7 @@ int main()
 	h5::DataSet dataset2_aeq   = file2.createDataSet("detected_aeq 1D", ODPT.aeq);
 	h5::DataSet dataset2_alpha = file2.createDataSet("detected_alpha 1D", ODPT.alpha);
 	h5::DataSet telescope_lamda= file2.createDataSet("telescope_lamda scalar", ODPT.latitude);
-	h5::DataSet population     = file2.createDataSet("whole population", Constants::population);
+	h5::DataSet population     = file2.createDataSet("whole population", track_pop);
 	h5::DataSet initial_lamda  = file2.createDataSet("initial latitude", Constants::lamda0);
 	h5::DataSet dataset_time   = file2.createDataSet("simulation time", Constants::t);
 

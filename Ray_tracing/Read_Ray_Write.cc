@@ -89,7 +89,7 @@ int main()
     auto stop1= std::chrono::high_resolution_clock::now();
     auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
     real time1 = duration1.count()*pow(10,-6);
-    std::cout << "\nTime elapsed: " << time1 <<" seconds" ;
+    std::cout << "\nReading CSV. Time elapsed: " << time1 <<" seconds" ;
 
     auto start2 = std::chrono::high_resolution_clock::now();
 
@@ -158,7 +158,7 @@ int main()
     auto stop2= std::chrono::high_resolution_clock::now();
     auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(stop2 - start2);
     real time2 = duration2.count()*pow(10,-6);
-    std::cout << "\nTime elapsed: " << time2 <<" seconds" ;
+    std::cout << "\nInterpolating Ray. Time elapsed: " << time2 <<" seconds" ;
 
     auto start3 = std::chrono::high_resolution_clock::now();
 
@@ -206,7 +206,7 @@ for(size_t i=0; i<time_new.size(); i++)
     auto stop3 = std::chrono::high_resolution_clock::now();
     auto duration3 = std::chrono::duration_cast<std::chrono::microseconds>(stop3 - start3);
     real time3 = duration3.count()*pow(10,-6);
-    std::cout << "\nTime elapsed: " << time3 <<" seconds" ;
+    std::cout << "\nCalculating other vectors. Time elapsed: " << time3 <<" seconds" ;
 
     auto start4 = std::chrono::high_resolution_clock::now();
 
@@ -288,7 +288,7 @@ for(size_t i=0; i<time_new.size(); i++)
     auto stop4= std::chrono::high_resolution_clock::now();
     auto duration4 = std::chrono::duration_cast<std::chrono::microseconds>(stop4 - start4);
     real time4 = duration4.count()*pow(10,-6);
-    std::cout << "\nTime elapsed: " << time4 <<" seconds\n" ;
+    std::cout << "\nWriting in h5 file. Time elapsed: " << time4 <<" seconds\n" ;
 
     return 0;
 

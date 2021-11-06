@@ -53,14 +53,14 @@ const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
 const int Nsteps=t/h; 			  				//Number of simulation steps, signed 8 byte integer.
 
 //--Satellite parameters--//
-const real telescope_lamda = 30; //90 //0,10,20,30
+const real telescope_lamda = 0; //90 //0,10,20,30
 
 
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
 const int64_t aeq_dstr    = 10;  			    
 const int64_t lamda_dstr  = 1;					
-const int64_t population  = eta_dstr * aeq_dstr * lamda_dstr;
+const int64_t test_pop  = eta_dstr * aeq_dstr * lamda_dstr;
 
 //------------------------------ Eta distribution range and step. --------------------------------//
 const real eta_start_d    = eta0_deg;     //Degrees 	 

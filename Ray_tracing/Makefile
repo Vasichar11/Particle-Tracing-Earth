@@ -1,19 +1,17 @@
 BIN=tracer ray_int
 CC=g++ 
-LNK=g++ -fopenmp 
+LNK=g++  
 OPT=-O3
-OMP=-fopenmp
-CXXFLAGS=-std=c++17 -lstdc++fs -Wall -pg
+CXXFLAGS=-std=c++17 -lstdc++fs -Wall -g -fopenmp
 
 
-#Include paths and flags for libraries used
-INC_HIFIVE= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
-#Add paths that correspond to the running system (e.g -I/home/"username"/HighFive/include/ ).
+INC_HIFIVE= -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/billy/HighFive/include/
 
-INC_H5FAST= -I/usr/include/hdf5/serial -L/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/ -lhdf5
 
-#Objects to build 
-OBJ= Li_Ray_Telescope.o  struct_Particles.o  struct_Telescope.o  wpi.o  read_hdf5.o  functions.o  time_rates.o  is_in_packet.o 
+INC_H5FAST= -I/usr/include/hdf5/serial -L/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/billy/HighFive/include/ -lhdf5
+
+
+OBJ= Li_Ray_Telescope.o  struct_Particles.o  struct_Telescope.o  wpi_ray.o  read_hdf5.o  functions.o  time_rates.o  is_in_packet.o 
 
 
 
@@ -44,8 +42,8 @@ functions.o: functions.cc
 time_rates.o: time_rates.cc
 	${CC} ${CXXFLAGS} ${OPT} -c time_rates.cc
 
-wpi.o: wpi.cc
-	${CC} ${CXXFLAGS} ${OPT} -c wpi.cc ${INC_H5FAST}
+wpi_ray.o: wpi_ray.cc
+	${CC} ${CXXFLAGS} ${OPT} -c wpi_ray.cc ${INC_H5FAST}
 
 Li_Ray_Telescope.o: Li_Ray_Telescope.cc
 	${CC} ${CXXFLAGS} ${OPT} -c Li_Ray_Telescope.cc  ${INC_H5FAST}

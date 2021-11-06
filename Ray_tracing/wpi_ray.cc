@@ -1,22 +1,24 @@
-#include "headers/wpi.h"
+#include "headers/wpi_ray.h"
 
 
-void wpi(real p, Particles &single, Telescope &ODPT)
+void wpi_ray(real p, Particles &single, Telescope &ODPT)
 {
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
-  
+	double wtime = omp_get_wtime();
     //read_vector() is a function to read HDF5 dataset as vectors. 
-    std::vector <real> lat_int       =   read_vector("lat_int",       "h5files/interpolated_ray.h5");
-    std::vector <real> kx_ray        =   read_vector("kx_ray",        "h5files/interpolated_ray.h5");    
-    std::vector <real> kz_ray        =   read_vector("kz_ray",        "h5files/interpolated_ray.h5");   
-    std::vector <real> kappa_ray     =   read_vector("kappa_ray",     "h5files/interpolated_ray.h5");       
-    std::vector <real> Bzw           =   read_vector("Bzw",           "h5files/interpolated_ray.h5");
-    std::vector <real> Ezw           =   read_vector("Ezw",           "h5files/interpolated_ray.h5");
-    std::vector <real> Bw_ray        =   read_vector("Bw_ray",        "h5files/interpolated_ray.h5");    
-    std::vector <real> w1            =   read_vector("w1",            "h5files/interpolated_ray.h5");
-    std::vector <real> w2            =   read_vector("w2",            "h5files/interpolated_ray.h5");
-    std::vector <real> R1            =   read_vector("R1",            "h5files/interpolated_ray.h5");
-    std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
+    static std::vector <real> lat_int       =   read_vector("lat_int",       "h5files/interpolated_ray.h5");
+    static std::vector <real> kx_ray        =   read_vector("kx_ray",        "h5files/interpolated_ray.h5");    
+    static std::vector <real> kz_ray        =   read_vector("kz_ray",        "h5files/interpolated_ray.h5");   
+    static std::vector <real> kappa_ray     =   read_vector("kappa_ray",     "h5files/interpolated_ray.h5");       
+    static std::vector <real> Bzw           =   read_vector("Bzw",           "h5files/interpolated_ray.h5");
+    static std::vector <real> Ezw           =   read_vector("Ezw",           "h5files/interpolated_ray.h5");
+    static std::vector <real> Bw_ray        =   read_vector("Bw_ray",        "h5files/interpolated_ray.h5");    
+    static std::vector <real> w1            =   read_vector("w1",            "h5files/interpolated_ray.h5");
+    static std::vector <real> w2            =   read_vector("w2",            "h5files/interpolated_ray.h5");
+    static std::vector <real> R1            =   read_vector("R1",            "h5files/interpolated_ray.h5");
+    static std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
+    wtime = omp_get_wtime()-wtime;
+	std::cout<<"\nExecution time: "<<wtime<<std::endl;
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
     real lamda    =  single.lamda.at(0);
     real zeta     =  single.zeta.at(0); 
@@ -25,23 +27,20 @@ void wpi(real p, Particles &single, Telescope &ODPT)
     real eta      =  single.eta.at(0); 
     real alpha    =  single.alpha.at(0); 
     real aeq      =  single.aeq.at(0); 
-    real upar     =  single.upar.at(0); 
-    real uper     =  single.uper.at(0);
+    //real upar     =  single.upar.at(0); 
+    //real uper     =  single.uper.at(0);
     //real deta_dt  =  single.deta_dt.at(0);
-    //real Ekin        =  single.Ekin.at(0);
-    //real M_adiabatic =  single.M_adiabatic.at(0);
+    //real Ekin     =  single.Ekin.at(0);
+    //real M_adiabatic = single.M_adiabatic.at(0);
     real time     =  single.time.at(0);
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
-   
     int index;                                            //To find minimum difference between latitudes
     int i=0;
 
     real min_lat,max_lat;
-    real p_mag,gama,w_h,dwh_ds,kz,B_lam,Fpar,Fper,Ftheta;
+    real p_mag,gama,w_h,dwh_ds,kz,Fpar,Fper,Ftheta;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real new_lamda;
-
-
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
     while(i<Constants::Nsteps-1) //Nsteps-1?           
@@ -103,15 +102,27 @@ void wpi(real p, Particles &single, Telescope &ODPT)
 
         //Check crossing. First estimate latitude. 
         new_lamda  =  lamda  +  (Constants::h/6)*(o1+2*o2+2*o3+o4);
+        
+        //Check if NAN to break this particle. Why NAN ?
+        if(std::isnan(new_lamda))
+        {
+            //std::cout<<"\nParticle "<<p<<" breaks";
+            //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
+            //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
+            break;
+        }
 
-        if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-        {										
-            //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-            //Store its state(it's before crossing the satellite!).
-            ODPT.store( p, lamda, uper , upar, alpha, aeq, eta, time);  			        	
+        #pragma omp critical
+        {
+            if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
+            {										
+                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+                //Store its state(it's before crossing the satellite!).
+                ODPT.store( p, lamda, alpha, aeq, time);  			        	
+            }
         }
         
-        //Now update all values of Runge Kutta's block.
+        //Now approximate all values of Runge Kutta's block.
         lamda =  new_lamda;
         zeta  =  zeta   +  (Constants::h/6)*(k1+2*k2+2*k3+k4);
         ppar  =  ppar   +  (Constants::h/6)*(l1+2*l2+2*l3+l4);
@@ -119,10 +130,14 @@ void wpi(real p, Particles &single, Telescope &ODPT)
         eta   =  eta    +  (Constants::h/6)*(n1+2*n2+2*n3+n4);
         alpha =  alpha  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
         aeq   =  aeq    +  (Constants::h/6)*(q1+2*q2+2*q3+q4);
-        upar  =  ppar   /  (Constants::m_e*gama);
-        uper  =  pper   /  (Constants::m_e*gama);
+        //deta_dt =            (Constants::h/6)*(n1+2*n2+2*n3+n4);
+        //upar  =  ppar   /  (Constants::m_e*gama);
+        //uper  =  pper   /  (Constants::m_e*gama);
 
-        B_lam    =  Bmag_dipole(lamda);    
+        //p_mag = sqrt((ppar*ppar)+(pper*pper));
+        //gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
+        //Ekin = ((gama-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15; 
+        //B_lam    =  Bmag_dipole(lamda);    
         //M_adiabatic = (pper*pper)/(2*Constants::m_e*B_lam); 
 
         //Go to next timestep
