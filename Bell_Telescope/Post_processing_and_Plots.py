@@ -10,20 +10,11 @@ from random import randint
 from matplotlib.ticker import MaxNLocator
 from collections import Counter
 import math as mt
-
-D2R=np.pi/180
-R2D=1/D2R
+from scipy.stats import norm
 
 np.set_printoptions(threshold=sys.maxsize)
 
-font = {'family': 'serif',
-        'color':  'blue',
-        'weight': 'bold',
-        'size': 12,
-        }
-
-############################################# READ DATA ###################################################
-
+############################################# READ HDF5 ###################################################
 #noWPI
 f1 = h5py.File("h5files/detected.h5","r")
 #print("Keys: %s" % f1.keys())
@@ -46,9 +37,7 @@ By_wave        = f1["By_wave"][()]
 #time           = f1["time_plot"][()]
 #deta_dt        = f1["deta_dt"][()]
 
-f1.close();
-
-"""
+""" 
 #WPI
 f2 = h5py.File("h5files/detected_WPI.h5","r")
 #print("Keys: %s" % f2.keys())
@@ -74,10 +63,53 @@ deta_dt_WPI        = f2["deta_dt"][()]
 f2.close();
 """
 
+############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
+time_bin  = 0.1                 #seconds to distinquish events(time resolution)
+timesteps = int (t / time_bin)
+view = 180 
+sector_range = 15
+sectors = int(view/sector_range)
+
+D2R=np.pi/180
+R2D=1/D2R
+########################################### FONTS AND COLORS #############################################
+font = {'family': 'serif',
+        'color':  'blue',
+        'weight': 'bold',
+        'size': 12}
+colors = []
+for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
+    colors.append('#%06X' % randint(0, 0xFFFFFF))
+
+
+
+
+
+
+
+
+
+##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
 ##########################################################################################################
+##########################################################################################################
 
+
+
+
+
+
+
+
+
+######################################## PLOT INITIAL DISTRIBUTION #######################################
+#fig, ax = plt.subplots()
+#for i in range(population):
+#    ax.scatter(lamda[i]*R2D,aeq[i]*R2D,s=0.3)
+#ax.grid(alpha=.3)
+#ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial Particle distribution in Latitude-aeq",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
+#fig.savefig("simulation_MM/initial_states.png",dpi=200)
 ########################################## COMPARE WPI - noWPI ###########################################
 """
 detected_id     = list(detected_id)     #Turn into lists
@@ -137,11 +169,11 @@ fig, ax = plt.subplots()
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
-plt.title("$Population$: " +str(population)+ ", $lamda$: [" +str(lamda_start_d)+", "+str(lamda_end_d)+ "], $aeq0$: ["+str(aeq_start_d)+", "+str(aeq_end_d)+"], $By wave$: "+str(By_wave)+"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
+plt.title("$Population$: " +str(population)+ ", $lamda$: [" +str(lamda_start_d)+", "+str(lamda_end_d)+ "], $aeq0$: ["+str(aeq_start_d)+", "+str(aeq_end_d)+"]\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
-plt.savefig("simulation_MM/28k_all_5s_1pT.h5.png", dpi=100)
+plt.savefig("simulation_MM/Crossing_particles.png", dpi=100)
 """
 
 #WPI
@@ -149,7 +181,7 @@ fig, ax = plt.subplots()
 ax.scatter(detected_time_WPI, detected_lamda_WPI*R2D, c = detected_id_WPI, s=7, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
-plt.title("Population: " +str(population_WPI)+ ", lamda: [" +str(lamda_start_d_WPI)+", "+str(lamda_end_d_WPI)+ "], aeq0: ["+str(aeq_start_d_WPI)+", "+str(aeq_end_d_WPI)+"], "+str(By_wave_WPI)+"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
+plt.title("Population: " +str(population_WPI)+ ", lamda: [" +str(lamda_start_d_WPI)+", "+str(lamda_end_d_WPI)+ "], aeq0: ["+str(aeq_start_d_WPI)+", "+str(aeq_end_d_WPI)+"]"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda_WPI+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_WPI ,color="b", linestyle="dashed")
@@ -171,16 +203,19 @@ ax.axhline(y = telescope_lamda_WPI ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles_WPI_onlyNEW.png", dpi=100)
 
 """
-####################################### TELESCOPE SPECIFICATION ##########################################
-"""
-time_bin  = 0.1                 #seconds to distinquish events(time resolution)
-timesteps = int (t / time_bin)
-view = 180 
-sector_range = 15
-sectors = int(view/sector_range)
-"""
+############################################ WEIGHTING FACTORS ############################################
+data = np.linspace(0,sectors,sectors)            #Normal  distribution around the middle sector
+pdf = norm.pdf(data,loc=sectors/2,scale = 1.1)     #Mean in the middle sector and standard deviation of 0.7
+
+factor = pdf*20     #Multiply the normal distribution to make the weighting factors
+
+fig, ax = plt.subplots()  
+plt.scatter(data, factor, color = 'red')
+plt.title("Weighting factor for each sector")
+plt.xlabel('Sector')
+plt.ylabel('Factor')
+fig.savefig('simulation_MM/factors.png' , dpi=200)
 ############################################## BINNING ####################################################
-"""
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux = [0 for i in range(timesteps)]
 
@@ -191,14 +226,7 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
         sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
     sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux[timestep] += 1
-
-
-colors = []
-for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
-    colors.append('#%06X' % randint(0, 0xFFFFFF))
-"""
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
-"""
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
 ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flux")
@@ -207,9 +235,7 @@ ax.xaxis.grid(True, which='both')
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
         ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep],s=10)
-
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
-"""
 ####################################### (FLUX-TIME)*SECTORS  MOVIE ##########################################
 """
 fig,ax = plt.subplots()
@@ -238,12 +264,9 @@ with writer.saving(fig, "simulation_MM/Time_binning.mp4", 100):
 
         writer.grab_frame()
         ax.clear() #clear data 
-
-
 """
 ###################################### (FLUX-P.A)*TIMESTEPS  MOVIE ##########################################
-"""
-fig,ax = plt.subplots()
+fig,ax = plt.subplots(2)
 FFMpegWriter = manimation.writers["ffmpeg"]
 metadata2 = dict(title="P.A binning",comment="P.A bins of 15deg")
 fps = 1
@@ -255,70 +278,101 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
         for sector in range(0,sectors): 
                         
             if sctr_flux[sector][timestep]!=0: #to show only non zero dots.
-                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c=colors[sector])  
+                ax[0].scatter(sector+0.5, sctr_flux[sector][timestep],c=colors[sector])   #without weighting factors
+            if factor[sector]*sctr_flux[sector][timestep]!=0: #to show only non zero dots.
+                ax[1].scatter(sector+0.5, factor[sector]*sctr_flux[sector][timestep],c=colors[sector])   #with weighting factors
 
-        ax.set_xticks(ticks=np.arange(0.5,sectors)) 
-        ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
-        ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
-        ax.set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
-        ax.set_ylim(0,np.amax(sctr_flux))
-        ax.set_xlim(0,sectors)
-        ax.set(xlabel="P.A bins",ylabel="count")
-        ax.set_title("P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", fontdict=font,x=-0.015)
-        ax.xaxis.grid(True, which='minor')
+
+        ax[0].set_xticks(ticks=np.arange(0.5,sectors)) 
+        ax[0].set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
+        ax[0].set_xticks(ticks=np.arange(0,sectors),minor=True) 
+        ax[0].set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
+        ax[0].set_ylim(0,np.amax(pdf)*np.amax(sctr_flux))
+        ax[0].set_xlim(0,sectors)
+        ax[0].set(ylabel="count")
+        ax[0].set_title("P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
+        ax[0].xaxis.grid(True, which='minor')
+
+        ax[1].set_xticks(ticks=np.arange(0.5,sectors)) 
+        ax[1].set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
+        ax[1].set_xticks(ticks=np.arange(0,sectors),minor=True) 
+        ax[1].set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
+        ax[1].set_ylim(0,1000)
+        ax[1].set_xlim(0,sectors)
+        ax[1].set(xlabel="P.A bins",ylabel="count * factor")
+        ax[1].set_title("Weighted", loc="left", size="small",color="blue",x=-0.15)
+        ax[1].xaxis.grid(True, which='minor')
 
         writer.grab_frame()
-        ax.clear() #clear data 
-
-"""
-
-
-
-
-
+        ax[0].clear() #clear data 
+        ax[1].clear() #clear data 
 ######################################### LAST TIMESTEP - ALTER BINS ############################################
-fig,ax = plt.subplots()
+fig,ax = plt.subplots(2)
 
-time_bin  = [0.05,0.1,0.2]  #Try these time bins    
-view = 180 
-sector_range = [7.5,15,30] #With these sector ranges
+alter_time_bin  = [0.05,0.1,0.2]  #Try these time bins    
+alter_sector_range = [7.5,15,30]  #With these sector ranges
 
 FFMpegWriter = manimation.writers["ffmpeg"]
 metadata2 = dict(title="Alter binning")
 fps = 0.25
 writer = FFMpegWriter(fps=fps, metadata = metadata2)
-print("Generating alter binning mp4 file...\nDuration of mp4 file will be:",(len(time_bin)*len(sector_range)/fps), "seconds")
+print("Generating alter binning mp4 file...\nDuration of mp4 file will be:",(len(alter_time_bin)*len(alter_sector_range)/fps), "seconds")
 
-with writer.saving(fig, "simulation_MM/28k_all_5s_1pT.h5.mp4", 100):
-    for srange in sector_range:
+with writer.saving(fig, "simulation_MM/Alter_bins.mp4", 100):
+   
+    for srange in alter_sector_range:
         sectors = int(view/srange)
-        for tbin in time_bin:  
+        
+        data = np.linspace(0,sectors,sectors)           #Weigting factors for the number of sectors defined above.
+        pdf = norm.pdf(data,loc=sectors/2,scale = 1.1)
+        factor = pdf*20
+
+        for tbin in alter_time_bin:  
             timesteps = int (t / tbin)
-            sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
+            altered_sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #altered_sctr_flux[sectors][timesteps]
+            
+            
             #Binning here
             for time,pa in zip(detected_time,detected_alpha): #Iterate in both array elements. No sorting required.
                 timestep = math.floor(time/tbin)
                 sector   = math.floor(pa*R2D/srange)
                 if(pa*R2D==180):
                     sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
-                sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
+                altered_sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
+            
+            
             #Plot here
             timestep = -1
             for sector in range(0,sectors): 
                             
-                if sctr_flux[sector][timestep]!=0: #to show only non zero dots.
-                    ax.scatter(sector+0.5, sctr_flux[sector][timestep])  
+                if altered_sctr_flux[sector][timestep]!=0: #to show only non zero dots.
+                    ax[0].scatter(sector+0.5, altered_sctr_flux[sector][timestep])  
+                if factor[sector]*altered_sctr_flux[sector][timestep]!=0:
+                    ax[1].scatter(sector+0.5, factor[sector]*altered_sctr_flux[sector][timestep])  #with weights
 
-            ax.set_xticks(ticks=np.arange(0.5,sectors)) 
-            ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
-            ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
-            if (srange>=15):            
-                ax.set_xticklabels(labels=np.arange(0,view,srange),minor=True,size="small") 
-            ax.set_ylim(0,population/4)
-            ax.set_xlim(0,sectors)
-            ax.set(xlabel="P.A bins",ylabel="count")
-            ax.set_title("Ending P.A dstr when\n$time$_$bin$: "+str(tbin)+"s, $sector$_$range$: "+str(srange)+"degrees", loc="left", fontdict=font,x=-0.015)
-            ax.xaxis.grid(True, which='minor')
+            ax[0].set_xticks(ticks=np.arange(0.5,sectors)) 
+            ax[0].set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
+            ax[0].set_xticks(ticks=np.arange(0,sectors),minor=True) 
             
+            ax[1].set_xticks(ticks=np.arange(0.5,sectors)) 
+            ax[1].set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
+            ax[1].set_xticks(ticks=np.arange(0,sectors),minor=True) 
+
+            if (srange>=15):            
+                ax[0].set_xticklabels(labels=np.arange(0,view,srange),minor=True,size="small") 
+                ax[1].set_xticklabels(labels=np.arange(0,view,srange),minor=True,size="small") 
+
+            ax[0].set_ylim(0,population/4)
+            ax[0].set_xlim(0,sectors)
+            ax[0].set_title("Ending P.A dstr when\n$time$_$bin$: "+str(tbin)+"s, $sector$_$range$: "+str(srange)+"degrees", loc="left", size="small",color="blue",x=-0.15)
+            ax[0].xaxis.grid(True, which='minor')
+            
+            ax[1].set_ylim(0,population/4)
+            ax[1].set_xlim(0,sectors)
+            ax[1].set(xlabel="P.A bins",ylabel="count * factor")
+            ax[1].set_title("Weighted",loc="left", size="small",color="blue",x=-0.15)
+            ax[1].xaxis.grid(True, which='minor')
+
             writer.grab_frame()
-            ax.clear() #clear data 
+            ax[0].clear() #clear data 
+            ax[1].clear() #clear data 
