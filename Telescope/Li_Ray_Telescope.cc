@@ -1,4 +1,3 @@
-//Standard library 
 #include <cmath>                        
 #include <iostream>                 
 #include <vector>   
@@ -58,7 +57,8 @@ int main()
 				Blam0=Bmag_dipole(lamda0);
 				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
 				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) {eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
-				alpha0=asin(salpha0);		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
+				k = ((aeq0*Constants::R2D>90) ? 1 : 0);
+				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
 				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 
 				//Print initial state of particles.

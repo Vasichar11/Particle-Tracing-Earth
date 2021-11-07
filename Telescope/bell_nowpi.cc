@@ -1,7 +1,7 @@
-#include "headers/adiabatic_motion.h"
+#include "headers/bell_nowpi.h"
 
 //Adiabatic motion.
-void adiabatic_motion(int p, Particles &single, Telescope &ODPT)
+void nowpi(int p, Particles &single, Telescope &ODPT)
 {
 
 

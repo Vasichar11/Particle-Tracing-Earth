@@ -4,7 +4,6 @@
 void wpi_ray(real p, Particles &single, Telescope &ODPT)
 {
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
-	double wtime = omp_get_wtime();
     //read_vector() is a function to read HDF5 dataset as vectors. 
     static std::vector <real> lat_int       =   read_vector("lat_int",       "h5files/interpolated_ray.h5");
     static std::vector <real> kx_ray        =   read_vector("kx_ray",        "h5files/interpolated_ray.h5");    
@@ -17,8 +16,6 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     static std::vector <real> w2            =   read_vector("w2",            "h5files/interpolated_ray.h5");
     static std::vector <real> R1            =   read_vector("R1",            "h5files/interpolated_ray.h5");
     static std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
-    wtime = omp_get_wtime()-wtime;
-	std::cout<<"\nExecution time: "<<wtime<<std::endl;
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
     real lamda    =  single.lamda.at(0);
     real zeta     =  single.zeta.at(0); 

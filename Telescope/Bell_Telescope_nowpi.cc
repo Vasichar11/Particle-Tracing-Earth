@@ -7,7 +7,7 @@
 
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
-#include "headers/adiabatic_motion.h"
+#include "headers/bell_nowpi.h"
 #include "headers/common.h"
 #include "headers/struct_Particles.h"   		    	
 #include "headers/struct_Telescope.h"  				
@@ -75,12 +75,17 @@ int main()
 	
     
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
-    int realthreads;   
+	int realthreads;   
 	//---PARALLELISM Work sharing---//
 	double wtime = omp_get_wtime();
 	std::cout<<"\nForked..."<<std::endl;
- 	#pragma omp parallel
-    {
+	
+
+	if(arv[1].compare("nowpi"))
+	{
+		#pragma omp parallel
+    	{
+
     	int id = omp_get_thread_num();
 		if(id==0){ realthreads = omp_get_num_threads();}
 		
@@ -90,12 +95,64 @@ int main()
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
 				//Detected particles are saved in ODPT object, which is passed here by reference.
-				adiabatic_motion(p, eql_dstr[p], ODPT);   
-			}	
+				nowpi(p, eql_dstr[p], ODPT);
+			}
+		}	
+    	std::cout<<"\n"<<"Joined"<<std::endl;
+		wtime = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 	}
-    std::cout<<"\n"<<"Joined"<<std::endl;
-	wtime = omp_get_wtime()-wtime;
-	std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+	
+	else if(arv[1].compare("wpi"))
+	{
+		#pragma omp parallel
+    	{
+
+    	int id = omp_get_thread_num();
+		if(id==0){ realthreads = omp_get_num_threads();}
+		
+		#pragma omp for schedule(static)
+			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+			{
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//Void Function for particle's motion. Involves RK4 for Nsteps. 
+				//Detected particles are saved in ODPT object, which is passed here by reference.
+				wpi(p, eql_dstr[p], ODPT);
+			}
+		}	
+    	std::cout<<"\n"<<"Joined"<<std::endl;
+		wtime = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+	}
+	
+	else if(arv[1].compare("wpi_ray"))
+	{
+		#pragma omp parallel
+    	{
+
+    	int id = omp_get_thread_num();
+		if(id==0){ realthreads = omp_get_num_threads();}
+		
+		#pragma omp for schedule(static)
+			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+			{
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//Void Function for particle's motion. Involves RK4 for Nsteps. 
+				//Detected particles are saved in ODPT object, which is passed here by reference.
+				wpi_ray(p, eql_dstr[p], ODPT);
+			}
+		}	
+    	std::cout<<"\n"<<"Joined"<<std::endl;
+		wtime = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+	}
+
+	else
+	{
+		std::cout<<"\n Argument variable doesn't match any of the program's possible implementations.\n\nTry nowpi, wpi, or wpi_ray as the second argument variable."<<std::endl;
+		return EXIT_FAILURE;	
+	}
+
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
 

@@ -7,8 +7,11 @@
 
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
-
+#include "headers/bell_nowpi.h"
 #include "headers/bell_wpi.h"
+#include "headers/li_wpi.h"
+
+
 #include "headers/common.h"
 #include "headers/struct_Particles.h"   		    	
 #include "headers/struct_Telescope.h"  				
@@ -22,15 +25,14 @@
 namespace h5 = HighFive;
 
 
-int main()
+int main(int argc, char **argv)
 {
-
 	//Position of the Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
-
+	
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
-	std::cout<<"\n\nParticle testing population: " << Constants::test_pop;
+	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n";
 	std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq distribution in degrees"<<"\n|From "<<" To|";
@@ -42,7 +44,7 @@ int main()
 	std::vector<Particles> eql_dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
 						//equally distributed
 	
-	real eta0,aeq0,lamda0;
+	real eta0,aeq0,lamda0,k;
 	real Blam0,salpha0,alpha0;
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
@@ -63,28 +65,34 @@ int main()
 				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
 				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) {eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
 				k = ((aeq0*Constants::R2D>90) ? 1 : 0);
-				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	 	
+				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
 				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D;				
-
+				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;				
 			}
 		}	
 	}
 	int64_t track_pop = eql_dstr.size(); //Population of particles that will be tracked.
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
-
-
-
+	
+    
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
-    int realthreads;   
+	int realthreads;   
 	//---PARALLELISM Work sharing---//
 	double wtime = omp_get_wtime();
 	std::cout<<"\nForked..."<<std::endl;
- 	#pragma omp parallel
-    {
+	std::string s1("nowpi");
+	std::string s2("wpi");
+	std::string s3("wpi_ray");
+
+	if( !(s1.compare(argv[1])) )
+	{
+        std::cout<<"\n\nNoWPI Simulation using Bell formulas"<<std::endl;
+		#pragma omp parallel
+    	{
+
     	int id = omp_get_thread_num();
 		if(id==0){ realthreads = omp_get_num_threads();}
 		
@@ -94,39 +102,93 @@ int main()
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
 				//Detected particles are saved in ODPT object, which is passed here by reference.
-		    	wpi(p, eql_dstr[p], ODPT);   
-			}	
+				nowpi(p, eql_dstr[p], ODPT);
+			}
+		}	
+    	std::cout<<"\n"<<"Joined"<<std::endl;
+		wtime = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 	}
-    std::cout<<"\n"<<"Joined"<<std::endl;
-	wtime = omp_get_wtime()-wtime;
-	std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+	
+	else if( !(s2.compare(argv[1])) )
+	{
+        std::cout<<"\n\nWPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
+		#pragma omp parallel
+    	{
+
+    	int id = omp_get_thread_num();
+		if(id==0){ realthreads = omp_get_num_threads();}
+		
+		#pragma omp for schedule(static)
+			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+			{
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//Void Function for particle's motion. Involves RK4 for Nsteps. 
+				//Detected particles are saved in ODPT object, which is passed here by reference.
+				wpi(p, eql_dstr[p], ODPT);
+			}
+		}	
+    	std::cout<<"\n"<<"Joined"<<std::endl;
+		wtime = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+	}
+	
+	else if( !(s3.compare(argv[1])) )
+	{
+        std::cout<<"\n\nWPI Simulation using Li formulas. Read Ray from CSV"<<std::endl;
+		#pragma omp parallel
+    	{
+
+    	int id = omp_get_thread_num();
+		if(id==0){ realthreads = omp_get_num_threads();}
+		
+		#pragma omp for schedule(static)
+			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+			{
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//Void Function for particle's motion. Involves RK4 for Nsteps. 
+				//Detected particles are saved in ODPT object, which is passed here by reference.
+				wpi_ray(p, eql_dstr[p], ODPT);
+			}
+		}	
+    	std::cout<<"\n"<<"Joined"<<std::endl;
+		wtime = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+	}
+
+	else
+	{
+		std::cout<<"\n Argument variable doesn't match any of the program's possible implementations.\n\nTry nowpi, wpi, or wpi_ray as the second argument variable."<<std::endl;
+		return EXIT_FAILURE;	
+	}
+
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
-/*
+
 	std::vector<std::vector<real>>  aeq_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	std::vector<std::vector<real>> lamda_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> deta_dt_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	
+	//std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	//std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	//std::vector<std::vector<real>> deta_dt_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	
 
 	//Assign from struct to 2d vectors.
 	for(int p=0; p<track_pop; p++)
 	{
-	    for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
-	    {
-	    	time_plot[p][i] = eql_dstr[p].time.at(i);
-	    	aeq_plot[p][i] = eql_dstr[p].aeq.at(i);
-	    	alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
-	    	lamda_plot[p][i] = eql_dstr[p].lamda.at(i);
-	    	deta_dt_plot[p][i] = eql_dstr[p].deta_dt.at(i);
-
-	    }
+	    //for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
+	    //{
+	    	//time_plot[p][0] = eql_dstr[p].time.at(0);  //take the initial values
+	    	aeq_plot[p][0] = eql_dstr[p].aeq.at(0);
+	    	//alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
+	    	lamda_plot[p][0] = eql_dstr[p].lamda.at(0);
+	    	//deta_dt_plot[p][i] = eql_dstr[p].deta_dt.at(i);
+	    //}
 	}
-*/
+
 	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
@@ -145,16 +207,15 @@ int main()
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
 	h5::DataSet t			       = file.createDataSet("t", Constants::t);
 	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
-/*	
+	
 	//Saved Particles
 	h5::DataSet saved_lamda  = file.createDataSet("lamda_plot", lamda_plot);
-	h5::DataSet saved_alpha  = file.createDataSet("alpha_plot", alpha_plot);
-	h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
+	//h5::DataSet saved_alpha  = file.createDataSet("alpha_plot", alpha_plot);
+	//h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
 	h5::DataSet saved_aeq    = file.createDataSet("aeq_plot", aeq_plot);
-	h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
+	//h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
 
 
-*/
 
 
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
