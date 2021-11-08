@@ -63,7 +63,7 @@ const real telescope_lamda = 0; //90 //0,10,20,30
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
 const int64_t aeq_dstr    = 10;  			    
-const int64_t lamda_dstr  = 1;					
+const int64_t lamda_dstr  = 10;					
 const int64_t test_pop    = eta_dstr * aeq_dstr * lamda_dstr;   //Testing population. Not all of them will be tracked. Only those will valid initial state.
 
 //------------------------------ Eta distribution range and step. --------------------------------//
@@ -77,8 +77,8 @@ const real aeq_end_d      = 179;
 const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	
 		                          
 //----------------------------- Lamda distribution range and step. -------------------------------//					 
-const real lamda_start_d  = lamda0_deg;     					 				
-const real lamda_end_d    = lamda0_deg;    			
-const real lamda_step_d	  = 0;//(lamda_end_d - lamda_start_d)/(lamda_dstr-1); 	
+const real lamda_start_d  = -90; 					 				
+const real lamda_end_d    =  90;			
+const real lamda_step_d	  = (lamda_end_d - lamda_start_d)/(lamda_dstr-1); 	
 };	
 
