@@ -8,6 +8,10 @@
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
 #include "headers/bell_nowpi.h"
+#include "headers/bell_wpi.h"
+#include "headers/li_wpi.h"
+
+
 #include "headers/common.h"
 #include "headers/struct_Particles.h"   		    	
 #include "headers/struct_Telescope.h"  				
@@ -21,8 +25,15 @@
 namespace h5 = HighFive;
 
 
-int main()
+int main(int argc, char **argv)
 {
+	if(argc!=2)
+	{
+		std::cout<<"Error. Argc should be 2. Set second argv from the list:(nowpi, wpi, wpi_ray)."<<std::endl;
+		return EXIT_FAILURE;
+	}
+
+	
 	//Position of the Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
 	
@@ -78,11 +89,14 @@ int main()
 	int realthreads;   
 	//---PARALLELISM Work sharing---//
 	double wtime = omp_get_wtime();
-	std::cout<<"\nForked..."<<std::endl;
-	
+	std::string s1("nowpi");
+	std::string s2("wpi");
+	std::string s3("wpi_ray");
 
-	if(arv[1].compare("nowpi"))
+	if( !(s1.compare(argv[1])) )
 	{
+        std::cout<<"\n\nNoWPI Simulation using Bell formulas"<<std::endl;
+		std::cout<<"\nForked..."<<std::endl;
 		#pragma omp parallel
     	{
 
@@ -103,8 +117,10 @@ int main()
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 	}
 	
-	else if(arv[1].compare("wpi"))
+	else if( !(s2.compare(argv[1])) )
 	{
+        std::cout<<"\n\nWPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
+		std::cout<<"\nForked..."<<std::endl;
 		#pragma omp parallel
     	{
 
@@ -125,8 +141,10 @@ int main()
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 	}
 	
-	else if(arv[1].compare("wpi_ray"))
+	else if( !(s3.compare(argv[1])) )
 	{
+        std::cout<<"\n\nWPI Simulation using Li formulas. Read Ray from CSV"<<std::endl;
+		std::cout<<"\nForked..."<<std::endl;
 		#pragma omp parallel
     	{
 
@@ -149,7 +167,7 @@ int main()
 
 	else
 	{
-		std::cout<<"\n Argument variable doesn't match any of the program's possible implementations.\n\nTry nowpi, wpi, or wpi_ray as the second argument variable."<<std::endl;
+		std::cout<<"\nArgument variable doesn't match any of the program's possible implementations.\n\nTry nowpi, wpi, or wpi_ray as the second argument variable."<<std::endl;
 		return EXIT_FAILURE;	
 	}
 
