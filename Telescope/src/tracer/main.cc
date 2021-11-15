@@ -60,17 +60,20 @@ int main(int argc, char **argv)
 //-------------NORMAL DSTR--------------//
     //Take something like half normal distribution to find da matrix. Mean 0.
     std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0,10.0);
+    std::normal_distribution<double> distribution(0.0,12.0); //before was 0.0,10.0 and 15.0
     double number;
     double aeq0dstr[Constants::aeq_dstr], da[Constants::aeq_dstr/2];
 	double mean=90;
-	for(int i=0;i<=Constants::aeq_dstr/2;i++)
+	aeq0dstr[Constants::aeq_dstr/2] = mean;
+
+	for(int i=0;i<Constants::aeq_dstr/2;i++)
     {
         number = distribution(generator); 
-        if(number>=0) { da[i] = number; std::cout<<"\nda: "<<da[i]; }
+        if(number>=0) { da[i] = number; std::cout<<"\nda: "<<da[i]; } //before was number>0.1
         else i--; //sample again
     }
     //Add/Remove da[] to 90degrees which is the mean of the distribution.
+	
 	for(int i=1; i<Constants::aeq_dstr/2; i++)
     {
 	    aeq0dstr[Constants::aeq_dstr/2 + i] = mean + da[i]; 
@@ -208,8 +211,8 @@ int main(int argc, char **argv)
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
 
-	std::vector<std::vector<real>>  aeq_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	std::vector<std::vector<real>> lamda_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
+	std::vector<real>  init_aeq_plot(track_pop);
+	std::vector<real> init_lamda_plot(track_pop);
 	
 	//std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	//std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
@@ -222,9 +225,9 @@ int main(int argc, char **argv)
 	    //for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
 	    //{
 	    	//time_plot[p][0] = eql_dstr[p].time.at(0);  //take the initial values
-	    	aeq_plot[p][0] = eql_dstr[p].aeq.at(0);
+	    	init_aeq_plot[p] = eql_dstr[p].aeq.at(0);
 	    	//alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
-	    	lamda_plot[p][0] = eql_dstr[p].lamda.at(0);
+	    	init_lamda_plot[p] = eql_dstr[p].lamda.at(0);
 	    	//deta_dt_plot[p][i] = eql_dstr[p].deta_dt.at(i);
 	    //}
 	}
@@ -249,10 +252,10 @@ int main(int argc, char **argv)
 	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
 	
 	//Saved Particles
-	h5::DataSet saved_lamda  = file.createDataSet("lamda_plot", lamda_plot);
+	h5::DataSet saved_lamda  = file.createDataSet("init_lamda_plot", init_lamda_plot);
 	//h5::DataSet saved_alpha  = file.createDataSet("alpha_plot", alpha_plot);
 	//h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
-	h5::DataSet saved_aeq    = file.createDataSet("aeq_plot", aeq_plot);
+	h5::DataSet saved_aeq    = file.createDataSet("init_aeq_plot", init_aeq_plot);
 	//h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
 
 

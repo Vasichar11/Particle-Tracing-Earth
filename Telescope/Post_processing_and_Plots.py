@@ -31,9 +31,9 @@ aeq_start_d    = f1["aeq_start_d"][()]
 aeq_end_d      = f1["aeq_end_d"][()]
 Ekev0          = f1["Ekev0"][()]
 By_wave        = f1["By_wave"][()]
-#aeq            = f1["aeq_plot"][()]
+aeq            = f1["init_aeq_plot"][()]
 #alpha          = f1["alpha_plot"][()]
-#lamda          = f1["lamda_plot"][()]
+lamda          = f1["init_lamda_plot"][()]
 #time           = f1["time_plot"][()]
 #deta_dt        = f1["deta_dt"][()]
 
@@ -99,17 +99,23 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 
 
-
-
-
-
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
-#fig, ax = plt.subplots()
-#for i in range(population):
-#    ax.scatter(lamda[i]*R2D,aeq[i]*R2D,s=0.3)
-#ax.grid(alpha=.3)
-#ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial Particle distribution in Latitude-aeq",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
-#fig.savefig("simulation_MM/initial_states.png",dpi=200)
+fig, ax = plt.subplots()
+for i in range(population):
+    ax.scatter(lamda[i]*R2D,aeq[i]*R2D,s=2)
+ax.grid(alpha=.3)
+ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial Particle distribution in Latitude-aeq",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
+ax.axhline(y = 90, color ="b", linestyle="dashed")
+fig.savefig("simulation_MM/initial_states.png",dpi=200)
+
+#Just aeq
+fig, ax = plt.subplots()
+for i in range(population):
+    ax.scatter(aeq[i]*R2D,1,s=2)
+ax.grid(alpha=.3)
+ax.set(xlabel="Aeq(deg)",ylabel="dN",title="Initial Particle distribution in aeq")
+ax.axvline(x = 90, color ="b", linestyle="dashed")
+fig.savefig("simulation_MM/initial_aeq.png",dpi=200)
 ########################################## COMPARE WPI - noWPI ###########################################
 """
 detected_id     = list(detected_id)     #Turn into lists
@@ -205,7 +211,7 @@ plt.savefig("simulation_MM/Crossing_particles_WPI_onlyNEW.png", dpi=100)
 """
 ############################################ WEIGHTING FACTORS ############################################
 data = np.linspace(0,sectors,sectors)            #Normal  distribution around the middle sector
-pdf = norm.pdf(data,loc=sectors/2,scale = 1.1)     #Mean in the middle sector and standard deviation of 0.7
+pdf = norm.pdf(data,loc=sectors/2,scale = 0.1)     #Mean in the middle sector and standard deviation of 0.7
 
 factor = pdf*20     #Multiply the normal distribution to make the weighting factors
 
@@ -287,7 +293,7 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
         ax[0].set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
         ax[0].set_xticks(ticks=np.arange(0,sectors),minor=True) 
         ax[0].set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
-        ax[0].set_ylim(0,np.amax(pdf)*np.amax(sctr_flux))
+        #ax[0].set_ylim(0,np.amax(pdf)*np.amax(sctr_flux))
         ax[0].set_xlim(0,sectors)
         ax[0].set(ylabel="count")
         ax[0].set_title("P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
@@ -297,7 +303,7 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
         ax[1].set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
         ax[1].set_xticks(ticks=np.arange(0,sectors),minor=True) 
         ax[1].set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
-        ax[1].set_ylim(0,1000)
+        #ax[1].set_ylim(0,1000)
         ax[1].set_xlim(0,sectors)
         ax[1].set(xlabel="P.A bins",ylabel="count * factor")
         ax[1].set_title("Weighted", loc="left", size="small",color="blue",x=-0.15)
@@ -362,13 +368,13 @@ with writer.saving(fig, "simulation_MM/Alter_bins.mp4", 100):
                 ax[0].set_xticklabels(labels=np.arange(0,view,srange),minor=True,size="small") 
                 ax[1].set_xticklabels(labels=np.arange(0,view,srange),minor=True,size="small") 
 
-            ax[0].set_ylim(0,population/4)
-            ax[0].set_xlim(0,sectors)
+            #ax[0].set_ylim(0,population/4)
+            #ax[0].set_xlim(0,sectors)
             ax[0].set_title("Ending P.A dstr when\n$time$_$bin$: "+str(tbin)+"s, $sector$_$range$: "+str(srange)+"degrees", loc="left", size="small",color="blue",x=-0.15)
             ax[0].xaxis.grid(True, which='minor')
             
-            ax[1].set_ylim(0,population/4)
-            ax[1].set_xlim(0,sectors)
+            #ax[1].set_ylim(0,population/4)
+            #ax[1].set_xlim(0,sectors)
             ax[1].set(xlabel="P.A bins",ylabel="count * factor")
             ax[1].set_title("Weighted",loc="left", size="small",color="blue",x=-0.15)
             ax[1].xaxis.grid(True, which='minor')
