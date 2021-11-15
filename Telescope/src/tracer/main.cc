@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cinttypes>  
 #include <vector> 
+#include <random>
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
 
@@ -51,21 +52,51 @@ int main(int argc, char **argv)
 	std::vector<Particles> eql_dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
 						//equally distributed
 	
-	real eta0,aeq0,lamda0,k;
+	real eta0,lamda0,k,aeq0=Constants::aeq_start_d;
 	real Blam0,salpha0,alpha0;
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
+
+
+//-------------NORMAL DSTR--------------//
+    //Take something like half normal distribution to find da matrix. Mean 0.
+    std::default_random_engine generator;
+    std::normal_distribution<double> distribution(0.0,10.0);
+    double number;
+    double aeq0dstr[Constants::aeq_dstr], da[Constants::aeq_dstr/2];
+	double mean=90;
+	for(int i=0;i<=Constants::aeq_dstr/2;i++)
+    {
+        number = distribution(generator); 
+        if(number>=0) { da[i] = number; std::cout<<"\nda: "<<da[i]; }
+        else i--; //sample again
+    }
+    //Add/Remove da[] to 90degrees which is the mean of the distribution.
+	for(int i=1; i<Constants::aeq_dstr/2; i++)
+    {
+	    aeq0dstr[Constants::aeq_dstr/2 + i] = mean + da[i]; 
+	    aeq0dstr[Constants::aeq_dstr/2 - i] = mean - da[i];
+    }    
+//-------------NORMAL DSTR--------------//
+
+	for(int i=0; i<Constants::aeq_dstr; i++)
+    {
+		std::cout<<"\n"<<aeq0dstr[i];
+    }    
 
 	for(int e=0, p=0; e<Constants::eta_dstr; e++)		
 	{   																							 
 		eta0 = (Constants::eta_start_d + e*Constants::eta_step_d) * Constants::D2R;			   														
 		
-		for(int a=0; a<Constants::aeq_dstr; a++)											
-		{	
-			aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	         	  	    
+		for(int a=0; a<Constants::aeq_dstr; a++)
+		{
+
+			aeq0 = aeq0dstr[a] * Constants::D2R;
+			
 
 			for(int l=0; l<Constants::lamda_dstr; l++, p++)
 		    {
-		    	lamda0 = (Constants::lamda_start_d + l*Constants::lamda_step_d) * Constants::D2R;  	
+
+				lamda0 = (Constants::lamda_start_d + l*Constants::lamda_step_d) * Constants::D2R;  	
 				
 				//Find P.A at lamda0.
 				Blam0=Bmag_dipole(lamda0);
@@ -76,7 +107,7 @@ int main(int argc, char **argv)
 				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;				
+				std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;				
 			}
 		}	
 	}

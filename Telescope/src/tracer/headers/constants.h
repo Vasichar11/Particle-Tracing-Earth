@@ -46,7 +46,7 @@ const real theta0=theta0_deg*D2R;
 //--Simulation parameters--//
 const real t=1;        				  	        //Simulation duration in seconds.
 const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
-const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
+const int64_t Nsteps=1; 			  			//Number of simulation steps, signed 8 byte integer.
 
 
 //for Bell code
@@ -62,8 +62,8 @@ const real telescope_lamda = 0; //90 //0,10,20,30
 
 //--Distribution parameters--//
 const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 10;  			    
-const int64_t lamda_dstr  = 10;					
+const int64_t aeq_dstr    = 1000;  			    
+const int64_t lamda_dstr  = 1000;					
 const int64_t test_pop    = eta_dstr * aeq_dstr * lamda_dstr;   //Testing population. Not all of them will be tracked. Only those will valid initial state.
 
 //------------------------------ Eta distribution range and step. --------------------------------//
@@ -74,7 +74,7 @@ const real eta_step_d     = 0;//(eta_end_d - eta_start_d)/(eta_dstr-1); 	//Step 
 //------------------------------ Aeq distribution range and step. --------------------------------//					 
 const real aeq_start_d    = 1;    					 				
 const real aeq_end_d      = 179;  			
-const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	
+//const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	
 		                          
 //----------------------------- Lamda distribution range and step. -------------------------------//					 
 const real lamda_start_d  = -90; 					 				
