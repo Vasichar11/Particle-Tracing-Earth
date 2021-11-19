@@ -25,15 +25,16 @@ detected_alpha = f1["ODPT.alpha"][()]
 telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
+arround90      = f1["arround90"][()]
 lamda_start_d  = f1["lamda_start_d"][()]
 lamda_end_d    = f1["lamda_end_d"][()]
 aeq_start_d    = f1["aeq_start_d"][()]
 aeq_end_d      = f1["aeq_end_d"][()]
 Ekev0          = f1["Ekev0"][()]
 By_wave        = f1["By_wave"][()]
-aeq            = f1["init_aeq_plot"][()]
+aeq0           = f1["aeq0_plot"][()]
 #alpha          = f1["alpha_plot"][()]
-lamda          = f1["init_lamda_plot"][()]
+lamda0          = f1["lamda0_plot"][()]
 #time           = f1["time_plot"][()]
 #deta_dt        = f1["deta_dt"][()]
 
@@ -87,8 +88,6 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 
 
-
-
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -99,26 +98,34 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 
 
+
+
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 fig, ax = plt.subplots()
-for i in range(population):
-    ax.scatter(lamda[i]*R2D,aeq[i]*R2D,s=2)
+ax.scatter(lamda0*R2D,aeq0*R2D,s=0.01)
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial Particle distribution in Latitude-aeq",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
 fig.savefig("simulation_MM/initial_states.png",dpi=200)
 
+#Normal aeq
+fig, ax = plt.subplots()
+ax.scatter(arround90,np.ones(len(arround90)),s=0.01)
+ax.axvline(x = 90, color ="b", linestyle="dashed")
+ax.grid(alpha=.3)
+ax.set(xlabel="Aeq(deg)",ylabel="dN",title="Initial distribution")
+fig.savefig("simulation_MM/distributed_aeq.png",dpi=200)
+
 #Just aeq
 fig, ax = plt.subplots()
-for i in range(population):
-    ax.scatter(aeq[i]*R2D,1,s=2)
+ax.scatter(aeq0*R2D,np.ones(len(aeq0)),s=0.01)
 ax.grid(alpha=.3)
-ax.set(xlabel="Aeq(deg)",ylabel="dN",title="Initial Particle distribution in aeq")
+ax.set(xlabel="Aeq(deg)",ylabel="dN",title="The particles that can be simulated")
 ax.axvline(x = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/initial_aeq.png",dpi=200)
-########################################## COMPARE WPI - noWPI ###########################################
+fig.savefig("simulation_MM/simulated_aeq.png",dpi=200)
+######################################### COMPARE WPI - noWPI ###########################################
 """
-detected_id     = list(detected_id)     #Turn into lists
+detected_id     = list(detected_id)         #Turn into lists
 detected_id_WPI = list(detected_id_WPI)
 new_particles = list(set(detected_id_WPI) - set(detected_id))  #Particles that were detected with WPI but not before.
 print("New id's when WPI",By_wave_WPI,"\n",new_particles)

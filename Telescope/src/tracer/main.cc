@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cinttypes>  
 #include <vector> 
-#include <random>
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
 
@@ -11,6 +10,7 @@
 #include "headers/bell_nowpi.h"
 #include "headers/bell_wpi.h"
 #include "headers/li_wpi.h"
+#include "headers/distributions.h"
 
 
 #include "headers/common.h"
@@ -57,34 +57,10 @@ int main(int argc, char **argv)
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
 
-//-------------NORMAL DSTR--------------//
-    //Take something like half normal distribution to find da matrix. Mean 0.
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0,12.0); //before was 0.0,10.0 and 15.0
-    double number;
-    double aeq0dstr[Constants::aeq_dstr], da[Constants::aeq_dstr/2];
-	double mean=90;
-	aeq0dstr[Constants::aeq_dstr/2] = mean;
-
-	for(int i=0;i<Constants::aeq_dstr/2;i++)
-    {
-        number = distribution(generator); 
-        if(number>=0) { da[i] = number; std::cout<<"\nda: "<<da[i]; } //before was number>0.1
-        else i--; //sample again
-    }
-    //Add/Remove da[] to 90degrees which is the mean of the distribution.
+	//"Symmetrical distribution" by mirroring half normal and shifting it.
+	std::array<real, Constants::aeq_dstr> aeq0dstr = symmetrical_dstr(Constants::halfmean, Constants::stdev, Constants::shift);
+    //for(int i=0;i<Constants::aeq_dstr;i++)  std::cout<<"\n"<<aeq0dstr.at(i);
 	
-	for(int i=1; i<Constants::aeq_dstr/2; i++)
-    {
-	    aeq0dstr[Constants::aeq_dstr/2 + i] = mean + da[i]; 
-	    aeq0dstr[Constants::aeq_dstr/2 - i] = mean - da[i];
-    }    
-//-------------NORMAL DSTR--------------//
-
-	for(int i=0; i<Constants::aeq_dstr; i++)
-    {
-		std::cout<<"\n"<<aeq0dstr[i];
-    }    
 
 	for(int e=0, p=0; e<Constants::eta_dstr; e++)		
 	{   																							 
@@ -92,9 +68,7 @@ int main(int argc, char **argv)
 		
 		for(int a=0; a<Constants::aeq_dstr; a++)
 		{
-
 			aeq0 = aeq0dstr[a] * Constants::D2R;
-			
 
 			for(int l=0; l<Constants::lamda_dstr; l++, p++)
 		    {
@@ -104,21 +78,22 @@ int main(int argc, char **argv)
 				//Find P.A at lamda0.
 				Blam0=Bmag_dipole(lamda0);
 				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
-				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) {eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
+				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) { eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
 				k = ((aeq0*Constants::R2D>90) ? 1 : 0);
 				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
 				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 
 				//Print initial state of particles.
-				std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;				
+				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;				
 			}
 		}	
 	}
 	int64_t track_pop = eql_dstr.size(); //Population of particles that will be tracked.
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
-	
-    
+
+
+
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
 	int realthreads;   
 	//---PARALLELISM Work sharing---//
@@ -204,15 +179,14 @@ int main(int argc, char **argv)
 		std::cout<<"\nArgument variable doesn't match any of the program's possible implementations.\n\nTry nowpi, wpi, or wpi_ray as the second argument variable."<<std::endl;
 		return EXIT_FAILURE;	
 	}
-
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
 
-	std::vector<real>  init_aeq_plot(track_pop);
-	std::vector<real> init_lamda_plot(track_pop);
+	std::vector<real>  aeq0_plot(track_pop);
+	std::vector<real> lamda0_plot(track_pop);
 	
 	//std::vector<std::vector<real>> time_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
 	//std::vector<std::vector<real>> alpha_plot(track_pop, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
@@ -225,12 +199,13 @@ int main(int argc, char **argv)
 	    //for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
 	    //{
 	    	//time_plot[p][0] = eql_dstr[p].time.at(0);  //take the initial values
-	    	init_aeq_plot[p] = eql_dstr[p].aeq.at(0);
+	    	aeq0_plot[p] = eql_dstr[p].aeq.at(0);
 	    	//alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
-	    	init_lamda_plot[p] = eql_dstr[p].lamda.at(0);
+	    	lamda0_plot[p] = eql_dstr[p].lamda.at(0);
 	    	//deta_dt_plot[p][i] = eql_dstr[p].deta_dt.at(i);
 	    //}
 	}
+    
 
 	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
@@ -252,11 +227,12 @@ int main(int argc, char **argv)
 	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
 	
 	//Saved Particles
-	h5::DataSet saved_lamda  = file.createDataSet("init_lamda_plot", init_lamda_plot);
+	h5::DataSet saved_lamda0  = file.createDataSet("lamda0_plot", lamda0_plot);
 	//h5::DataSet saved_alpha  = file.createDataSet("alpha_plot", alpha_plot);
 	//h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
-	h5::DataSet saved_aeq    = file.createDataSet("init_aeq_plot", init_aeq_plot);
+	h5::DataSet saved_aeq0    = file.createDataSet("aeq0_plot", aeq0_plot);
 	//h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
+	h5::DataSet normal_aeq    = file.createDataSet("arround90", aeq0dstr);
 
 
 
