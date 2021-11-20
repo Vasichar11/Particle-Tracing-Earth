@@ -57,10 +57,16 @@ int main(int argc, char **argv)
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
 
+//---------------------------------------- DISTRIBUTION OF AEQ0 -----------------------------------------//
+	//"Half-normal distribution" arround halfmean with stdeviation
+	std::array<real, Constants::aeq_dstr/2 + 1> da_dstr  = half_norm(Constants::halfmean, Constants::stdev);
 	//"Symmetrical distribution" by mirroring half normal and shifting it.
-	std::array<real, Constants::aeq_dstr> aeq0dstr = symmetrical_dstr(Constants::halfmean, Constants::stdev, Constants::shift);
-    //for(int i=0;i<Constants::aeq_dstr;i++)  std::cout<<"\n"<<aeq0dstr.at(i);
+	std::array<real, Constants::aeq_dstr> aeq0dstr = symmetrical_dstr(da_dstr, Constants::shift);
+	//for(int i=0;i<Constants::aeq_dstr;i++)  std::cout<<"\n"<<aeq0dstr.at(i);
+//---------------------------------------- DISTRIBUTION OF AEQ0 -----------------------------------------//
 	
+
+
 
 	for(int e=0, p=0; e<Constants::eta_dstr; e++)		
 	{   																							 
@@ -206,7 +212,7 @@ int main(int argc, char **argv)
 	    //}
 	}
     
-
+	std::cout<<"\n"<<da_dstr.size()<<" " <<aeq0dstr.size()<<" " <<aeq0_plot.size();
 	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
@@ -232,7 +238,8 @@ int main(int argc, char **argv)
 	//h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
 	h5::DataSet saved_aeq0    = file.createDataSet("aeq0_plot", aeq0_plot);
 	//h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
-	h5::DataSet normal_aeq    = file.createDataSet("arround90", aeq0dstr);
+	h5::DataSet normal_aeq    = file.createDataSet("aeq0dstr", aeq0dstr);
+	h5::DataSet da   	      = file.createDataSet("da", da_dstr);
 
 
 

@@ -25,7 +25,8 @@ detected_alpha = f1["ODPT.alpha"][()]
 telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
-arround90      = f1["arround90"][()]
+aeq0dstr       = f1["aeq0dstr"][()]
+da              = f1["da"][()]
 lamda_start_d  = f1["lamda_start_d"][()]
 lamda_end_d    = f1["lamda_end_d"][()]
 aeq_start_d    = f1["aeq_start_d"][()]
@@ -101,28 +102,40 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
+#da step
+da_mirrored = np.flip(da)
+da_full = list(da_mirrored)
+da_full.extend(da)
+fig, ax= plt.subplots()
+print(da_full)
+ax.scatter(aeq0dstr*R2D,da_full,s=1)
+ax.grid(alpha=.3)
+ax.set(xlabel="Particle",ylabel="da",title="Step in aeq0")
+fig.savefig("simulation_MM/half_normal.png", dpi =200)
+
+#aeq0-lamda0
 fig, ax = plt.subplots()
 ax.scatter(lamda0*R2D,aeq0*R2D,s=0.01)
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial Particle distribution in Latitude-aeq",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/initial_states.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_lamda0.png",dpi=200)
 
-#Normal aeq
+#aeq0 before
 fig, ax = plt.subplots()
-ax.scatter(arround90,np.ones(len(arround90)),s=0.01)
+ax.scatter(aeq0dstr,np.ones(len(aeq0dstr)),s=0.01)
 ax.axvline(x = 90, color ="b", linestyle="dashed")
 ax.grid(alpha=.3)
 ax.set(xlabel="Aeq(deg)",ylabel="dN",title="Initial distribution")
-fig.savefig("simulation_MM/distributed_aeq.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_before.png",dpi=200)
 
-#Just aeq
+#aeq0 after
 fig, ax = plt.subplots()
 ax.scatter(aeq0*R2D,np.ones(len(aeq0)),s=0.01)
 ax.grid(alpha=.3)
 ax.set(xlabel="Aeq(deg)",ylabel="dN",title="The particles that can be simulated")
 ax.axvline(x = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/simulated_aeq.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_after.png",dpi=200)
 ######################################### COMPARE WPI - noWPI ###########################################
 """
 detected_id     = list(detected_id)         #Turn into lists
