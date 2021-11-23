@@ -49,8 +49,8 @@ int main(int argc, char **argv)
 	std::cout<<"\n| "<<Constants::lamda_start_d << "  "<< " " << Constants::lamda_end_d <<"|\n";
 
 	Particles single; //Single particle struct.
-	std::vector<Particles> eql_dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
-						//equally distributed
+	std::vector<Particles> dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
+						
 	
 	real eta0,lamda0,k,aeq0=Constants::aeq_start_d;
 	real Blam0,salpha0,alpha0;
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
 //---------------------------------------- DISTRIBUTION OF AEQ0 -----------------------------------------//
 	//"Half-normal distribution" arround halfmean with stdeviation
-	std::array<real, Constants::aeq_dstr/2 + 1> da_dstr  = half_norm(Constants::halfmean, Constants::stdev);
+	std::array<real, Constants::aeq_dstr/2> da_dstr  = half_norm(Constants::mean, Constants::stdev);
 	//"Symmetrical distribution" by mirroring half normal and shifting it.
 	std::array<real, Constants::aeq_dstr> aeq0dstr = symmetrical_dstr(da_dstr, Constants::shift);
 	//for(int i=0;i<Constants::aeq_dstr;i++)  std::cout<<"\n"<<aeq0dstr.at(i);
@@ -84,20 +84,19 @@ int main(int argc, char **argv)
 				//Find P.A at lamda0.
 				Blam0=Bmag_dipole(lamda0);
 				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
-				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) { eql_dstr.pop_back(); p--; continue; } //Exclude these particles.
+				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) { dstr.pop_back(); p--; continue; } //Exclude these particles.
 				k = ((aeq0*Constants::R2D>90) ? 1 : 0);
 				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
-				eql_dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
+				dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 
 				//Print initial state of particles.
 				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;				
 			}
 		}	
 	}
-	int64_t track_pop = eql_dstr.size(); //Population of particles that will be tracked.
+	int64_t track_pop = dstr.size(); //Population of particles that will be tracked.
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
-
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
@@ -124,7 +123,7 @@ int main(int argc, char **argv)
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
 				//Detected particles are saved in ODPT object, which is passed here by reference.
-				nowpi(p, eql_dstr[p], ODPT);
+				nowpi(p, dstr[p], ODPT);
 			}
 		}	
     	std::cout<<"\n"<<"Joined"<<std::endl;
@@ -148,7 +147,7 @@ int main(int argc, char **argv)
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
 				//Detected particles are saved in ODPT object, which is passed here by reference.
-				wpi(p, eql_dstr[p], ODPT);
+				wpi(p, dstr[p], ODPT);
 			}
 		}	
     	std::cout<<"\n"<<"Joined"<<std::endl;
@@ -172,7 +171,7 @@ int main(int argc, char **argv)
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
 				//Detected particles are saved in ODPT object, which is passed here by reference.
-				wpi_ray(p, eql_dstr[p], ODPT);
+				wpi_ray(p, dstr[p], ODPT);
 			}
 		}	
     	std::cout<<"\n"<<"Joined"<<std::endl;
@@ -187,7 +186,24 @@ int main(int argc, char **argv)
 	}
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
-
+	int closer90,wider90,away90,far90,farr90,farrr90;
+	closer90=wider90=away90=far90=farr90=farrr90=0;
+	for(int p=0;p<track_pop;p++)
+	{
+		//[85-95]
+		if(dstr[p].aeq.at(0)*Constants::R2D <= 95.0 && dstr[p].aeq.at(0)*Constants::R2D >= 85.0) closer90++; 
+		//(95-100] && [80-85)
+		else if((95.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 100.0) || (85.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 80.0)) wider90++;
+		//100-105 && 75-80
+		else if((100.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 105.0) || (80.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 75.0)) away90++;
+		//105-110 && 70-75
+		else if((105.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 110.0) || (75.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 70.0)) far90++;
+		//110-115 && 65-70
+		else if((110.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 115.0) || (70.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 65.0)) farr90++;
+		//115-120 && 60-65
+		else if((115.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 120.0) || (65.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 60.0)) farrr90++;
+	}
+	std::cout<<"\n85-95 degrees   : "<<closer90<<"\n80-85 || 95-100 : "<< wider90<< "\n75-80 || 100-105: " << away90<< "\n70-75 || 105-110: " <<far90 << "\n65-70 || 110-115: " <<farr90 << "\n60-65 || 115-120: " <<farrr90 <<std::endl;
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
 
@@ -202,17 +218,16 @@ int main(int argc, char **argv)
 	//Assign from struct to 2d vectors.
 	for(int p=0; p<track_pop; p++)
 	{
-	    //for(size_t i=0; i<eql_dstr[p].alpha.size(); i++)  
+	    //for(size_t i=0; i<dstr[p].alpha.size(); i++)  
 	    //{
-	    	//time_plot[p][0] = eql_dstr[p].time.at(0);  //take the initial values
-	    	aeq0_plot[p] = eql_dstr[p].aeq.at(0);
-	    	//alpha_plot[p][i] = eql_dstr[p].alpha.at(i);
-	    	lamda0_plot[p] = eql_dstr[p].lamda.at(0);
-	    	//deta_dt_plot[p][i] = eql_dstr[p].deta_dt.at(i);
+	    	//time_plot[p][0] = dstr[p].time.at(0);  //take the initial values
+	    	aeq0_plot[p] = dstr[p].aeq.at(0);
+	    	//alpha_plot[p][i] = dstr[p].alpha.at(i);
+	    	lamda0_plot[p] = dstr[p].lamda.at(0);
+	    	//deta_dt_plot[p][i] = dstr[p].deta_dt.at(i);
 	    //}
 	}
     
-	std::cout<<"\n"<<da_dstr.size()<<" " <<aeq0dstr.size()<<" " <<aeq0_plot.size();
 	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
@@ -231,6 +246,9 @@ int main(int argc, char **argv)
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
 	h5::DataSet t			       = file.createDataSet("t", Constants::t);
 	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
+	h5::DataSet std                = file.createDataSet("stdev",Constants::stdev);
+	h5::DataSet shifted            = file.createDataSet("shift",Constants::shift);
+	h5::DataSet half_mean          = file.createDataSet("halfmean",Constants::mean);
 	
 	//Saved Particles
 	h5::DataSet saved_lamda0  = file.createDataSet("lamda0_plot", lamda0_plot);

@@ -1,17 +1,18 @@
 #include "headers/distributions.h"
 
- std::array<real, Constants::aeq_dstr/2 + 1> half_norm(real halfmean, real std)
+ std::array<real, Constants::aeq_dstr/2> half_norm(real mean, real std)
  {
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution(halfmean, std); 
+    std::random_device seed;         //random seed
+    std::mt19937 generator(seed());  //PRNG initialized with seed
     double number;
-    std::array<real,Constants::aeq_dstr/2 + 1> half_dstr;
+    std::array<real,Constants::aeq_dstr/2> half_dstr;
 
 	//"Half-normal" dstr for da
     for(int i=0;i<Constants::aeq_dstr/2;i++)
     {
+        std::normal_distribution<double> distribution(mean, std); //If inside the loop -> different values, why?
         number = distribution(generator); 
-        if(number>=0) half_dstr.at(i) = number; 
+        if(number>=0) half_dstr.at(i) = number;  //take positives close to the mean
         else i--; //sample again
     }
     
@@ -20,10 +21,8 @@
     return half_dstr;
  }
 
-
-
 //"Symmetrical distribution" by mirroring half normal and shifting it.
- std::array<real, Constants::aeq_dstr> symmetrical_dstr(std::array<real, Constants::aeq_dstr/2 + 1> half_dstr, real shift)
+ std::array<real, Constants::aeq_dstr> symmetrical_dstr(std::array<real, Constants::aeq_dstr/2> half_dstr, real shift)
 {
     std::array<real, Constants::aeq_dstr> dstr;
 

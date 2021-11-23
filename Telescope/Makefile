@@ -28,7 +28,7 @@ default: directories ray_int tracer
 #Implicit Rules
 ray_int: ${OBJ_INTERP}
 	${LNK} -o $@ ${OBJ_INTERP} ${INC_H5} ${CPPFLAGS} 
-	@printf "Builded to interpolate ray\n\n" ;
+	@printf "\nBuilded to interpolate ray\n\n" ;
 tracer: ${OBJ_TRACER}
 	${LNK} -o $@ ${OBJ_TRACER} ${INC_H5} ${CPPFLAGS}
 	@printf "\nBuilded to trace particles\n" ;

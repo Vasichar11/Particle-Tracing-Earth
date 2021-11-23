@@ -26,7 +26,10 @@ telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
 aeq0dstr       = f1["aeq0dstr"][()]
-da              = f1["da"][()]
+da             = f1["da"][()]
+stdev          = f1["stdev"][()]
+halfmean       = f1["halfmean"][()]
+shift          = f1["shift"][()]
 lamda_start_d  = f1["lamda_start_d"][()]
 lamda_end_d    = f1["lamda_end_d"][()]
 aeq_start_d    = f1["aeq_start_d"][()]
@@ -102,40 +105,31 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
-#da step
+#da step before
 da_mirrored = np.flip(da)
 da_full = list(da_mirrored)
 da_full.extend(da)
 fig, ax= plt.subplots()
-print(da_full)
-ax.scatter(aeq0dstr*R2D,da_full,s=1)
+ax.scatter(da_full,aeq0dstr,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
-ax.set(xlabel="Particle",ylabel="da",title="Step in aeq0")
-fig.savefig("simulation_MM/half_normal.png", dpi =200)
-
-#aeq0-lamda0
-fig, ax = plt.subplots()
-ax.scatter(lamda0*R2D,aeq0*R2D,s=0.01)
-ax.grid(alpha=.3)
-ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial Particle distribution in Latitude-aeq",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
-ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/aeq0_lamda0.png",dpi=200)
+ax.set(xlabel="da(degree step from mean)",ylabel="aeq0",title="Step in aeq0 when distributing(not all are simulated)\nmirroring-shifting with: stdev="+str(stdev)+", halfmean="+str(halfmean)+", shift="+str(shift))
+fig.savefig("simulation_MM/half_normal_before.png", dpi =200)
 
 #aeq0 before
 fig, ax = plt.subplots()
-ax.scatter(aeq0dstr,np.ones(len(aeq0dstr)),s=0.01)
+ax.scatter(aeq0dstr,np.ones(len(aeq0dstr)),s=0.5,alpha=0.1)
 ax.axvline(x = 90, color ="b", linestyle="dashed")
 ax.grid(alpha=.3)
-ax.set(xlabel="Aeq(deg)",ylabel="dN",title="Initial distribution")
+ax.set(xlabel="Aeq(deg)",ylabel="dN",title="Distribution in aeq(not all are simulated)\nThis is applied in all diferrent latitudes of the lamda_dstr.")
 fig.savefig("simulation_MM/aeq0_before.png",dpi=200)
 
-#aeq0 after
+#aeq0-lamda0 after
 fig, ax = plt.subplots()
-ax.scatter(aeq0*R2D,np.ones(len(aeq0)),s=0.01)
+ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
-ax.set(xlabel="Aeq(deg)",ylabel="dN",title="The particles that can be simulated")
-ax.axvline(x = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/aeq0_after.png",dpi=200)
+ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
+ax.axhline(y = 90, color ="b", linestyle="dashed")
+fig.savefig("simulation_MM/aeq0_lamda0_after.png",dpi=200)
 ######################################### COMPARE WPI - noWPI ###########################################
 """
 detected_id     = list(detected_id)         #Turn into lists
