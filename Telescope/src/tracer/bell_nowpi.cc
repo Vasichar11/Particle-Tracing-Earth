@@ -3,8 +3,6 @@
 //Adiabatic motion.
 void nowpi(int p, Particles &single, Telescope &ODPT)
 {
-
-
     real lamda   =  single.lamda.at(0);
     //real zeta    =  single.zeta.at(0); 
     real ppar    =  single.ppar.at(0); 
@@ -16,7 +14,6 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
     //real Ekin    =  single.Ekin.at(0);
     real time    =  single.time.at(0);
 
-
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda;
     real w_h, dwh_ds, Bmag, p_mag, gama;
@@ -27,7 +24,6 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
     Species oxygen  (Constants::m_O,  Constants::q_i, 0.006); 
     Species hydrogen(Constants::m_H,  Constants::q_i, 0.94); 
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
-
     
 	std::cout.precision(8);			//Output 16 decimal precise
 	std::cout<<std::scientific;		//For e notation representation
@@ -36,7 +32,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
     
     while(i<Constants::Nsteps) 
     {
-        
+
         Bmag=Bmag_dipole(lamda);   
         w_h = electron.wc(Bmag); //Cyclotron frequency.
         dwh_ds=dwh_dsf(w_h,lamda);
@@ -46,7 +42,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
         slopes(k1, l1, m1, o1, p1, ppar, pper, lamda, w_h, dwh_ds, gama);
         //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn " << n1<< "\no1 " << o1 << "\np1 " << p1 << "\nq1 " << q1 <<"\n";	
         
-        
+
         Bmag=Bmag_dipole(lamda+0.5*(Constants::h)*o1);
         w_h = electron.wc(Bmag);
         dwh_ds=dwh_dsf(w_h,lamda+0.5*(Constants::h)*o1);
@@ -79,17 +75,22 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
 
         //Approximate new lamda
         new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
-        
-        //Check if NAN to break this particle. Why NAN ?
-        if(std::isnan(new_lamda))
+        if(std::isnan(ppar*pper*aeq*alpha*lamda*w_h*dwh_ds*p_mag*gama))
         {
-            std::cout<<"\nParticle "<<p<<" breaks";
-            //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " <<lamda<< " " <<aeq ;
-            //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
+            #pragma omp critical
+            {
+                std::cout<<"\nParticle "<<p<<" breaks";
+                //std::cout<<"\n"<< alpha << " " << " " << ppar<< " " << pper<< " " <<lamda<< " " <<aeq ;
+                //std::cout<<"\nw_h "<< w_h<<"\ndwh_ds " <<dwh_ds<<"\np_mag "<<p_mag<<"\ngama "<<gama;
+                //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 <<  "\no1 " << o1 << "\np1 " << p1 << "\n";
+                //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 <<  "\no2 " << o2 << "\np2 " << p2 << "\n";
+                //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 <<  "\no3 " << o3 << "\np3 " << p3 << "\n";
+                //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 <<  "\no4 " << o4 << "\np4 " << p4 << "\n";
+            }
             break;
         }
         
-        #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
+        #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
             //Check crossing. First estimate new latitude. 
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 

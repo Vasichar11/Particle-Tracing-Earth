@@ -57,8 +57,6 @@ ${OBJDIR_TRACER}/struct_Telescope.o: ${SRCDIR_TRACER}/struct_Telescope.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@    
 ${OBJDIR_TRACER}/functions.o: ${SRCDIR_TRACER}/functions.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@
-${OBJDIR_TRACER}/distributions.o: ${SRCDIR_TRACER}/distributions.cc
-	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@
 ${OBJDIR_TRACER}/is_in_packet.o: ${SRCDIR_TRACER}/is_in_packet.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ 
 ${OBJDIR_TRACER}/time_rates.o: ${SRCDIR_TRACER}/time_rates.cc

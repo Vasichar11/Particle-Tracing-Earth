@@ -25,11 +25,8 @@ detected_alpha = f1["ODPT.alpha"][()]
 telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
-aeq0dstr       = f1["aeq0dstr"][()]
-da             = f1["da"][()]
-stdev          = f1["stdev"][()]
-halfmean       = f1["halfmean"][()]
-shift          = f1["shift"][()]
+#aeq0dstr       = f1["aeq0dstr"][()]
+#da             = f1["da"][()]
 lamda_start_d  = f1["lamda_start_d"][()]
 lamda_end_d    = f1["lamda_end_d"][()]
 aeq_start_d    = f1["aeq_start_d"][()]
@@ -106,22 +103,22 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 #da step before
-da_mirrored = np.flip(da)
-da_full = list(da_mirrored)
-da_full.extend(da)
-fig, ax= plt.subplots()
-ax.scatter(da_full,aeq0dstr,s=0.5,alpha=0.1)
-ax.grid(alpha=.3)
-ax.set(xlabel="da(degree step from mean)",ylabel="aeq0",title="Step in aeq0 when distributing(not all are simulated)\nmirroring-shifting with: stdev="+str(stdev)+", halfmean="+str(halfmean)+", shift="+str(shift))
-fig.savefig("simulation_MM/half_normal_before.png", dpi =200)
+#da_mirrored = np.flip(da)
+#da_full = list(da_mirrored)
+#da_full.extend(da)
+#fig, ax= plt.subplots()
+#ax.scatter(da_full,aeq0dstr,s=0.5,alpha=0.1)
+#ax.grid(alpha=.3)
+#ax.set(xlabel="da(degree step from mean)",ylabel="aeq0",title="Step in aeq0 when distributing(not all are simulated)\nmirroring-shifting with: stdev="+str(stdev)+", halfmean="+str(halfmean)+", shift="+str(shift))
+#fig.savefig("simulation_MM/half_normal_before.png", dpi =200)
 
 #aeq0 before
-fig, ax = plt.subplots()
-ax.scatter(aeq0dstr,np.ones(len(aeq0dstr)),s=0.5,alpha=0.1)
-ax.axvline(x = 90, color ="b", linestyle="dashed")
-ax.grid(alpha=.3)
-ax.set(xlabel="Aeq(deg)",ylabel="dN",title="Distribution in aeq(not all are simulated)\nThis is applied in all diferrent latitudes of the lamda_dstr.")
-fig.savefig("simulation_MM/aeq0_before.png",dpi=200)
+#fig, ax = plt.subplots()
+#ax.scatter(aeq0dstr,np.ones(len(aeq0dstr)),s=0.5,alpha=0.1)
+#ax.axvline(x = 90, color ="b", linestyle="dashed")
+#ax.grid(alpha=.3)
+#ax.set(xlabel="Aeq(deg)",ylabel="dN",title="Distribution in aeq(not all are simulated)\nThis is applied in all diferrent latitudes of the lamda_dstr.")
+#fig.savefig("simulation_MM/aeq0_before.png",dpi=200)
 
 #aeq0-lamda0 after
 fig, ax = plt.subplots()

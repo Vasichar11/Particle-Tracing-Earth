@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cinttypes>  
 #include <vector> 
+#include <random> 
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
 
@@ -10,7 +11,6 @@
 #include "headers/bell_nowpi.h"
 #include "headers/bell_wpi.h"
 #include "headers/li_wpi.h"
-#include "headers/distributions.h"
 
 
 #include "headers/common.h"
@@ -41,68 +41,87 @@ int main(int argc, char **argv)
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	//Object for particles.
 	std::cout<<"\n\nParticle testing population: " << Constants::test_pop << "\n";
-	std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
-	std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
-	std::cout<<"\nWith aeq distribution in degrees"<<"\n|From "<<" To|";
+	//std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
+	//std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
+	std::cout<<"\nWith aeq fixed step distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::aeq_start_d << "  "<< " " << Constants::aeq_end_d <<"|\n";
-	std::cout<<"\nWith lamda distribution in degrees"<<"\n|From "<<" To|";
+	//std::cout<<"\nWith lamda distribution in degrees"<<"\n|From "<<" To|";
+	std::cout<<"\nWith latitude uniformly distributed, with varying interval"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::lamda_start_d << "  "<< " " << Constants::lamda_end_d <<"|\n";
 
 	Particles single; //Single particle struct.
 	std::vector<Particles> dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
-						
 	
-	real eta0,lamda0,k,aeq0=Constants::aeq_start_d;
-	real Blam0,salpha0,alpha0;
+	real lamda0,Blam0;
+	real k,aeq0,salpha0,alpha0;
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
-
-//---------------------------------------- DISTRIBUTION OF AEQ0 -----------------------------------------//
-	//"Half-normal distribution" arround halfmean with stdeviation
-	std::array<real, Constants::aeq_dstr/2> da_dstr  = half_norm(Constants::mean, Constants::stdev);
-	//"Symmetrical distribution" by mirroring half normal and shifting it.
-	std::array<real, Constants::aeq_dstr> aeq0dstr = symmetrical_dstr(da_dstr, Constants::shift);
-	//for(int i=0;i<Constants::aeq_dstr;i++)  std::cout<<"\n"<<aeq0dstr.at(i);
-//---------------------------------------- DISTRIBUTION OF AEQ0 -----------------------------------------//
-	
+	std::random_device seed;         //random seed 
+    std::mt19937 generator(seed());  //PRNG initialized with seed
+	real number, count;
+	real interval;
 
 
-
-	for(int e=0, p=0; e<Constants::eta_dstr; e++)		
-	{   																							 
-		eta0 = (Constants::eta_start_d + e*Constants::eta_step_d) * Constants::D2R;			   														
+	for(int a=0, p=0; a<Constants::aeq_dstr; a++)
+	{
+		aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	//Distributed with fixed step in fixed interval.		   														
 		
-		for(int a=0; a<Constants::aeq_dstr; a++)
+		//Varying interval for latitude selection - 2x2 linear system.
+		
+		if (0<aeq0 && aeq0<90) 		  interval = 180 - aeq0;
+		
+		else if (90<aeq0 && aeq0<180) interval = aeq0 - 180;
+		
+		else { std::cout<<"\nError aeq0 initialization."; return EXIT_FAILURE;}
+
+		//"Brute Force domain validation". Better solution? 
+		//Loop until <lamda_dstr> valid states for this aeq0 -> Flat aeq distribution * Weighting factors = Realistic distribution
+		count = 0;
+		while(count<Constants::lamda_dstr) 
 		{
-			aeq0 = aeq0dstr[a] * Constants::D2R;
-
-			for(int l=0; l<Constants::lamda_dstr; l++, p++)
-		    {
-
-				lamda0 = (Constants::lamda_start_d + l*Constants::lamda_step_d) * Constants::D2R;  	
-				
-				//Find P.A at lamda0.
-				Blam0=Bmag_dipole(lamda0);
-				salpha0=sin(aeq0)*sqrt(Blam0/Beq0); //(2.20) Bortnik thesis
-				if( (salpha0<-1) || (salpha0>1) || (salpha0==0) ) { dstr.pop_back(); p--; continue; } //Exclude these particles.
-				k = ((aeq0*Constants::R2D>90) ? 1 : 0);
-				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;		//If aeq0=150 => alpha0=arcsin(sin(150))=30 for particle in equator.Distribute in alpha instead of aeq?		 	
-				dstr[p].initialize(eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
-
+			std::uniform_real_distribution <real> distribution(-interval/2, interval/2); //Uniform distribution with varying interval.
+			number  = distribution(generator);											 //lat~90, interval is small. Moving away from 90, interval increases.
+			lamda0 	= number * Constants::D2R; 											 //Done to increase particle randomness in latitude. 
+			//Find P.A at lamda0.
+			Blam0 	   = Bmag_dipole(lamda0);
+			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0);  //(2.20) Bortnik thesis
+			if(   !((salpha0>1) || (salpha0<-1) || (salpha0==0))   ) //NOR of these should be true. Otherwise domain error. 
+			{
+				//Projecting aeq from alpha
+				k    = ((aeq0*Constants::R2D>90)    ? 1 : 0); 		//kEN...(here k=0 or 1 ?)
+				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;			 	// sinx = a => x=(-1)^k * asin(a) + k*pi
+				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
+				p ++ ;
+				count++;
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;				
+				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
 			}
 		}	
 	}
+
 	int64_t track_pop = dstr.size(); //Population of particles that will be tracked.
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
-
-
+	
+	//AEQ DISTRIBUTION
+	int sector_range = 15;
+	int view = 180;
+	int sectors = view/sector_range;
+	int eq_pa [sectors];
+	int sec;
+	for(int p=0; p<track_pop; p++)
+	{
+		sec = floor((dstr[p].aeq.at(0)*Constants::R2D)/sector_range);
+		eq_pa [sec] ++;
+	}
+	for(int sector=0;sector<sectors;sector++)
+	{
+		std::cout<<"\nSector: "<<sector<< " has " << eq_pa[sector] << " particles.";
+	}
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
 	int realthreads;   
 	//---PARALLELISM Work sharing---//
-	double wtime = omp_get_wtime();
+	real wtime = omp_get_wtime();
 	std::string s1("nowpi");
 	std::string s2("wpi");
 	std::string s3("wpi_ray");
@@ -117,8 +136,8 @@ int main(int argc, char **argv)
     	int id = omp_get_thread_num();
 		if(id==0){ realthreads = omp_get_num_threads();}
 		
-		#pragma omp for schedule(static)
-			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+		#pragma omp for schedule(dynamic)
+			for(int p=0; p<track_pop; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
 			{
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
@@ -141,8 +160,8 @@ int main(int argc, char **argv)
     	int id = omp_get_thread_num();
 		if(id==0){ realthreads = omp_get_num_threads();}
 		
-		#pragma omp for schedule(static)
-			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+		#pragma omp for schedule(dynamic)
+			for(int p=0; p<track_pop; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
 			{
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
@@ -165,8 +184,8 @@ int main(int argc, char **argv)
     	int id = omp_get_thread_num();
 		if(id==0){ realthreads = omp_get_num_threads();}
 		
-		#pragma omp for schedule(static)
-			for(int p=0; p<track_pop; p++)     //Chunk=1, pass blocks of 1 iteration to each thread.
+		#pragma omp for schedule(dynamic)
+			for(int p=0; p<track_pop; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
 			{
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
@@ -186,24 +205,6 @@ int main(int argc, char **argv)
 	}
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
-	int closer90,wider90,away90,far90,farr90,farrr90;
-	closer90=wider90=away90=far90=farr90=farrr90=0;
-	for(int p=0;p<track_pop;p++)
-	{
-		//[85-95]
-		if(dstr[p].aeq.at(0)*Constants::R2D <= 95.0 && dstr[p].aeq.at(0)*Constants::R2D >= 85.0) closer90++; 
-		//(95-100] && [80-85)
-		else if((95.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 100.0) || (85.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 80.0)) wider90++;
-		//100-105 && 75-80
-		else if((100.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 105.0) || (80.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 75.0)) away90++;
-		//105-110 && 70-75
-		else if((105.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 110.0) || (75.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 70.0)) far90++;
-		//110-115 && 65-70
-		else if((110.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 115.0) || (70.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 65.0)) farr90++;
-		//115-120 && 60-65
-		else if((115.0 < dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D <= 120.0) || (65.0>dstr[p].aeq.at(0)*Constants::R2D && dstr[p].aeq.at(0)*Constants::R2D >= 60.0)) farrr90++;
-	}
-	std::cout<<"\n85-95 degrees   : "<<closer90<<"\n80-85 || 95-100 : "<< wider90<< "\n75-80 || 100-105: " << away90<< "\n70-75 || 105-110: " <<far90 << "\n65-70 || 110-115: " <<farr90 << "\n60-65 || 115-120: " <<farrr90 <<std::endl;
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
 
@@ -246,9 +247,6 @@ int main(int argc, char **argv)
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
 	h5::DataSet t			       = file.createDataSet("t", Constants::t);
 	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
-	h5::DataSet std                = file.createDataSet("stdev",Constants::stdev);
-	h5::DataSet shifted            = file.createDataSet("shift",Constants::shift);
-	h5::DataSet half_mean          = file.createDataSet("halfmean",Constants::mean);
 	
 	//Saved Particles
 	h5::DataSet saved_lamda0  = file.createDataSet("lamda0_plot", lamda0_plot);
@@ -256,10 +254,6 @@ int main(int argc, char **argv)
 	//h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
 	h5::DataSet saved_aeq0    = file.createDataSet("aeq0_plot", aeq0_plot);
 	//h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
-	h5::DataSet normal_aeq    = file.createDataSet("aeq0dstr", aeq0dstr);
-	h5::DataSet da   	      = file.createDataSet("da", da_dstr);
-
-
 
 
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
