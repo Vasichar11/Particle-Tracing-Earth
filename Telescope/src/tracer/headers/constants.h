@@ -27,10 +27,10 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6/m-3
 
 //--Particle initial parameters--//
 const real L_shell=5; 			 				//L_shell of particle. Constant for now.
-const real Ekev0=500;               			//Initial energy keV
+const real Ekev0=590;               			//Initial energy keV
 const real aeq0_deg=170;            		    //Initial equatorial pitch angle, deg.
 const real aeq0=aeq0_deg*D2R;
-const real lamda0_deg=10;						//Initial latitude, deg.
+const real lamda0_deg=0;						//Initial latitude, deg.
 const real lamda0=lamda0_deg*D2R;	     		
 const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
@@ -44,7 +44,7 @@ const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
 
 //--Simulation parameters--//
-const real t=1;        				  	        //Simulation duration in seconds.
+const real t=10;        				  	        //Simulation duration in seconds.
 const real h=0.00001;							//Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps=t/h; 			  			//Number of simulation steps, signed 8 byte integer.
 
@@ -58,12 +58,12 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
 
 //--Satellite parameters--//
-const real telescope_lamda = 0; //90 //0,10,20,30
+const real telescope_lamda = 0; 
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
 const int64_t aeq_dstr    = 180;  			    
-const int64_t lamda_dstr  = 100;					
+const int64_t lamda_dstr  = 10;					
 const int64_t test_pop    = lamda_dstr * aeq_dstr;   //Testing population.
 
 //------------------------------ Eta distribution range and step. --------------------------------//

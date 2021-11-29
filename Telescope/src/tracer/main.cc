@@ -54,7 +54,9 @@ int main(int argc, char **argv)
 	std::vector<Particles> dstr(Constants::test_pop, single);	//Vector of structs for particle distribution.
 	
 	real lamda0,Blam0;
+	real lamda0_mr,Blam0_mr;
 	real k,aeq0,salpha0,alpha0;
+	real k_mr,aeq0_mr,salpha0_mr,alpha0_mr;
 	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
 
 	std::random_device seed;         //random seed 
@@ -66,14 +68,17 @@ int main(int argc, char **argv)
 	for(int a=0, p=0; a<Constants::aeq_dstr; a++)
 	{
 		aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	//Distributed with fixed step in fixed interval.		   														
+		aeq0_mr = M_PI - aeq0;		   														
 		
 		//Varying interval for latitude selection - 2x2 linear system.
 		
-		if (0<aeq0 && aeq0<90) 		  interval = 180 - aeq0;
+		if (0<aeq0 && aeq0<(M_PI/2)) 		    interval = 180 - aeq0*Constants::R2D;
 		
-		else if (90<aeq0 && aeq0<180) interval = aeq0 - 180;
+		else if ((M_PI/2)<aeq0 && aeq0<M_PI)    interval = aeq0*Constants::R2D - 180;
 		
-		else { std::cout<<"\nError aeq0 initialization."; return EXIT_FAILURE;}
+		else if (aeq0==M_PI/2) 					interval = 0.1 ; //Equator particles, aeq=90, lamda=0
+
+		else { std::cout<<"\nError aeq0 initialization. aeq0= " << aeq0*Constants::R2D <<std::endl; return EXIT_FAILURE;}
 
 		//"Brute Force domain validation". Better solution? 
 		//Loop until <lamda_dstr> valid states for this aeq0 -> Flat aeq distribution * Weighting factors = Realistic distribution
@@ -82,20 +87,28 @@ int main(int argc, char **argv)
 		{
 			std::uniform_real_distribution <real> distribution(-interval/2, interval/2); //Uniform distribution with varying interval.
 			number  = distribution(generator);											 //lat~90, interval is small. Moving away from 90, interval increases.
-			lamda0 	= number * Constants::D2R; 											 //Done to increase particle randomness in latitude. 
+			lamda0 	= number * Constants::D2R;											 //Done to increase particle randomness in latitude. 
+			lamda0_mr 	= -lamda0;											 			 //Done to increase particle randomness in latitude. 
+			
 			//Find P.A at lamda0.
 			Blam0 	   = Bmag_dipole(lamda0);
+			Blam0_mr   = Bmag_dipole(lamda0_mr);
 			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0);  //(2.20) Bortnik thesis
-			if(   !((salpha0>1) || (salpha0<-1) || (salpha0==0))   ) //NOR of these should be true. Otherwise domain error. 
+			salpha0_mr    = sin(aeq0_mr)*sqrt(Blam0_mr/Beq0);  
+			if(   !((salpha0>1) || (salpha0<-1) || (salpha0==0) || (salpha0_mr>1) || (salpha0_mr<-1) || (salpha0_mr==0) )   ) //NOR of these should be true. Otherwise domain error. 
 			{
 				//Projecting aeq from alpha
 				k    = ((aeq0*Constants::R2D>90)    ? 1 : 0); 		//kEN...(here k=0 or 1 ?)
-				alpha0=pow(-1,k)*asin(salpha0)+k*M_PI;			 	// sinx = a => x=(-1)^k * asin(a) + k*pi
+				k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		//kEN...(here k=0 or 1 ?)
+				alpha0  = pow(-1,k)*asin(salpha0)+k*M_PI;			 	// sinx = a => x=(-1)^k * asin(a) + k*pi
+				alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	// sinx = a => x=(-1)^k * asin(a) + k*pi
 				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
-				p ++ ;
-				count++;
+				dstr[p+1].initialize(Constants::eta0,aeq0_mr,alpha0_mr,lamda0_mr,Constants::Ekev0,Blam0_mr,0,0,0);
 				//Print initial state of particles.
 				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
+				//std::cout<<"\nParticle"<<p+1<<" aeq0: "<< aeq0_mr*Constants::R2D <<", lamda0: "<< lamda0_mr*Constants::R2D <<" gives alpha0: "<<alpha0_mr*Constants::R2D<<std::endl;
+				p+=2;
+				count+=2;
 			}
 		}	
 	}
@@ -115,9 +128,10 @@ int main(int argc, char **argv)
 		sec = floor((dstr[p].aeq.at(0)*Constants::R2D)/sector_range);
 		aeq0_bins.at(sec) ++;
 	}
+	std::cout<<"\nEquatorial P.A Initialization: ";
 	for(int sector=0;sector<sectors;sector++)
 	{
-		std::cout<<"\nSector: "<<sector<< " has " << aeq0_bins.at(sector) << " particles.";
+		std::cout<<"\naeq0 range: "<<sector*sector_range<< " - " <<(sector+1)*sector_range<< " has " << aeq0_bins.at(sector) << " particles.";
 	}
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
 	int realthreads;   
