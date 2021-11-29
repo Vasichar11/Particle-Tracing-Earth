@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cinttypes>  
 #include <vector> 
+#include <array> 
 #include <random> 
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
@@ -103,20 +104,20 @@ int main(int argc, char **argv)
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
 	
-	//AEQ DISTRIBUTION
-	int sector_range = 15;
-	int view = 180;
-	int sectors = view/sector_range;
-	int eq_pa [sectors];
+	//AEQ0 DISTRIBUTION
+	const int sector_range = 15;
+	const int view = 180;
+	const int sectors = view/sector_range;
+	std::array<int, sectors> aeq0_bins;
 	int sec;
 	for(int p=0; p<track_pop; p++)
 	{
 		sec = floor((dstr[p].aeq.at(0)*Constants::R2D)/sector_range);
-		eq_pa [sec] ++;
+		aeq0_bins.at(sec) ++;
 	}
 	for(int sector=0;sector<sectors;sector++)
 	{
-		std::cout<<"\nSector: "<<sector<< " has " << eq_pa[sector] << " particles.";
+		std::cout<<"\nSector: "<<sector<< " has " << aeq0_bins.at(sector) << " particles.";
 	}
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
 	int realthreads;   
@@ -247,6 +248,7 @@ int main(int argc, char **argv)
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
 	h5::DataSet t			       = file.createDataSet("t", Constants::t);
 	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
+	h5::DataSet aeq0bins           = file.createDataSet("aeq0_bins", aeq0_bins);
 	
 	//Saved Particles
 	h5::DataSet saved_lamda0  = file.createDataSet("lamda0_plot", lamda0_plot);
