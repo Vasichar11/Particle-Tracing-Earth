@@ -97,7 +97,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
             {										
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
                 //Store its state(it's before crossing the satellite!).
-                ODPT.store( p, lamda, alpha, aeq, time);  			        	
+                ODPT.store( p, lamda, alpha, time);  			        	
             }
         }
 

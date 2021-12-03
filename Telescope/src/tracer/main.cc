@@ -67,14 +67,14 @@ int main(int argc, char **argv)
 
 	for(int a=0, p=0; a<Constants::aeq_dstr; a++)
 	{
-		aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	//Distributed with fixed step in fixed interval.		   														
-		aeq0_mr = M_PI - aeq0;		   														
+		aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	// linspace(start,stop,aeq_dstr)					
+		aeq0_mr = M_PI - aeq0;		 // Opposite direction particle  														
 		
 		//Varying interval for latitude selection - 2x2 linear system.
 		
-		if (0<aeq0 && aeq0<(M_PI/2)) 		    interval = 180 - aeq0*Constants::R2D;
+		if (0<aeq0 && aeq0<(M_PI/2)) 		    interval = 180 - (2*aeq0*Constants::R2D);
 		
-		else if ((M_PI/2)<aeq0 && aeq0<M_PI)    interval = aeq0*Constants::R2D - 180;
+		else if ((M_PI/2)<aeq0 && aeq0<M_PI)    interval = (2*aeq0*Constants::R2D) - 180;
 		
 		else if (aeq0==M_PI/2) 					interval = 0.1 ; //Equator particles, aeq=90, lamda=0
 
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 			std::uniform_real_distribution <real> distribution(-interval/2, interval/2); //Uniform distribution with varying interval.
 			number  = distribution(generator);											 //lat~90, interval is small. Moving away from 90, interval increases.
 			lamda0 	= number * Constants::D2R;											 //Done to increase particle randomness in latitude. 
-			lamda0_mr 	= -lamda0;											 			 //Done to increase particle randomness in latitude. 
+			lamda0_mr 	= - lamda0;											 			 //Done to increase particle randomness in latitude. 
 			
 			//Find P.A at lamda0.
 			Blam0 	   = Bmag_dipole(lamda0);
@@ -244,7 +244,7 @@ int main(int argc, char **argv)
 	    //}
 	}
     
-	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_mirror.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

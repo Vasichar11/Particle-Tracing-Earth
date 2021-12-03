@@ -11,6 +11,7 @@ from matplotlib.ticker import MaxNLocator
 from collections import Counter
 import math as mt
 from scipy.stats import norm
+import re
 
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -40,31 +41,55 @@ lamda0          = f1["lamda0_plot"][()]
 #deta_dt        = f1["deta_dt"][()]
 aeq0_bins       = f1["aeq0_bins"][()]
 
-""" 
+"""
 #WPI
 f2 = h5py.File("h5files/detected_WPI.h5","r")
 #print("Keys: %s" % f2.keys())
-detected_lamda_WPI = f2["ODPT.lamda"][()]
-detected_time_WPI  = f2["ODPT.time"][()]
-detected_id_WPI    = f2["ODPT.id"][()]
-detected_alpha     = f2["ODPT.alpha"][()]
-telescope_lamda_WPI= f2["ODPT.latitude"][()]
-population_WPI     = f2["population"][()]
-t_WPI              = f2["t"][()]
+detected_lamda_WPI = f1["ODPT.lamda"][()]
+detected_time_WPI  = f1["ODPT.time"][()]
+detected_id_WPI    = f1["ODPT.id"][()]
+detected_alpha_WPI = f1["ODPT.alpha"][()]
+telescope_lamda= f1["ODPT.latitude"][()]
+population_WPI     = f1["population"][()]
+t_WPI              = f1["t"][()]
+#aeq0dstr_WPI       = f1["aeq0dstr"][()]
+#da_WPI             = f1["da"][()]
 lamda_start_d_WPI  = f1["lamda_start_d"][()]
 lamda_end_d_WPI    = f1["lamda_end_d"][()]
 aeq_start_d_WPI    = f1["aeq_start_d"][()]
 aeq_end_d_WPI      = f1["aeq_end_d"][()]
 Ekev0_WPI          = f1["Ekev0"][()]
 By_wave_WPI        = f1["By_wave"][()]
-aeq_WPI            = f2["aeq_plot"][()]
-alpha_WPI          = f2["alpha_plot"][()]
-lamda_WPI          = f2["lamda_plot"][()]
-time_WPI           = f2["time_plot"][()]
-deta_dt_WPI        = f2["deta_dt"][()]
+aeq0_WPI           = f1["aeq0_plot"][()]
+#alpha_WPI          = f1["alpha_plot"][()]
+lamda0_WPI          = f1["lamda0_plot"][()]
+#time_WPI           = f1["time_plot"][()]
+#deta_dt_WPI        = f1["deta_dt"][()]
+aeq0_bins_WPI       = f1["aeq0_bins"][()]
 
-f2.close();
+f2.close()
 """
+
+############################################# REALISTIC PAD #######################################################
+
+pad = []
+pad.append(0.5162495948881156)
+pad.append(0.6854568231698152)
+pad.append(0.8638323509385712)
+pad.append(0.9697522420014371)
+pad.append(1.0173297248797026)
+pad.append(1.0386138703574943)
+pad.append(1.0539472452654686)
+pad.append(1.0626431175553313)
+pad.append(1.0583956889325798)
+pad.append(1.0446399611726047)
+pad.append(1.0267311040548355)
+pad.append(0.9924859391521681)
+pad.append(0.9116620782464004)
+pad.append(0.7584825426967184)
+pad.append(0.5645044682586008)
+
+
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
 time_bin  = 0.1                 #seconds to distinquish events(time resolution)
@@ -305,7 +330,7 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
         ax[0].set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
         ax[0].set_xticks(ticks=np.arange(0,sectors),minor=True) 
         ax[0].set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
-        #ax[0].set_ylim(0,np.amax(pdf)*np.amax(sctr_flux))
+        ax[0].set_ylim(0,np.amax(sctr_flux))
         ax[0].set_xlim(0,sectors)
         ax[0].set(ylabel="count")
         ax[0].set_title("P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)

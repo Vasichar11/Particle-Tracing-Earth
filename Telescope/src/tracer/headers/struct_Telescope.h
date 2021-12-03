@@ -11,7 +11,7 @@ struct Telescope
 	bool crossing(real p1_lamda, real p2_lamda, real p_L_shell);	//Returns true if particle crossed satellite.
 
 	//Function to push back detected particles.
-	void store(int id, real lamda, real alpha, real aeq, real time);
+	void store(int id, real lamda, real alpha, real time);
 
 	//void update_look_dir();   					//When called, update look direction.
 	
