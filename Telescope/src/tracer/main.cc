@@ -6,7 +6,7 @@
 #include <random> 
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
-
+ 
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
 #include "headers/bell_nowpi.h"
@@ -57,51 +57,44 @@ int main(int argc, char **argv)
 	real lamda0_mr,Blam0_mr;
 	real k,aeq0,salpha0,alpha0;
 	real k_mr,aeq0_mr,salpha0_mr,alpha0_mr;
-	real Beq0 = Bmag_dipole(0);	//Beq isn't always Beq0?
+	real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 
-	std::random_device seed;         //random seed 
-    std::mt19937 generator(seed());  //PRNG initialized with seed
+	std::random_device seed;         //Random seed. 
+    std::mt19937 generator(seed());  //PRNG initialized with seed.
 	real number, count;
 	real interval;
 
 
 	for(int a=0, p=0; a<Constants::aeq_dstr; a++)
 	{
-		aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	// linspace(start,stop,aeq_dstr)					
-		aeq0_mr = M_PI - aeq0;		 // Opposite direction particle  														
+		aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	  	  //linspace(start,stop,aeq_dstr)					
+		aeq0_mr = M_PI - aeq0;		 												  	  //Mirror aeq  														
 		
-		//Varying interval for latitude selection - 2x2 linear system.
-		
-		if (0<aeq0 && aeq0<(M_PI/2)) 		    interval = 180 - (2*aeq0*Constants::R2D);
-		
+		if      (0<aeq0 && aeq0<(M_PI/2)) 		interval = 180 - (2*aeq0*Constants::R2D); //Varying interval for latitude selection - 2x2 linear system.
 		else if ((M_PI/2)<aeq0 && aeq0<M_PI)    interval = (2*aeq0*Constants::R2D) - 180;
-		
-		else if (aeq0==M_PI/2) 					interval = 0.1 ; //Equator particles, aeq=90, lamda=0
+		else if (aeq0==M_PI/2) 					interval = 0.1 ; 					      //Equator particles, aeq=90, lamda~=0
+		else { std::cout<<"\nError aeq0 initialization. aeq0= " << aeq0*Constants::R2D << std::endl; return EXIT_FAILURE;}
 
-		else { std::cout<<"\nError aeq0 initialization. aeq0= " << aeq0*Constants::R2D <<std::endl; return EXIT_FAILURE;}
-
-		//"Brute Force domain validation". Better solution? 
-		//Loop until <lamda_dstr> valid states for this aeq0 -> Flat aeq distribution * Weighting factors = Realistic distribution
 		count = 0;
-		while(count<Constants::lamda_dstr) 
-		{
-			std::uniform_real_distribution <real> distribution(-interval/2, interval/2); //Uniform distribution with varying interval.
-			number  = distribution(generator);											 //lat~90, interval is small. Moving away from 90, interval increases.
-			lamda0 	= number * Constants::D2R;											 //Done to increase particle randomness in latitude. 
-			lamda0_mr 	= - lamda0;											 			 //Done to increase particle randomness in latitude. 
+		while(count<Constants::lamda_dstr)												   //"Brute Force domain validation". Better solution? 
+		{																				   //Loop until <lamda_dstr> valid states for this aeq0.
+			std::uniform_real_distribution <real> distribution(-interval/2, interval/2);   //Uniform distribution with varying interval.
+			number  = distribution(generator);											   //lat~90, interval is small. Moving away from 90, interval increases.
+			lamda0 	= number * Constants::D2R;											    
+			lamda0_mr 	= - lamda0;											 			   //Mirror lamda
 			
 			//Find P.A at lamda0.
 			Blam0 	   = Bmag_dipole(lamda0);
 			Blam0_mr   = Bmag_dipole(lamda0_mr);
-			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0);  //(2.20) Bortnik thesis
+			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0); 										//(2.20) Bortnik thesis
 			salpha0_mr    = sin(aeq0_mr)*sqrt(Blam0_mr/Beq0);  
-			if(   !((salpha0>1) || (salpha0<-1) || (salpha0==0) || (salpha0_mr>1) || (salpha0_mr<-1) || (salpha0_mr==0) )   ) //NOR of these should be true. Otherwise domain error. 
-			{
+			if(   !((salpha0>1) || (salpha0<-1) || (salpha0==0) || (salpha0_mr>1) || (salpha0_mr<-1) || (salpha0_mr==0) )   )  
+			{																			 	//NOR of these should be true. Otherwise domain error.
 				//Projecting aeq from alpha
-				k    = ((aeq0*Constants::R2D>90)    ? 1 : 0); 		//kEN...(here k=0 or 1 ?)
-				k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		//kEN...(here k=0 or 1 ?)
-				alpha0  = pow(-1,k)*asin(salpha0)+k*M_PI;			 	// sinx = a => x=(-1)^k * asin(a) + k*pi
-				alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	// sinx = a => x=(-1)^k * asin(a) + k*pi
+				k       = ((aeq0*   Constants::R2D>90)    ? 1 : 0);     					//kEN...(here k=0 or 1 ?)
+				k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		
+				alpha0  = pow(-1,k)*asin(salpha0)+k*M_PI;			 						// sinx = a => x=(-1)^k * asin(a) + k*pi
+				alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	
 				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 				dstr[p+1].initialize(Constants::eta0,aeq0_mr,alpha0_mr,lamda0_mr,Constants::Ekev0,Blam0_mr,0,0,0);
 				//Print initial state of particles.
@@ -115,9 +108,9 @@ int main(int argc, char **argv)
 
 	int64_t track_pop = dstr.size(); //Population of particles that will be tracked.
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
+	std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.008/60) * Constants::t <<" minutes."<<std::endl;
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
-	
-	//AEQ0 DISTRIBUTION
+	//AEQ0 DISTRIBUTION CHECK
 	const int sector_range = 15;
 	const int view = 180;
 	const int sectors = view/sector_range;
@@ -244,7 +237,7 @@ int main(int argc, char **argv)
 	    //}
 	}
     
-	h5::File file("h5files/detected_mirror.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_mirrored.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
