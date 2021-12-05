@@ -108,7 +108,6 @@ int main(int argc, char **argv)
 
 	int64_t track_pop = dstr.size(); //Population of particles that will be tracked.
 	std::cout<<"\n"<<Constants::test_pop - track_pop<<" Particles were excluded from the initial population due to domain issues.\nThe particle population for the tracer is now: "<<track_pop<<"\n";
-	std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.008/60) * Constants::t <<" minutes."<<std::endl;
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
 	//AEQ0 DISTRIBUTION CHECK
 	const int sector_range = 15;
@@ -137,6 +136,7 @@ int main(int argc, char **argv)
 	if( !(s1.compare(argv[1])) )
 	{
         std::cout<<"\n\nNoWPI Simulation using Bell formulas"<<std::endl;
+		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.008/60) * Constants::t <<" minutes."<<std::endl;
 		std::cout<<"\nForked..."<<std::endl;
 		#pragma omp parallel
     	{
@@ -161,6 +161,8 @@ int main(int argc, char **argv)
 	else if( !(s2.compare(argv[1])) )
 	{
         std::cout<<"\n\nWPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
+		std::cout<<"\nExecution time estimation for 16 THREAD run: "<<(track_pop*0.5/60) * Constants::t <<" minutes."<<std::endl;
+		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.634/60) * Constants::t <<" minutes."<<std::endl;
 		std::cout<<"\nForked..."<<std::endl;
 		#pragma omp parallel
     	{
@@ -237,7 +239,7 @@ int main(int argc, char **argv)
 	    //}
 	}
     
-	h5::File file("h5files/detected_mirrored.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

@@ -19,7 +19,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
     real w_h, dwh_ds, Bmag, p_mag, gama;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,o1,o2,o3,o4,p1,p2,p3,p4;
 
-    //Objects for each specie. Used inside "motion" function. //Change that, it's called once for each particle...
+    //Objects for each specie.
     Species electron(Constants::m_e,  Constants::q_e, 1); 
     Species oxygen  (Constants::m_O,  Constants::q_i, 0.006); 
     Species hydrogen(Constants::m_H,  Constants::q_i, 0.94); 

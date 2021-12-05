@@ -92,7 +92,7 @@ pad.append(0.5645044682586008)
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 0.2                 #seconds to distinquish events(time resolution)
+time_bin  = 0.1                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
 sector_range = 15
