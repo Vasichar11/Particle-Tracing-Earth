@@ -31,10 +31,10 @@ int main(int argc, char **argv)
 {
 	if(argc!=2)
 	{
-		std::cout<<"Error. Argc should be 2. Set second argv from the list:(nowpi, wpi, wpi_ray)."<<std::endl;
+		std::cout<<"Error. Argc should be 2. Set second argv from the list:(nowpi, wpi, both, wpi_ray)."<<std::endl;
 		return EXIT_FAILURE;
 	}
-
+	
 	
 	//Position of the Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
@@ -126,12 +126,15 @@ int main(int argc, char **argv)
 		std::cout<<"\naeq0 range: "<<sector*sector_range<< " - " <<(sector+1)*sector_range<< " has " << aeq0_bins.at(sector) << " particles.";
 	}
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
+
+
 	int realthreads;   
 	//---PARALLELISM Work sharing---//
 	real wtime = omp_get_wtime();
 	std::string s1("nowpi");
 	std::string s2("wpi");
 	std::string s3("wpi_ray");
+	std::string s4("both");
 
 	if( !(s1.compare(argv[1])) )
 	{
@@ -156,13 +159,14 @@ int main(int argc, char **argv)
     	std::cout<<"\n"<<"Joined"<<std::endl;
 		wtime = omp_get_wtime()-wtime;
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+
 	}
 	
 	else if( !(s2.compare(argv[1])) )
 	{
         std::cout<<"\n\nWPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
-		std::cout<<"\nExecution time estimation for 16 THREAD run: "<<(track_pop*0.5/60) * Constants::t <<" minutes."<<std::endl;
-		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.634/60) * Constants::t <<" minutes."<<std::endl;
+		std::cout<<"\nExecution time estimation for 12 THREAD run: "<<(track_pop*0.02/60) * Constants::t <<" minutes."<<std::endl;
+		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.02/60) * Constants::t <<" minutes."<<std::endl;
 		std::cout<<"\nForked..."<<std::endl;
 		#pragma omp parallel
     	{
@@ -208,6 +212,70 @@ int main(int argc, char **argv)
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 	}
 
+
+//BOTH
+	else if( !(s4.compare(argv[1])) )
+	{
+		std::cout<<"\n\n"<<"The particles will bounce adiabatically until "<<Constants::t_wpi<<" simulation second"<<std::endl;
+		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation using Bell formulas"<<std::endl;
+		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
+		std::cout<<"\nForked..."<<std::endl;
+		#pragma omp parallel
+    	{
+    	int id = omp_get_thread_num();
+		if(id==0){ realthreads = omp_get_num_threads();}
+		
+		#pragma omp for schedule(dynamic)
+			for(int p=0; p<track_pop; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
+			{
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//Void Function for particle's motion. Involves RK4 for Nsteps. 
+				//Detected particles are saved in ODPT object, which is passed here by reference.
+				nowpi(p, dstr[p], ODPT);
+			}
+		}	
+    	std::cout<<"\n"<<"Joined"<<std::endl;
+		wtime = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+
+
+		//Last state becomes the first one to continue the simulation.
+		//Last step states need to be stored at the end of nowpi simulation.
+		for(int p=0; p<track_pop; p++)
+		{	
+			dstr[p].lamda.front() = dstr[p].lamda.back();
+			dstr[p].alpha.front() = dstr[p].alpha.back();
+			dstr[p].aeq.front()   = dstr[p].aeq.back();
+			dstr[p].ppar.front()  = dstr[p].ppar.back();
+			dstr[p].pper.front()  = dstr[p].pper.back();
+			dstr[p].eta.front()   = Constants::eta0;
+			dstr[p].time.front()  = dstr[p].time.back();
+		}
+
+		std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
+		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.02/60) * Constants::t_wpi <<" minutes."<<std::endl;
+		std::cout<<"\nForked..."<<std::endl;
+		#pragma omp parallel
+    	{
+
+    	int id = omp_get_thread_num();
+		if(id==0){ realthreads = omp_get_num_threads();}
+		
+		#pragma omp for schedule(dynamic)
+			for(int p=0; p<track_pop; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
+			{
+				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+				//Void Function for particle's motion. Involves RK4 for Nsteps. 
+				//Detected particles are saved in ODPT object, which is passed here by reference.
+				wpi(p, dstr[p], ODPT);
+			}
+		}	
+    	std::cout<<"\n"<<"Joined"<<std::endl;
+		wtime = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
+	}
+
+
 	else
 	{
 		std::cout<<"\nArgument variable doesn't match any of the program's possible implementations.\n\nTry nowpi, wpi, or wpi_ray as the second argument variable."<<std::endl;
@@ -239,7 +307,7 @@ int main(int argc, char **argv)
 	    //}
 	}
     
-	h5::File file("h5files/detected.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_nowpi.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

@@ -37,15 +37,15 @@ void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real 
 }
 
 //Member function to push_back new state
-void Particles::save_state(real new_lamda, real new_aeq, real new_time)
+void Particles::save_state(real new_lamda, real new_alpha, real new_aeq, real new_ppar, real new_pper, real new_time)
 {	//define size
 	this->lamda.push_back(new_lamda);      				
 	//this->zeta.push_back(new_zeta);
 	//this->upar.push_back(new_upar);
 	//this->uper.push_back(new_uper);	     
-	//this->ppar.push_back(new_ppar);		 
-	//this->pper.push_back(new_pper);
-	//this->alpha.push_back(new_alpha);	
+	this->ppar.push_back(new_ppar);		 
+	this->pper.push_back(new_pper);
+	this->alpha.push_back(new_alpha);	
 	this->aeq.push_back(new_aeq);
 	//this->deta_dt.push_back(new_deta_dt);
 	//this->eta.push_back(new_eta);			

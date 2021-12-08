@@ -40,7 +40,7 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     real new_lamda;
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
-    while(i<Constants::Nsteps-1) //Nsteps-1?           
+    while(i<Constants::Nsteps_wpi-1) //Nsteps-1?           
     {   
         //Take the data from interpolation and return (pulse_dur) of them, moved by "i" each iteration.
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Minimum lat of wave(in pulse duration).

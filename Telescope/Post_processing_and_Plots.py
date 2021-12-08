@@ -17,7 +17,7 @@ np.set_printoptions(threshold=sys.maxsize)
 
 ############################################# READ HDF5 ###################################################
 #noWPI
-f1 = h5py.File("h5files/detected_mirrored.h5","r")
+f1 = h5py.File("h5files/detected_nowpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -41,58 +41,37 @@ lamda0          = f1["lamda0_plot"][()]
 #deta_dt        = f1["deta_dt"][()]
 aeq0_bins       = f1["aeq0_bins"][()]
 
-"""
-#WPI
-f2 = h5py.File("h5files/detected_WPI.h5","r")
+f1.close()
+
+#noWPI and WPI afterwards
+f2 = h5py.File("h5files/detected_both.h5","r")
 #print("Keys: %s" % f2.keys())
-detected_lamda_WPI = f1["ODPT.lamda"][()]
-detected_time_WPI  = f1["ODPT.time"][()]
-detected_id_WPI    = f1["ODPT.id"][()]
-detected_alpha_WPI = f1["ODPT.alpha"][()]
-telescope_lamda= f1["ODPT.latitude"][()]
-population_WPI     = f1["population"][()]
-t_WPI              = f1["t"][()]
-#aeq0dstr_WPI       = f1["aeq0dstr"][()]
-#da_WPI             = f1["da"][()]
-lamda_start_d_WPI  = f1["lamda_start_d"][()]
-lamda_end_d_WPI    = f1["lamda_end_d"][()]
-aeq_start_d_WPI    = f1["aeq_start_d"][()]
-aeq_end_d_WPI      = f1["aeq_end_d"][()]
-Ekev0_WPI          = f1["Ekev0"][()]
-By_wave_WPI        = f1["By_wave"][()]
-aeq0_WPI           = f1["aeq0_plot"][()]
-#alpha_WPI          = f1["alpha_plot"][()]
-lamda0_WPI          = f1["lamda0_plot"][()]
-#time_WPI           = f1["time_plot"][()]
-#deta_dt_WPI        = f1["deta_dt"][()]
-aeq0_bins_WPI       = f1["aeq0_bins"][()]
+detected_lamda_both = f2["ODPT.lamda"][()]
+detected_time_both  = f2["ODPT.time"][()]
+detected_id_both    = f2["ODPT.id"][()]
+detected_alpha_both = f2["ODPT.alpha"][()]
+telescope_lamda_both= f2["ODPT.latitude"][()]
+population_both     = f2["population"][()]
+t_both              = f2["t"][()]
+#aeq0dstr_both       = f2["aeq0dstr"][()]
+#da_both             = f2["da"][()]
+lamda_start_d_both  = f2["lamda_start_d"][()]
+lamda_end_d_both    = f2["lamda_end_d"][()]
+aeq_start_d_both    = f2["aeq_start_d"][()]
+aeq_end_d_both      = f2["aeq_end_d"][()]
+Ekev0_both          = f2["Ekev0"][()]
+By_wave_both        = f2["By_wave"][()]
+aeq0_both           = f2["aeq0_plot"][()]
+#alpha_both          = f2["alpha_plot"][()]
+lamda0_both          = f2["lamda0_plot"][()]
+#time_both           = f2["time_plot"][()]
+#deta_dt_both        = f2["deta_dt"][()]
+aeq0_bins_both       = f2["aeq0_bins"][()]
 
 f2.close()
-"""
-
-############################################# REALISTIC PAD #######################################################
-
-pad = []
-pad.append(0.5162495948881156)
-pad.append(0.6854568231698152)
-pad.append(0.8638323509385712)
-pad.append(0.9697522420014371)
-pad.append(1.0173297248797026)
-pad.append(1.0386138703574943)
-pad.append(1.0539472452654686)
-pad.append(1.0626431175553313)
-pad.append(1.0583956889325798)
-pad.append(1.0446399611726047)
-pad.append(1.0267311040548355)
-pad.append(0.9924859391521681)
-pad.append(0.9116620782464004)
-pad.append(0.7584825426967184)
-pad.append(0.5645044682586008)
-
-
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 0.1                 #seconds to distinquish events(time resolution)
+time_bin  = 0.2                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
 sector_range = 15
@@ -109,12 +88,6 @@ colors = []
 for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
     colors.append('#%06X' % randint(0, 0xFFFFFF))
 
-
-
-
-
-
-
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -128,16 +101,6 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
-#da step before
-#da_mirrored = np.flip(da)
-#da_full = list(da_mirrored)
-#da_full.extend(da)
-#fig, ax= plt.subplots()
-#ax.scatter(da_full,aeq0dstr,s=0.5,alpha=0.1)
-#ax.grid(alpha=.3)
-#ax.set(xlabel="da(degree step from mean)",ylabel="aeq0",title="Step in aeq0 when distributing(not all are simulated)\nmirroring-shifting with: stdev="+str(stdev)+", halfmean="+str(halfmean)+", shift="+str(shift))
-#fig.savefig("simulation_MM/half_normal_before.png", dpi =200)
-
 #aeq0 dstr
 fig, ax = plt.subplots()
 for sec in range(0,sectors):
@@ -152,59 +115,8 @@ ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/aeq0_lamda0_after.png",dpi=200)
-######################################### COMPARE WPI - noWPI ###########################################
-"""
-detected_id     = list(detected_id)         #Turn into lists
-detected_id_WPI = list(detected_id_WPI)
-new_particles = list(set(detected_id_WPI) - set(detected_id))  #Particles that were detected with WPI but not before.
-print("New id's when WPI",By_wave_WPI,"\n",new_particles)
-print(new_particles)
-new_part = new_particles[1] #take one of them
+fig.savefig("simulation_MM/aeq0_lamda0.png",dpi=200)
 
-#most = max(set(detected_id_WPI), key = detected_id_WPI.count)  #One of the most detected particles(regularly bouncing whole time).
-
-fig, ax = plt.subplots(3,2)  
-
-#noWPI
-ax[0,0].set_title("noWPI",size="small",color="darkorange")     #AEQ-TIME
-ax[0,0].plot(time[new_part,:-1],aeq[new_part,:-1]*R2D)
-ax[0,0].grid(alpha=.3)
-ax[0,0].set_ylim(10,80)
-ax[0,0].set_ylabel('$aeq (deg)$',size="small")
-
-ax[1,0].plot(time[new_part,1:-1],deta_dt[new_part,1:-1])        #DETA_DT-TIME
-ax[1,0].grid(alpha=.3)
-ax[1,0].set_ylabel('$deta_dt$',size="small")
-
-ax[2,0].plot(time[new_part,:-1],lamda[new_part,:-1]*R2D)             #LAMDA-TIME
-ax[2,0].axhline(y = telescope_lamda, color ="b", linestyle="dashed")
-ax[2,0].set_ylim(-40,40)
-ax[2,0].annotate("SATELLITE",xy=(0,telescope_lamda_WPI+0.2),color="blue",weight="semibold",size="small")
-ax[2,0].grid(alpha=.3)
-ax[2,0].set_ylabel('$lamda (deg)$',size="small")
-ax[2,0].set_xlabel('$time (sec)$',size="x-small")
-
-
-#WPI
-ax[0,1].set_title("WPI",size="small",color="darkorange")         #AEQ-TIME
-ax[0,1].plot(time_WPI[new_part,:-1],aeq_WPI[new_part,:-1]*R2D)
-ax[0,1].set_ylim(10,80)
-ax[0,1].grid(alpha=.3)
-
-ax[1,1].plot(time_WPI[new_part,1:-1],deta_dt_WPI[new_part,1:-1])    #DETA_DT-TIME
-ax[1,1].grid(alpha=.3)
-
-ax[2,1].plot(time_WPI[new_part,:-1],lamda_WPI[new_part,:-1]*R2D)
-ax[2,1].axhline(y = telescope_lamda, color ="b", linestyle="dashed")     #LAMDA-TIME
-ax[2,1].set_ylim(-40,40)
-ax[2,1].annotate("SATELLITE",xy=(0,telescope_lamda_WPI+0.8),color="blue",weight="semibold",size="small")
-ax[2,1].grid(alpha=.3)
-ax[2,1].set_xlabel('$time (sec)$',size="x-small")
-
-fig.savefig('simulation_MM/aeq_deta_lamda.png' , dpi=200, facecolor='white',transparent=False)
-
-"""
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 
 #noWPI
@@ -217,39 +129,21 @@ plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="se
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles.png", dpi=100)
-"""
 
 #WPI
 fig, ax = plt.subplots()
-ax.scatter(detected_time_WPI, detected_lamda_WPI*R2D, c = detected_id_WPI, s=7, cmap="viridis")
+ax.scatter(detected_time_both, detected_lamda_both*R2D, c = detected_id_both, s=0.3, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
-plt.title("Population: " +str(population_WPI)+ ", lamda: [" +str(lamda_start_d_WPI)+", "+str(lamda_end_d_WPI)+ "], aeq0: ["+str(aeq_start_d_WPI)+", "+str(aeq_end_d_WPI)+"]"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
-plt.annotate("SATELLITE",xy=(t/2,telescope_lamda_WPI+0.0002),color="blue",weight="semibold")
+plt.title("$Population$: " +str(population_both)+ ", $lamda$: [" +str(lamda_start_d_both)+", "+str(lamda_end_d_both)+ "], $aeq0$: ["+str(aeq_start_d_both)+", "+str(aeq_end_d_both)+"]\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
+plt.annotate("SATELLITE",xy=(t_both/2,telescope_lamda_both+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
-ax.axhline(y = telescope_lamda_WPI ,color="b", linestyle="dashed")
-plt.savefig("simulation_MM/Crossing_particles_WPI.png", dpi=100)
+ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
+plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
 
-#PLOT ONLY NEW PARTICLES #NOT VALID...
-fig, ax = plt.subplots()
-j=0
-for id in new_particles:
-    ax.scatter(detected_time_WPI[id], detected_lamda_WPI[id]*R2D, c = "r", s=7)
-    j+=1
-ax.grid(alpha=0.8)
-ax.set(xlabel="time(s)", ylabel="latitude(deg)")
-plt.title("New particles : " +str(len(new_particles))+ "\n"+"Northward particles are captured below the satellite.\nSouthward particles are captured above the satellite.",size="medium")
-plt.annotate("SATELLITE",xy=(t/2,telescope_lamda_WPI+0.0002),color="blue",weight="semibold")
-ax.ticklabel_format(useOffset=False)    #disable e notation.
-ax.axhline(y = telescope_lamda_WPI ,color="b", linestyle="dashed")
-
-plt.savefig("simulation_MM/Crossing_particles_WPI_onlyNEW.png", dpi=100)
-
-"""
 ############################################## BINNING ####################################################
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux = [0 for i in range(timesteps)]
-
 for time,pa in zip(detected_time,detected_alpha): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
@@ -257,6 +151,17 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
         sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
     sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux[timestep] += 1
+
+#Both wpi and nowpi
+sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
+sum_flux_both = [0 for i in range(timesteps)]
+for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both array elements. No sorting required.
+    timestep = math.floor(time/time_bin)
+    sector   = math.floor(pa*R2D/sector_range)
+    if(pa*R2D==180):
+        sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
+    sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
+    sum_flux_both[timestep] += 1
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
@@ -265,7 +170,9 @@ ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flu
 ax.xaxis.grid(True, which='both')
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
-        ax.scatter(timestep*0.1+0.1/2,sum_flux[timestep],s=10)
+        ax.scatter(timestep*time_bin+time_bin/2,sum_flux[timestep],s=10)
+    if sum_flux_both[timestep]!=0:  
+        ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, alpha=0.2)  #WPI would be transparent dots
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
 ###################################### (FLUX-P.A)*TIMESTEPS  MOVIE ##########################################
 fig,ax = plt.subplots()
@@ -280,7 +187,9 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
         for sector in range(0,sectors): 
                         
             if sctr_flux[sector][timestep]!=0: #to show only non zero dots.
-                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c=colors[sector])   #without weighting factors
+                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c=colors[sector])  
+            if sctr_flux_both[sector][timestep]!=0: 
+                ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c=colors[sector], alpha=0.2)  
 
         ax.set_xticks(ticks=np.arange(0.5,sectors)) 
         ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
@@ -294,6 +203,15 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
 
         writer.grab_frame()
         ax.clear() #clear data 
+
+
+
+
+
+
+
+
+"""
 ######################################### LAST TIMESTEP - ALTER BINS ############################################
 fig,ax = plt.subplots()
 
@@ -340,3 +258,4 @@ with writer.saving(fig, "simulation_MM/Alter_bins.mp4", 100):
         
             writer.grab_frame()
             ax.clear() #clear data 
+"""

@@ -25,12 +25,12 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
     Species hydrogen(Constants::m_H,  Constants::q_i, 0.94); 
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
     
-	std::cout.precision(8);			//Output 16 decimal precise
-	std::cout<<std::scientific;		//For e notation representation
+	//std::cout.precision(8);			//Output 16 decimal precise
+	//std::cout<<std::scientific;		//For e notation representation
 
     int i=0;
     
-    while(i<Constants::Nsteps) 
+    while(i<Constants::Nsteps_nowpi) 
     {
 
         Bmag=Bmag_dipole(lamda);   
@@ -130,6 +130,15 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
     }
     
     //std::cout<<"\n" << "\nppar "<< ppar<< "\npper " << pper<< "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
+
+
+
+    //Save last state to continue the simulation if needed. There's no need for critical, threads have diferent structs of particles.
+    #pragma omp critical
+    {
+        
+        single.save_state(lamda,alpha,aeq,ppar,pper,time);
+    }
 
 }
 

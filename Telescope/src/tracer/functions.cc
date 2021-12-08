@@ -30,13 +30,15 @@ std::tuple<real, real, real, real> dispersion(real S, real P, real R, real L, re
     //th wave normal angle
     real A=S*sin(Constants::theta0)*sin(Constants::theta0)+P*cos(Constants::theta0)*cos(Constants::theta0);
     real B=R*L*sin(Constants::theta0)*sin(Constants::theta0)+S*P*(1+cos(Constants::theta0)*cos(Constants::theta0));
-    real C=P*R*L;                                   //using Lorentz & Maxwell equations with Stix parameters
-//  if(B>0)                                         //produced dispersion relation  A*(mu^4) − B*(mu^2) + C = 0
-//    { mu_sq=(B-sqrt(B*B-4*A*C))/(2*A); }
-//  if(B<0)
-//    { mu_sq=(2*C)/(B+sqrt(B*B-4*A*C)); }
-    real mu_sq=(B-sqrt(B*B-4*A*C))/(2*A);
-    real mu=sqrt(mu_sq);
+    real C=P*R*L;                                   //using Lorentz & Maxwell equations with Stix parameters //produced dispersion relation  A*(mu^4) − B*(mu^2) + C = 0
+    real mu_sq, mu;
+    //std::cout<<"\nB "<< B << " A " << A << " C " << C <<"\nsqrtof "<<(B*B-4*A*C);
+    //mu squared can become negative. Probably it has to do with the ion densities. Domain error.
+    if(B>=0)  mu_sq=(B-sqrt(B*B-4*A*C))/(2*A);   
+    else      mu_sq=(2*C)/(B+sqrt(B*B-4*A*C));    
+    //mu_sq=(B-sqrt(B*B-4*A*C))/(2*A);
+    //std::cout<<"\nmu_sq "<< mu_sq<<" mu "<< mu;
+    mu=sqrt(mu_sq);
     real kappa=mu*Constants::w_wave/Constants::c;
     real kx=kappa*sin(Constants::theta0);
     real kz=kappa*cos(Constants::theta0);
