@@ -10,13 +10,13 @@ std::tuple<real, real, real, real, real> stix_parameters(real wce, real wcO, rea
     real P=1-(wpse/pow(Constants::w_wave,2))-(wpsH/pow(Constants::w_wave,2))-(wpsHe/pow(Constants::w_wave,2))-(wpsO/pow(Constants::w_wave,2));
     real S = (R+L)/2;
     real D = (R-L)/2 ;
-return std::make_tuple(S, D, P, R, L); //try std::vector for performance
+    return std::make_tuple(S, D, P, R, L); //try std::vector for performance
 }
 
 //Magnetic dipole field 
 real Bmag_dipole(real lamda)                                      //Components of B [Walt,1994]
 {   //----calculate the dipole magnetic field strength            //B = sqrt(Br^2 + Bl^2) = B0*(Re/r^3)*slat_term
-    //lamda geomagnetic latitude                                  //Where r = Re*L*sqrt(clat)
+    //lamda geomagnetic latitude                                  //Where r = Re*L*(clat^2)
     real slat=sin(lamda);                                         //Substituting in Bmag
     real clat=cos(lamda);                   
     real slat_term = sqrt(1 + 3*slat*slat);             
@@ -35,14 +35,14 @@ std::tuple<real, real, real, real> dispersion(real S, real P, real R, real L, re
     //std::cout<<"\nB "<< B << " A " << A << " C " << C <<"\nsqrtof "<<(B*B-4*A*C);
     //mu squared can become negative. Probably it has to do with the ion densities. Domain error.
     if(B>=0)  mu_sq=(B-sqrt(B*B-4*A*C))/(2*A);   
-    else      mu_sq=(2*C)/(B+sqrt(B*B-4*A*C));    
+    else      mu_sq=(2*C)/(B+sqrt(B*B-4*A*C));      //Conditional forms are only for computational accuracy[Kimura, 1966].
     //mu_sq=(B-sqrt(B*B-4*A*C))/(2*A);
     //std::cout<<"\nmu_sq "<< mu_sq<<" mu "<< mu;
     mu=sqrt(mu_sq);
     real kappa=mu*Constants::w_wave/Constants::c;
     real kx=kappa*sin(Constants::theta0);
     real kz=kappa*cos(Constants::theta0);
-return std::make_tuple(mu, kappa, kx, kz); //try std::vector for performance
+    return std::make_tuple(mu, kappa, kx, kz); //try std::vector for performance
 }
 
 //Estimate dwh_ds
@@ -52,7 +52,7 @@ real dwh_dsf(real w_h, real lamda){         //[Tao et al, 2012]
     real slat_term = sqrt(1 + 3*slat*slat);
     real dwh_ds = (3.0*w_h/(Constants::L_shell*Constants::Re)) *(slat/slat_term) * (1.0/(slat_term*slat_term) + 2.0/(clat*clat));
     // dwh_ds = (3.0*w_h/(L_shell*Re)) *(slat/slat_term) * (1.0/(slat_term*slat_term))
-return dwh_ds;
+    return dwh_ds;
 }
     
 //Estimate Bell parameters //In[10]:                //Bell[1984]
@@ -80,7 +80,7 @@ void Bell_params(const real ppar, const real pper, const real Bxw, const real By
 //https://en.cppreference.com/w/cpp/numeric/special_functions/cyl_bessel_j
 //compile with c++17, bessel is defined in <cmath>
 //which bessel should i use?
-return; 
+   return; 
 }
 
 //Estimate resonant velocity
@@ -96,7 +96,7 @@ void vres_f(const real kz, const real w_h, const real alpha, real &v_para_res, r
     v_para_res = ( direction*sqrt(t1 + (t2*t3)) - Constants::w_wave*kz) / t3;
     real v_tot_res = v_para_res / cos(alpha);
     E_res = Constants::e_el*(1.0/sqrt( 1-(v_tot_res*v_tot_res/(Constants::c*Constants::c)) ) - 1 );  //not sure about that... taken from Bortnik code
-return;
+    return;
 }
 
 //Compute field components.([Bell 1984] 𝑧̂ ||𝐵0→ and 𝑥̂  pointing towards higher L-shells)
@@ -170,6 +170,7 @@ void f_packet (real &Fpar, real &Fper, real &Ftheta, real &aeq_rk, real &kz, con
     
     //Calculate Equatorial P.A change.
     aeq_rk =((Constants::q_e*Bw_ray)/(pow(p_mag,2)))*(tan(aeqsu_tmp)/tan(alpha_tmp))*(((Constants::w_wave/kappa_ray)-(ppar_tmp/(gama*Constants::m_e)))*ppar_tmp-(pow(pper_tmp,2)/(gama*Constants::m_e)))*sin(eta_tmp);
+    return;
 }
 
 //Returns quantities needed, regardless WPI.
@@ -186,6 +187,7 @@ void f_always(real &p_mag, real &gama, real &w_h, real &dwh_ds, const real lamda
     real Bmag = ((Constants::B0)/(pow((Constants::L_shell),3)))*slat_term/(pow(clat,6));
     w_h = ((Constants::q_e*Bmag)/Constants::m_e);
     dwh_ds = (3.0*w_h/(Constants::L_shell*Constants::Re)) *(slat/slat_term) * (1.0/(slat_term*slat_term) + 2.0/(clat*clat)); // [Tao et al, 2012]
+    return;
 }
 
 //Estimate resonant velocity

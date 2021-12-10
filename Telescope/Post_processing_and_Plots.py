@@ -44,7 +44,7 @@ aeq0_bins       = f1["aeq0_bins"][()]
 f1.close()
 
 #noWPI and WPI afterwards
-f2 = h5py.File("h5files/detected_both.h5","r")
+f2 = h5py.File("h5files/detected_nowpi.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -70,23 +70,10 @@ aeq0_bins_both       = f2["aeq0_bins"][()]
 
 f2.close()
 
-############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 0.2                 #seconds to distinquish events(time resolution)
-timesteps = int (t / time_bin)
-view = 180 
-sector_range = 15
-sectors = int(view/sector_range)
 
 D2R=np.pi/180
 R2D=1/D2R
-########################################### FONTS AND COLORS #############################################
-font = {'family': 'serif',
-        'color':  'blue',
-        'weight': 'bold',
-        'size': 12}
-colors = []
-for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
-    colors.append('#%06X' % randint(0, 0xFFFFFF))
+
 
 ##########################################################################################################
 ##########################################################################################################
@@ -96,6 +83,21 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 
 
+
+############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
+time_bin  = 0.2                 #seconds to distinquish events(time resolution)
+timesteps = int (t / time_bin)
+view = 180 
+sector_range = 15
+sectors = int(view/sector_range)
+########################################### FONTS AND COLORS #############################################
+font = {'family': 'serif',
+        'color':  'blue',
+        'weight': 'bold',
+        'size': 12}
+colors = []
+for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
+    colors.append('#%06X' % randint(0, 0xFFFFFF))
 
 
 
@@ -130,7 +132,7 @@ ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles.png", dpi=100)
 
-#WPI
+#BOTH
 fig, ax = plt.subplots()
 ax.scatter(detected_time_both, detected_lamda_both*R2D, c = detected_id_both, s=0.3, cmap="viridis")
 ax.grid(alpha=0.8)
@@ -140,6 +142,8 @@ plt.annotate("SATELLITE",xy=(t_both/2,telescope_lamda_both+0.0002),color="blue",
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
+
+
 
 ############################################## BINNING ####################################################
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]

@@ -47,8 +47,8 @@ const real theta0=theta0_deg*D2R;
 const real t=1;        				  	            //Simulation duration in seconds.
 const real t_nowpi = 0;
 const real t_wpi = t - t_nowpi;
-const real h=0.00001;						        //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
-//const int64_t Nsteps=t/h; 			  		    //Number of simulation steps, signed 8 byte integer.
+const real h=0.00001;						                //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
+//const int64_t Nsteps=t/h; 			  		            //Number of simulation steps, signed 8 byte integer.
 const int64_t Nsteps_wpi  = t_wpi/h; 			  		    //Number of simulation steps, signed 8 byte integer.
 const int64_t Nsteps_nowpi= t_nowpi/h; 			  		    //Number of simulation steps, signed 8 byte integer.
 

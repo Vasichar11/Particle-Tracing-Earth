@@ -211,12 +211,9 @@ int main(int argc, char **argv)
 		wtime = omp_get_wtime()-wtime;
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 	}
-
-
 //BOTH
 	else if( !(s4.compare(argv[1])) )
 	{
-		std::cout<<"\n\n"<<"The particles will bounce adiabatically until "<<Constants::t_wpi<<" simulation second"<<std::endl;
 		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation using Bell formulas"<<std::endl;
 		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"\nForked..."<<std::endl;
@@ -238,19 +235,9 @@ int main(int argc, char **argv)
 		wtime = omp_get_wtime()-wtime;
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<wtime<<std::endl;
 
-
-		//Last state becomes the first one to continue the simulation.
-		//Last step states need to be stored at the end of nowpi simulation.
-		for(int p=0; p<track_pop; p++)
-		{	
-			dstr[p].lamda.front() = dstr[p].lamda.back();
-			dstr[p].alpha.front() = dstr[p].alpha.back();
-			dstr[p].aeq.front()   = dstr[p].aeq.back();
-			dstr[p].ppar.front()  = dstr[p].ppar.back();
-			dstr[p].pper.front()  = dstr[p].pper.back();
-			dstr[p].eta.front()   = Constants::eta0;
-			dstr[p].time.front()  = dstr[p].time.back();
-		}
+		//inside nowpi
+		//Last states becode firsts to continue the simulation.
+		//then wpi
 
 		std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
 		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(track_pop*0.02/60) * Constants::t_wpi <<" minutes."<<std::endl;
@@ -262,7 +249,7 @@ int main(int argc, char **argv)
 		if(id==0){ realthreads = omp_get_num_threads();}
 		
 		#pragma omp for schedule(dynamic)
-			for(int p=0; p<track_pop; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
+			for(int p=0; p<track_pop; p++)     
 			{
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 

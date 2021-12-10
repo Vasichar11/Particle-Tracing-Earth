@@ -133,13 +133,17 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
 
 
 
-    //Save last state to continue the simulation if needed. There's no need for critical, threads have diferent structs of particles.
-    #pragma omp critical
-    {
-        
-        single.save_state(lamda,alpha,aeq,ppar,pper,time);
-    }
+    //    single.save_state(lamda,alpha,aeq,ppar,pper,time);
 
+    //Save last state to continue the simulation with wave if needed. 
+    single.lamda.front() = lamda;
+    single.alpha.front() = alpha;
+    single.aeq.front()   = aeq;
+    single.ppar.front()  = ppar;
+    single.pper.front()  = pper;
+    single.eta.front()   = Constants::eta0;
+    single.time.front()  = time;
+    
 }
 
 

@@ -3,7 +3,6 @@
 #include "constants.h"
 #include <cmath>
 
-
 //Struct for mass & charge data of species
 //   and for computing densities & wps,wc
 struct Species
