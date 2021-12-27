@@ -44,7 +44,7 @@ aeq0_bins       = f1["aeq0_bins"][()]
 f1.close()
 
 #noWPI and WPI afterwards
-f2 = h5py.File("h5files/detected_nowpi.h5","r")
+f2 = h5py.File("h5files/detected_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -156,7 +156,7 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
     sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux[timestep] += 1
 
-#Both wpi and nowpi
+#BOTH
 sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_both = [0 for i in range(timesteps)]
 for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both array elements. No sorting required.
@@ -178,7 +178,7 @@ for timestep in range(0,timesteps):
     if sum_flux_both[timestep]!=0:  
         ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, alpha=0.2)  #WPI would be transparent dots
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
-###################################### (FLUX-P.A)*TIMESTEPS  MOVIE ##########################################
+###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
 metadata2 = dict(title="P.A binning",comment="P.A bins of"+str(sector_range)+"degrees")
@@ -191,9 +191,10 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
         for sector in range(0,sectors): 
                         
             if sctr_flux[sector][timestep]!=0: #to show only non zero dots.
-                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c=colors[sector])  
-            if sctr_flux_both[sector][timestep]!=0: 
-                ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c=colors[sector], alpha=0.2)  
+                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c="black")  
+                #If it differs with WPI, plot with red dots
+                if (sctr_flux_both[sector][timestep] != sctr_flux[sector][timestep]): 
+                    ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red")  
 
         ax.set_xticks(ticks=np.arange(0.5,sectors)) 
         ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")

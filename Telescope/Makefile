@@ -2,14 +2,16 @@ BIN := tracer ray_int
 CC  := g++
 LNK := g++ 
 OPT := -O3
-INC_H5 := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
-INC_H5LESS := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial  -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
+INC_H5 := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/bill-menta/HighFive/include/
+INC_H5LESS := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial  -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/bill-menta/HighFive/include/
 CPPFLAGS := -std=c++17 -lstdc++fs -Wall -g -fopenmp 
 
 SRCDIR_TRACER := src/tracer
 SRCDIR_INTERP := src/interpolation
+SRCDIR_DSTR   := src/distribution
 OBJDIR_TRACER := obj/tracer
 OBJDIR_INTERP := obj/interpolation
+OBJDIR_DSTR   := obj/distribution
 OBJDIR := obj
 H5DIR  := h5files
 SIMDIR := simulation_MM
@@ -20,22 +22,29 @@ SRC_INTERP := $(wildcard ${SRCDIR_INTERP}/*.cc)
 OBJ_TRACER := $(patsubst ${SRCDIR_TRACER}/%.cc, ${OBJDIR_TRACER}/%.o, $(SRC_TRACER))
 OBJ_INTERP := $(patsubst ${SRCDIR_INTERP}/%.cc, ${OBJDIR_INTERP}/%.o, $(SRC_INTERP))
 
+SRC_DSTR   := ${SRCDIR_DSTR}/distribution.cc ${SRCDIR_DSTR}/struct_Particles.cc ${SRCDIR_DSTR}/functions.cc
+OBJ_DSTR   := ${OBJDIR_DSTR}/distribution.o  ${OBJDIR_DSTR}/struct_Particles.o  ${OBJDIR_DSTR}/functions.o
+
 
 #Default Rule
-default: directories ray_int tracer
+default: directories dstr ray_int tracer
 	@printf "\nEverything is builded\n"
 
 #Implicit Rules
+
 ray_int: ${OBJ_INTERP}
 	${LNK} -o $@ ${OBJ_INTERP} ${INC_H5} ${CPPFLAGS} 
 	@printf "\nBuilded to interpolate ray\n\n" ;
+dstr: ${OBJ_DSTR}
+	${LNK} -o $@ ${OBJ_DSTR} ${INC_H5} ${CPPFLAGS} 
+	@printf "\nBuilded to distribute particles\n\n" ;
 tracer: ${OBJ_TRACER}
 	${LNK} -o $@ ${OBJ_TRACER} ${INC_H5} ${CPPFLAGS}
 	@printf "\nBuilded to trace particles\n" ;
 	
 #Phony Targets(Just recipes)
 directories:
-	@mkdir -p ${H5DIR} ${SIMDIR} ${OBJDIR_TRACER} ${OBJDIR_INTERP}
+	@mkdir -p ${H5DIR} ${SIMDIR} ${OBJDIR_TRACER} ${OBJDIR_INTERP} ${OBJDIR_DSTR}
 	@printf "Directories are made\n\n" ;
 clean: 
 	@rm  -rf ${OBJDIR} ${BIN}
@@ -70,6 +79,13 @@ ${OBJDIR_TRACER}/bell_wpi.o: ${SRCDIR_TRACER}/bell_wpi.cc
 ${OBJDIR_TRACER}/li_wpi.o: ${SRCDIR_TRACER}/li_wpi.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 ${OBJDIR_TRACER}/main.o: ${SRCDIR_TRACER}/main.cc
+	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
+
+${OBJDIR_DSTR}/distribution.o: ${SRCDIR_DSTR}/distribution.cc
+	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
+${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_DSTR}/struct_Particles.cc
+	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
+${OBJDIR_DSTR}/functions.o: ${SRCDIR_DSTR}/functions.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 
 ${OBJDIR_INTERP}/read_csv.o: ${SRCDIR_INTERP}/read_csv.cc
