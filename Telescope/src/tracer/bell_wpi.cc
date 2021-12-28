@@ -69,7 +69,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         //RK step-1//#################################################################################################################################################################################################################################################################################################
         slopes(k1, l1, m1, n1, o1, p1, q1, ppar, pper, lamda, eta, alpha, aeq, p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn " << n1<< "\no1 " << o1 << "\np1 " << p1 << "\nq1 " << q1 <<"\n";	
-        
+
 
         Bmag=Bmag_dipole(lamda+0.5*(Constants::h)*o1);
         ns_e = electron.density(lamda+0.5*(Constants::h)*o1); ns_O = oxygen.density(lamda+0.5*(Constants::h)*o1);  ns_H = hydrogen.density(lamda+0.5*(Constants::h)*o1); ns_He = helium.density(lamda+0.5*(Constants::h)*o1);
@@ -92,7 +92,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         //RK step-2//#################################################################################################################################################################################################################################################################################################
         slopes(k2, l2, m2, n2, o2, p2, q2, ppar+(0.5*l1*Constants::h), pper+(0.5*m1*Constants::h), lamda+(0.5*o1*Constants::h), eta+(0.5*n1*Constants::h), alpha+(0.5*p1*Constants::h), aeq+(0.5*q1*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 << "\nn2 " << n2<< "\no2 " << o2 << "\np2 " << p2 <<"\nq2 "<< q2 <<"\n";
-
+    
 
         Bmag=Bmag_dipole(lamda+0.5*(Constants::h)*o2);
         ns_e = electron.density(lamda+0.5*(Constants::h)*o2); ns_O = oxygen.density(lamda+0.5*(Constants::h)*o2);  ns_H = hydrogen.density(lamda+0.5*(Constants::h)*o2); ns_He = helium.density(lamda+0.5*(Constants::h)*o2);
@@ -139,32 +139,16 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         slopes(k4, l4, m4, n4, o4, p4, q4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), eta+(n3*Constants::h), alpha+(p3*Constants::h), aeq+(q3*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\nq4 "<< q4 <<"\n";
 
-        
+
         //Approximate new lamda
         new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
-        
-        //Check if NAN to break this particle. Why NAN ?
-        if(std::isnan(ppar*pper*aeq*alpha*lamda*eta*w_h*dwh_ds*p_mag*gama))
-        {
-            #pragma omp critical
-            {
-                std::cout<<"\nParticle "<<p<<" breaks";
-                std::cout<<"\n"<< alpha << " " << ppar<< " " << pper<< " " << eta << " " <<lamda*Constants::R2D<< " " <<aeq ;
-                //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << "\nwtau_sq " << wtau_sq;
-                //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 <<  "\no1 " << o1 << "\np1 " << p1 << "\n";
-                //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 <<  "\no2 " << o2 << "\np2 " << p2 << "\n";
-                //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 <<  "\no3 " << o3 << "\np3 " << p3 << "\n";
-                //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 <<  "\no4 " << o4 << "\np4 " << p4 << "\n";
-            }
-            break;
-        }
-
+            
         #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
             //Check crossing. First estimate new latitude. 
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
             {										
-                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+                std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
                 //Store its state(it's before crossing the satellite!).
                 ODPT.store( p, lamda, alpha, time);  			        	
             }
@@ -195,7 +179,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
 		//single.save_state(aeq,alpha,lamda,deta_dt,time);
 
         i++;  
-        //std::cout<<"\n\nalpha "<<alpha<<"\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
+        std::cout<<"\n\nalpha "<<alpha<<"\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
 
         //Stop at equator
         //if(eql_dstr[p].lamda.at(i)>0) {	
