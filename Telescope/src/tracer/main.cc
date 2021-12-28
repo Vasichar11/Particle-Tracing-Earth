@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 		int id = omp_get_thread_num();
 		if(id==0) realthreads = omp_get_num_threads();
 		#pragma omp for schedule(dynamic)
-			for(int p=0; p<1; p++)     
+			for(int p=0; p<Constants::population; p++)     
 			{
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
 	    //}
 	}
     
-	h5::File file("h5files/detected_both.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_nowpi.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

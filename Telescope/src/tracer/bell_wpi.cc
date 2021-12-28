@@ -39,8 +39,8 @@ void wpi(int p, Particles &single, Telescope &ODPT)
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
     
 
-	std::cout.precision(8);			//Output 16 decimal precise
-	std::cout<<std::scientific;		//For e notation representation
+	//std::cout.precision(8);			//Output 16 decimal precise
+	//std::cout<<std::scientific;		//For e notation representation
     
     int i=0;
 
@@ -169,7 +169,6 @@ void wpi(int p, Particles &single, Telescope &ODPT)
        
         //Approximate new lamda
         new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
-        std::cout<<"\nLamda difference "<<new_lamda - lamda;
             
         #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
@@ -206,7 +205,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
 		//single.save_state(aeq,alpha,lamda,deta_dt,time);
 
         i++;  
-        std::cout<<"\n\nParticle "<<p<<" at alpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
+        //std::cout<<"\n\nParticle "<<p<<" at alpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
 
         //Stop at equator
         //if(eql_dstr[p].lamda.at(i)>0) {	
