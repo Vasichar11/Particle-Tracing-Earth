@@ -2,8 +2,8 @@ BIN := tracer ray_int dstr
 CC  := g++
 LNK := g++ 
 OPT := -O3
-INC_H5 := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
-INC_H5LESS := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial  -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
+INC_H5 := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/bill-menta/HighFive/include/
+INC_H5LESS := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial  -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/bill-menta/HighFive/include/
 CPPFLAGS := -std=c++17 -lstdc++fs -Wall -g -fopenmp 
 
 SRCDIR_TRACER := src/tracer
@@ -22,7 +22,7 @@ SRC_INTERP := $(wildcard ${SRCDIR_INTERP}/*.cc)
 OBJ_TRACER := $(patsubst ${SRCDIR_TRACER}/%.cc, ${OBJDIR_TRACER}/%.o, $(SRC_TRACER))
 OBJ_INTERP := $(patsubst ${SRCDIR_INTERP}/%.cc, ${OBJDIR_INTERP}/%.o, $(SRC_INTERP))
 
-SRC_DSTR   := ${SRCDIR_DSTR}/distribution.cc ${SRCDIR_DSTR}/struct_Particles.cc ${SRCDIR_DSTR}/functions.cc
+SRC_DSTR   := ${SRCDIR_DSTR}/distribution.cc ${SRCDIR_TRACER}/struct_Particles.cc ${SRCDIR_TRACER}/functions.cc
 OBJ_DSTR   := ${OBJDIR_DSTR}/distribution.o  ${OBJDIR_DSTR}/struct_Particles.o  ${OBJDIR_DSTR}/functions.o
 
 
@@ -83,9 +83,9 @@ ${OBJDIR_TRACER}/main.o: ${SRCDIR_TRACER}/main.cc
 
 ${OBJDIR_DSTR}/distribution.o: ${SRCDIR_DSTR}/distribution.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
-${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_DSTR}/struct_Particles.cc
+${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_TRACER}/struct_Particles.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
-${OBJDIR_DSTR}/functions.o: ${SRCDIR_DSTR}/functions.cc
+${OBJDIR_DSTR}/functions.o: ${SRCDIR_TRACER}/functions.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 
 ${OBJDIR_INTERP}/read_csv.o: ${SRCDIR_INTERP}/read_csv.cc

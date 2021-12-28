@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 		int id = omp_get_thread_num();
 		if(id==0) realthreads = omp_get_num_threads();
 		#pragma omp for schedule(dynamic)
-			for(int p=0; p<Constants::population; p++)     
+			for(int p=0; p<1; p++)     
 			{
 				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 				//Void Function for particle's motion. Involves RK4 for Nsteps. 
