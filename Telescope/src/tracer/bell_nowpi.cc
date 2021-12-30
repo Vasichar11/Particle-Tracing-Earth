@@ -75,20 +75,6 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
 
         //Approximate new lamda
         new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
-        if(std::isnan(ppar*pper*aeq*alpha*lamda*w_h*dwh_ds*p_mag*gama))
-        {
-            #pragma omp critical
-            {
-                std::cout<<"\nParticle "<<p<<" breaks";
-                //std::cout<<"\n"<< alpha << " " << " " << ppar<< " " << pper<< " " <<lamda<< " " <<aeq ;
-                //std::cout<<"\nw_h "<< w_h<<"\ndwh_ds " <<dwh_ds<<"\np_mag "<<p_mag<<"\ngama "<<gama;
-                //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 <<  "\no1 " << o1 << "\np1 " << p1 << "\n";
-                //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 <<  "\no2 " << o2 << "\np2 " << p2 << "\n";
-                //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 <<  "\no3 " << o3 << "\np3 " << p3 << "\n";
-                //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 <<  "\no4 " << o4 << "\np4 " << p4 << "\n";
-            }
-            break;
-        }
         
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.

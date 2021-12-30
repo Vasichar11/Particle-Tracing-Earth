@@ -22,12 +22,13 @@ SRC_INTERP := $(wildcard ${SRCDIR_INTERP}/*.cc)
 OBJ_TRACER := $(patsubst ${SRCDIR_TRACER}/%.cc, ${OBJDIR_TRACER}/%.o, $(SRC_TRACER))
 OBJ_INTERP := $(patsubst ${SRCDIR_INTERP}/%.cc, ${OBJDIR_INTERP}/%.o, $(SRC_INTERP))
 
-SRC_DSTR   := ${SRCDIR_DSTR}/distribution.cc ${SRCDIR_TRACER}/struct_Particles.cc ${SRCDIR_TRACER}/functions.cc
-OBJ_DSTR   := ${OBJDIR_DSTR}/distribution.o  ${OBJDIR_DSTR}/struct_Particles.o  ${OBJDIR_DSTR}/functions.o
+SRC_DSTR := $(wildcard ${SRCDIR_DSTR}/*.cc)
+OBJ_DSTR := $(patsubst ${SRCDIR_DSTR}/%.cc, ${OBJDIR_DSTR}/%.o, $(SRC_DSTR))
+
 
 
 #Default Rule
-default: dstr ray_int tracer
+default: directories dstr ray_int tracer
 	@printf "\nEverything is builded\n"
 
 #Implicit Rules
@@ -44,7 +45,7 @@ tracer: ${OBJ_TRACER}
 	
 #Phony Targets(Just recipes)
 directories:
-	@mkdir -p ${SIMDIR} ${OBJDIR_TRACER} ${OBJDIR_INTERP} ${OBJDIR_DSTR}
+	@mkdir -p ${H5DIR} ${SIMDIR} ${OBJDIR_TRACER} ${OBJDIR_INTERP} ${OBJDIR_DSTR}
 	@printf "Directories are made\n\n" ;
 clean: 
 	@rm  -rf ${OBJDIR} ${BIN}
@@ -57,7 +58,9 @@ allclean:
 
 
 
-#Compiling Objects 
+#COMPILING
+
+#TRACER
 ${OBJDIR_TRACER}/struct_Particles.o: ${SRCDIR_TRACER}/struct_Particles.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@   
 ${OBJDIR_TRACER}/struct_Species.o: ${SRCDIR_TRACER}/struct_Species.cc 	
@@ -81,6 +84,7 @@ ${OBJDIR_TRACER}/li_wpi.o: ${SRCDIR_TRACER}/li_wpi.cc
 ${OBJDIR_TRACER}/main.o: ${SRCDIR_TRACER}/main.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 
+#DISTRIBUTION, WITHOUT TE SYMBOLIC LINKS FOR SOURCE CODES struct_Particles.cc, functions.cc
 ${OBJDIR_DSTR}/distribution.o: ${SRCDIR_DSTR}/distribution.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 ${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_TRACER}/struct_Particles.cc
@@ -88,6 +92,7 @@ ${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_TRACER}/struct_Particles.cc
 ${OBJDIR_DSTR}/functions.o: ${SRCDIR_TRACER}/functions.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 
+#INTERPOLATION
 ${OBJDIR_INTERP}/read_csv.o: ${SRCDIR_INTERP}/read_csv.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@
 ${OBJDIR_INTERP}/interpolate.o: ${SRCDIR_INTERP}/interpolate.cc

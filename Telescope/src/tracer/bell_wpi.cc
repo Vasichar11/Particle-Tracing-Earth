@@ -66,7 +66,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         if(std::isnan(mu)) //mu becomes nan first
         {
             //Particle moves to new lamda
-            std::cout<<"\nParticle moves to new latitude to avoid nan.";
+            //std::cout<<"\nParticle moves to new latitude to avoid nan.";
             lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
             continue;    
         }
@@ -96,7 +96,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         if(std::isnan(mu)) //mu becomes nan first
         {
             //Particle moves to new lamda
-            std::cout<<"\nParticle moves to new latitude to avoid nan.";
+            //std::cout<<"\nParticle moves to new latitude to avoid nan.";
             lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
             continue;    
         }
@@ -126,7 +126,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         if(std::isnan(mu)) //mu becomes nan first
         {
             //Particle moves to new lamda
-            std::cout<<"\nParticle moves to new latitude to avoid nan.";
+            //std::cout<<"\nParticle moves to new latitude to avoid nan.";
             lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
             continue;    
         }
@@ -156,7 +156,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         if(std::isnan(mu)) //mu becomes nan first
         {
             //Particle moves to new lamda
-            std::cout<<"\nParticle moves to new latitude to avoid nan.";
+            //std::cout<<"\nParticle moves to new latitude to avoid nan.";
             lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
             continue;    //continues simulation to avoid nan
         }
@@ -175,7 +175,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
             //Check crossing. First estimate new latitude. 
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
             {										
-                std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
                 //Store its state(it's before crossing the satellite!).
                 ODPT.store( p, lamda, alpha, time);  			        	
             }

@@ -66,8 +66,8 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 100;  			    
-const int64_t lamda_dstr  = 100;					
+const int64_t aeq_dstr    = 180;  			    
+const int64_t lamda_dstr  = 1000;					
 const int64_t population  = lamda_dstr * aeq_dstr;   
 
 //------------------------------ Eta distribution range and step. --------------------------------//
