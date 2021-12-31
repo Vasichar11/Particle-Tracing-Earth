@@ -73,6 +73,8 @@ ${OBJDIR_TRACER}/is_in_packet.o: ${SRCDIR_TRACER}/is_in_packet.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ 
 ${OBJDIR_TRACER}/time_rates.o: ${SRCDIR_TRACER}/time_rates.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@
+${OBJDIR_TRACER}/RK_estimations.o: ${SRCDIR_TRACER}/RK_estimations.cc
+	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@
 ${OBJDIR_TRACER}/read_hdf5.o: ${SRCDIR_TRACER}/read_hdf5.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 ${OBJDIR_TRACER}/bell_nowpi.o: ${SRCDIR_TRACER}/bell_nowpi.cc

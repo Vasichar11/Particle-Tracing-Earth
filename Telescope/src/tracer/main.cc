@@ -150,7 +150,7 @@ int main(int argc, char **argv)
 
 	//---WPI---//
 	std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
-	std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.02/60) * Constants::t_wpi <<" minutes."<<std::endl;
+	std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
 	std::cout<<"\nForked..."<<std::endl;
 	//---PARALLELISM Work sharing---//
 	#pragma omp parallel
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
 	    //}
 	}
     
-	h5::File file("h5files/detected_nowpi.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_both.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

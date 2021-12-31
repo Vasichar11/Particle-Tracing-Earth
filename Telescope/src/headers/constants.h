@@ -44,8 +44,8 @@ const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
 
 //--Simulation parameters--//
-const real t=10;        				  	            //Simulation duration in seconds.
-const real t_nowpi = 10;
+const real t=1;        				  	            //Simulation duration in seconds.
+const real t_nowpi = 0.5;
 const real t_wpi = t - t_nowpi;
 const real h=0.00001;						                //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 //const int64_t Nsteps=t/h; 			  		            //Number of simulation steps, signed 8 byte integer.
@@ -66,8 +66,8 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 180;  			    
-const int64_t lamda_dstr  = 1000;					
+const int64_t aeq_dstr    = 100;  			    
+const int64_t lamda_dstr  = 180;					
 const int64_t population  = lamda_dstr * aeq_dstr;   
 
 //------------------------------ Eta distribution range and step. --------------------------------//
