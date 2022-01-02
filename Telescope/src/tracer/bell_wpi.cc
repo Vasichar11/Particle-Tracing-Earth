@@ -166,15 +166,12 @@ void wpi(int p, Particles &single, Telescope &ODPT)
        
         //Approximate new lamda first, to check if particle crosses satellite.
         new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
-            
-        #pragma omp critical //Only one processor can write at a time. There is a chance 2 processors writing in the same spot.
+        #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
-            //Check crossing. First estimate new latitude. 
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-            {										
+            {	//Check crossing.								
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-                //Store its state(it's before crossing the satellite!).
-                ODPT.store( p, lamda, alpha, time);  			        	
+                ODPT.store( p, lamda, alpha, time); //Store its state(it's before crossing the satellite!).		        	
             }
         }
         

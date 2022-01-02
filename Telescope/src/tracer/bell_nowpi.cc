@@ -73,43 +73,24 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\n";
 
 
-        //Approximate new lamda
+        //Approximate new lamda first, to check if particle crosses satellite.
         new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
-        
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
-            //Check crossing. First estimate new latitude. 
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-            {										
+            {	//Check crossing.								
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-                //Store its state(it's before crossing the satellite!).
-                ODPT.store( p, lamda, alpha, time);  			        	
+                ODPT.store( p, lamda, alpha, time); //Store its state(it's before crossing the satellite!).		        	
             }
         }
 
-        //Now approximate all values of Runge Kutta's block.
-        lamda   =  new_lamda;
-        //zeta    =  zeta   +  (Constants::h/6)*(k1+2*k2+2*k3+k4);
-        ppar    =  ppar   +  (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        pper    =  pper   +  (Constants::h/6)*(m1+2*m2+2*m3+m4);
-        alpha   =  alpha  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
-        //upar    =  ppar   /  (Constants::m_e*gama);
-        //uper    =  pper   /  (Constants::m_e*gama);
-        
-        //p_mag = sqrt((ppar*ppar)+(pper*pper));
-        //gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-        //Ekin = ((gama-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15; 
-        //B_lam    =  Bmag_dipole(lamda);    
-        //M_adiabatic = (pper*pper)/(2*Constants::m_e*B_lam); 
-
-        //Go to next timestep
+        //Next step:
+        new_values_RK4(lamda, ppar, pper, alpha, l1, l2, l3, l4, m1, m2, m3, m4, o1, o2, o3, o4, p1, p2, p3, p4);
         time  = time + Constants::h; 
-        
+        i++;  
+ 
 		//To save states:
 		//single.save_state(lamda,aeq,time);
-
-        i++;  
-
         //Stop at equator
         //if(lamda>0) {	
         //	break;}	
