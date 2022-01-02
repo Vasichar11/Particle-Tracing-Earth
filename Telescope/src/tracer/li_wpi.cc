@@ -18,12 +18,12 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     static std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
     real lamda    =  single.lamda.at(0);
-    real zeta     =  single.zeta.at(0); 
     real ppar     =  single.ppar.at(0); 
     real pper     =  single.pper.at(0); 
     real eta      =  single.eta.at(0); 
     real alpha    =  single.alpha.at(0); 
-    real aeq      =  single.aeq.at(0); 
+    real aeq      =  single.aeq.at(0);
+    //real zeta     =  single.zeta.at(0); 
     //real upar     =  single.upar.at(0); 
     //real uper     =  single.uper.at(0);
     //real deta_dt  =  single.deta_dt.at(0);
@@ -103,7 +103,7 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         //Check if NAN to break this particle. Why NAN ?
         if(std::isnan(new_lamda))
         {
-            //std::cout<<"\nParticle "<<p<<" breaks";
+            std::cout<<"\nParticle "<<p<<" breaks";
             //std::cout<<"\n"<< alpha << " " << zeta << " " << ppar<< " " << pper<< " " << eta << " " <<lamda<< " " <<aeq ;
             //std::cout<<"\n" << "ns_He " << ns_He << "\nwc_O " <<wc_O << "\nwc_H " << wc_H << "\nwc_He " << wc_He << "\nwps_e " <<wps_e<< "\nwps_O " <<wps_O << "\nwps_H " << wps_H << "\nwps_He " << wps_He << "\nlamda " <<"\nBwc " << Bwc << "\nEwc "<< Ewc << "\nL " << L << "\nS " <<S<< "\nD " << D << "\nP " << P << "\nR " <<R << "\nmu " << mu << "\nkappa " << kappa<< "\nkx " << kx << "\nkz " <<kz << "\n" << "R1 " << R1 << "\nR2 " << R2 << "\nw1 " << w1 << "\nw2 " << w2 << "\ngama " << gama << "\nbeta " << beta << "Eres " << Eres<< "\nvresz " << vresz << "\nwtau_sq " << wtau_sq << "\nmu_adiabatic" << M_adiabatic;
             break;
@@ -118,38 +118,19 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
                 ODPT.store( p, lamda, alpha, time);  			        	
             }
         }
-        
-        //Now approximate all values of Runge Kutta's block.
-        lamda =  new_lamda;
-        zeta  =  zeta   +  (Constants::h/6)*(k1+2*k2+2*k3+k4);
-        ppar  =  ppar   +  (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        pper  =  pper   +  (Constants::h/6)*(m1+2*m2+2*m3+m4);
-        eta   =  eta    +  (Constants::h/6)*(n1+2*n2+2*n3+n4);
-        alpha =  alpha  +  (Constants::h/6)*(p1+2*p2+2*p3+p4);
-        aeq   =  aeq    +  (Constants::h/6)*(q1+2*q2+2*q3+q4);
-        //deta_dt =            (Constants::h/6)*(n1+2*n2+2*n3+n4);
-        //upar  =  ppar   /  (Constants::m_e*gama);
-        //uper  =  pper   /  (Constants::m_e*gama);
-
-        //p_mag = sqrt((ppar*ppar)+(pper*pper));
-        //gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
-        //Ekin = ((gama-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15; 
-        //B_lam    =  Bmag_dipole(lamda);    
-        //M_adiabatic = (pper*pper)/(2*Constants::m_e*B_lam); 
-
-        //Go to next timestep
+       
+        //Next step:
+        new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, p1, p2, p3, p4, o1, o2, o3, o4, q1, q2, q3, q4);
         time  = time + Constants::h; 
+        i++;  
         
-        //eql_dstr[p].update_state(lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, mu_ad_li, time);
-
+		//To save states:
+        //single.save_state(lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, mu_ad_li, time);
         //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
-        i++;  
-
-        //Stop at equator
+        //Stop at equator:
         //if(eql_dstr[p].lamda.at(i)>0) {	
         //	break;}		
-
     }
 
 }

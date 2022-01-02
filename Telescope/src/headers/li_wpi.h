@@ -6,6 +6,7 @@
 #include "common.h"
 #include "constants.h"
 #include "functions.h"
+#include "RK_estimations.h"
 #include "is_in_packet.h"
 #include "time_rates.h"
 #include "struct_Telescope.h"

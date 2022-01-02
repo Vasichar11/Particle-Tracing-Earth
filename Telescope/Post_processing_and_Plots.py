@@ -161,7 +161,7 @@ sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sc
 sum_flux_both = [0 for i in range(timesteps)]
 for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
-    sector   = math.floor((pa*R2D)%180/sector_range)
+    sector   = math.floor(pa*R2D/sector_range)
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
