@@ -86,6 +86,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
 
         //Next step:
         new_values_RK4(lamda, ppar, pper, alpha, l1, l2, l3, l4, m1, m2, m3, m4, o1, o2, o3, o4, p1, p2, p3, p4);
+
         time  = time + Constants::h; 
         i++;  
  

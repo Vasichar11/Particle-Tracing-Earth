@@ -44,7 +44,7 @@ aeq0_bins       = f1["aeq0_bins"][()]
 f1.close()
 
 #noWPI and WPI afterwards
-f2 = h5py.File("h5files/detected_both.h5","r")
+f2 = h5py.File("h5files/detected_both_ray.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -162,6 +162,9 @@ sum_flux_both = [0 for i in range(timesteps)]
 for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
+    if(sector>11): #happens when NAN particles are kept in the simulation(jumping steps) WHY?
+        print("Particle with pa",pa,"needs sector",sector)
+        continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
@@ -178,6 +181,14 @@ for timestep in range(0,timesteps):
     if sum_flux_both[timestep]!=0:  
         ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, alpha=0.2)  #WPI would be transparent dots
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
+
+
+##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################
+diff = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
+
+for sector in range(0,sectors):           
+    for timestep in range(0,timesteps): 
+        diff[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep])
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
@@ -189,18 +200,19 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
     for timestep in range(0,timesteps):           
             
         for sector in range(0,sectors): 
-                        
-            if sctr_flux[sector][timestep]!=0: #to show only non zero dots.
-                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c="black")  
-                #If it differs with WPI, plot with red dots
-                if (sctr_flux_both[sector][timestep] != sctr_flux[sector][timestep]): 
-                    ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red")  
+
+            if(sctr_flux[sector][timestep]!=0): #plot only non zero dots
+                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c="black") 
+            if(sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot only difference
+                ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red") 
+
+        ax.bar(np.arange(0.5,sectors+0.5),diff[timestep],alpha=0.5)#plot difference with bars
 
         ax.set_xticks(ticks=np.arange(0.5,sectors)) 
         ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
         ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
         ax.set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
-        ax.set_ylim(0,np.amax(sctr_flux)+(0.1*np.amax(sctr_flux)) )
+        ax.set_ylim(0, max(np.amax(sctr_flux)+(0.1*np.amax(sctr_flux)), np.amax(sctr_flux_both)+(0.1*np.amax(sctr_flux_both)) ) )
         ax.set_xlim(0,sectors)
         ax.set(ylabel="count")
         ax.set_title("P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
@@ -211,56 +223,3 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
 
 
 
-
-
-
-
-
-"""
-######################################### LAST TIMESTEP - ALTER BINS ############################################
-fig,ax = plt.subplots()
-
-alter_time_bin  = [0.05,0.1,0.2]  #Try these time bins    
-alter_sector_range = [7.5,15,30]  #With these sector ranges
-
-FFMpegWriter = manimation.writers["ffmpeg"]
-metadata2 = dict(title="Alter binning")
-fps = 0.25
-writer = FFMpegWriter(fps=fps, metadata = metadata2)
-print("Generating alter binning mp4 file...\nDuration of mp4 file will be:",(len(alter_time_bin)*len(alter_sector_range)/fps), "seconds")
-
-with writer.saving(fig, "simulation_MM/Alter_bins.mp4", 100):
-   
-    for srange in alter_sector_range:
-        sectors = int(view/srange)
-        for tbin in alter_time_bin:  
-            timesteps = int (t / tbin)
-            altered_sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #altered_sctr_flux[sectors][timesteps]
-            
-            #Binning here
-            for time,pa in zip(detected_time,detected_alpha): #Iterate in both array elements. No sorting required.
-                timestep = math.floor(time/tbin)
-                sector   = math.floor(pa*R2D/srange)
-                if(pa*R2D==180):
-                    sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
-                altered_sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
-            #Plot here
-            timestep = -1
-            for sector in range(0,sectors): 
-                if altered_sctr_flux[sector][timestep]!=0: #to show only non zero dots.
-                    ax.scatter(sector+0.5, altered_sctr_flux[sector][timestep])  
-
-            ax.set_xticks(ticks=np.arange(0.5,sectors)) 
-            ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
-            ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
-            if (srange>=15):            
-                ax.set_xticklabels(labels=np.arange(0,view,srange),minor=True,size="small") 
-                ax.set_xticklabels(labels=np.arange(0,view,srange),minor=True,size="small") 
-            #ax.set_ylim(0,population/4)
-            #ax.set_xlim(0,sectors)
-            ax.set_title("Ending P.A dstr when\n$time$_$bin$: "+str(tbin)+"s, $sector$_$range$: "+str(srange)+"degrees", loc="left", size="small",color="blue",x=-0.15)
-            ax.xaxis.grid(True, which='minor')
-        
-            writer.grab_frame()
-            ax.clear() #clear data 
-"""

@@ -98,6 +98,8 @@ int main(int argc, char **argv)
 		dstr[p].deta_dt.push_back(deta_dt_0.at(p));
 		dstr[p].M_adiabatic.push_back(M_adiabatic_0.at(p));
 	}
+	std::cout<<"\nParticle population: "<< dstr.size()<<std::endl;
+
 	//AEQ0 DISTRIBUTION CHECK
 	const int sector_range = 15;
 	const int view = 180;
@@ -124,61 +126,73 @@ int main(int argc, char **argv)
 	std::string s2("li_ray");
 
 	//---NOWPI---//
-	std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation using Bell formulas"<<std::endl;
-	std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
-	std::cout<<"\nForked..."<<std::endl;
-	//---PARALLELISM Work sharing---//
-	#pragma omp parallel
+	if(Constants::t_nowpi!=0)
 	{
-		int id = omp_get_thread_num();
-		if(id==0) realthreads = omp_get_num_threads();
-		#pragma omp for schedule(dynamic)
-			for(int p=0; p<Constants::population; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
-			{
-				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
-				//Void Function for particle's motion. Involves RK4 for Nsteps. 
-				//Detected particles are saved in ODPT object, which is passed here by reference.
-				nowpi(p, dstr[p], ODPT);
-				//Inside nowpi -> Last states become firsts to continue the simulation 
-				//Then wpi
-			}
-		
-	}	
-	std::cout<<"\n"<<"Joined"<<std::endl;
-	real time1 = omp_get_wtime()-wtime;
-	std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time1<<std::endl;
+		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation using Bell formulas"<<std::endl;
+		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
+		std::cout<<"\nForked..."<<std::endl;
+		//---PARALLELISM Work sharing---//
+		#pragma omp parallel
+		{
+			int id = omp_get_thread_num();
+			if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
+			#pragma omp for schedule(dynamic)
+				for(int p=0; p<Constants::population; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
+				{
+					//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+					//Void Function for particle's motion. Involves RK4 for Nsteps. 
+					//Detected particles are saved in ODPT object, which is passed here by reference.
+					nowpi(p, dstr[p], ODPT);
+					//Inside nowpi -> Last states become firsts to continue the simulation 
+					//Then wpi
+				}
+			
+		}	
+		std::cout<<"\n"<<"Joined"<<std::endl;
+		real time1 = omp_get_wtime()-wtime;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time1<<std::endl;
+	}
+
 
 	//---WPI---//
-	std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
-	std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
-	std::cout<<"\nForked..."<<std::endl;
-	//---PARALLELISM Work sharing---//
-	#pragma omp parallel
+	if(Constants::t_wpi!=0)
 	{
-		int id = omp_get_thread_num();
-		if(id==0) realthreads = omp_get_num_threads();
-		#pragma omp for schedule(dynamic)
-			for(int p=0; p<Constants::population; p++)     
-			{
-				//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
-				//Void Function for particle's motion. Involves RK4 for Nsteps. 
-				//Detected particles are saved in ODPT object, which is passed here by reference.
-				if( !(s1.compare(argv[1])) ) 		wpi(p, dstr[p], ODPT); 		//BELL + THE WAVE IS EVERYWHERE
-				else if( !(s2.compare(argv[1])) )   wpi_ray(p, dstr[p], ODPT);  //LI   + RAY TRACING
-				//else
-				//{ 
-				//	std::cout<<"\nArgument variable doesn't match any of the program's possible implementations.\n\nTry nowpi, wpi, or wpi_ray as the second argument variable."<<std::endl;
-				//	return EXIT_FAILURE;	
-				//}
-			}
-	}	
-	std::cout<<"\n"<<"Joined"<<std::endl;
-	real time2 = omp_get_wtime()-wtime ;
-	std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
-	
-	
-	
+		if(!(s1.compare(argv[1])))
+		{
+			std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
+			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Constants::population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
+		}
+		else if(!(s2.compare(argv[1])))
+		{
+			std::cout<<"\n\n"<<Constants::t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
+			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Constants::population*0.25/60) * Constants::t_wpi <<" minutes."<<std::endl;
+		}
+		else
+		{ 
+			std::cout<<"\n\nArgument variable doesn't match any of the program's possible implementations.\nTry nowpi, wpi, or wpi_ray as the second argument variable.\n"<<std::endl;
+			return EXIT_FAILURE;	
+		}
 
+		std::cout<<"\nForked..."<<std::endl;
+		//---PARALLELISM Work sharing---//
+		#pragma omp parallel
+		{
+			int id = omp_get_thread_num();
+			if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
+			#pragma omp for schedule(dynamic)
+				for(int p=0; p<Constants::population; p++)     
+				{
+					//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
+					//Void Function for particle's motion. Involves RK4 for Nsteps. 
+					//Detected particles are saved in ODPT object, which is passed here by reference.
+					if( !(s1.compare(argv[1])) ) 		wpi(p, dstr[p], ODPT); 		//BELL + THE WAVE IS EVERYWHERE
+					else if( !(s2.compare(argv[1])) )   wpi_ray(p, dstr[p], ODPT);  //LI   + RAY TRACING
+				}
+		}	
+		std::cout<<"\n"<<"Joined"<<std::endl;
+		real time2 = omp_get_wtime()-wtime ;
+		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
+	}
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
 
@@ -205,7 +219,7 @@ int main(int argc, char **argv)
 	    //}
 	}
     
-	h5::File file("h5files/detected_nowpi.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_both_15.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

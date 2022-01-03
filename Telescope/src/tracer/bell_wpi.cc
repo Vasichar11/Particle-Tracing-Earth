@@ -66,11 +66,19 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         //vres_f(kz,w_h,alpha,vresz,Eres); //Called only once in first step...
         if(std::isnan(mu)) //mu becomes nan first
         {
-            //Move to next step to avoid nan. Use old slopes(previous step).
-            new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1_old, l2_old, l3_old, l4_old, m1_old, m2_old, m3_old, m4_old, n1_old, n2_old, n3_old, n4_old, p1_old, p2_old, p3_old, p4_old, o1_old, o2_old, o3_old, o4_old, q1_old, q2_old, q3_old, q4_old);
-            time  = time + Constants::h; 
-            i++;
-            continue;    
+            if(i==0) 
+            { 
+                std::cout<<"\nParticle "<<p<<" broke at first step."<<std::endl; break;
+            }
+            else
+            {
+                //Move to next step to avoid nan. Use old slopes(previous step).
+                std::cout<<"\nParticle "<<p<<" at step: "<< i <<" continues."<<std::endl;
+                new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1_old, l2_old, l3_old, l4_old, m1_old, m2_old, m3_old, m4_old, n1_old, n2_old, n3_old, n4_old, o1_old, o2_old, o3_old, o4_old, p1_old, p2_old, p3_old, p4_old, q1_old, q2_old, q3_old, q4_old);
+                time  = time + Constants::h; 
+                i++;
+                continue;  
+            }
         }
         //std::cout<<"\nR1 "<< R1<<"\nR2 "<< R2<<"\nw1 "<< w1<<"\nw2 "<< w2<<"\nbeta "<< beta<<"\ngama "<< gama<<"\nmu "<< mu<<"\nBywc "<< Bywc<<"\nBzwc "<< Bzwc<<"\nBwc "<< Bwc<<"\nS "<< S<<"\nD "<< D<<"\nP "<< P<<"\nR "<< R<<"\nL "<< L<<"\nkappa "<< kappa<<"\nkx "<< kx<<"\nkz "<< kz<<"\nw_h "<< w_h<<"\ndwh_ds "<< dwh_ds<<"\ngama "<< gama;
         slopes(k1, l1, m1, n1, o1, p1, q1, ppar, pper, lamda, eta, alpha, aeq, p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
@@ -95,11 +103,19 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         Bell_params(ppar+0.5*(Constants::h)*l1,pper+0.5*(Constants::h)*m1,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
         if(std::isnan(mu)) //mu becomes nan first
         {
-            //Move to next step to avoid nan. Use old slopes(previous step).
-            new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1_old, l2_old, l3_old, l4_old, m1_old, m2_old, m3_old, m4_old, n1_old, n2_old, n3_old, n4_old, p1_old, p2_old, p3_old, p4_old, o1_old, o2_old, o3_old, o4_old, q1_old, q2_old, q3_old, q4_old);
-            time  = time + Constants::h; 
-            i++;
-            continue;    
+            if(i==0) 
+            { 
+                std::cout<<"\nParticle "<<p<<" broke at first step."<<std::endl; break;
+            }
+            else
+            {
+                //Move to next step to avoid nan. Use old slopes(previous step).
+                std::cout<<"\nParticle "<<p<<" at step: "<< i <<" continues."<<std::endl;
+                new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1_old, l2_old, l3_old, l4_old, m1_old, m2_old, m3_old, m4_old, n1_old, n2_old, n3_old, n4_old, o1_old, o2_old, o3_old, o4_old, p1_old, p2_old, p3_old, p4_old, q1_old, q2_old, q3_old, q4_old);
+                time  = time + Constants::h; 
+                i++;
+                continue;  
+            }
         }
         //std::cout<<"\nR1 "<< R1<<"\nR2 "<< R2<<"\nw1 "<< w1<<"\nw2 "<< w2<<"\nbeta "<< beta<<"\ngama "<< gama<<"\nmu "<< mu<<"\nBywc "<< Bywc<<"\nBzwc "<< Bzwc<<"\nBwc "<< Bwc<<"\nS "<< S<<"\nD "<< D<<"\nP "<< P<<"\nR "<< R<<"\nL "<< L<<"\nkappa "<< kappa<<"\nkx "<< kx<<"\nkz "<< kz<<"\nw_h "<< w_h<<"\ndwh_ds "<< dwh_ds<<"\ngama "<< gama;
         slopes(k2, l2, m2, n2, o2, p2, q2, ppar+(0.5*l1*Constants::h), pper+(0.5*m1*Constants::h), lamda+(0.5*o1*Constants::h), eta+(0.5*n1*Constants::h), alpha+(0.5*p1*Constants::h), aeq+(0.5*q1*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
@@ -124,11 +140,19 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         Bell_params(ppar+0.5*(Constants::h)*l2,pper+0.5*(Constants::h)*m2,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);  
         if(std::isnan(mu)) //mu becomes nan first
         {
-            //Move to next step to avoid nan. Use old slopes(previous step).
-            new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1_old, l2_old, l3_old, l4_old, m1_old, m2_old, m3_old, m4_old, n1_old, n2_old, n3_old, n4_old, p1_old, p2_old, p3_old, p4_old, o1_old, o2_old, o3_old, o4_old, q1_old, q2_old, q3_old, q4_old);
-            time  = time + Constants::h; 
-            i++;
-            continue;    
+            if(i==0) 
+            { 
+                std::cout<<"\nParticle "<<p<<" broke at first step."<<std::endl; break;
+            }
+            else
+            {
+                //Move to next step to avoid nan. Use old slopes(previous step).
+                std::cout<<"\nParticle "<<p<<" at step: "<< i <<" continues."<<std::endl;
+                new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1_old, l2_old, l3_old, l4_old, m1_old, m2_old, m3_old, m4_old, n1_old, n2_old, n3_old, n4_old, o1_old, o2_old, o3_old, o4_old, p1_old, p2_old, p3_old, p4_old, q1_old, q2_old, q3_old, q4_old);
+                time  = time + Constants::h; 
+                i++;
+                continue;  
+            }
         }
         //std::cout<<"\nR1 "<< R1<<"\nR2 "<< R2<<"\nw1 "<< w1<<"\nw2 "<< w2<<"\nbeta "<< beta<<"\ngama "<< gama<<"\nmu "<< mu<<"\nBywc "<< Bywc<<"\nBzwc "<< Bzwc<<"\nBwc "<< Bwc<<"\nS "<< S<<"\nD "<< D<<"\nP "<< P<<"\nR "<< R<<"\nL "<< L<<"\nkappa "<< kappa<<"\nkx "<< kx<<"\nkz "<< kz<<"\nw_h "<< w_h<<"\ndwh_ds "<< dwh_ds<<"\ngama "<< gama;
         slopes(k3, l3, m3, n3, o3, p3, q3, ppar+(0.5*l2*Constants::h), pper+(0.5*m2*Constants::h), lamda+(0.5*o2*Constants::h), eta+(0.5*n2*Constants::h), alpha+(0.5*p2*Constants::h), aeq+(0.5*q2*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
@@ -153,11 +177,19 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         Bell_params(ppar+(Constants::h)*l3,pper+(Constants::h)*m3,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
         if(std::isnan(mu)) //mu becomes nan first
         {
-            //Move to next step to avoid nan. Use old slopes(previous step).
-            new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1_old, l2_old, l3_old, l4_old, m1_old, m2_old, m3_old, m4_old, n1_old, n2_old, n3_old, n4_old, p1_old, p2_old, p3_old, p4_old, o1_old, o2_old, o3_old, o4_old, q1_old, q2_old, q3_old, q4_old);
-            time  = time + Constants::h; 
-            i++;
-            continue;    
+            if(i==0) 
+            { 
+                std::cout<<"\nParticle "<<p<<" broke at first step."<<std::endl; break;
+            }
+            else
+            {
+                //Move to next step to avoid nan. Use old slopes(previous step).
+                std::cout<<"\nParticle "<<p<<" at step: "<< i <<" continues."<<std::endl;
+                new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1_old, l2_old, l3_old, l4_old, m1_old, m2_old, m3_old, m4_old, n1_old, n2_old, n3_old, n4_old, o1_old, o2_old, o3_old, o4_old, p1_old, p2_old, p3_old, p4_old, q1_old, q2_old, q3_old, q4_old);
+                time  = time + Constants::h; 
+                i++;
+                continue;  
+            }
         }
         //std::cout<<"\nR1 "<< R1<<"\nR2 "<< R2<<"\nw1 "<< w1<<"\nw2 "<< w2<<"\nbeta "<< beta<<"\ngama "<< gama<<"\nmu "<< mu<<"\nBywc "<< Bywc<<"\nBzwc "<< Bzwc<<"\nBwc "<< Bwc<<"\nS "<< S<<"\nD "<< D<<"\nP "<< P<<"\nR "<< R<<"\nL "<< L<<"\nkappa "<< kappa<<"\nkx "<< kx<<"\nkz "<< kz<<"\nw_h "<< w_h<<"\ndwh_ds "<< dwh_ds<<"\ngama "<< gama;
         slopes(k4, l4, m4, n4, o4, p4, q4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), eta+(n3*Constants::h), alpha+(p3*Constants::h), aeq+(q3*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
@@ -165,7 +197,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
        
        
         //Approximate new lamda first, to check if particle crosses satellite.
-        new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
+        new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
@@ -186,7 +218,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         q1_old = q1 ; q2_old = q2 ; q3_old = q3 ; q4_old = q4 ; 
 
         //Next step:
-        new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, p1, p2, p3, p4, o1, o2, o3, o4, q1, q2, q3, q4);
+        new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, o1, o2, o3, o4, p1, p2, p3, p4, q1, q2, q3, q4);
         time  = time + Constants::h; 
         i++;  
 
