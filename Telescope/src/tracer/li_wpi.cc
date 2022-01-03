@@ -45,6 +45,12 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         //Take the data from interpolation and return (pulse_dur) of them, moved by "i" each iteration.
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Minimum lat of wave(in pulse duration).
         max_lat=*max_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Max lat of wave.
+
+        //Guard against these 2 beign NULL...
+        if (min_lat == lat_int.end() || max_lat == lat_int.end() ) { 
+           std::cerr<<"Null poiinters here"<<__FILE__<<" "<<__LINE__<<std::endl;
+        }
+
         //std::cout<<"\n" << lamda*Constants::R2D << " " << min_lat << "" << max_lat << " "<< lat_int.at(i) << " " << lat_int.back(); 
         
         f_always(p_mag, gama, w_h, dwh_ds, lamda, ppar, pper); 
