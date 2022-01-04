@@ -36,7 +36,7 @@ const real eta0=eta0_deg*D2R;
 //wave initials
 const real f_wave=2000; 			    		//Wave frequency in Hz. 2kHz
 const real w_wave=2*M_PI*f_wave;        		//Wave angular frequency.
-const real m_res=1;                           	//WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
+const real m_res=1;//1                           	//WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
 const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
 //bell
@@ -47,8 +47,8 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 
 
 //--Simulation parameters--//
-const real t= 15;        				  	    //Simulation time in seconds.
-const real t_nowpi = 10;                         //NoWPI time.
+const real t = 5;        				  	    //Simulation time in seconds.
+const real t_nowpi = 5;                         //NoWPI time.
 const real t_wpi = t - t_nowpi;                 //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count

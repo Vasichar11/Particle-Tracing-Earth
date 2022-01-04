@@ -44,7 +44,7 @@ aeq0_bins       = f1["aeq0_bins"][()]
 f1.close()
 
 #noWPI and WPI afterwards
-f2 = h5py.File("h5files/detected_both_ray.h5","r")
+f2 = h5py.File("h5files/detected_both_ray_minus.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
