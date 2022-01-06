@@ -25,8 +25,8 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
     Species hydrogen(Constants::m_H,  Constants::q_i, 0.94); 
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
     
-	//std::cout.precision(8);			//Output 16 decimal precise
-	//std::cout<<std::scientific;		//For e notation representation
+	std::cout.precision(64);			//Output 16 decimal precise
+	std::cout<<std::scientific;		//For e notation representation
 
     int i=0;
     
@@ -40,7 +40,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //RK step-1//#################################################################################################################################################################################################################################################################################################
         slopes(k1, l1, m1, o1, p1, ppar, pper, lamda, w_h, dwh_ds, gama);
-        //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn " << n1<< "\no1 " << o1 << "\np1 " << p1 << "\nq1 " << q1 <<"\n";	
+        std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 <<"\no1 " << o1 << "\np1 " << p1 <<"\n";	
         
 
         Bmag=Bmag_dipole(lamda+0.5*(Constants::h)*o1);
@@ -50,7 +50,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //RK step-2//#################################################################################################################################################################################################################################################################################################
         slopes(k2, l2, m2, o2, p2, ppar+(0.5*l1*Constants::h), pper+(0.5*m1*Constants::h), lamda+(0.5*o1*Constants::h),w_h, dwh_ds, gama);
-        //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 << "\nn2 " << n2<< "\no2 " << o2 << "\np2 " << p2 << "\n";
+        std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 <<"\no2 " << o2 << "\np2 " << p2 << "\n";
         
 
         Bmag=Bmag_dipole(lamda+0.5*(Constants::h)*o2);
@@ -60,7 +60,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //RK step-3//#################################################################################################################################################################################################################################################################################################
         slopes(k3, l3, m3, o3, p3, ppar+(0.5*l2*Constants::h), pper+(0.5*m2*Constants::h), lamda+(0.5*o2*Constants::h),w_h, dwh_ds, gama);
-        //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 << "\nn3 " << n3<< "\no3 " << o3 << "\np3 " << p3 << "\n";
+        std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3  << "\no3 " << o3 << "\np3 " << p3 << "\n";
 
 
         Bmag=Bmag_dipole(lamda+(Constants::h)*o3);
@@ -70,7 +70,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //RK step-4//#################################################################################################################################################################################################################################################################################################																								
         slopes(k4, l4, m4, o4, p4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), w_h, dwh_ds, gama);
-        //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\n";
+        std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 <<"\no4 " << o4 << "\np4 " << p4 << "\n";
 
 
         //Approximate new lamda first, to check if particle crosses satellite.

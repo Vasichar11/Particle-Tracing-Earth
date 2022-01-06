@@ -3,8 +3,10 @@
 //For wave-particle interaction
 void wpi(int p, Particles &single, Telescope &ODPT)
 {
-	
-
+    
+	std::cout.precision(64);			//Output 16 decimal precise
+	std::cout<<std::scientific;		    //For e notation representation
+    
     real lamda    =  single.lamda.at(0);
     //real zeta     =  single.zeta.at(0); 
     real ppar     =  single.ppar.at(0); 
@@ -18,6 +20,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
     //real Ekin     =  single.Ekin.at(0);
     real eta      =  single.eta.at(0); 
     real time     =  single.time.at(0);
+    std::cout<<"\n\nParticle "<<p<<" at alpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda = lamda;
@@ -40,9 +43,6 @@ void wpi(int p, Particles &single, Telescope &ODPT)
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
     
 
-	//std::cout.precision(8);			//Output 16 decimal precise
-	//std::cout<<std::scientific;		//For e notation representation
-    
     int i=0;
 
     while(i<Constants::Nsteps_wpi) 
@@ -159,11 +159,11 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 << "\nn3 " << n3<< "\no3 " << o3 << "\np3 " << p3 <<"\nq3 "<< q3 <<"\n";
         
 
-        Bmag=Bmag_dipole(lamda+(Constants::h)*o3);
-        ns_e = electron.density(lamda+(Constants::h)*o3); ns_O = oxygen.density(lamda+(Constants::h)*o3);  ns_H = hydrogen.density(lamda+(Constants::h)*o3); ns_He = helium.density(lamda+(Constants::h)*o3);
-        w_h = electron.wc(Bmag); wc_O = oxygen.wc(Bmag); wc_H = hydrogen.wc(Bmag);   wc_He = helium.wc(Bmag);
-        dwh_ds=dwh_dsf(w_h,lamda+(Constants::h)*o3);
-        p_mag = sqrt((ppar+(Constants::h)*l3)*(ppar+(Constants::h)*l3)+(pper+(Constants::h)*m3)*(pper+(Constants::h)*m3));
+        Bmag=Bmag_dipole(lamda+Constants::h*o3);
+        ns_e = electron.density(lamda+Constants::h*o3); ns_O = oxygen.density(lamda+Constants::h*o3);  ns_H = hydrogen.density(lamda+Constants::h*o3); ns_He = helium.density(lamda+Constants::h*o3);
+        w_h = electron.wc(Bmag); wc_O = oxygen.wc(Bmag); wc_H = hydrogen.wc(Bmag);   wc_He = helium.wc(Bmag); 
+        dwh_ds=dwh_dsf(w_h,lamda+Constants::h*o3);
+        p_mag = sqrt((ppar+Constants::h*l3)*(ppar+Constants::h*l3)+(pper+Constants::h*m3)*(pper+Constants::h*m3));
         gama = sqrt((p_mag*p_mag*Constants::c*Constants::c)+(Constants::m_e*Constants::m_e*Constants::c*Constants::c*Constants::c*Constants::c))/(Constants::m_e*Constants::c*Constants::c);
         //For interaction
         wps_e = electron.wps(ns_e); wps_O = oxygen.wps(ns_O); wps_H = hydrogen.wps(ns_H); wps_He = helium.wps(ns_He); 
@@ -174,7 +174,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
         whistlers(p,i,mu,P,D,S,kz, Bxwc, Bywc, Bzwc, Exwc, Eywc, Ezwc);
         //Ewc = sqrt(Exwc*Exwc + Eywc*Eywc + Ezwc*Ezwc);
         Bwc = sqrt(Bxwc*Bxwc + Bywc*Bywc + Bzwc*Bzwc);
-        Bell_params(ppar+(Constants::h)*l3,pper+(Constants::h)*m3,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);
+        Bell_params(ppar+Constants::h*l3,pper+Constants::h*m3,Bxwc,Bywc,Exwc,Eywc,Ezwc,kz,kx,w_h,gama,w1,w2,wtau_sq,R1,R2,beta);  
         if(std::isnan(mu)) //mu becomes nan first
         {
             if(i==0) 
@@ -192,7 +192,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
             }
         }
         //std::cout<<"\nR1 "<< R1<<"\nR2 "<< R2<<"\nw1 "<< w1<<"\nw2 "<< w2<<"\nbeta "<< beta<<"\ngama "<< gama<<"\nmu "<< mu<<"\nBywc "<< Bywc<<"\nBzwc "<< Bzwc<<"\nBwc "<< Bwc<<"\nS "<< S<<"\nD "<< D<<"\nP "<< P<<"\nR "<< R<<"\nL "<< L<<"\nkappa "<< kappa<<"\nkx "<< kx<<"\nkz "<< kz<<"\nw_h "<< w_h<<"\ndwh_ds "<< dwh_ds<<"\ngama "<< gama;
-        slopes(k4, l4, m4, n4, o4, p4, q4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), eta+(n3*Constants::h), alpha+(p3*Constants::h), aeq+(q3*Constants::h), p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
+        slopes(k4, l4, m4, n4, o4, p4, q4, ppar+l3*Constants::h, pper+m3*Constants::h, lamda+o3*Constants::h, eta+n3*Constants::h, alpha+p3*Constants::h, aeq+q3*Constants::h, p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\nq4 "<< q4 <<"\n";
        
        
@@ -224,7 +224,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
 
 		//To save states:
 		//single.save_state(aeq,alpha,lamda,deta_dt,time);
-        //std::cout<<"\n\nParticle "<<p<<" at alpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
+        std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
 
         //Stop at equator:
         //if(eql_dstr[p].lamda.at(i)>0) {	

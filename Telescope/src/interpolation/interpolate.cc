@@ -1,46 +1,36 @@
 #include "headers/interpolate.h"
-#include <cassert>
-#include <gnu/stubs-64.h>
-#include <limits>
-#include <iostream>
 
+std::vector <real> interpolate(std::vector <real> time_new, std::vector <real> timef, std::vector <real> vector_csv)  
+{
+    std::vector <real> vector_int;
 
-template <typename T,typename std::enable_if<std::is_arithmetic<T>::value>::type * = nullptr>
-bool getLeftNeighbor(std::vector<T> data , T target,size_t& lNeighbor){
+    int size = time_new.size();
+    vector_int.reserve(size);
+    
+    int x=1;
+    real yp;
+	for(size_t p=1; p<time_new.size(); p++)                        
+    {             
+		if(timef[x-1]<=time_new[p] && time_new[p]<=timef[x])      
+        {   //Independent variable: time_new -> x
+            //x1<=xp<=x2
+            //x1,y1 coordinates Below the known xp value
+            //x2,y2 coordinates Above the known xp value  
+            //yp = y1 + (xp - x1)(y2-y1)/(x2-x1)                                                 
 
-   for (size_t i=0; i<data.size()-1; i++){
-      if (data.at(i)<=target && target <= data.at(i+1) ){
-         lNeighbor=i;
-         return true;
-      }
-   }
-   //No neighbor found
-   return false;
+            //std::cout<< std::setprecision(16)<<std::scientific<<"\nx"<<x<<"\n csv 1 " << vector_csv[x-1) << "\n time_new p " << time_new[p) << "\n timef 1 " << timef[x-1) << "\n csv 2 " << vector_csv[x) <<"\n csv 1 "<< vector_csv[x-1)<<"\n timef 2 "<<timef[x)<<"\n timef 1 "<<timef[x-1) ; 
+            
+            yp = vector_csv[x-1] + ((time_new[p] - timef[x-1])*(vector_csv[x] - vector_csv[x-1])/(timef[x]-timef[x-1]));   
+            vector_int.push_back(yp);
+   		}
+   		else
+        {
+            x++; //Change range of interpolation
+            p--; //To loop again and find interpolant in this range. Has to be another way too...
+        }
+    }
+
+    vector_int.insert(vector_int.begin(),vector_csv[0]); //Insert first value at start.
+
+    return vector_int; 
 }
-
-template <typename T,typename std::enable_if<std::is_arithmetic<T>::value>::type * = nullptr>
-std::vector <T> interpolate(std::vector <T> time_new, std::vector <T> timef, std::vector <T> vector_csv)  {
-
-#ifdef DEBUG
-   //sanity check in debug mode
-   bool sizeMatch = time_new.size()==timef.size() && timef.size() == vector_csv.size();
-   assert(sizeMatch);
-#endif
-
-   size_t totalSize=time_new.size();
-   std::vector <T> vector_int;vector_int.resize(totalSize);
-   for (size_t i=0; i<totalSize; i++){
-      size_t lNeighIndex;
-      
-      if ( !getLeftNeighbor(timef,time_new[i], lNeighIndex)){     
-         vector_int[i]=std::numeric_limits<real>::quiet_NaN();
-         std::cerr<<"NaN added to vector because no neighbors where found at  "<<__FILE__<<" "<<__LINE__<<std::endl;
-         continue;
-      }
-      size_t rNeighIndex = lNeighIndex+1;
-      T retval = vector_csv[lNeighIndex]+((time_new[i]-timef[lNeighIndex])*(vector_csv[rNeighIndex]-vector_csv[lNeighIndex])/(timef[rNeighIndex]-timef[lNeighIndex]));   
-      vector_int[i]=retval;
-   }
-   return vector_int; 
-}
-
