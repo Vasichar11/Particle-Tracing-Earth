@@ -65,7 +65,6 @@ int main()
 			std::uniform_real_distribution <real> distribution(-interval/2, interval/2);   //Uniform distribution with varying interval.
 			number  = distribution(generator);											   //lat~90, interval is small. Moving away from 90, interval increases.
 			lamda0 	= number * Constants::D2R;											    
-			//lamda0 	= Constants::lamda0_deg * Constants::D2R;		//only for testing									    
 			lamda0_mr 	= - lamda0;											 			   //Mirror lamda
 			
 			//Find P.A at lamda0.

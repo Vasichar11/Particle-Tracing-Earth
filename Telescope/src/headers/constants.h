@@ -26,7 +26,7 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6/m-3
 //particle initials
 const real L_shell=5; 			 				//L_shell of particle. Constant for now.
 const real Ekev0=590;               			//Initial energy keV
-const real aeq0_deg=20;            		        //Initial equatorial pitch angle, deg.
+const real aeq0_deg=30;            		        //Initial equatorial pitch angle, deg.
 const real aeq0=aeq0_deg*D2R;
 const real lamda0_deg=0;						//Initial latitude, deg.
 const real lamda0=lamda0_deg*D2R;	     		

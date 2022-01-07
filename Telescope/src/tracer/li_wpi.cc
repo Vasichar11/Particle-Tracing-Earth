@@ -38,9 +38,12 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     real p_mag,gama,w_h,dwh_ds,kz,Fpar,Fper,Ftheta;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real new_lamda;
+    
+    std::cout.precision(64);			//Output 16 decimal precise
+	std::cout<<std::scientific;		    //For e notation representation
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
-    while(i<Constants::Nsteps_wpi-1) //Nsteps-1?           
+    while(i<Constants::Nsteps_wpi - 1) //Nsteps-1?           
     {   
         //Take the data from interpolation and return (pulse_dur) of them, moved by "i" each iteration.
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Minimum lat of wave(in pulse duration).
@@ -54,7 +57,6 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         { //Do only if there's WPI
             f_packet(Fpar, Fper, Ftheta, q1, kz, pper, ppar, eta, aeq, alpha, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
-
         slopes(k1,  l1,  m1,  n1,  o1,  p1, ppar, pper, alpha, lamda, eta, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz);
         //std::cout <<"\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";  
         //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn1 " << n1<< "\no1 " << o1 << "\np1 " << p1 <<"\nq1 " << q1 <<"\n";
@@ -113,7 +115,7 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         
 		//To save states:
         //single.save_state(lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, mu_ad_li, time);
-        //std::cout<<"\n\nzeta "<< zeta << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
+        //std::cout<<"\n\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
         //Stop at equator:
         //if(eql_dstr[p].lamda.at(i)>0) {	
