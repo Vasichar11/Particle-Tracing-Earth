@@ -36,19 +36,14 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	
 	//Position of the Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
-	
 	//Single particle struct.
 	Particles single; 
 	//Vector of structs for particle distribution.
 	std::vector<Particles> dstr(Constants::population, single);	
 
-
-
-
-	//-----------Read distribution from h5 file-------------//
+//------------------------------------------------------------READ DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
 	h5::File dstr_file("h5files/distribution.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, deta_dt_0, M_adiabatic_0;
@@ -100,26 +95,8 @@ int main(int argc, char **argv)
 	}
 	std::cout<<"\nParticle population: "<< dstr.size()<<std::endl;
 
-	//AEQ0 DISTRIBUTION CHECK
-	const int sector_range = 15;
-	const int view = 180;
-	const int sectors = view/sector_range;
-	std::array<int, sectors> aeq0_bins;
-	std::fill(std::begin(aeq0_bins), std::end(aeq0_bins), 0); //initialize array elements with 0
-	int sec;
-	for(int p=0; p<Constants::population; p++)
-	{
-		sec = floor((dstr[p].aeq.at(0)*Constants::R2D)/sector_range);
-		aeq0_bins.at(sec) ++;
-	}
-	std::cout<<"\nEquatorial P.A Initialization: ";
-	for(int sector=0;sector<sectors;sector++)
-	{
-		std::cout<<"\naeq0 range: "<<sector*sector_range<< " - " <<(sector+1)*sector_range<< " has " << aeq0_bins.at(sector) << " particles.";
-	}
+
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
-
-
 	int realthreads;   
 	real wtime = omp_get_wtime();
 	std::string s1("bell");
@@ -130,6 +107,7 @@ int main(int argc, char **argv)
 	{
 		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation using Bell formulas"<<std::endl;
 		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
+		std::cout<<"\nExecution time estimation for 20 THREAD run: "<<(Constants::population*0.017/60) * Constants::t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"\nForked..."<<std::endl;
 		//---PARALLELISM Work sharing---//
 		#pragma omp parallel
@@ -165,11 +143,11 @@ int main(int argc, char **argv)
 		else if(!(s2.compare(argv[1])))
 		{
 			std::cout<<"\n\n"<<Constants::t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
-			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Constants::population*0.25/60) * Constants::t_wpi <<" minutes."<<std::endl;
+			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Constants::population*0.1/60) * Constants::t_wpi <<" minutes."<<std::endl;
 		}
 		else
 		{ 
-			std::cout<<"\n\nArgument variable doesn't match any of the program's possible implementations.\nTry nowpi, wpi, or wpi_ray as the second argument variable.\n"<<std::endl;
+			std::cout<<"\n\nArgument variable doesn't match any of the program's possible implementations.\nTry nowpi, wpi, or li_ray as the second argument variable.\n"<<std::endl;
 			return EXIT_FAILURE;	
 		}
 
@@ -197,29 +175,24 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
-
-	std::vector<real>  aeq0_plot(Constants::population);
-	std::vector<real> lamda0_plot(Constants::population);
-	
-	//std::vector<std::vector<real>> time_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	//std::vector<std::vector<real>> alpha_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	//std::vector<std::vector<real>> deta_dt_plot(Constants::population, std::vector<real> (Constants::Nsteps + 1 ,0 ) );
-	
+	std::vector<std::vector<real>> precip_lamda(Constants::population, std::vector<real> (Constants::Nsteps_wpi + 1 ,0 ) );
+	std::vector<std::vector<real>> precip_alpha(Constants::population, std::vector<real> (Constants::Nsteps_wpi + 1 ,0 ) );
+	std::vector<std::vector<real>> precip_aeq(Constants::population, std::vector<real> (Constants::Nsteps_wpi + 1 ,0 ) );
+	std::vector<std::vector<real>> precip_time(Constants::population, std::vector<real> (Constants::Nsteps_wpi + 1 ,0 ) );
 
 	//Assign from struct to 2d vectors.
 	for(int p=0; p<Constants::population; p++)
 	{
-	    //for(size_t i=0; i<dstr[p].alpha.size(); i++)  
-	    //{
-	    	//time_plot[p][0] = dstr[p].time.at(0);  //take the initial values
-	    	aeq0_plot[p] = dstr[p].aeq.at(0);
-	    	//alpha_plot[p][i] = dstr[p].alpha.at(i);
-	    	lamda0_plot[p] = dstr[p].lamda.at(0);
-	    	//deta_dt_plot[p][i] = dstr[p].deta_dt.at(i);
-	    //}
+	    for(size_t i=0; i<dstr[p].alpha.size(); i++)  
+	    {
+			precip_lamda[p][i] = dstr[p].lamda.at(0); 
+			precip_alpha[p][i] = dstr[p].alpha.at(i);
+			precip_aeq[p][i] = dstr[p].aeq.at(i);
+			precip_time[p][i] = dstr[p].time.at(i);
+	    }
 	}
     
-	h5::File file("h5files/detected_nowpi.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_precipitation.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
@@ -237,14 +210,12 @@ int main(int argc, char **argv)
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
 	h5::DataSet t			       = file.createDataSet("t", Constants::t);
 	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
-	h5::DataSet aeq0bins           = file.createDataSet("aeq0_bins", aeq0_bins);
 	
-	//Saved Particles
-	h5::DataSet saved_lamda0  = file.createDataSet("lamda0_plot", lamda0_plot);
-	//h5::DataSet saved_alpha  = file.createDataSet("alpha_plot", alpha_plot);
-	//h5::DataSet saved_deta   = file.createDataSet("deta_dt", deta_dt_plot);
-	h5::DataSet saved_aeq0    = file.createDataSet("aeq0_plot", aeq0_plot);
-	//h5::DataSet saved_time   = file.createDataSet("time_plot", time_plot);
+	//Saved Particles that precipitate.
+	h5::DataSet saved_lamda  = file.createDataSet("precip_lamda", precip_lamda);
+	h5::DataSet saved_alpha  = file.createDataSet("precip_alpha", precip_alpha);
+	h5::DataSet saved_aeq    = file.createDataSet("precip_aeq", precip_aeq);
+	h5::DataSet saved_time   = file.createDataSet("precip_time", precip_time);
 
 
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//

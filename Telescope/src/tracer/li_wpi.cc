@@ -23,24 +23,25 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     real eta      =  single.eta.at(0); 
     real alpha    =  single.alpha.at(0); 
     real aeq      =  single.aeq.at(0);
+    real time     =  single.time.at(0);
     //real zeta     =  single.zeta.at(0); 
     //real upar     =  single.upar.at(0); 
     //real uper     =  single.uper.at(0);
     //real deta_dt  =  single.deta_dt.at(0);
     //real Ekin     =  single.Ekin.at(0);
     //real M_adiabatic = single.M_adiabatic.at(0);
-    real time     =  single.time.at(0);
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
-    int index;                                            //To find minimum difference between latitudes
+    int index;                              //To find minimum difference between latitudes
     int i=0;
 
     real min_lat,max_lat;
     real p_mag,gama,w_h,dwh_ds,kz,Fpar,Fper,Ftheta;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real new_lamda;
-    
-    std::cout.precision(64);			//Output 16 decimal precise
-	std::cout<<std::scientific;		    //For e notation representation
+    bool trapped = 1;                       //Particles trapped in Earth's magnetic field.
+
+    //std::cout.precision(64);                //Output 16 decimal precise
+	//std::cout<<std::scientific;		        //For e notation representation
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
     while(i<Constants::Nsteps_wpi - 1) //Nsteps-1?           
@@ -53,8 +54,7 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         f_always(p_mag, gama, w_h, dwh_ds, lamda, ppar, pper); 
         kz = Ftheta = Fpar = Fper = q1 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda, i, lat_int);  //is_in_packet returns "if and where" WPI happens. 
-        if(index>=0) 
-        { //Do only if there's WPI
+        if(index>=0) { //Do only if there's WPI
             f_packet(Fpar, Fper, Ftheta, q1, kz, pper, ppar, eta, aeq, alpha, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
         slopes(k1,  l1,  m1,  n1,  o1,  p1, ppar, pper, alpha, lamda, eta, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz);
@@ -64,34 +64,28 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         f_always(p_mag, gama, w_h, dwh_ds, lamda+0.5*Constants::h*o1, ppar+0.5*Constants::h*l1, pper+0.5*Constants::h*m1);
         kz = Ftheta = Fpar = Fper = q2 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda+0.5*Constants::h*o1, i, lat_int);
-        if(index>=0) 
-        { //Do only if there's WPI
+        if(index>=0) { //Do only if there's WPI
             f_packet(Fpar, Fper, Ftheta, q2, kz, pper+0.5*Constants::h*m1, ppar+0.5*Constants::h*l1, eta+0.5*Constants::h*n1, aeq+0.5*Constants::h*q1, alpha+0.5*Constants::h*p1, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
         slopes( k2, l2, m2, n2, o2, p2, ppar + 0.5*Constants::h*l1, pper + 0.5*Constants::h*m1, alpha + 0.5*Constants::h*p1, lamda + 0.5*Constants::h*o1, eta + 0.5*Constants::h*n1, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz ); 
-        //std::cout <<"\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";  
         //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 << "\nn2 " << n2<< "\no2 " << o2 << "\np2 " << p2 << "\nq2 "<< q2 <<"\n";;
         
         f_always(p_mag, gama, w_h, dwh_ds, lamda+0.5*Constants::h*o2, ppar+0.5*Constants::h*l2, pper+0.5*Constants::h*m2);
         kz = Ftheta = Fpar = Fper = q3 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda+0.5*Constants::h*o2, i, lat_int);
-        if(index>=0)
-        { //Do only if there's WPI
+        if(index>=0) { //Do only if there's WPI
             f_packet(Fpar, Fper, Ftheta, q3, kz, pper+0.5*Constants::h*m2, ppar+0.5*Constants::h*l2, eta+0.5*Constants::h*n2, aeq+0.5*Constants::h*q2, alpha+0.5*Constants::h*p2, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
         slopes( k3, l3, m3, n3, o3, p3, ppar + 0.5*Constants::h*l2, pper + 0.5*Constants::h*m2, alpha + 0.5*Constants::h*p2, lamda + 0.5*Constants::h*o2, eta + 0.5*Constants::h*n2, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz );   
-        //std::cout <<"\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";     
         //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 << "\nn3 " << n3<< "\no3 " << o3 << "\np3 " << p3 << "\nq3 "<< q3 <<"\n";
 
         f_always(p_mag, gama, w_h, dwh_ds, lamda+Constants::h*o3, ppar+Constants::h*l3, pper+Constants::h*m3);
         kz = Ftheta = Fpar = Fper = q4 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda+Constants::h*o3, i, lat_int);
         if(index>=0) { //Do only if there's WPI
-    
             f_packet(Fpar, Fper, Ftheta, q4, kz, pper+Constants::h*m3, ppar+Constants::h*l3, eta+Constants::h*n3, aeq+Constants::h*q3, alpha+Constants::h*p3, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
         slopes( k4, l4, m4, n4, o4, p4, ppar + Constants::h*l3, pper + Constants::h*m3, alpha + Constants::h*p3, lamda + Constants::h*o3, eta + Constants::h*n3, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz ); 
-        //std::cout <<"\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";          
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn4 " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\nq4 " << q4 <<"\n";           
 
 
@@ -108,13 +102,28 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
             }
         }
 
+
         //Next step:
         new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, o1, o2, o3, o4, p1, p2, p3, p4, q1, q2, q3, q4);
+        
+
+
+        if(aeq<Constants::alpha_lc) //Not trapped If particle's equator P.A is less than the loss cone angle for this L_shell and with minimum allowable trapping altitude 100km.
+        {
+            trapped = 0;
+        }
+        if(!trapped && (std::abs(new_lamda)<std::abs(lamda)) ) //Particle can now precipitate when |new_lamda|<|lamda| which happens is about to bounce.
+        {   
+            //To save states of precipitating particles:
+            single.save_state(lamda,alpha, aeq, ppar, pper, time);
+            std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<< ppar<< " pper " << pper<< " eta " << eta << " lamda " <<lamda<< " alpha "<< alpha << " aeq " <<aeq ;
+            break;
+        }
+        
         time  = time + Constants::h; 
         i++;  
         
-		//To save states:
-        //single.save_state(lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, mu_ad_li, time);
+
         //std::cout<<"\n\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
 
         //Stop at equator:
@@ -122,5 +131,21 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         //	break;}		
     }
 
+
+
+    //Erase first element which was the last state of the previous noWPI simulation.
+    single.lamda.erase(single.lamda.begin());
+    single.ppar.erase(single.ppar.begin()); 
+    single.pper.erase(single.pper.begin()); 
+    single.eta.erase(single.eta.begin()); 
+    single.alpha.erase(single.alpha.begin()); 
+    single.aeq.erase(single.aeq.begin());
+    single.time.erase(single.time.begin());    
+    //single.zeta.erase(single.zeta.begin()); 
+    //single.upar.erase(single.upar.begin()); 
+    //single.uper.erase(single.uper.begin());
+    //single.deta_dt.erase(single.deta_dt.begin());
+    //single.Ekin.erase(single.Ekin.begin());
+    //single.M_adiabatic.erase(single.M_adiabatic.begin());
 }
 

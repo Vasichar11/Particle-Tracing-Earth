@@ -16,8 +16,8 @@ import re
 np.set_printoptions(threshold=sys.maxsize)
 
 ############################################# READ HDF5 ###################################################
-#noWPI
-f1 = h5py.File("h5files/detected_nowpi.h5","r")
+#noWPI read
+f1 = h5py.File("h5files/detected_bellnowpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -26,25 +26,16 @@ detected_alpha = f1["ODPT.alpha"][()]
 telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
-#aeq0dstr       = f1["aeq0dstr"][()]
-#da             = f1["da"][()]
 lamda_start_d  = f1["lamda_start_d"][()]
 lamda_end_d    = f1["lamda_end_d"][()]
 aeq_start_d    = f1["aeq_start_d"][()]
 aeq_end_d      = f1["aeq_end_d"][()]
 Ekev0          = f1["Ekev0"][()]
 By_wave        = f1["By_wave"][()]
-aeq0           = f1["aeq0_plot"][()]
-#alpha          = f1["alpha_plot"][()]
-lamda0          = f1["lamda0_plot"][()]
-#time           = f1["time_plot"][()]
-#deta_dt        = f1["deta_dt"][()]
-aeq0_bins       = f1["aeq0_bins"][()]
-
 f1.close()
 
-#noWPI and WPI afterwards
-f2 = h5py.File("h5files/detected_both_ray_minus.h5","r")
+#noWPI and WPI afterwards read
+f2 = h5py.File("h5files/detected_liwpi_m_minus.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -53,26 +44,25 @@ detected_alpha_both = f2["ODPT.alpha"][()]
 telescope_lamda_both= f2["ODPT.latitude"][()]
 population_both     = f2["population"][()]
 t_both              = f2["t"][()]
-#aeq0dstr_both       = f2["aeq0dstr"][()]
-#da_both             = f2["da"][()]
 lamda_start_d_both  = f2["lamda_start_d"][()]
 lamda_end_d_both    = f2["lamda_end_d"][()]
 aeq_start_d_both    = f2["aeq_start_d"][()]
 aeq_end_d_both      = f2["aeq_end_d"][()]
 Ekev0_both          = f2["Ekev0"][()]
 By_wave_both        = f2["By_wave"][()]
-aeq0_both           = f2["aeq0_plot"][()]
-#alpha_both          = f2["alpha_plot"][()]
-lamda0_both          = f2["lamda0_plot"][()]
-#time_both           = f2["time_plot"][()]
-#deta_dt_both        = f2["deta_dt"][()]
-aeq0_bins_both       = f2["aeq0_bins"][()]
-
 f2.close()
+
+#Distribution read
+f3 = h5py.File("h5files/distribution.h5","r")
+aeq0         = f3["aeq"][()]
+lat0         = f3["lat"][()]
+aeq0_bins    = f3["aeq0_bins"][()]
+f3.close()
 
 
 D2R=np.pi/180
 R2D=1/D2R
+
 
 
 ##########################################################################################################
@@ -88,7 +78,7 @@ R2D=1/D2R
 time_bin  = 0.2                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
-sector_range = 15
+sector_range = 15 #P.A bins
 sectors = int(view/sector_range)
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
@@ -100,24 +90,21 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
     colors.append('#%06X' % randint(0, 0xFFFFFF))
 
 
-
-
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
-#aeq0 dstr
+
 fig, ax = plt.subplots()
 for sec in range(0,sectors):
     ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
 ax.grid(alpha=.3)
-ax.set(xlabel="Sectors",xlim=(0,11),xticks=np.arange(0,12,1),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
+ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
 fig.savefig("simulation_MM/aeq0.png",dpi=200)
 
-#aeq0-lamda0 after
 fig, ax = plt.subplots()
-ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
+ax.scatter(lat0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
-ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
+ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(aeq_start_d,aeq_end_d),xlim=(lamda_start_d,lamda_end_d),xticks=np.linspace(lamda_start_d,lamda_end_d,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/aeq0_lamda0.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_lat0.png",dpi=200)
 
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 
@@ -152,7 +139,7 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
     if(pa*R2D==180):
-        sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
+        sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux[timestep] += 1
 
@@ -162,11 +149,11 @@ sum_flux_both = [0 for i in range(timesteps)]
 for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    if(sector>11): #happens when NAN particles are kept in the simulation(jumping steps) WHY?
+    if(sector>sectors): #Uneeded?#happens when NAN particles are kept in the simulation(jumping steps) WHY?
         print("Particle with pa",pa,"needs sector",sector)
         continue 
     if(pa*R2D==180):
-        sector = sectors-1 #to include p.a 180 in the last sector(11). Is this needed?
+        sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux_both[timestep] += 1
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
@@ -177,9 +164,9 @@ ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flu
 ax.xaxis.grid(True, which='both')
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
-        ax.scatter(timestep*time_bin+time_bin/2,sum_flux[timestep],s=10)
+        ax.scatter(timestep*time_bin+time_bin/2,sum_flux[timestep],s=10, c="black")
     if sum_flux_both[timestep]!=0:  
-        ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, alpha=0.2)  #WPI would be transparent dots
+        ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, c="red")  #WPI would be transparent dots
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
 
 

@@ -32,11 +32,14 @@ const real lamda0_deg=0;						//Initial latitude, deg.
 const real lamda0=lamda0_deg*D2R;	     		
 const real eta0_deg=0;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
+const real hm = 100*pow(10,3);                  //Minimum allowable mirroring altitude in m.
+const real zm = (Re + hm)/(L_shell*Re);
+const real alpha_lc = asin(sqrt(pow(zm,3)/sqrt(1+3*(1-zm)))); //Loss cone angle
 
 //wave initials
 const real f_wave=2000; 			    		//Wave frequency in Hz. 2kHz
 const real w_wave=2*M_PI*f_wave;        		//Wave angular frequency.
-const real m_res=1;//1                           	//WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
+const real m_res=-1;                             //WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
 const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
 //bell
@@ -48,7 +51,7 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 
 //--Simulation parameters--//
 const real t = 1;        				  	    //Simulation time in seconds.
-const real t_nowpi = 0;                         //NoWPI time.
+const real t_nowpi = 0;                          //NoWPI time.
 const real t_wpi = t - t_nowpi;                 //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
@@ -60,13 +63,13 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 2;  			    
-const int64_t lamda_dstr  = 2;					
+const int64_t aeq_dstr    = 100;  	    		    
+const int64_t lamda_dstr  = 100;					
 const int64_t population  = lamda_dstr * aeq_dstr;   
 //Aeq dstr					 
-const real aeq_start_d    = 30;    		//Try narrower range because particles are breaking   			 				
-const real aeq_end_d      = 150;  			
-const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	//step for linspace(start,end,aeq_dstr) 
+const real aeq_start_d    = 1;    		  			 				
+const real aeq_end_d      = 179;  			
+const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(2*(aeq_dstr-1)); 	//step for linspace(start,end,aeq_dstr) 
 //Lamda dstr					 
 const real lamda_start_d  = -90;			 				
 const real lamda_end_d    = 90;	

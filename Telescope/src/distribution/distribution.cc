@@ -44,26 +44,28 @@ int main()
 
 	std::random_device seed;         //Random seed. 
     std::mt19937 generator(seed());  //PRNG initialized with seed.
-	real number, count;
+	real number;
 	real interval;
 
-	//DISTRIBUTIONS
-	for(int a=0, p=0; a<Constants::aeq_dstr; a++)
+	int p=0;
+	int aeq_count = 0;
+	while(aeq_count<Constants::aeq_dstr)
 	{
-		aeq0 = (Constants::aeq_start_d + a*Constants::aeq_step_d) * Constants::D2R;	  	  //linspace(start,stop,aeq_dstr)					
-		aeq0_mr = M_PI - aeq0;		 												  	  //Mirror aeq  														
+		aeq0 = (Constants::aeq_start_d + aeq_count*Constants::aeq_step_d) * Constants::D2R;	  	  //linspace(start,stop,aeq_dstr)					
+		aeq0_mr = M_PI - aeq0;		 													  		  //Mirror aeq  														
 		//Varying interval for latitude selection - 2x2 linear system.
 		//Aeq defines valid latitude interval.
+		//Aeq~90, interval is small. Moving away from 90, interval increases.
 		if      (0<aeq0 && aeq0<(M_PI/2)) 		interval = 180 - (2*aeq0*Constants::R2D); 
 		else if ((M_PI/2)<aeq0 && aeq0<M_PI)    interval = (2*aeq0*Constants::R2D) - 180;
 		else if (aeq0==M_PI/2) 					interval = 0.1 ; //Equator particles, aeq=90, lamda~=0
 		else { std::cout<<"\nError aeq0 initialization. aeq0= " << aeq0*Constants::R2D << std::endl; return EXIT_FAILURE;}
 
-		count = 0;
-		while(count<Constants::lamda_dstr)												   //"Brute Force domain validation". Better solution? 
+		int lat_count = 0;
+		while(lat_count<Constants::lamda_dstr)												   //"Brute Force domain validation". Better solution? 
 		{																				   //Loop until <lamda_dstr> valid states for this aeq0.
 			std::uniform_real_distribution <real> distribution(-interval/2, interval/2);   //Uniform distribution with varying interval.
-			number  = distribution(generator);											   //lat~90, interval is small. Moving away from 90, interval increases.
+			number  = distribution(generator);											   //When aeq~90, interval is small. Moving away from 90, interval increases.
 			lamda0 	= number * Constants::D2R;											    
 			lamda0_mr 	= - lamda0;											 			   //Mirror lamda
 			
@@ -85,22 +87,30 @@ int main()
 				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
 				//std::cout<<"\nParticle"<<p+1<<" aeq0: "<< aeq0_mr*Constants::R2D <<", lamda0: "<< lamda0_mr*Constants::R2D <<" gives alpha0: "<<alpha0_mr*Constants::R2D<<std::endl;
 				p+=2;
-				count+=2;
+				lat_count+=2;
 			}
 		}	
+		aeq_count++;
 	}
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
 
-
-
-
-
-
-
-
-
-
-
+	//AEQ0 DISTRIBUTION CHECK
+	const int sector_range = 15;
+	const int view = 180;
+	const int sectors = view/sector_range;
+	std::array<int, sectors> aeq0_bins;
+	std::fill(std::begin(aeq0_bins), std::end(aeq0_bins), 0); 		  //Initialize array elements with 0
+	int sec;
+	for(int p=0; p<Constants::population; p++)
+	{
+		sec = floor((dstr[p].aeq.at(0)*Constants::R2D)/sector_range); //Which sector has this particle?
+		aeq0_bins.at(sec) ++; 										  //This sector has this particle
+	}
+	std::cout<<"\nEquatorial P.A Initialization: ";
+	for(int sector=0;sector<sectors;sector++)					      //Print population of P.A bins
+	{				
+		std::cout<<"\naeq0 range: "<<sector*sector_range<< " - " <<(sector+1)*sector_range<< " has " << aeq0_bins.at(sector) << " particles.";
+	}
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//
 	std::vector<real> lamda_dstr(Constants::population);
@@ -148,6 +158,8 @@ int main()
 	h5::DataSet data_deta_dt        = file.createDataSet("deta_dt", deta_dt_dstr);
 	h5::DataSet data_M_adiabatic    = file.createDataSet("M_adiabatic", M_adiabatic_dstr);
 	h5::DataSet data_Ekin           = file.createDataSet("Ekin", Ekin_dstr);
+	h5::DataSet aeq0bins            = file.createDataSet("aeq0_bins", aeq0_bins);
+
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//
 
     return 0;
