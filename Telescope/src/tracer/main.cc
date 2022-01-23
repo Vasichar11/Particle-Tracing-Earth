@@ -175,20 +175,20 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
-	std::vector<std::vector<real>> precip_lamda(Constants::population, std::vector<real> (Constants::Nsteps_wpi + 1 ,0 ) );
-	std::vector<std::vector<real>> precip_alpha(Constants::population, std::vector<real> (Constants::Nsteps_wpi + 1 ,0 ) );
-	std::vector<std::vector<real>> precip_aeq(Constants::population, std::vector<real> (Constants::Nsteps_wpi + 1 ,0 ) );
-	std::vector<std::vector<real>> precip_time(Constants::population, std::vector<real> (Constants::Nsteps_wpi + 1 ,0 ) );
+	std::vector<real> precip_lamda(Constants::population);
+	std::vector<real> precip_alpha(Constants::population);
+	std::vector<real> precip_aeq(Constants::population);
+	std::vector<real> precip_time(Constants::population);
 
 	//Assign from struct to 2d vectors.
 	for(int p=0; p<Constants::population; p++)
 	{
 	    for(size_t i=0; i<dstr[p].alpha.size(); i++)  
 	    {
-			precip_lamda[p][i] = dstr[p].lamda.at(0); 
-			precip_alpha[p][i] = dstr[p].alpha.at(i);
-			precip_aeq[p][i] = dstr[p].aeq.at(i);
-			precip_time[p][i] = dstr[p].time.at(i);
+			precip_lamda[p] = dstr[p].lamda.at(0); 
+			precip_alpha[p] = dstr[p].alpha.at(0);
+			precip_aeq[p] = dstr[p].aeq.at(0);
+			precip_time[p] = dstr[p].time.at(0);
 	    }
 	}
     
