@@ -193,7 +193,7 @@ diff_precip = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_
 for sector in range(0,sectors):           
     for timestep in range(0,timesteps): 
         diff[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep])
-        diff_precip[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_precip[sector][timestep])
+        diff_precip[timestep][sector] = abs(sctr_flux_both[sector][timestep] - sctr_flux_precip[sector][timestep])
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
@@ -211,9 +211,9 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
             if(sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot only difference
                 ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red") 
 
-        ax.bar(np.arange(0.5,sectors+0.5),diff[timestep],alpha=0.5,width=0.2,color='r')#plot difference with bars
-        ax.bar(np.arange(0.5,sectors+0.5),diff_precip[timestep],alpha=0.5,width=0.1, color='y')#plot difference precipitated
-        
+        ax.bar(np.arange(0.5,sectors+0.5),diff[timestep],alpha=0.5,width=0.2,color='red')#plot difference with bars
+        ax.bar(np.arange(0.5,sectors+0.5),diff_precip[timestep],alpha=0.5,width=0.1, color='yellow')#plot difference precipitated
+
         ax.set_xticks(ticks=np.arange(0.5,sectors)) 
         ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
         ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
