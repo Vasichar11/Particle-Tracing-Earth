@@ -113,7 +113,7 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         {   
             //To save states of precipitating particles:
             single.save_state(lamda,alpha, aeq, ppar, pper, time);
-            std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<< ppar<< " pper " << pper<< " eta " << eta << " lamda " <<lamda<< " alpha "<< alpha << " aeq " <<aeq ;
+            //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<< ppar<< " pper " << pper<< " eta " << eta << " lamda " <<lamda<< " alpha "<< alpha << " aeq " <<aeq ;
             break;
         }
 
