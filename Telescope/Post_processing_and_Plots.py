@@ -17,7 +17,7 @@ np.set_printoptions(threshold=sys.maxsize)
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/detected_bellnowpi.h5","r")
+f1 = h5py.File("h5files/detected_bell_nowpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -35,7 +35,7 @@ By_wave        = f1["By_wave"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/detected_liwpi_m_minus.h5","r")
+f2 = h5py.File("h5files/detected_li_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -50,6 +50,11 @@ aeq_start_d_both    = f2["aeq_start_d"][()]
 aeq_end_d_both      = f2["aeq_end_d"][()]
 Ekev0_both          = f2["Ekev0"][()]
 By_wave_both        = f2["By_wave"][()]
+#Particles that escaped.
+precip_lamda = f2["precip_lamda"][()]
+precip_alpha = f2["precip_alpha"][()]
+precip_aeq   = f2["precip_aeq"][()]
+precip_time  = f2["precip_time"][()]
 f2.close()
 
 #Distribution read
@@ -149,9 +154,9 @@ sum_flux_both = [0 for i in range(timesteps)]
 for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    if(sector>sectors): #Uneeded?#happens when NAN particles are kept in the simulation(jumping steps) WHY?
-        print("Particle with pa",pa,"needs sector",sector)
-        continue 
+    #if(sector>sectors): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) WHY?
+    #    print("Particle with pa",pa,"needs sector",sector)
+    #    continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
@@ -168,6 +173,11 @@ for timestep in range(0,timesteps):
     if sum_flux_both[timestep]!=0:  
         ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, c="red")  #WPI would be transparent dots
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
+
+###################################### PARTICLES THAT PRECIPITATE ##########################################
+
+
+
 
 
 ##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################

@@ -17,19 +17,20 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     static std::vector <real> R1            =   read_vector("R1",            "h5files/interpolated_ray.h5");
     static std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
-    real lamda    =  single.lamda.at(0);
-    real ppar     =  single.ppar.at(0); 
-    real pper     =  single.pper.at(0); 
-    real eta      =  single.eta.at(0); 
-    real alpha    =  single.alpha.at(0); 
-    real aeq      =  single.aeq.at(0);
-    real time     =  single.time.at(0);
-    //real zeta     =  single.zeta.at(0); 
-    //real upar     =  single.upar.at(0); 
-    //real uper     =  single.uper.at(0);
-    //real deta_dt  =  single.deta_dt.at(0);
-    //real Ekin     =  single.Ekin.at(0);
-    //real M_adiabatic = single.M_adiabatic.at(0);
+                                           //Erase first element which was the last state of the previous noWPI simulation.
+    real lamda    =  single.lamda.at(0);    single.lamda.erase(single.lamda.begin());
+    real ppar     =  single.ppar.at(0);     single.ppar.erase(single.ppar.begin()); 
+    real pper     =  single.pper.at(0);     single.pper.erase(single.pper.begin()); 
+    real eta      =  single.eta.at(0);      single.eta.erase(single.eta.begin()); 
+    real alpha    =  single.alpha.at(0);    single.alpha.erase(single.alpha.begin()); 
+    real aeq      =  single.aeq.at(0);      single.aeq.erase(single.aeq.begin());
+    real time     =  single.time.at(0);     single.time.erase(single.time.begin());
+    //real zeta     =  single.zeta.at(0);           single.zeta.erase(single.zeta.begin()); 
+    //real upar     =  single.upar.at(0);           single.upar.erase(single.upar.begin()); 
+    //real uper     =  single.uper.at(0);           single.uper.erase(single.uper.begin());
+    //real deta_dt  =  single.deta_dt.at(0);        single.deta_dt.erase(single.deta_dt.begin());
+    //real Ekin     =  single.Ekin.at(0);           single.Ekin.erase(single.Ekin.begin());
+    //real M_adiabatic = single.M_adiabatic.at(0);  single.M_adiabatic.erase(single.M_adiabatic.begin());
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
     int index;                              //To find minimum difference between latitudes
     int i=0;
@@ -37,14 +38,14 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     real min_lat,max_lat;
     real p_mag,gama,w_h,dwh_ds,kz,Fpar,Fper,Ftheta;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
-    real new_lamda;
+    real new_lamda, new_aeq;
     bool trapped = 1;                       //Particles trapped in Earth's magnetic field.
 
     //std::cout.precision(64);                //Output 16 decimal precise
 	//std::cout<<std::scientific;		        //For e notation representation
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
-    while(i<Constants::Nsteps_wpi - 1) //Nsteps-1?           
+    while(i<Constants::Nsteps_wpi)          
     {   
         //Take the data from interpolation and return (pulse_dur) of them, moved by "i" each iteration.
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Minimum lat of wave(in pulse duration).
@@ -89,10 +90,10 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn4 " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\nq4 " << q4 <<"\n";           
 
 
-
-        //Check crossing:
-        new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
+        //Check validity:
+        new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
         if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break; }
+        //Check crossing:
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
@@ -101,51 +102,29 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
                 ODPT.store( p, lamda, alpha, time); //Store its state(it's before crossing the satellite!).		        	
             }
         }
-
-
-        //Next step:
-        new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, o1, o2, o3, o4, p1, p2, p3, p4, q1, q2, q3, q4);
-        
-
-
-        if(aeq<Constants::alpha_lc) //Not trapped If particle's equator P.A is less than the loss cone angle for this L_shell and with minimum allowable trapping altitude 100km.
+        //Check precipitation:
+        new_aeq = aeq + (Constants::h/6)*(q1+2*q2+2*q3+q4);
+        if(new_aeq<Constants::alpha_lc) //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. Minimum allowable trapping altitude 100km.
         {
             trapped = 0;
         }
-        if(!trapped && (std::abs(new_lamda)<std::abs(lamda)) ) //Particle can now precipitate when |new_lamda|<|lamda| which happens is about to bounce.
+        //If it's not trapped and it's about to bounce --> Precipitation
+        if(!trapped && (std::abs(new_lamda)<std::abs(lamda)) ) //Would bounce if |new_lamda|<|lamda|
         {   
             //To save states of precipitating particles:
             single.save_state(lamda,alpha, aeq, ppar, pper, time);
             std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<< ppar<< " pper " << pper<< " eta " << eta << " lamda " <<lamda<< " alpha "<< alpha << " aeq " <<aeq ;
             break;
         }
-        
+
+ 
+       //Next step:
+        new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, o1, o2, o3, o4, p1, p2, p3, p4, q1, q2, q3, q4);
         time  = time + Constants::h; 
         i++;  
-        
-
         //std::cout<<"\n\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
-
-        //Stop at equator:
-        //if(eql_dstr[p].lamda.at(i)>0) {	
-        //	break;}		
     }
 
 
-
-    //Erase first element which was the last state of the previous noWPI simulation.
-    single.lamda.erase(single.lamda.begin());
-    single.ppar.erase(single.ppar.begin()); 
-    single.pper.erase(single.pper.begin()); 
-    single.eta.erase(single.eta.begin()); 
-    single.alpha.erase(single.alpha.begin()); 
-    single.aeq.erase(single.aeq.begin());
-    single.time.erase(single.time.begin());    
-    //single.zeta.erase(single.zeta.begin()); 
-    //single.upar.erase(single.upar.begin()); 
-    //single.uper.erase(single.uper.begin());
-    //single.deta_dt.erase(single.deta_dt.begin());
-    //single.Ekin.erase(single.Ekin.begin());
-    //single.M_adiabatic.erase(single.M_adiabatic.begin());
 }
 

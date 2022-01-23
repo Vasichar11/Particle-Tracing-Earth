@@ -192,7 +192,7 @@ int main(int argc, char **argv)
 	    }
 	}
     
-	h5::File file("h5files/detected_precipitation.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/detected_li_both.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
@@ -202,16 +202,16 @@ int main(int argc, char **argv)
 
 	//Simulation data and Telescope specification - Scalars 
 	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
-	h5::DataSet population         = file.createDataSet("population", Constants::population);
+	h5::DataSet population         = file.createDataSet("population", 	Constants::population);
 	h5::DataSet lamda_start_d      = file.createDataSet("lamda_start_d",Constants::lamda_start_d);
 	h5::DataSet lamda_end_d        = file.createDataSet("lamda_end_d",  Constants::lamda_end_d);
 	h5::DataSet aeq_start_d        = file.createDataSet("aeq_start_d",  Constants::aeq_start_d);
 	h5::DataSet aeq_end_d          = file.createDataSet("aeq_end_d",    Constants::aeq_end_d);
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
-	h5::DataSet t			       = file.createDataSet("t", Constants::t);
-	h5::DataSet By_wave            = file.createDataSet("By_wave",Constants::By_wave);
+	h5::DataSet t			       = file.createDataSet("t", 			Constants::t);
+	h5::DataSet By_wave            = file.createDataSet("By_wave",		Constants::By_wave);
 	
-	//Saved Particles that precipitate.
+	//Saved Particles that Precipitate.
 	h5::DataSet saved_lamda  = file.createDataSet("precip_lamda", precip_lamda);
 	h5::DataSet saved_alpha  = file.createDataSet("precip_alpha", precip_alpha);
 	h5::DataSet saved_aeq    = file.createDataSet("precip_aeq", precip_aeq);

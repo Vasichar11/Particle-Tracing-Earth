@@ -34,16 +34,16 @@ const real eta0_deg=0;	   		  				//Initial particle phase (angle between Vperp 
 const real eta0=eta0_deg*D2R;
 const real hm = 100*pow(10,3);                  //Minimum allowable mirroring altitude in m.
 const real zm = (Re + hm)/(L_shell*Re);
-const real alpha_lc = asin(sqrt(pow(zm,3)/sqrt(1+3*(1-zm)))); //Loss cone angle
+const real alpha_lc = asin(sqrt(pow(zm,3)/sqrt(1+3*(1-zm)))); //Loss cone angle in radians.
 
 //wave initials
 const real f_wave=2000; 			    		//Wave frequency in Hz. 2kHz
 const real w_wave=2*M_PI*f_wave;        		//Wave angular frequency.
-const real m_res=-1;                             //WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
+const real m_res=-1;                            //WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
 const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
 //bell
-const real By_wave=10*pow(10,-12);               
+const real By_wave=1*pow(10,-9);    //1nT           
 //li && ray tracing
 const real pwr = pow(10,-4);                    //Poynting flux [W/m 2]. //for Ray tracing code  
 const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
@@ -51,7 +51,7 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 
 //--Simulation parameters--//
 const real t = 1;        				  	    //Simulation time in seconds.
-const real t_nowpi = 0;                          //NoWPI time.
+const real t_nowpi = 0.5;                         //NoWPI time.
 const real t_wpi = t - t_nowpi;                 //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
