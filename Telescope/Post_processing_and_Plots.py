@@ -69,7 +69,6 @@ D2R=np.pi/180
 R2D=1/D2R
 
 
-
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -135,8 +134,6 @@ ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
 
-
-
 ############################################## BINNING ####################################################
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux = [0 for i in range(timesteps)]
@@ -161,6 +158,21 @@ for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both arr
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux_both[timestep] += 1
+
+#PRECIPITATING PARTICLES
+#Particles that will precipitate are 
+sctr_flux_precip = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
+sum_flux_precip = [0 for i in range(timesteps)]
+for time,pa in zip(precip_time,precip_alpha): #Iterate in both array elements. No sorting required.
+    timestep = math.floor(time/time_bin)
+    sector   = math.floor(pa*R2D/sector_range)
+    if(pa*R2D==180):
+        sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
+    sctr_flux_precip[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
+    sum_flux_precip[timestep] += 1
+
+
+
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
@@ -174,18 +186,14 @@ for timestep in range(0,timesteps):
         ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, c="red")  #WPI would be transparent dots
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
 
-###################################### PARTICLES THAT PRECIPITATE ##########################################
-
-
-
-
-
 ##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################
 diff = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
+diff_precip = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
 
 for sector in range(0,sectors):           
     for timestep in range(0,timesteps): 
         diff[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep])
+        diff_precip[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_precip[sector][timestep])
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
@@ -203,8 +211,9 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
             if(sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot only difference
                 ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red") 
 
-        ax.bar(np.arange(0.5,sectors+0.5),diff[timestep],alpha=0.5)#plot difference with bars
-
+        ax.bar(np.arange(0.5,sectors+0.5),diff[timestep],alpha=0.5,width=0.2,color='r')#plot difference with bars
+        ax.bar(np.arange(0.5,sectors+0.5),diff_precip[timestep],alpha=0.5,width=0.1, color='y')#plot difference precipitated
+        
         ax.set_xticks(ticks=np.arange(0.5,sectors)) 
         ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
         ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
