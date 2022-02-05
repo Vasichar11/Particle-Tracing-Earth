@@ -58,7 +58,8 @@ int main()
 		//Aeq~90, interval is small. Moving away from 90, interval increases.
 		if      (0<aeq0 && aeq0<(M_PI/2)) 		interval = 180 - (2*aeq0*Constants::R2D); 
 		else if ((M_PI/2)<aeq0 && aeq0<M_PI)    interval = (2*aeq0*Constants::R2D) - 180;
-		else if (aeq0==M_PI/2) 					interval = 0.1 ; //Equator particles, aeq=90, lamda~=0
+		//else if (aeq0==M_PI/2) 					interval = 0.1 ; //Equator particles, aeq=90, lamda~=0
+		else if (aeq0==M_PI/2) 					interval = 0;    //Try only lamda=0?? Otherwise these particles would develop huge negative aeq for lamda=~0. 
 		else { std::cout<<"\nError aeq0 initialization. aeq0= " << aeq0*Constants::R2D << std::endl; return EXIT_FAILURE;}
 
 		int lat_count = 0;
@@ -68,7 +69,8 @@ int main()
 			number  = distribution(generator);											   //When aeq~90, interval is small. Moving away from 90, interval increases.
 			lamda0 	= number * Constants::D2R;											    
 			lamda0_mr 	= - lamda0;											 			   //Mirror lamda
-			
+			std::cout<<"\n"<<lamda0;
+
 			//Find P.A at lamda0.
 			Blam0 	   = Bmag_dipole(lamda0);
 			Blam0_mr   = Bmag_dipole(lamda0_mr);
@@ -143,7 +145,7 @@ int main()
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic.at(0);
 		time_dstr[p]       = dstr[p].time.at(0);
 	}
-	h5::File file("h5files/distribution.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/distribution_5000.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);

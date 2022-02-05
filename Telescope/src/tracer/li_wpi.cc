@@ -38,7 +38,7 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     real min_lat,max_lat;
     real p_mag,gama,w_h,dwh_ds,kz,Fpar,Fper,Ftheta;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
-    real new_lamda, new_aeq;
+    real new_lamda, new_aeq, new_ppar;
     bool trapped = 1;                       //Particles trapped in Earth's magnetic field.
 
     //std::cout.precision(64);                //Output 16 decimal precise
@@ -109,16 +109,18 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
             trapped = 0;
         }
         //If it's not trapped and it's about to bounce --> Precipitation
-        if(!trapped && (std::abs(new_lamda)<std::abs(lamda)) ) //Would bounce if |new_lamda|<|lamda|
+        new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
+        if(!trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign
         {   
             //To save states of precipitating particles:
-            single.save_state(lamda,alpha, aeq, ppar, pper, time);
-            //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<< ppar<< " pper " << pper<< " eta " << eta << " lamda " <<lamda<< " alpha "<< alpha << " aeq " <<aeq ;
+            #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
+            {
+                single.save_state(p, lamda, alpha, aeq, ppar, pper, time);
+                std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper<< " eta " << eta << " lamda " <<lamda<< " alpha "<< alpha << " aeq " <<aeq<< " at time " << time ;
+            }
             break;
         }
-
- 
-       //Next step:
+        //Next step:
         new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, o1, o2, o3, o4, p1, p2, p3, p4, q1, q2, q3, q4);
         time  = time + Constants::h; 
         i++;  

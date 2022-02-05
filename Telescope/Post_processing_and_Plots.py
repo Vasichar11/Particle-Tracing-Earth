@@ -17,7 +17,7 @@ np.set_printoptions(threshold=sys.maxsize)
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/detected_bell_nowpi.h5","r")
+f1 = h5py.File("h5files/nowpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -35,7 +35,7 @@ By_wave        = f1["By_wave"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/detected_li_both.h5","r")
+f2 = h5py.File("h5files/both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -51,14 +51,15 @@ aeq_end_d_both      = f2["aeq_end_d"][()]
 Ekev0_both          = f2["Ekev0"][()]
 By_wave_both        = f2["By_wave"][()]
 #Particles that escaped.
+precip_id    = f2["precip_id"][()]
 precip_lamda = f2["precip_lamda"][()]
 precip_alpha = f2["precip_alpha"][()]
 precip_aeq   = f2["precip_aeq"][()]
-precip_time  = f2["precip_time"][()]
+precip_time  = f2["precip_time"][()] 
 f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/distribution.h5","r")
+f3 = h5py.File("h5files/distribution_test.h5","r")
 aeq0         = f3["aeq"][()]
 lat0         = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
@@ -110,6 +111,11 @@ ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of 
 ax.axhline(y = 90, color ="b", linestyle="dashed")
 fig.savefig("simulation_MM/aeq0_lat0.png",dpi=200)
 
+#Print initials
+#num=0
+#for pa0,l0 in zip(aeq0,lat0):
+#    print("Particle",num,"aeq0",pa0*R2D,"lamda0",l0*R2D)
+#    num=num+1
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 
 #noWPI
@@ -144,28 +150,30 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux[timestep] += 1
-
 #BOTH
 sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_both = [0 for i in range(timesteps)]
 for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    #if(sector>sectors): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) WHY?
-    #    print("Particle with pa",pa,"needs sector",sector)
+    #if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+    #    print("Particle with pa",pa*R2D,"needs sector",sector,"in timestep",timestep)
     #    continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux_both[timestep] += 1
 
-#PRECIPITATING PARTICLES
-#Particles that will precipitate are 
+#PRECIPITATING PARTICLES, BINNING WITH EQUATORIAL HERE!
+#These particles escape with alpha close to 90(?), binning with equatorial pitch angle to compare them with the particles that are crossing the equator--> equatorial P.A
 sctr_flux_precip = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_precip = [0 for i in range(timesteps)]
-for time,pa in zip(precip_time,precip_alpha): #Iterate in both array elements. No sorting required.
+for time,pa in zip(precip_time,precip_aeq): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
+    #if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+    #    print("Particle with pa",pa*R2D,"needs sector",sector,"in timestep",timestep)
+    #    continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_precip[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
@@ -181,19 +189,20 @@ ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flu
 ax.xaxis.grid(True, which='both')
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
-        ax.scatter(timestep*time_bin+time_bin/2,sum_flux[timestep],s=10, c="black")
+        ax.scatter(timestep*time_bin+time_bin/2,sum_flux[timestep],s=10, c="black",label="noWPI")
     if sum_flux_both[timestep]!=0:  
-        ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, c="red")  #WPI would be transparent dots
+        ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, c="red", label="noWPI && WPI")  
+    if timestep==0:#plot legend once
+        ax.legend()
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
 
 ##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################
 diff = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
-diff_precip = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
-
+precip = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
 for sector in range(0,sectors):           
     for timestep in range(0,timesteps): 
-        diff[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep])
-        diff_precip[timestep][sector] = diff[timestep][sector] - sctr_flux_precip[sector][timestep]
+        diff[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - sctr_flux_precip[sector][timestep]
+        precip[timestep][sector] = sctr_flux_precip[sector][timestep] #particles that got lost in this timestep and sector. The particles escaped in higher latitudes, but the binning was made in equator to compare
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
@@ -211,8 +220,8 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
             if(sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot only difference
                 ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red") 
 
-        ax.bar(np.arange(0.5,sectors+0.5),diff[timestep],alpha=0.5,width=0.2,color='red')#plot difference with bars
-        ax.bar(np.arange(0.5,sectors+0.5),diff_precip[timestep],alpha=0.5,width=0.1, color='blue')#plot difference precipitated
+        ax.bar(np.arange(0.5,sectors+0.5),diff[timestep],alpha=0.5, width=0.3,color='blue',label="moved particles")               #plot difference with bars
+        ax.bar(np.arange(0.5,sectors+0.5),precip[timestep],alpha=0.5, width=0.3, bottom=diff[timestep], color='red', label="precipitated particles")#plot difference precipitated
 
         ax.set_xticks(ticks=np.arange(0.5,sectors)) 
         ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
@@ -223,7 +232,7 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
         ax.set(ylabel="count")
         ax.set_title("P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
         ax.xaxis.grid(True, which='minor')
-
+        ax.legend()
         writer.grab_frame()
         ax.clear() #clear data 
 

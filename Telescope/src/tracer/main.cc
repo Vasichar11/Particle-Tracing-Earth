@@ -35,6 +35,7 @@ int main(int argc, char **argv)
 		std::cout<<"Error. Argc should be 2. Set second argv from the list:(bell, li_ray)."<<std::endl;
 		return EXIT_FAILURE;
 	}
+	std::cout<<"\n"<<Constants::alpha_lc*Constants::R2D;
 	
 	//Position of the Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
@@ -44,7 +45,7 @@ int main(int argc, char **argv)
 	std::vector<Particles> dstr(Constants::population, single);	
 
 //------------------------------------------------------------READ DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File dstr_file("h5files/distribution.h5", h5::File::ReadOnly);
+	h5::File dstr_file("h5files/distribution_5000.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, deta_dt_0, M_adiabatic_0;
 	//Read dataset from h5file.
@@ -175,24 +176,26 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
-	std::vector<real> precip_lamda(Constants::population);
-	std::vector<real> precip_alpha(Constants::population);
-	std::vector<real> precip_aeq(Constants::population);
-	std::vector<real> precip_time(Constants::population);
-
-	//Assign from struct to 2d vectors.
-	for(int p=0; p<Constants::population; p++)
+	//Assign from struct to vectors.
+	std::vector<real> precip_id;
+	std::vector<real> precip_lamda;
+	std::vector<real> precip_alpha;
+	std::vector<real> precip_aeq;
+	std::vector<real> precip_time;
+		
+	for(int p=0; p<Constants::population; p++) 
 	{
-	    for(size_t i=0; i<dstr[p].alpha.size(); i++)  
-	    {
-			precip_lamda[p] = dstr[p].lamda.at(0); 
-			precip_alpha[p] = dstr[p].alpha.at(0);
-			precip_aeq[p] = dstr[p].aeq.at(0);
-			precip_time[p] = dstr[p].time.at(0);
-	    }
+		if(!dstr[p].id.empty()) //Only precipitated were saved, other vectors in the struct are empty.
+		{
+			precip_id.push_back(dstr[p].id.at(0));
+			precip_lamda.push_back(dstr[p].lamda.at(0)); 
+			precip_alpha.push_back(dstr[p].alpha.at(0));
+			precip_aeq.push_back(dstr[p].aeq.at(0));
+			precip_time.push_back(dstr[p].time.at(0));
+		}
 	}
-    
-	h5::File file("h5files/detected_li_both.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+
+	h5::File file("h5files/both_5000p_10s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
@@ -212,6 +215,7 @@ int main(int argc, char **argv)
 	h5::DataSet By_wave            = file.createDataSet("By_wave",		Constants::By_wave);
 	
 	//Saved Particles that Precipitate.
+	h5::DataSet saved_id     = file.createDataSet("precip_id", precip_id);
 	h5::DataSet saved_lamda  = file.createDataSet("precip_lamda", precip_lamda);
 	h5::DataSet saved_alpha  = file.createDataSet("precip_alpha", precip_alpha);
 	h5::DataSet saved_aeq    = file.createDataSet("precip_aeq", precip_aeq);
