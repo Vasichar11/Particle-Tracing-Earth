@@ -17,12 +17,13 @@ np.set_printoptions(threshold=sys.maxsize)
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/nowpi.h5","r")
+f1 = h5py.File("h5files/nowpi_1000p_10s.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
 detected_id    = f1["ODPT.id"][()]
 detected_alpha = f1["ODPT.alpha"][()]
+detected_aeq   = f1["ODPT.aeq"][()]
 telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
@@ -35,12 +36,13 @@ By_wave        = f1["By_wave"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/both.h5","r")
+f2 = h5py.File("h5files/both_1000p_10s.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
 detected_id_both    = f2["ODPT.id"][()]
 detected_alpha_both = f2["ODPT.alpha"][()]
+detected_aeq_both   = f2["ODPT.aeq"][()]
 telescope_lamda_both= f2["ODPT.latitude"][()]
 population_both     = f2["population"][()]
 t_both              = f2["t"][()]
@@ -59,7 +61,7 @@ precip_time  = f2["precip_time"][()]
 f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/distribution_test.h5","r")
+f3 = h5py.File("h5files/distribution.h5","r")
 aeq0         = f3["aeq"][()]
 lat0         = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
@@ -141,9 +143,11 @@ ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
 
 ############################################## BINNING ####################################################
+#Binning aeq0 or aeq?
+#noWPI
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
-sum_flux = [0 for i in range(timesteps)]
-for time,pa in zip(detected_time,detected_alpha): #Iterate in both array elements. No sorting required.
+sum_flux  = [  0 for i in range(timesteps)]
+for time,pa in zip(detected_time,detected_aeq): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
     if(pa*R2D==180):
@@ -152,8 +156,8 @@ for time,pa in zip(detected_time,detected_alpha): #Iterate in both array element
     sum_flux[timestep] += 1
 #BOTH
 sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
-sum_flux_both = [0 for i in range(timesteps)]
-for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both array elements. No sorting required.
+sum_flux_both  = [  0 for i in range(timesteps)]
+for time,pa in zip(detected_time_both,detected_aeq_both): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
     #if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
@@ -164,7 +168,7 @@ for time,pa in zip(detected_time_both,detected_alpha_both): #Iterate in both arr
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux_both[timestep] += 1
 
-#PRECIPITATING PARTICLES, BINNING WITH EQUATORIAL HERE!
+#PRECIPITATING
 #These particles escape with alpha close to 90(?), binning with equatorial pitch angle to compare them with the particles that are crossing the equator--> equatorial P.A
 sctr_flux_precip = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_precip = [0 for i in range(timesteps)]
@@ -178,8 +182,6 @@ for time,pa in zip(precip_time,precip_aeq): #Iterate in both array elements. No 
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_precip[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux_precip[timestep] += 1
-
-
 
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
 fig, ax = plt.subplots()
@@ -197,11 +199,11 @@ for timestep in range(0,timesteps):
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
 
 ##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################
-diff = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
+moved = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
 precip = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
 for sector in range(0,sectors):           
     for timestep in range(0,timesteps): 
-        diff[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - sctr_flux_precip[sector][timestep]
+        moved[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - sctr_flux_precip[sector][timestep]
         precip[timestep][sector] = sctr_flux_precip[sector][timestep] #particles that got lost in this timestep and sector. The particles escaped in higher latitudes, but the binning was made in equator to compare
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 fig,ax = plt.subplots()
@@ -217,11 +219,11 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
 
             if(sctr_flux[sector][timestep]!=0): #plot only non zero dots
                 ax.scatter(sector+0.5, sctr_flux[sector][timestep],c="black") 
-            if(sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot only difference
+            if(sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot dot only when it differs with noWPI
                 ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red") 
 
-        ax.bar(np.arange(0.5,sectors+0.5),diff[timestep],alpha=0.5, width=0.3,color='blue',label="moved particles")               #plot difference with bars
-        ax.bar(np.arange(0.5,sectors+0.5),precip[timestep],alpha=0.5, width=0.3, bottom=diff[timestep], color='red', label="precipitated particles")#plot difference precipitated
+        ax.bar(np.arange(0.5,sectors+0.5),moved[timestep], width=0.3,color='blue',label="moved particles")               #plot difference with bars
+        ax.bar(np.arange(0.5,sectors+0.5),precip[timestep], width=0.3, bottom=moved[timestep], color='orange', label="precipitated particles")#plot difference precipitated
 
         ax.set_xticks(ticks=np.arange(0.5,sectors)) 
         ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")

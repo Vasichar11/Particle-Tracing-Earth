@@ -90,33 +90,35 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn4 " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\nq4 " << q4 <<"\n";           
 
 
-        //Check validity:
+        //Check Validity:
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
         if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break; }
-        //Check crossing:
+        if(alpha<0 || aeq<0)      { std::cout<<"\nParticle "<<p<<" negative p.a"; break; }
+        
+        //Check Crossing:
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
             {	//Check crossing.								
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-                ODPT.store( p, lamda, alpha, time); //Store its state(it's before crossing the satellite!).		        	
+                ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
             }
         }
-        //Check precipitation:
+        //Check Trapping:
         new_aeq = aeq + (Constants::h/6)*(q1+2*q2+2*q3+q4);
-        if(new_aeq<Constants::alpha_lc) //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. Minimum allowable trapping altitude 100km.
-        {
+        if( (0<new_aeq && new_aeq<Constants::alpha_lc) || (new_aeq>M_PI-Constants::alpha_lc && new_aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
+        {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
             trapped = 0;
         }
-        //If it's not trapped and it's about to bounce --> Precipitation
+        //Check Precipitation
         new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        if(!trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign
+        if(!trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
         {   
             //To save states of precipitating particles:
             #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
-            {
+            {   
                 single.save_state(p, lamda, alpha, aeq, ppar, pper, time);
-                std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper<< " eta " << eta << " lamda " <<lamda<< " alpha "<< alpha << " aeq " <<aeq<< " at time " << time ;
+                std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper<< " eta " << eta << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
             }
             break;
         }
@@ -124,7 +126,8 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, o1, o2, o3, o4, p1, p2, p3, p4, q1, q2, q3, q4);
         time  = time + Constants::h; 
         i++;  
-        //std::cout<<"\n\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\nalpha "<< alpha << "\naeq " <<aeq ;
+
+        //std::cout<<"\n\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda*Constants::R2D<< "\nalpha "<< alpha*Constants::R2D << "\naeq " <<aeq*Constants::R2D ;
     }
 
 

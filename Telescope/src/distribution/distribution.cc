@@ -52,7 +52,7 @@ int main()
 	while(aeq_count<Constants::aeq_dstr)
 	{
 		aeq0 = (Constants::aeq_start_d + aeq_count*Constants::aeq_step_d) * Constants::D2R;	  	  //linspace(start,stop,aeq_dstr)					
-		aeq0_mr = M_PI - aeq0;		 													  		  //Mirror aeq  														
+		//aeq0_mr = aeq0 + M_PI/2;		 													  	  //Mirror aeq  														
 		//Varying interval for latitude selection - 2x2 linear system.
 		//Aeq defines valid latitude interval.
 		//Aeq~90, interval is small. Moving away from 90, interval increases.
@@ -64,32 +64,31 @@ int main()
 
 		int lat_count = 0;
 		while(lat_count<Constants::lamda_dstr)												   //"Brute Force domain validation". Better solution? 
-		{																				   //Loop until <lamda_dstr> valid states for this aeq0.
-			std::uniform_real_distribution <real> distribution(-interval/2, interval/2);   //Uniform distribution with varying interval.
-			number  = distribution(generator);											   //When aeq~90, interval is small. Moving away from 90, interval increases.
+		{																				   	   //Loop until <lamda_dstr> valid states for this aeq0.
+			std::uniform_real_distribution <real> distribution(-interval/2, interval/2);       //Uniform distribution with varying interval.
+			number  = distribution(generator);											       //When aeq~90, interval is small. Moving away from 90, interval increases.
 			lamda0 	= number * Constants::D2R;											    
-			lamda0_mr 	= - lamda0;											 			   //Mirror lamda
-			std::cout<<"\n"<<lamda0;
+			//lamda0_mr 	= - lamda0;											 			   //Mirror lamda
 
 			//Find P.A at lamda0.
 			Blam0 	   = Bmag_dipole(lamda0);
-			Blam0_mr   = Bmag_dipole(lamda0_mr);
-			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0); 										//(2.20) Bortnik thesis
-			salpha0_mr    = sin(aeq0_mr)*sqrt(Blam0_mr/Beq0);  
-			if(   !((salpha0>1) || (salpha0<-1) || (salpha0==0) || (salpha0_mr>1) || (salpha0_mr<-1) || (salpha0_mr==0) )   )  
-			{																			 	//NOR of these should be true. Otherwise domain error.
+			//Blam0_mr   = Bmag_dipole(lamda0_mr);
+			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0); 										   //(2.20) Bortnik thesis
+			//salpha0_mr    = sin(aeq0_mr)*sqrt(Blam0_mr/Beq0);  
+			if(   !( (salpha0>1) || (salpha0<-1) || (salpha0==0) )   )  //|| (salpha0_mr>1) || (salpha0_mr<-1) || (salpha0_mr==0)
+			{																			 	   //NOR of these should be true. Otherwise domain error.
 				//Projecting aeq from alpha
-				k       = ((aeq0*   Constants::R2D>90)    ? 1 : 0);     					//kEN...(here k=0 or 1 ?)
-				k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		
-				alpha0  = pow(-1,k)*asin(salpha0)+k*M_PI;			 						// sinx = a => x=(-1)^k * asin(a) + k*pi
-				alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	
+				k       = ((aeq0*   Constants::R2D>90)    ? 1 : 0);     					   //kEN...(here k=0 or 1 ?)
+				//k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		
+				alpha0  = pow(-1,k)*asin(salpha0)+k*M_PI;			 						   // sinx = a => x=(-1)^k * asin(a) + k*pi
+				//alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	
 				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
-				dstr[p+1].initialize(Constants::eta0,aeq0_mr,alpha0_mr,lamda0_mr,Constants::Ekev0,Blam0_mr,0,0,0);
+				//dstr[p+1].initialize(Constants::eta0,aeq0_mr,alpha0_mr,lamda0_mr,Constants::Ekev0,Blam0_mr,0,0,0);
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
+				std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
 				//std::cout<<"\nParticle"<<p+1<<" aeq0: "<< aeq0_mr*Constants::R2D <<", lamda0: "<< lamda0_mr*Constants::R2D <<" gives alpha0: "<<alpha0_mr*Constants::R2D<<std::endl;
-				p+=2;
-				lat_count+=2;
+				p++;//p+=2;
+				lat_count++;//lat_count+=2;
 			}
 		}	
 		aeq_count++;
@@ -145,7 +144,7 @@ int main()
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic.at(0);
 		time_dstr[p]       = dstr[p].time.at(0);
 	}
-	h5::File file("h5files/distribution_5000.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/distribution.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);

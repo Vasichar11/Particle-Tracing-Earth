@@ -35,7 +35,6 @@ int main(int argc, char **argv)
 		std::cout<<"Error. Argc should be 2. Set second argv from the list:(bell, li_ray)."<<std::endl;
 		return EXIT_FAILURE;
 	}
-	std::cout<<"\n"<<Constants::alpha_lc*Constants::R2D;
 	
 	//Position of the Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
@@ -45,7 +44,7 @@ int main(int argc, char **argv)
 	std::vector<Particles> dstr(Constants::population, single);	
 
 //------------------------------------------------------------READ DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File dstr_file("h5files/distribution_5000.h5", h5::File::ReadOnly);
+	h5::File dstr_file("h5files/distribution.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, deta_dt_0, M_adiabatic_0;
 	//Read dataset from h5file.
@@ -195,13 +194,14 @@ int main(int argc, char **argv)
 		}
 	}
 
-	h5::File file("h5files/both_5000p_10s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/nowpi_1000p_10s_withaeq.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
 	h5::DataSet detected_time       = file.createDataSet("ODPT.time", ODPT.time);
 	h5::DataSet detected_id         = file.createDataSet("ODPT.id", ODPT.id);
 	h5::DataSet detected_alpha      = file.createDataSet("ODPT.alpha", ODPT.alpha);
+	h5::DataSet detected_aeq        = file.createDataSet("ODPT.aeq", ODPT.alpha);
 
 	//Simulation data and Telescope specification - Scalars 
 	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);

@@ -203,7 +203,7 @@ void wpi(int p, Particles &single, Telescope &ODPT)
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
             {	//Check crossing.								
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-                ODPT.store( p, lamda, alpha, time); //Store its state(it's before crossing the satellite!).		        	
+                ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
             }
         }
         
