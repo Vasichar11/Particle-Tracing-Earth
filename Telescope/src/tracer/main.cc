@@ -194,7 +194,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	h5::File file("h5files/both_1000p_10s_withaeq.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/both_20000p_20s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
