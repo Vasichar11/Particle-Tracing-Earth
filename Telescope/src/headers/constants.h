@@ -50,8 +50,8 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 
 
 //--Simulation parameters--//
-const real t = 10;        				  	    //Simulation time in seconds.
-const real t_nowpi = 10;                         //NoWPI time.
+const real t = 1;        				  	    //Simulation time in seconds.
+const real t_nowpi = 0.5;                         //NoWPI time.
 const real t_wpi = t - t_nowpi;                 //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count

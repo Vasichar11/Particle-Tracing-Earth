@@ -17,7 +17,7 @@ np.set_printoptions(threshold=sys.maxsize)
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/nowpi_1000p_10s.h5","r")
+f1 = h5py.File("h5files/nowpi_1000p_10s_withaeq.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -36,7 +36,7 @@ By_wave        = f1["By_wave"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/both_1000p_10s.h5","r")
+f2 = h5py.File("h5files/both_1000p_10s_withaeq.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -143,7 +143,7 @@ ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
 
 ############################################## BINNING ####################################################
-#Binning aeq0 or aeq?
+#Binning aeq0 or aeq? Satellite @ equator.
 #noWPI
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux  = [  0 for i in range(timesteps)]
@@ -199,12 +199,16 @@ for timestep in range(0,timesteps):
 plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
 
 ##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################
-moved = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
-precip = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[sectors][timesteps]
-for sector in range(0,sectors):           
+moved  = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[timesteps][sectors]
+precip = [ [0 for i in range(sectors)] for j in range(timesteps) ]   
+lost   = [ 0 for i in range(sectors)]   
+
+for sector in range(0,sectors):  
     for timestep in range(0,timesteps): 
-        moved[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - sctr_flux_precip[sector][timestep]
-        precip[timestep][sector] = sctr_flux_precip[sector][timestep] #particles that got lost in this timestep and sector. The particles escaped in higher latitudes, but the binning was made in equator to compare
+        precip[timestep][sector] = sctr_flux_precip[sector][timestep] #particles that got lost in this timestep and sector.
+        lost[sector] = lost[sector] + precip[timestep][sector]        #lost particles until this timestep, for this sector.
+        moved[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - lost[sector] #find difference between simulations and remove lost particles
+        
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
@@ -232,7 +236,7 @@ with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
         ax.set_ylim(0, max(np.amax(sctr_flux)+(0.1*np.amax(sctr_flux)), np.amax(sctr_flux_both)+(0.1*np.amax(sctr_flux_both)) ) )
         ax.set_xlim(0,sectors)
         ax.set(ylabel="count")
-        ax.set_title("P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
+        ax.set_title("eq P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
         ax.xaxis.grid(True, which='minor')
         ax.legend()
         writer.grab_frame()
