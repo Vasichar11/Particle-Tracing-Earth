@@ -37,9 +37,9 @@ int main()
 	std::vector<Particles> dstr(Constants::population, single);	//Vector of structs for particle distribution.
 	
 	real lamda0,Blam0;
-	real lamda0_mr,Blam0_mr;
+	//real lamda0_mr,Blam0_mr;
 	real k,aeq0,salpha0,alpha0;
-	real k_mr,aeq0_mr,salpha0_mr,alpha0_mr;
+	//real k_mr,aeq0_mr,salpha0_mr,alpha0_mr;
 	real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 
 	std::random_device seed;         //Random seed. 
@@ -85,7 +85,7 @@ int main()
 				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
 				//dstr[p+1].initialize(Constants::eta0,aeq0_mr,alpha0_mr,lamda0_mr,Constants::Ekev0,Blam0_mr,0,0,0);
 				//Print initial state of particles.
-				std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
+				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
 				//std::cout<<"\nParticle"<<p+1<<" aeq0: "<< aeq0_mr*Constants::R2D <<", lamda0: "<< lamda0_mr*Constants::R2D <<" gives alpha0: "<<alpha0_mr*Constants::R2D<<std::endl;
 				p++;//p+=2;
 				lat_count++;//lat_count+=2;
@@ -144,7 +144,7 @@ int main()
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic.at(0);
 		time_dstr[p]       = dstr[p].time.at(0);
 	}
-	h5::File file("h5files/distribution.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/distribution_2000p.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);

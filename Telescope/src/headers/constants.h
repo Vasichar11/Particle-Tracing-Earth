@@ -45,13 +45,13 @@ const real theta0=theta0_deg*D2R;
 //For bell code only
 const real By_wave=1*pow(10,-9);    //1nT           
 //li && ray tracing
-const real pwr = pow(10,-4);                    //Poynting flux [W/m 2]. //for Ray tracing code  
+const real pwr = pow(10,-2);                    //Poynting flux [W/m 2]. //for Ray tracing code  
 const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 
 
 //--Simulation parameters--//
-const real t = 20;        				  	    //Simulation time in seconds.
-const real t_nowpi = 10;                         //NoWPI time.
+const real t = 10;        				  	    //Simulation time in seconds.
+const real t_nowpi = 5;                         //NoWPI time.
 const real t_wpi = t - t_nowpi;                 //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
@@ -63,7 +63,7 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 2000;  	    		    
+const int64_t aeq_dstr    = 200;  	    		    
 const int64_t lamda_dstr  = 10;					
 const int64_t population  = lamda_dstr * aeq_dstr;   
 //Aeq dstr					 

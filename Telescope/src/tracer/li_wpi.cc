@@ -1,7 +1,7 @@
 #include "headers/li_wpi.h"
 
 
-void wpi_ray(real p, Particles &single, Telescope &ODPT)
+void wpi_ray(real p, Particles &single, Telescope &ODPT, Particles &particle_state)
 {
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
     //read_vector() is a function to read HDF5 dataset as vectors. 
@@ -17,20 +17,21 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
     static std::vector <real> R1            =   read_vector("R1",            "h5files/interpolated_ray.h5");
     static std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
-                                           //Erase first element which was the last state of the previous noWPI simulation.
-    real lamda    =  single.lamda.at(0);    single.lamda.erase(single.lamda.begin());
-    real ppar     =  single.ppar.at(0);     single.ppar.erase(single.ppar.begin()); 
-    real pper     =  single.pper.at(0);     single.pper.erase(single.pper.begin()); 
-    real eta      =  single.eta.at(0);      single.eta.erase(single.eta.begin()); 
-    real alpha    =  single.alpha.at(0);    single.alpha.erase(single.alpha.begin()); 
-    real aeq      =  single.aeq.at(0);      single.aeq.erase(single.aeq.begin());
-    real time     =  single.time.at(0);     single.time.erase(single.time.begin());
-    //real zeta     =  single.zeta.at(0);           single.zeta.erase(single.zeta.begin()); 
-    //real upar     =  single.upar.at(0);           single.upar.erase(single.upar.begin()); 
-    //real uper     =  single.uper.at(0);           single.uper.erase(single.uper.begin());
-    //real deta_dt  =  single.deta_dt.at(0);        single.deta_dt.erase(single.deta_dt.begin());
-    //real Ekin     =  single.Ekin.at(0);           single.Ekin.erase(single.Ekin.begin());
-    //real M_adiabatic = single.M_adiabatic.at(0);  single.M_adiabatic.erase(single.M_adiabatic.begin());
+
+    if(particle_state.lamda.empty()) return; //If this particle is lost, continue with next particle.
+
+
+    //Assign last particle states from nowpi simulation.
+    real lamda    =  particle_state.lamda.front();
+    real ppar     =  particle_state.ppar.front(); 
+    real pper     =  particle_state.pper.front(); 
+    real alpha    =  particle_state.alpha.front(); 
+    real aeq      =  particle_state.aeq.front(); 
+    real eta      =  particle_state.eta.front(); 
+    real time     =  particle_state.time.front();
+    //real zeta     =  particle_state.zeta.front(); 
+    //real upar     =  particle_state.upar.front(); 
+    //real uper     =  particle_state.uper.front();
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
     int index;                              //To find minimum difference between latitudes
     int i=0;
@@ -110,7 +111,7 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT)
         {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
             trapped = 0;
         }
-        //Check Precipitation
+        //Check Precipitation:
         new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
         if(!trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
         {   

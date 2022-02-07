@@ -17,7 +17,7 @@ np.set_printoptions(threshold=sys.maxsize)
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/nowpi_1000p_10s_withaeq.h5","r")
+f1 = h5py.File("h5files/nowpi_2000p_10s.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -36,7 +36,7 @@ By_wave        = f1["By_wave"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/both_1000p_10s_withaeq.h5","r")
+f2 = h5py.File("h5files/both_2000p_10s.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -61,7 +61,7 @@ precip_time  = f2["precip_time"][()]
 f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/distribution.h5","r")
+f3 = h5py.File("h5files/distribution_2000p.h5","r")
 aeq0         = f3["aeq"][()]
 lat0         = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
@@ -85,7 +85,7 @@ R2D=1/D2R
 time_bin  = 0.2                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
-sector_range = 15 #P.A bins
+sector_range = 1 #P.A bins #1deg
 sectors = int(view/sector_range)
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
@@ -99,12 +99,12 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 
-fig, ax = plt.subplots()
-for sec in range(0,sectors):
-    ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
-ax.grid(alpha=.3)
-ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
-fig.savefig("simulation_MM/aeq0.png",dpi=200)
+#fig, ax = plt.subplots()
+#for sec in range(0,sectors):
+#    ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
+#ax.grid(alpha=.3)
+#ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
+#fig.savefig("simulation_MM/aeq0.png",dpi=200)
 
 fig, ax = plt.subplots()
 ax.scatter(lat0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
@@ -114,10 +114,10 @@ ax.axhline(y = 90, color ="b", linestyle="dashed")
 fig.savefig("simulation_MM/aeq0_lat0.png",dpi=200)
 
 #Print initials
-#num=0
-#for pa0,l0 in zip(aeq0,lat0):
-#    print("Particle",num,"aeq0",pa0*R2D,"lamda0",l0*R2D)
-#    num=num+1
+num=0
+for pa0,l0 in zip(aeq0,lat0):
+    print("Particle",num,"aeq0",pa0*R2D,"lamda0",l0*R2D)
+    num=num+1
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 
 #noWPI
@@ -157,12 +157,12 @@ for time,pa in zip(detected_time,detected_aeq): #Iterate in both array elements.
 #BOTH
 sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_both  = [  0 for i in range(timesteps)]
-for time,pa in zip(detected_time_both,detected_aeq_both): #Iterate in both array elements. No sorting required.
+for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    #if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
-    #    print("Particle with pa",pa*R2D,"needs sector",sector,"in timestep",timestep)
-    #    continue 
+    if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+        print("Particle",id,"with pa",pa*R2D,"needs sector",sector,"in timestep",timestep)
+        continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
@@ -216,27 +216,32 @@ metadata2 = dict(title="P.A binning",comment="P.A bins of"+str(sector_range)+"de
 fps = 1
 writer = FFMpegWriter(fps=fps, metadata = metadata2)
 print("Generating P.A binning mp4 file...\nDuration of mp4 file will be:",(timesteps*fps), "seconds")
-with writer.saving(fig, "simulation_MM/PA_binning.mp4", 100):
-    for timestep in range(0,timesteps):           
+with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_bin)+"s.mp4", 100):
+    for timestep in range(0,timestep):           
             
         for sector in range(0,sectors): 
 
             if(sctr_flux[sector][timestep]!=0): #plot only non zero dots
-                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c="black") 
+                ax.scatter(sector+0.5, sctr_flux[sector][timestep],c="black",s=1) 
             if(sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot dot only when it differs with noWPI
-                ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red") 
+                ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red",s=1) 
 
         ax.bar(np.arange(0.5,sectors+0.5),moved[timestep], width=0.3,color='blue',label="moved particles")               #plot difference with bars
         ax.bar(np.arange(0.5,sectors+0.5),precip[timestep], width=0.3, bottom=moved[timestep], color='orange', label="precipitated particles")#plot difference precipitated
 
-        ax.set_xticks(ticks=np.arange(0.5,sectors)) 
-        ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
-        ax.set_xticks(ticks=np.arange(0,sectors),minor=True) 
-        ax.set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
+        #Sector red ticks
+        ax.set_xticks(ticks=np.arange(0.5,sectors,10)) 
+        ax.set_xticklabels(labels=np.arange(0,sectors,10),color="red",size="small")
+        #P.A black ticks
+        #ax.set_xticks(ticks=np.arange(0,sectors,),minor=True) 
+        #ax.set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
+
         ax.set_ylim(0, max(np.amax(sctr_flux)+(0.1*np.amax(sctr_flux)), np.amax(sctr_flux_both)+(0.1*np.amax(sctr_flux_both)) ) )
         ax.set_xlim(0,sectors)
         ax.set(ylabel="count")
-        ax.set_title("eq P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
+        ax.set(xlabel="P.A bins(black): "+str(sector_range)+" deg   Sectors(red): "+str(sectors))
+        ax.set_title("Equatorial P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
+        ax.xaxis.grid(True, which='major')
         ax.xaxis.grid(True, which='minor')
         ax.legend()
         writer.grab_frame()

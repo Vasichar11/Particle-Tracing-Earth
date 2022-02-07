@@ -194,7 +194,7 @@ for(size_t i=0; i<time_new.size(); i++)
     Exw.push_back( std::abs(((Constants::c*fac1.at(i))/(mu_ray.at(i)*P_stix_int.at(i)*cos(psi_int.at(i)*Constants::D2R))*Byw.at(i))) );
     Eyw.push_back( std::abs(((D_stix_int.at(i)*Constants::c*fac1.at(i))/(mu_ray.at(i)*P_stix_int.at(i)*cos(psi_int.at(i)*Constants::D2R)*(pow(mu_ray.at(i),2)-S_stix_int.at(i))))*Byw.at(i)) );
     Ezw.push_back( std::abs((-(Constants::c*mu_ray.at(i)*sin(psi_int.at(i)))/P_stix_int.at(i))*Byw.at(i)) );
-
+    //std::cout<<"\n"<<Byw.at(i);
     Bw_ray.push_back( sqrt(Bxw.at(i)*Bxw.at(i) + Byw.at(i)*Bzw.at(i) + Byw.at(i)*Bzw.at(i)) );
     //From Bell parameters
     w1.push_back( (Constants::q_e/(2*Constants::m_e))*(Bxw.at(i)+Byw.at(i)) );

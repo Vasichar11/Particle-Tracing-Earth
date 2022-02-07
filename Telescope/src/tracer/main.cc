@@ -30,21 +30,26 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {
-	if(argc!=2)
+	if(argc>2)
 	{
-		std::cout<<"Error. Argc should be 2. Set second argv from the list:(bell, li_ray)."<<std::endl;
+		std::cout<<"Error. Argc<=2. Set second argv from the list:(bell, li_ray)."<<std::endl;
 		return EXIT_FAILURE;
 	}
 	
-	//Position of the Particle Telescope.		
+	//Object for Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
+	
 	//Single particle struct.
 	Particles single; 
-	//Vector of structs for particle distribution.
+
+	//Vector of structs to store desired particle states.
 	std::vector<Particles> dstr(Constants::population, single);	
 
+	//Vector of structs for initial particle states.
+	std::vector<Particles> particle_state(Constants::population, single);	
+
 //------------------------------------------------------------READ DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File dstr_file("h5files/distribution.h5", h5::File::ReadOnly);
+	h5::File dstr_file("h5files/distribution_2000p.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, deta_dt_0, M_adiabatic_0;
 	//Read dataset from h5file.
@@ -79,21 +84,21 @@ int main(int argc, char **argv)
 	//Append to struct from single vector.
 	for(int p=0; p<Constants::population; p++)
 	{
-		dstr[p].lamda.push_back(lamda_0.at(p));
-		dstr[p].alpha.push_back(alpha_0.at(p));  
-		dstr[p].aeq.push_back(aeq_0.at(p));
-		dstr[p].ppar.push_back(ppar_0.at(p));
-		dstr[p].pper.push_back(pper_0.at(p));
-		dstr[p].upar.push_back(upar_0.at(p));
-		dstr[p].uper.push_back(uper_0.at(p));
-		dstr[p].Ekin.push_back(Ekin_0.at(p));
-		dstr[p].time.push_back(time_0.at(p));
-		dstr[p].zeta.push_back(zeta_0.at(p));
-		dstr[p].eta.push_back(eta_0.at(p));
-		dstr[p].deta_dt.push_back(deta_dt_0.at(p));
-		dstr[p].M_adiabatic.push_back(M_adiabatic_0.at(p));
+		particle_state[p].lamda.push_back(lamda_0.at(p));
+		particle_state[p].alpha.push_back(alpha_0.at(p));  
+		particle_state[p].aeq.push_back(aeq_0.at(p));
+		particle_state[p].ppar.push_back(ppar_0.at(p));
+		particle_state[p].pper.push_back(pper_0.at(p));
+		particle_state[p].upar.push_back(upar_0.at(p));
+		particle_state[p].uper.push_back(uper_0.at(p));
+		particle_state[p].Ekin.push_back(Ekin_0.at(p));
+		particle_state[p].time.push_back(time_0.at(p));
+		particle_state[p].zeta.push_back(zeta_0.at(p));
+		particle_state[p].eta.push_back(eta_0.at(p));
+		particle_state[p].deta_dt.push_back(deta_dt_0.at(p));
+		particle_state[p].M_adiabatic.push_back(M_adiabatic_0.at(p));
 	}
-	std::cout<<"\nParticle population: "<< dstr.size()<<std::endl;
+	std::cout<<"\nParticle population: "<< particle_state.size()<<std::endl;
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
@@ -120,7 +125,7 @@ int main(int argc, char **argv)
 					//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 					//Void Function for particle's motion. Involves RK4 for Nsteps. 
 					//Detected particles are saved in ODPT object, which is passed here by reference.
-					nowpi(p, dstr[p], ODPT);
+					nowpi(p, dstr[p], ODPT, particle_state[p]);
 					//Inside nowpi -> Last states become firsts to continue the simulation 
 					//Then wpi
 				}
@@ -163,8 +168,8 @@ int main(int argc, char **argv)
 					//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
 					//Void Function for particle's motion. Involves RK4 for Nsteps. 
 					//Detected particles are saved in ODPT object, which is passed here by reference.
-					if( !(s1.compare(argv[1])) ) 		wpi(p, dstr[p], ODPT); 		//BELL + THE WAVE IS EVERYWHERE
-					else if( !(s2.compare(argv[1])) )   wpi_ray(p, dstr[p], ODPT);  //LI   + RAY TRACING
+					if( !(s1.compare(argv[1])) ) 		wpi(p, dstr[p], ODPT, particle_state[p]); 		//BELL + THE WAVE IS EVERYWHERE
+					else if( !(s2.compare(argv[1])) )   wpi_ray(p, dstr[p], ODPT, particle_state[p]);  //LI   + RAY TRACING
 				}
 		}	
 		std::cout<<"\n"<<"Joined"<<std::endl;
@@ -194,7 +199,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	h5::File file("h5files/both_20000p_20s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/both_2000p_10s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

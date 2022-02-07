@@ -12,4 +12,4 @@
 #include <cmath>
 
 //Function for wave=particle interaction. Involves RK4 for Nsteps. 
-void wpi(int p, Particles &single, Telescope &ODPT);
+void wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state);

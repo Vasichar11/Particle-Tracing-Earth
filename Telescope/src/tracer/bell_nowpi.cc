@@ -1,23 +1,23 @@
 #include "headers/bell_nowpi.h"
 
 //Adiabatic motion.
-void nowpi(int p, Particles &single, Telescope &ODPT)
+void nowpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
 {
-    real lamda   =  single.lamda.at(0);
-    //real zeta    =  single.zeta.at(0); 
-    real ppar    =  single.ppar.at(0); 
-    real pper    =  single.pper.at(0); 
-    real alpha   =  single.alpha.at(0); 
-    real aeq     =  single.aeq.at(0); 
-    //real upar    =  single.upar.at(0); 
-    //real uper    =  single.uper.at(0);
-    //real Ekin    =  single.Ekin.at(0);
-    real time    =  single.time.at(0);
+    real lamda    =  particle_state.lamda.front();
+    real ppar     =  particle_state.ppar.front(); 
+    real pper     =  particle_state.pper.front(); 
+    real alpha    =  particle_state.alpha.front(); 
+    real aeq      =  particle_state.aeq.front(); 
+    real time     =  particle_state.time.front();
+    //real zeta     =  particle_state.zeta.front(); 
+    //real upar     =  particle_state.upar.front(); 
+    //real uper     =  particle_state.uper.front();
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
-    real new_lamda;
+    real new_lamda,new_ppar;
     real w_h, dwh_ds, Bmag, p_mag, gama;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,o1,o2,o3,o4,p1,p2,p3,p4;
+    bool trapped=1;
 
     //Objects for each specie.
     Species electron(Constants::m_e,  Constants::q_e, 1); 
@@ -72,9 +72,12 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
         slopes(k4, l4, m4, o4, p4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), w_h, dwh_ds, gama);
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 <<"\no4 " << o4 << "\np4 " << p4 << "\n";
 
+        //Check Validity:
+        new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
+        if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break; }
+        if(alpha<0 || aeq<0)      { std::cout<<"\nParticle "<<p<<" negative p.a"; break; }
 
-        //Approximate new lamda first, to check if particle crosses satellite.
-        new_lamda = lamda + ((Constants::h)/6)*(o1+2*o2+2*o3+o4);
+        //Check Crossing:
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
@@ -82,6 +85,37 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
                 ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
             }
+        }
+
+        //Check Trapping:
+        if( (0<aeq && aeq<Constants::alpha_lc) || (aeq>M_PI-Constants::alpha_lc && aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
+        {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
+            trapped = 0;
+        }
+
+        //Check Precipitation:
+        new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
+        if(!trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
+        {   
+            //To save states of precipitating particles:
+            #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
+            {   
+                single.save_state(p, lamda, alpha, aeq, ppar, pper, time);
+                std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
+                
+                //This particle won't continue for the WPI simulation. 
+                particle_state.lamda.erase(particle_state.lamda.begin());
+                particle_state.ppar.erase(particle_state.ppar.begin());
+                particle_state.pper.erase(particle_state.pper.begin());
+                particle_state.alpha.erase(particle_state.alpha.begin());
+                particle_state.aeq.erase(particle_state.aeq.begin());
+                particle_state.time.erase(particle_state.time.begin());
+                //particle_state.zeta.erase(particle_state.zeta.begin());
+                //particle_state.upar.erase(particle_state.upar.begin());
+                //particle_state.uper.erase(particle_state.uper.begin());
+                //particle_state.Ekin.erase(particle_state.Ekin.begin());
+            }
+            break;
         }
 
         //Next step:
@@ -99,16 +133,17 @@ void nowpi(int p, Particles &single, Telescope &ODPT)
     }
     
 
-    //Save last state to continue the simulation with wave if needed. 
-    //single.save_state(lamda,alpha,aeq,ppar,pper,time);
-    single.lamda.front() = lamda;
-    single.alpha.front() = alpha;
-    single.aeq.front()   = aeq;
-    single.ppar.front()  = ppar;
-    single.pper.front()  = pper;
-    single.eta.front()   = Constants::eta0;
-    single.time.front()  = time;
-    
+    //Save last state to return values and continue the simulation with wave (if needed). 
+    particle_state.lamda.front() = lamda;
+    particle_state.ppar.front()  = ppar;
+    particle_state.pper.front()  = pper;
+    particle_state.alpha.front() = alpha;
+    particle_state.aeq.front()   = aeq;
+    particle_state.time.front()  = time;
+    //particle_state.zeta.front() = zeta;
+    //particle_state.upar.front() = upar;
+    //particle_state.uper.front() = uper;
+    //particle_state.Ekin.front() = Ekin;
 }
 
 
