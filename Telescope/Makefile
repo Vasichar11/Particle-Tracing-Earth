@@ -1,4 +1,4 @@
-BIN := tracer ray_int dstr
+BIN := tracer ray dstr
 CC  := g++
 LNK := g++ 
 OPT := -O3
@@ -29,7 +29,7 @@ OBJ_DSTR := $(patsubst ${SRCDIR_DSTR}/%.cc, ${OBJDIR_DSTR}/%.o, $(SRC_DSTR))
 
 
 #Default Rule
-default: directories dstr ray_int tracer
+default: directories dstr ray tracer
 	@printf "\nEverything is builded\n"
 
 debug: default
@@ -37,7 +37,7 @@ debug: default
 
 #Implicit Rules
 
-ray_int: ${OBJ_INTERP}
+ray: ${OBJ_INTERP}
 	${LNK} -o $@ ${OBJ_INTERP} ${INC_H5} ${CPPFLAGS} 
 	@printf "\nBuilded to interpolate ray\n\n" ;
 dstr: ${OBJ_DSTR}
@@ -81,7 +81,7 @@ ${OBJDIR_TRACER}/RK_estimations.o: ${SRCDIR_TRACER}/RK_estimations.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@
 ${OBJDIR_TRACER}/read_hdf5.o: ${SRCDIR_TRACER}/read_hdf5.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
-${OBJDIR_TRACER}/bell_nowpi.o: ${SRCDIR_TRACER}/bell_nowpi.cc
+${OBJDIR_TRACER}/no_wpi.o: ${SRCDIR_TRACER}/no_wpi.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@
 ${OBJDIR_TRACER}/bell_wpi.o: ${SRCDIR_TRACER}/bell_wpi.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@

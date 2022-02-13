@@ -29,23 +29,23 @@ int main()
 	//std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq fixed step distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::aeq_start_d << "  "<< " " << Constants::aeq_end_d <<"|\n";
+	std::cout<<"\nAeq step is: "<<Constants::aeq_step_d<< " degrees\n";
 	//std::cout<<"\nWith lamda distribution in degrees"<<"\n|From "<<" To|";
 	std::cout<<"\nWith latitude uniformly distributed, with varying interval"<<"\n|From "<<" To|";
 	std::cout<<"\n| "<<Constants::lamda_start_d << "  "<< " " << Constants::lamda_end_d <<"|\n";
 
 	Particles single; //Single particle struct.
 	std::vector<Particles> dstr(Constants::population, single);	//Vector of structs for particle distribution.
-	
-	real lamda0,Blam0;
-	//real lamda0_mr,Blam0_mr;
-	real k,aeq0,salpha0,alpha0;
-	//real k_mr,aeq0_mr,salpha0_mr,alpha0_mr;
+	real lamda0,Blam0,aeq0,salpha0,alpha0,k;
 	real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
+	//real lamda0_mr,Blam0_mr,k_mr,aeq0_mr,salpha0_mr,alpha0_mr;
 
 	std::random_device seed;         //Random seed. 
     std::mt19937 generator(seed());  //PRNG initialized with seed.
 	real number;
 	real interval;
+
+
 
 	int p=0;
 	int aeq_count = 0;
@@ -67,28 +67,32 @@ int main()
 		{																				   	   //Loop until <lamda_dstr> valid states for this aeq0.
 			std::uniform_real_distribution <real> distribution(-interval/2, interval/2);       //Uniform distribution with varying interval.
 			number  = distribution(generator);											       //When aeq~90, interval is small. Moving away from 90, interval increases.
-			lamda0 	= number * Constants::D2R;											    
-			//lamda0_mr 	= - lamda0;											 			   //Mirror lamda
 
 			//Find P.A at lamda0.
+			lamda0 	= number * Constants::D2R;											    
 			Blam0 	   = Bmag_dipole(lamda0);
-			//Blam0_mr   = Bmag_dipole(lamda0_mr);
 			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0); 										   //(2.20) Bortnik thesis
+
+			//lamda0_mr 	= - lamda0;											 			   //Mirror lamda
+			//Blam0_mr   = Bmag_dipole(lamda0_mr);
 			//salpha0_mr    = sin(aeq0_mr)*sqrt(Blam0_mr/Beq0);  
 			if(   !( (salpha0>1) || (salpha0<-1) || (salpha0==0) )   )  //|| (salpha0_mr>1) || (salpha0_mr<-1) || (salpha0_mr==0)
 			{																			 	   //NOR of these should be true. Otherwise domain error.
 				//Projecting aeq from alpha
 				k       = ((aeq0*   Constants::R2D>90)    ? 1 : 0);     					   //kEN...(here k=0 or 1 ?)
-				//k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		
 				alpha0  = pow(-1,k)*asin(salpha0)+k*M_PI;			 						   // sinx = a => x=(-1)^k * asin(a) + k*pi
-				//alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	
 				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
+				
+				//k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		
+				//alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	
 				//dstr[p+1].initialize(Constants::eta0,aeq0_mr,alpha0_mr,lamda0_mr,Constants::Ekev0,Blam0_mr,0,0,0);
+				
 				//Print initial state of particles.
 				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
 				//std::cout<<"\nParticle"<<p+1<<" aeq0: "<< aeq0_mr*Constants::R2D <<", lamda0: "<< lamda0_mr*Constants::R2D <<" gives alpha0: "<<alpha0_mr*Constants::R2D<<std::endl;
-				p++;//p+=2;
-				lat_count++;//lat_count+=2;
+				
+				p++; lat_count++;
+				//p+=2; lat_count+=2;
 			}
 		}	
 		aeq_count++;
@@ -96,7 +100,7 @@ int main()
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
 
 	//AEQ0 DISTRIBUTION CHECK
-	const int sector_range = 15;
+	const int sector_range = 5;
 	const int view = 180;
 	const int sectors = view/sector_range;
 	std::array<int, sectors> aeq0_bins;
@@ -114,19 +118,9 @@ int main()
 	}
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//
-	std::vector<real> lamda_dstr(Constants::population);
-	std::vector<real> alpha_dstr(Constants::population);
-	std::vector<real> aeq_dstr(Constants::population);
-	std::vector<real> upar_dstr(Constants::population);
-	std::vector<real> uper_dstr(Constants::population);
-	std::vector<real> ppar_dstr(Constants::population);
-	std::vector<real> pper_dstr(Constants::population);
-	std::vector<real> eta_dstr(Constants::population);
-	std::vector<real> M_adiabatic_dstr(Constants::population);
-	std::vector<real> deta_dt_dstr(Constants::population);
-	std::vector<real> time_dstr(Constants::population);
-	std::vector<real> Ekin_dstr(Constants::population);
-	std::vector<real> zeta_dstr(Constants::population);
+	
+	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), deta_dt_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population);
+
 	//Assign from struct to 1d vectors.
 	for(int p=0; p<Constants::population; p++)
 	{
@@ -144,7 +138,7 @@ int main()
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic.at(0);
 		time_dstr[p]       = dstr[p].time.at(0);
 	}
-	h5::File file("h5files/distribution_2000p.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/distribution_test.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);

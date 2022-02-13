@@ -1,7 +1,7 @@
 #include "headers/li_wpi.h"
 
 
-void wpi_ray(real p, Particles &single, Telescope &ODPT, Particles &particle_state)
+void li_wpi(real p, Particles &single, Telescope &ODPT, Particles &particle_state)
 {
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
     //read_vector() is a function to read HDF5 dataset as vectors. 
@@ -27,8 +27,8 @@ void wpi_ray(real p, Particles &single, Telescope &ODPT, Particles &particle_sta
     real pper     =  particle_state.pper.front(); 
     real alpha    =  particle_state.alpha.front(); 
     real aeq      =  particle_state.aeq.front(); 
-    real eta      =  particle_state.eta.front(); 
     real time     =  particle_state.time.front();
+    real eta      =  particle_state.eta.front(); 
     //real zeta     =  particle_state.zeta.front(); 
     //real upar     =  particle_state.upar.front(); 
     //real uper     =  particle_state.uper.front();

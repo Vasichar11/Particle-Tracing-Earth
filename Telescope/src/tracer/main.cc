@@ -10,7 +10,7 @@
  
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
-#include "headers/bell_nowpi.h"
+#include "headers/no_wpi.h"
 #include "headers/bell_wpi.h"
 #include "headers/li_wpi.h"
 
@@ -30,11 +30,17 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {
-	if(argc>2)
-	{
-		std::cout<<"Error. Argc<=2. Set second argv from the list:(bell, li_ray)."<<std::endl;
-		return EXIT_FAILURE;
+	std::string string_no_wpi   = "no_wpi";
+	std::string string_li_wpi   = "li_wpi";
+	std::string string_bell_wpi = "bell_wpi";
+	
+	//---ARGV ERROR---//
+	if(  argv[1]!=string_no_wpi    ||    ( argc==3 && argv[2]!=string_bell_wpi && argv[2]!=string_li_wpi ) )
+	{ 
+		std::cout<<"\n\nArgument variables don't match any of the program's possible implementations.\nSet first argv=no_wpi and third argv from the list:(bell_wpi, li_wpi).\n"<<std::endl;
+		return EXIT_FAILURE;	
 	}
+
 	
 	//Object for Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
@@ -43,29 +49,29 @@ int main(int argc, char **argv)
 	Particles single; 
 
 	//Vector of structs to store desired particle states.
-	std::vector<Particles> dstr(Constants::population, single);	
+	std::vector<Particles> lost_particles(Constants::population, single);	
 
 	//Vector of structs for initial particle states.
-	std::vector<Particles> particle_state(Constants::population, single);	
+	std::vector<Particles> initial_particles(Constants::population, single);	
 
 //------------------------------------------------------------READ DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File dstr_file("h5files/distribution_2000p.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/distribution_test.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, deta_dt_0, M_adiabatic_0;
 	//Read dataset from h5file.
-	h5::DataSet data_lat 	     = dstr_file.getDataSet("lat");
-	h5::DataSet data_aeq	     = dstr_file.getDataSet("aeq");
-	h5::DataSet data_alpha 		 = dstr_file.getDataSet("alpha");
-	h5::DataSet data_upar 		 = dstr_file.getDataSet("upar");
-	h5::DataSet data_uper 		 = dstr_file.getDataSet("uper");
-	h5::DataSet data_ppar 		 = dstr_file.getDataSet("ppar");
-	h5::DataSet data_pper 		 = dstr_file.getDataSet("pper");
-	h5::DataSet data_eta 		 = dstr_file.getDataSet("eta");
-	h5::DataSet data_zeta 		 = dstr_file.getDataSet("zeta");
-	h5::DataSet data_time 		 = dstr_file.getDataSet("time");
-	h5::DataSet data_deta_dt     = dstr_file.getDataSet("deta_dt");
-	h5::DataSet data_M_adiabatic = dstr_file.getDataSet("M_adiabatic");
-	h5::DataSet data_Ekin 		 = dstr_file.getDataSet("Ekin");
+	h5::DataSet data_lat 	     = distribution_file.getDataSet("lat");
+	h5::DataSet data_aeq	     = distribution_file.getDataSet("aeq");
+	h5::DataSet data_alpha 		 = distribution_file.getDataSet("alpha");
+	h5::DataSet data_upar 		 = distribution_file.getDataSet("upar");
+	h5::DataSet data_uper 		 = distribution_file.getDataSet("uper");
+	h5::DataSet data_ppar 		 = distribution_file.getDataSet("ppar");
+	h5::DataSet data_pper 		 = distribution_file.getDataSet("pper");
+	h5::DataSet data_eta 		 = distribution_file.getDataSet("eta");
+	h5::DataSet data_zeta 		 = distribution_file.getDataSet("zeta");
+	h5::DataSet data_time 		 = distribution_file.getDataSet("time");
+	h5::DataSet data_deta_dt     = distribution_file.getDataSet("deta_dt");
+	h5::DataSet data_M_adiabatic = distribution_file.getDataSet("M_adiabatic");
+	h5::DataSet data_Ekin 		 = distribution_file.getDataSet("Ekin");
 	//Convert to single vector.
 	data_lat.read(lamda_0);
 	data_aeq.read(aeq_0);
@@ -84,33 +90,32 @@ int main(int argc, char **argv)
 	//Append to struct from single vector.
 	for(int p=0; p<Constants::population; p++)
 	{
-		particle_state[p].lamda.push_back(lamda_0.at(p));
-		particle_state[p].alpha.push_back(alpha_0.at(p));  
-		particle_state[p].aeq.push_back(aeq_0.at(p));
-		particle_state[p].ppar.push_back(ppar_0.at(p));
-		particle_state[p].pper.push_back(pper_0.at(p));
-		particle_state[p].upar.push_back(upar_0.at(p));
-		particle_state[p].uper.push_back(uper_0.at(p));
-		particle_state[p].Ekin.push_back(Ekin_0.at(p));
-		particle_state[p].time.push_back(time_0.at(p));
-		particle_state[p].zeta.push_back(zeta_0.at(p));
-		particle_state[p].eta.push_back(eta_0.at(p));
-		particle_state[p].deta_dt.push_back(deta_dt_0.at(p));
-		particle_state[p].M_adiabatic.push_back(M_adiabatic_0.at(p));
+		initial_particles[p].lamda.push_back(lamda_0.at(p));
+		initial_particles[p].alpha.push_back(alpha_0.at(p));  
+		initial_particles[p].aeq.push_back(aeq_0.at(p));
+		initial_particles[p].ppar.push_back(ppar_0.at(p));
+		initial_particles[p].pper.push_back(pper_0.at(p));
+		initial_particles[p].upar.push_back(upar_0.at(p));
+		initial_particles[p].uper.push_back(uper_0.at(p));
+		initial_particles[p].Ekin.push_back(Ekin_0.at(p));
+		initial_particles[p].time.push_back(time_0.at(p));
+		initial_particles[p].zeta.push_back(zeta_0.at(p));
+		initial_particles[p].eta.push_back(eta_0.at(p));
+		initial_particles[p].deta_dt.push_back(deta_dt_0.at(p));
+		initial_particles[p].M_adiabatic.push_back(M_adiabatic_0.at(p));
 	}
-	std::cout<<"\nParticle population: "<< particle_state.size()<<std::endl;
+	std::cout<<"\nParticle population: "<< initial_particles.size()<<std::endl;
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
 	int realthreads;   
 	real wtime = omp_get_wtime();
-	std::string s1("bell");
-	std::string s2("li_ray");
+
 
 	//---NOWPI---//
-	if(Constants::t_nowpi!=0)
+	if(argv[1]==string_no_wpi)
 	{
-		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation using Bell formulas"<<std::endl;
+		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation"<<std::endl;
 		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"\nExecution time estimation for 20 THREAD run: "<<(Constants::population*0.017/60) * Constants::t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"\nForked..."<<std::endl;
@@ -122,62 +127,66 @@ int main(int argc, char **argv)
 			#pragma omp for schedule(dynamic)
 				for(int p=0; p<Constants::population; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
 				{
-					//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
-					//Void Function for particle's motion. Involves RK4 for Nsteps. 
-					//Detected particles are saved in ODPT object, which is passed here by reference.
-					nowpi(p, dstr[p], ODPT, particle_state[p]);
-					//Inside nowpi -> Last states become firsts to continue the simulation 
-					//Then wpi
+					//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
+					no_wpi(p, lost_particles[p], ODPT, initial_particles[p]);
 				}
-			
 		}	
 		std::cout<<"\n"<<"Joined"<<std::endl;
 		real time1 = omp_get_wtime()-wtime;
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time1<<std::endl;
 	}
 
+	//Now initial_particles have the last state after NoWPI
 
 	//---WPI---//
-	if(Constants::t_wpi!=0)
+	if(argc==3)
 	{
-		if(!(s1.compare(argv[1])))
-		{
-			std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
-			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Constants::population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
-		}
-		else if(!(s2.compare(argv[1])))
+		//---LI---//
+		if(argv[2]==string_li_wpi)
 		{
 			std::cout<<"\n\n"<<Constants::t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
 			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Constants::population*0.1/60) * Constants::t_wpi <<" minutes."<<std::endl;
-		}
-		else
-		{ 
-			std::cout<<"\n\nArgument variable doesn't match any of the program's possible implementations.\nTry nowpi, wpi, or li_ray as the second argument variable.\n"<<std::endl;
-			return EXIT_FAILURE;	
+			std::cout<<"\nForked..."<<std::endl;
+			//---PARALLELISM Work sharing---//
+			#pragma omp parallel
+			{
+				int id = omp_get_thread_num();
+				if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
+				#pragma omp for schedule(dynamic)
+					for(int p=0; p<Constants::population; p++)     
+					{
+						//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
+						li_wpi(p, lost_particles[p], ODPT, initial_particles[p]);  //LI   + RAY TRACING
+					}
+			}	
+			std::cout<<"\n"<<"Joined"<<std::endl;
+			real time2 = omp_get_wtime()-wtime ;
+			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
 		}
 
-		std::cout<<"\nForked..."<<std::endl;
-		//---PARALLELISM Work sharing---//
-		#pragma omp parallel
+		//---BELL---//
+		else if(argv[2]==string_bell_wpi)
 		{
-			int id = omp_get_thread_num();
-			if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
-			#pragma omp for schedule(dynamic)
-				for(int p=0; p<Constants::population; p++)     
-				{
-					//std::cout<<"\nBouncing particle "<<p<<" "<<id<<std::flush;
-					//Void Function for particle's motion. Involves RK4 for Nsteps. 
-					//Detected particles are saved in ODPT object, which is passed here by reference.
-					if( !(s1.compare(argv[1])) ) 		wpi(p, dstr[p], ODPT, particle_state[p]); 		//BELL + THE WAVE IS EVERYWHERE
-					else if( !(s2.compare(argv[1])) )   wpi_ray(p, dstr[p], ODPT, particle_state[p]);  //LI   + RAY TRACING
-				}
-		}	
-		std::cout<<"\n"<<"Joined"<<std::endl;
-		real time2 = omp_get_wtime()-wtime ;
-		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
+			std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
+			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Constants::population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
+			//---PARALLELISM Work sharing---//
+			#pragma omp parallel
+			{
+				int id = omp_get_thread_num();
+				if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
+				#pragma omp for schedule(dynamic)
+					for(int p=0; p<Constants::population; p++)     
+					{
+						//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
+						bell_wpi(p, lost_particles[p], ODPT, initial_particles[p]); 		//BELL + THE WAVE IS EVERYWHERE
+					}
+			}	
+			std::cout<<"\n"<<"Joined"<<std::endl;
+			real time2 = omp_get_wtime()-wtime ;
+			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
+		}
 	}
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
-
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
 	//Assign from struct to vectors.
@@ -189,17 +198,17 @@ int main(int argc, char **argv)
 		
 	for(int p=0; p<Constants::population; p++) 
 	{
-		if(!dstr[p].id.empty()) //Only precipitated were saved, other vectors in the struct are empty.
+		if(!lost_particles[p].id.empty()) //Only precipitated were saved, other vectors in the struct are empty.
 		{
-			precip_id.push_back(dstr[p].id.at(0));
-			precip_lamda.push_back(dstr[p].lamda.at(0)); 
-			precip_alpha.push_back(dstr[p].alpha.at(0));
-			precip_aeq.push_back(dstr[p].aeq.at(0));
-			precip_time.push_back(dstr[p].time.at(0));
+			precip_id.push_back(lost_particles[p].id.at(0));
+			precip_lamda.push_back(lost_particles[p].lamda.at(0)); 
+			precip_alpha.push_back(lost_particles[p].alpha.at(0));
+			precip_aeq.push_back(lost_particles[p].aeq.at(0));
+			precip_time.push_back(lost_particles[p].time.at(0));
 		}
 	}
 
-	h5::File file("h5files/both_2000p_10s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/test.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

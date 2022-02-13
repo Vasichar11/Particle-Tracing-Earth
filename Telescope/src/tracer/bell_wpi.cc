@@ -1,7 +1,7 @@
 #include "headers/bell_wpi.h"
 
 //For wave-particle interaction
-void wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
+void bell_wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
 {
     
 	//std::cout.precision(64);			//Output 16 decimal precise

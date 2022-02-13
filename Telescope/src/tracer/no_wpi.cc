@@ -1,7 +1,7 @@
-#include "headers/bell_nowpi.h"
+#include "headers/no_wpi.h"
 
 //Adiabatic motion.
-void nowpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
+void no_wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
 {
     real lamda    =  particle_state.lamda.front();
     real ppar     =  particle_state.ppar.front(); 
@@ -103,17 +103,21 @@ void nowpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
                 single.save_state(p, lamda, alpha, aeq, ppar, pper, time);
                 std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
                 
-                //This particle won't continue for the WPI simulation. 
+                //This particle won't continue for the WPI simulation.
+                //Erase it's vectors. 
                 particle_state.lamda.erase(particle_state.lamda.begin());
                 particle_state.ppar.erase(particle_state.ppar.begin());
                 particle_state.pper.erase(particle_state.pper.begin());
                 particle_state.alpha.erase(particle_state.alpha.begin());
                 particle_state.aeq.erase(particle_state.aeq.begin());
                 particle_state.time.erase(particle_state.time.begin());
-                //particle_state.zeta.erase(particle_state.zeta.begin());
-                //particle_state.upar.erase(particle_state.upar.begin());
-                //particle_state.uper.erase(particle_state.uper.begin());
-                //particle_state.Ekin.erase(particle_state.Ekin.begin());
+                particle_state.zeta.erase(particle_state.zeta.begin());
+                particle_state.upar.erase(particle_state.upar.begin());
+                particle_state.uper.erase(particle_state.uper.begin());
+                particle_state.Ekin.erase(particle_state.Ekin.begin());
+                particle_state.eta.erase(particle_state.eta.begin());
+                particle_state.deta_dt.erase(particle_state.deta_dt.begin());
+                particle_state.M_adiabatic.erase(particle_state.M_adiabatic.begin());
             }
             break;
         }
@@ -140,6 +144,7 @@ void nowpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
     particle_state.alpha.front() = alpha;
     particle_state.aeq.front()   = aeq;
     particle_state.time.front()  = time;
+    particle_state.eta.front()   = Constants::eta0;
     //particle_state.zeta.front() = zeta;
     //particle_state.upar.front() = upar;
     //particle_state.uper.front() = uper;
