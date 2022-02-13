@@ -1,28 +1,30 @@
-<mxfile host="app.diagrams.net" modified="2022-02-13T14:12:56.335Z" agent="5.0 (X11)" etag="QM-jk-GAg4W_aJynUkcu" version="16.5.6" type="github">
+<mxfile host="app.diagrams.net" modified="2022-02-13T19:52:01.481Z" agent="5.0 (X11)" etag="0Cyij-hcSKKKVrDqmlue" version="16.5.6" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="723" dy="355" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1741" dy="448" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=11;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="WIyWlLk6GJQsqaUBKTNV-3" target="YKpsX4Ho8cr_-5MnQuur-53" edge="1">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="j9RpM40QB2oZLk69nVbn-28" value="&lt;br style=&quot;font-size: 8px;&quot;&gt;&lt;ul style=&quot;font-size: 8px;&quot;&gt;&lt;li style=&quot;font-size: 8px;&quot;&gt;new lost particles&lt;br style=&quot;font-size: 8px;&quot;&gt;&lt;/li&gt;&lt;li style=&quot;font-size: 8px;&quot;&gt;satellite-crossed particles saved in ODPT struct&lt;br style=&quot;font-size: 8px;&quot;&gt;&lt;/li&gt;&lt;li style=&quot;font-size: 8px;&quot;&gt;new state of particles&lt;br style=&quot;font-size: 8px;&quot;&gt;&lt;/li&gt;&lt;/ul&gt;" style="text;strokeColor=none;fillColor=none;html=1;whiteSpace=wrap;verticalAlign=middle;overflow=hidden;fontSize=8;fontColor=#000000;opacity=90;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="250" y="491.25" width="170" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="WIyWlLk6GJQsqaUBKTNV-3" value="&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/interpolation/Read_Ray_Write.cc&quot;&gt;Read_Ray_Write.cc&lt;/a&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="120" y="160" width="120" height="50" as="geometry" />
+        <mxCell id="j9RpM40QB2oZLk69nVbn-27" value="&lt;ul style=&quot;font-size: 8px&quot;&gt;&lt;li style=&quot;font-size: 8px&quot;&gt;particle ids&lt;br style=&quot;font-size: 8px&quot;&gt;&lt;/li&gt;&lt;li style=&quot;font-size: 8px&quot;&gt;already lost particles&lt;br style=&quot;font-size: 8px&quot;&gt;&lt;/li&gt;&lt;li style=&quot;font-size: 8px&quot;&gt;ODPT struct&lt;br style=&quot;font-size: 8px&quot;&gt;&lt;/li&gt;&lt;li style=&quot;font-size: 8px&quot;&gt;state of particles&lt;br style=&quot;font-size: 8px&quot;&gt;&lt;/li&gt;&lt;/ul&gt;" style="text;strokeColor=none;fillColor=none;html=1;whiteSpace=wrap;verticalAlign=middle;overflow=hidden;fontSize=8;fontColor=#000000;opacity=90;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="65" y="510" width="115" height="57.5" as="geometry" />
         </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=11;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="WIyWlLk6GJQsqaUBKTNV-7" target="YKpsX4Ho8cr_-5MnQuur-55" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="WIyWlLk6GJQsqaUBKTNV-7" value="&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/distribution/distribution.cc&quot;&gt;distribution.cc&lt;/a&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="300" y="160" width="120" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="WIyWlLk6GJQsqaUBKTNV-11" edge="1">
+        <mxCell id="_-sZunUBoSVdFQu77xVK-30" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="WIyWlLk6GJQsqaUBKTNV-3" target="YKpsX4Ho8cr_-5MnQuur-53">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="270" y="300" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="95" y="185" />
+            </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="WIyWlLk6GJQsqaUBKTNV-11" value="&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/tracer/main.cc&quot;&gt;main.cc&lt;/a&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="210" y="240" width="120" height="30" as="geometry" />
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-3" value="&lt;div&gt;&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/interpolation/Read_Ray_Write.cc&quot;&gt;Read_Ray_Write.cc&lt;/a&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="35" y="140" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-48" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="WIyWlLk6GJQsqaUBKTNV-7" target="YKpsX4Ho8cr_-5MnQuur-55">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-7" value="&lt;div&gt;&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/distribution/distribution.cc&quot;&gt;distribution.cc&lt;/a&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="385" y="140" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="YKpsX4Ho8cr_-5MnQuur-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" target="YKpsX4Ho8cr_-5MnQuur-4" edge="1">
           <mxGeometry relative="1" as="geometry">
@@ -35,11 +37,11 @@
         <mxCell id="j9RpM40QB2oZLk69nVbn-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=13;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-4" target="j9RpM40QB2oZLk69nVbn-8" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-4" value="&lt;div&gt;argv[2]=(li_wpi, bell_wpi)&lt;br&gt;&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;shadow=0;fontFamily=Helvetica;fontSize=12;align=center;strokeWidth=1;spacing=6;spacingTop=-4;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+        <mxCell id="YKpsX4Ho8cr_-5MnQuur-4" value="&lt;div&gt;argv[2]=(li_wpi, bell_wpi)&lt;br&gt;&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;shadow=0;fontFamily=Helvetica;fontSize=12;align=center;strokeWidth=1;spacing=6;spacingTop=-4;fillColor=#f8cecc;strokeColor=#b85450;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="169.5" y="380" width="201" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-29" value="&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/Post_processing_and_Plots.py&quot;&gt;Post_Processing_and_Plots.py&lt;/a&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="630" y="510" width="179" height="40" as="geometry" />
+        <mxCell id="YKpsX4Ho8cr_-5MnQuur-29" value="&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/Post_processing_and_Plots.py&quot;&gt;Post_Processing_and_Plots.py&lt;/a&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="536" y="275" width="179" height="100" as="geometry" />
         </mxCell>
         <mxCell id="YKpsX4Ho8cr_-5MnQuur-38" value="&lt;b&gt;&lt;i&gt;bell&lt;/i&gt;_wpi&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="360" y="390" width="60" height="30" as="geometry" />
@@ -47,119 +49,171 @@
         <mxCell id="YKpsX4Ho8cr_-5MnQuur-39" value="&lt;i&gt;&lt;b&gt;li_wpi&lt;/b&gt;&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="121.5" y="390" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-50" target="WIyWlLk6GJQsqaUBKTNV-7" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="j9RpM40QB2oZLk69nVbn-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;fontColor=#000099;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-50" target="WIyWlLk6GJQsqaUBKTNV-3" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-50" value="&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/headers/constants.h&quot;&gt;constants.h&lt;/a&gt;" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="176" y="50" width="190" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-53" target="j9RpM40QB2oZLk69nVbn-8" edge="1">
+        <mxCell id="_-sZunUBoSVdFQu77xVK-53" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=8;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-50" target="WIyWlLk6GJQsqaUBKTNV-7">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="50" y="150" />
-              <mxPoint x="50" y="485" />
+              <mxPoint x="445" y="95" />
             </Array>
-            <mxPoint x="70" y="460" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-53" value="&lt;div&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;&lt;i&gt;interpolated_ray.h5 &lt;br&gt;&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="30" y="110" width="130" height="40" as="geometry" />
+        <mxCell id="_-sZunUBoSVdFQu77xVK-54" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=8;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-50" target="WIyWlLk6GJQsqaUBKTNV-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="95" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=11;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-55" target="WIyWlLk6GJQsqaUBKTNV-11" edge="1">
+        <mxCell id="_-sZunUBoSVdFQu77xVK-58" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=8;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-50" target="_-sZunUBoSVdFQu77xVK-55">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="YKpsX4Ho8cr_-5MnQuur-55" value="&lt;div&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;&lt;i&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;distribution.h5&lt;br&gt;&lt;/font&gt;&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="380" y="110" width="130" height="40" as="geometry" />
+        <mxCell id="YKpsX4Ho8cr_-5MnQuur-50" value="&lt;div&gt;Simulation parameters&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/headers/constants.h&quot;&gt;constants.h&lt;/a&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff2cc;strokeColor=#d6b656;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="175" y="70" width="190" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-36" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-53" target="j9RpM40QB2oZLk69nVbn-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="325" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-43" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-53" target="j9RpM40QB2oZLk69nVbn-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="YKpsX4Ho8cr_-5MnQuur-53" value="&lt;div&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;&lt;i&gt;interpolated_ray.h5 &lt;br&gt;&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="30" y="220" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-46" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-55" target="YKpsX4Ho8cr_-5MnQuur-29">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="626" y="240" />
+              <mxPoint x="626" y="255" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-66" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=8;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YKpsX4Ho8cr_-5MnQuur-55" target="_-sZunUBoSVdFQu77xVK-55">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="YKpsX4Ho8cr_-5MnQuur-55" value="&lt;div&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;&lt;i&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;distribution.h5&lt;br&gt;&lt;/font&gt;&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="380" y="220" width="130" height="40" as="geometry" />
         </mxCell>
         <mxCell id="YKpsX4Ho8cr_-5MnQuur-64" value="Continue with the last state of particles" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="270" y="360" width="120" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="-YGpuqABr9hIoaa6Peu--0" value="make" style="shape=table;childLayout=tableLayout;startSize=40;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="21.5" y="640" width="277" height="238.5" as="geometry" />
+        <mxCell id="-YGpuqABr9hIoaa6Peu--0" value="" style="shape=table;childLayout=tableLayout;startSize=40;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="24" y="593.88" width="356" height="238.5" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--1" value="nowpi" style="shape=tableRow;horizontal=0;startSize=40;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;dropTarget=0;fillColor=none;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--0" vertex="1">
-          <mxGeometry y="40" width="277" height="90" as="geometry" />
+          <mxGeometry y="40" width="356" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="-YGpuqABr9hIoaa6Peu--2" value="make dstr" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=40;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--1" vertex="1">
-          <mxGeometry x="40" width="79" height="90" as="geometry">
-            <mxRectangle width="79" height="90" as="alternateBounds" />
+        <mxCell id="_-sZunUBoSVdFQu77xVK-67" value="make directories" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=40;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" vertex="1" parent="-YGpuqABr9hIoaa6Peu--1">
+          <mxGeometry x="40" width="106" height="90" as="geometry">
+            <mxRectangle width="106" height="90" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="-YGpuqABr9hIoaa6Peu--19" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" parent="-YGpuqABr9hIoaa6Peu--2" vertex="1">
-          <mxGeometry x="30.53" y="50" width="35.19" height="30" as="geometry" />
+        <mxCell id="-YGpuqABr9hIoaa6Peu--19" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" parent="_-sZunUBoSVdFQu77xVK-67" vertex="1">
+          <mxGeometry x="35.41" y="50" width="35.19" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-YGpuqABr9hIoaa6Peu--2" value="make dstr" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=40;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--1" vertex="1">
+          <mxGeometry x="146" width="70" height="90" as="geometry">
+            <mxRectangle width="70" height="90" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-70" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" vertex="1" parent="-YGpuqABr9hIoaa6Peu--2">
+          <mxGeometry x="17.400000000000006" y="50" width="35.19" height="30" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--3" value="make ray" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=40;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--1" vertex="1">
-          <mxGeometry x="119" width="79" height="90" as="geometry">
-            <mxRectangle width="79" height="90" as="alternateBounds" />
+          <mxGeometry x="216" width="70" height="90" as="geometry">
+            <mxRectangle width="70" height="90" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--4" value="make tracer" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=40;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--1" vertex="1">
-          <mxGeometry x="198" width="79" height="90" as="geometry">
-            <mxRectangle width="79" height="90" as="alternateBounds" />
+          <mxGeometry x="286" width="70" height="90" as="geometry">
+            <mxRectangle width="70" height="90" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--24" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" parent="-YGpuqABr9hIoaa6Peu--4" vertex="1">
-          <mxGeometry x="21.909999999999968" y="50" width="35.19" height="30" as="geometry" />
+          <mxGeometry x="17.409999999999968" y="50" width="35.19" height="30" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--5" value="bell" style="shape=tableRow;horizontal=0;startSize=40;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;dropTarget=0;fillColor=none;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--0" vertex="1">
-          <mxGeometry y="130" width="277" height="54" as="geometry" />
+          <mxGeometry y="130" width="356" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-68" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=0;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" vertex="1" parent="-YGpuqABr9hIoaa6Peu--5">
+          <mxGeometry x="40" width="106" height="54" as="geometry">
+            <mxRectangle width="106" height="54" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-71" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" vertex="1" parent="_-sZunUBoSVdFQu77xVK-68">
+          <mxGeometry x="35.41" y="12" width="35.19" height="30" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--6" value="" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=0;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--5" vertex="1">
-          <mxGeometry x="40" width="79" height="54" as="geometry">
-            <mxRectangle width="79" height="54" as="alternateBounds" />
+          <mxGeometry x="146" width="70" height="54" as="geometry">
+            <mxRectangle width="70" height="54" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--21" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" parent="-YGpuqABr9hIoaa6Peu--6" vertex="1">
-          <mxGeometry x="30.529999999999966" y="10" width="35.19" height="30" as="geometry" />
+          <mxGeometry x="19.999999999999968" y="12" width="35.19" height="30" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--7" value="" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=0;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--5" vertex="1">
-          <mxGeometry x="119" width="79" height="54" as="geometry">
-            <mxRectangle width="79" height="54" as="alternateBounds" />
+          <mxGeometry x="216" width="70" height="54" as="geometry">
+            <mxRectangle width="70" height="54" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--8" value="" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=0;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--5" vertex="1">
-          <mxGeometry x="198" width="79" height="54" as="geometry">
-            <mxRectangle width="79" height="54" as="alternateBounds" />
+          <mxGeometry x="286" width="70" height="54" as="geometry">
+            <mxRectangle width="70" height="54" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--23" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" parent="-YGpuqABr9hIoaa6Peu--8" vertex="1">
-          <mxGeometry x="21.909999999999968" y="12" width="35.19" height="30" as="geometry" />
+          <mxGeometry x="17.409999999999968" y="12" width="35.19" height="30" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--9" value="li" style="shape=tableRow;horizontal=0;startSize=40;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;dropTarget=0;fillColor=none;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--0" vertex="1">
-          <mxGeometry y="184" width="277" height="55" as="geometry" />
+          <mxGeometry y="184" width="356" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-69" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=0;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" vertex="1" parent="-YGpuqABr9hIoaa6Peu--9">
+          <mxGeometry x="40" width="106" height="55" as="geometry">
+            <mxRectangle width="106" height="55" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-72" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" vertex="1" parent="_-sZunUBoSVdFQu77xVK-69">
+          <mxGeometry x="35.41" y="11" width="35.19" height="30" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--10" value="" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=0;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--9" vertex="1">
-          <mxGeometry x="40" width="79" height="55" as="geometry">
-            <mxRectangle width="79" height="55" as="alternateBounds" />
+          <mxGeometry x="146" width="70" height="55" as="geometry">
+            <mxRectangle width="70" height="55" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--20" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" parent="-YGpuqABr9hIoaa6Peu--10" vertex="1">
-          <mxGeometry x="30.529999999999973" y="11" width="35.19" height="30" as="geometry" />
+          <mxGeometry x="19.999999999999975" y="11" width="35.19" height="30" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--11" value="" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=0;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--9" vertex="1">
-          <mxGeometry x="119" width="79" height="55" as="geometry">
-            <mxRectangle width="79" height="55" as="alternateBounds" />
+          <mxGeometry x="216" width="70" height="55" as="geometry">
+            <mxRectangle width="70" height="55" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--25" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" parent="-YGpuqABr9hIoaa6Peu--11" vertex="1">
-          <mxGeometry x="21.909999999999968" y="11" width="35.19" height="30" as="geometry" />
+          <mxGeometry x="17.409999999999968" y="11" width="35.19" height="30" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--12" value="" style="swimlane;swimlaneHead=0;swimlaneBody=0;fontStyle=0;connectable=0;fillColor=none;startSize=0;collapsible=0;recursiveResize=0;expand=0;fontStyle=1;" parent="-YGpuqABr9hIoaa6Peu--9" vertex="1">
-          <mxGeometry x="198" width="79" height="55" as="geometry">
-            <mxRectangle width="79" height="55" as="alternateBounds" />
+          <mxGeometry x="286" width="70" height="55" as="geometry">
+            <mxRectangle width="70" height="55" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--22" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.tick;fillColor=#52FF52;" parent="-YGpuqABr9hIoaa6Peu--12" vertex="1">
-          <mxGeometry x="21.909999999999968" y="12.5" width="35.19" height="30" as="geometry" />
+          <mxGeometry x="17.409999999999968" y="12.5" width="35.19" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="-YGpuqABr9hIoaa6Peu--100" value="&lt;ul&gt;&lt;li&gt;&lt;br&gt;&lt;/li&gt;&lt;/ul&gt;" style="text;strokeColor=none;fillColor=none;html=1;whiteSpace=wrap;verticalAlign=middle;overflow=hidden;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="436" y="655" width="100" height="80" as="geometry" />
+        <mxCell id="_-sZunUBoSVdFQu77xVK-101" value="" style="endArrow=none;html=1;rounded=0;fontSize=9;fontColor=#009900;entryX=1;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="-YGpuqABr9hIoaa6Peu--0" source="-YGpuqABr9hIoaa6Peu--9" target="-YGpuqABr9hIoaa6Peu--0">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="206" y="170.75" as="sourcePoint" />
+            <mxPoint x="256" y="120.75" as="targetPoint" />
+            <Array as="points">
+              <mxPoint y="290.75" />
+              <mxPoint x="176" y="290.75" />
+              <mxPoint x="356" y="290.75" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--101" value="Compare noWPI-WPI" style="swimlane;startSize=20;horizontal=1;containerType=tree;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};fillColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="330" y="640" width="280" height="300" as="geometry" />
+          <mxGeometry x="400" y="609.25" width="280" height="300" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--102" value="" style="edgeStyle=elbowEdgeStyle;elbow=vertical;startArrow=none;endArrow=none;rounded=0;" parent="-YGpuqABr9hIoaa6Peu--101" source="-YGpuqABr9hIoaa6Peu--104" target="-YGpuqABr9hIoaa6Peu--105" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -185,22 +239,26 @@
           <mxGeometry x="160" y="220" width="100" height="60" as="geometry" />
         </mxCell>
         <mxCell id="-YGpuqABr9hIoaa6Peu--109" value="&lt;ul style=&quot;font-size: 8px&quot;&gt;&lt;li&gt;&lt;font style=&quot;font-size: 8px&quot;&gt;t = t_nowpi + t_wpi simulation time.&lt;br&gt;&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;font-size: 8px&quot;&gt;t_nowpi simulation without interaction.&lt;br&gt;&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;font-size: 8px&quot;&gt;t_wpi simulation with interaction.&lt;br&gt;&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;" style="text;strokeColor=none;fillColor=none;html=1;whiteSpace=wrap;verticalAlign=middle;overflow=hidden;fontSize=13;" parent="-YGpuqABr9hIoaa6Peu--101" vertex="1">
-          <mxGeometry x="-30" y="205" width="200" height="90" as="geometry" />
+          <mxGeometry x="-20" y="205" width="190" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="j9RpM40QB2oZLk69nVbn-3" target="_-sZunUBoSVdFQu77xVK-5">
+        <mxCell id="_-sZunUBoSVdFQu77xVK-41" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="j9RpM40QB2oZLk69nVbn-3" target="_-sZunUBoSVdFQu77xVK-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="j9RpM40QB2oZLk69nVbn-3" value="&lt;div&gt;&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/tracer/bell_wpi.cc&quot;&gt;bell_wpi.cc&lt;/a&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;&lt;i&gt;for t_wpi&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;" style="shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="349" y="460" width="121" height="50" as="geometry" />
+          <mxGeometry x="384.5" y="460" width="121" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="j9RpM40QB2oZLk69nVbn-8" target="_-sZunUBoSVdFQu77xVK-1">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="_-sZunUBoSVdFQu77xVK-40" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="j9RpM40QB2oZLk69nVbn-8" target="_-sZunUBoSVdFQu77xVK-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="565" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="j9RpM40QB2oZLk69nVbn-8" value="&lt;div&gt;&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/tracer/li_wpi.cc&quot;&gt;li_wpi.cc&lt;/a&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;&lt;i&gt;for t_wpi&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;" style="shape=ext;double=1;rounded=1;whiteSpace=wrap;html=1;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="80" y="460" width="120" height="50" as="geometry" />
+          <mxGeometry x="35" y="460" width="120" height="50" as="geometry" />
         </mxCell>
         <mxCell id="j9RpM40QB2oZLk69nVbn-13" value="&lt;font style=&quot;font-size: 11px&quot; color=&quot;#000099&quot;&gt;parallel&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;opacity=40;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="80" y="440" width="60" height="30" as="geometry" />
+          <mxGeometry x="100" y="440" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="_-sZunUBoSVdFQu77xVK-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="j9RpM40QB2oZLk69nVbn-15" target="_-sZunUBoSVdFQu77xVK-0">
           <mxGeometry relative="1" as="geometry" />
@@ -211,55 +269,69 @@
         <mxCell id="j9RpM40QB2oZLk69nVbn-16" value="&lt;font style=&quot;font-size: 11px&quot; color=&quot;#000099&quot;&gt;parallel&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;opacity=40;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="210" y="280" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="j9RpM40QB2oZLk69nVbn-23" value="&lt;div&gt;no_wpi()&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;or&lt;/font&gt; li_wpi()&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;or&lt;/font&gt; bell_wpi()&lt;/div&gt;" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;fontSize=11;fontColor=#000099;opacity=40;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="646" y="230" width="120" height="80" as="geometry" />
+        <mxCell id="j9RpM40QB2oZLk69nVbn-23" value="&lt;div style=&quot;font-size: 8px;&quot;&gt;no_wpi()&lt;/div&gt;&lt;div style=&quot;font-size: 8px;&quot;&gt;&lt;font style=&quot;font-size: 8px;&quot; color=&quot;#000000&quot;&gt;or&lt;/font&gt; li_wpi()&lt;/div&gt;&lt;div style=&quot;font-size: 8px;&quot;&gt;&lt;font style=&quot;font-size: 8px;&quot; color=&quot;#000000&quot;&gt;or&lt;/font&gt; bell_wpi()&lt;/div&gt;" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;fontSize=8;fontColor=#000099;opacity=90;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="180" y="505" width="100" height="55" as="geometry" />
         </mxCell>
-        <mxCell id="j9RpM40QB2oZLk69nVbn-24" value="" style="endArrow=classic;html=1;rounded=0;fontSize=11;fontColor=#000000;" parent="WIyWlLk6GJQsqaUBKTNV-1" target="j9RpM40QB2oZLk69nVbn-23" edge="1">
+        <mxCell id="j9RpM40QB2oZLk69nVbn-24" value="" style="endArrow=classic;html=1;rounded=0;fontSize=2;fontColor=#000000;opacity=40;entryX=0.004;entryY=0.265;entryDx=0;entryDy=0;entryPerimeter=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" target="j9RpM40QB2oZLk69nVbn-23" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="576" y="270" as="sourcePoint" />
-            <mxPoint x="556" y="250" as="targetPoint" />
+            <mxPoint x="103.5" y="520" as="sourcePoint" />
+            <mxPoint x="169.5" y="520" as="targetPoint" />
             <Array as="points" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="j9RpM40QB2oZLk69nVbn-25" value="" style="endArrow=classic;html=1;rounded=0;fontSize=11;fontColor=#000000;" parent="WIyWlLk6GJQsqaUBKTNV-1" edge="1">
+        <mxCell id="j9RpM40QB2oZLk69nVbn-25" value="" style="endArrow=classic;html=1;rounded=0;fontSize=8;fontColor=#000000;opacity=40;textOpacity=30;entryX=0.647;entryY=0.303;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.945;exitY=0.264;exitDx=0;exitDy=0;exitPerimeter=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" edge="1" target="j9RpM40QB2oZLk69nVbn-28" source="j9RpM40QB2oZLk69nVbn-23">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="766" y="270" as="sourcePoint" />
-            <mxPoint x="836" y="270" as="targetPoint" />
-            <Array as="points" />
+            <mxPoint x="280" y="520" as="sourcePoint" />
+            <mxPoint x="360" y="515" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="310" y="520" />
+              <mxPoint x="330" y="520" />
+            </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="j9RpM40QB2oZLk69nVbn-27" value="&lt;ul&gt;&lt;li&gt;particle ids&lt;br&gt;&lt;/li&gt;&lt;li&gt;already lost particles&lt;br&gt;&lt;/li&gt;&lt;li&gt;ODPT struct&lt;br&gt;&lt;/li&gt;&lt;li&gt;state particles&lt;br&gt;&lt;/li&gt;&lt;/ul&gt;" style="text;strokeColor=none;fillColor=none;html=1;whiteSpace=wrap;verticalAlign=middle;overflow=hidden;fontSize=11;fontColor=#000000;opacity=40;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="510" y="180" width="160" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="j9RpM40QB2oZLk69nVbn-28" value="&lt;br&gt;&lt;ul&gt;&lt;li&gt;new lost particles&lt;br&gt;&lt;/li&gt;&lt;li&gt;satellite-crossed particles saved in ODPT struct&lt;br&gt;&lt;/li&gt;&lt;li&gt;new state of particles&lt;br&gt;&lt;/li&gt;&lt;/ul&gt;" style="text;strokeColor=none;fillColor=none;html=1;whiteSpace=wrap;verticalAlign=middle;overflow=hidden;fontSize=11;fontColor=#000000;opacity=40;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="753" y="175" width="170" height="95" as="geometry" />
-        </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-0" value="&lt;i&gt;no_wpi.h5&lt;/i&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="406" y="305" width="130" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-1" value="&lt;i&gt;both.h5&lt;/i&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="75" y="560" width="130" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-5" value="&lt;i&gt;both.h5&lt;/i&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="344.5" y="560" width="130" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-sZunUBoSVdFQu77xVK-9" target="YKpsX4Ho8cr_-5MnQuur-29">
+        <mxCell id="_-sZunUBoSVdFQu77xVK-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-sZunUBoSVdFQu77xVK-0" target="YKpsX4Ho8cr_-5MnQuur-29">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-9" value="&lt;i&gt;no_wpi.h5&lt;/i&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="793" y="420" width="130" height="40" as="geometry" />
+        <mxCell id="_-sZunUBoSVdFQu77xVK-0" value="&lt;i&gt;no_wpi.h5&lt;/i&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="380" y="305" width="130" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-sZunUBoSVdFQu77xVK-10" target="YKpsX4Ho8cr_-5MnQuur-29">
+        <mxCell id="_-sZunUBoSVdFQu77xVK-47" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-sZunUBoSVdFQu77xVK-1" target="YKpsX4Ho8cr_-5MnQuur-29">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="626" y="565" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-1" value="&lt;i&gt;both.h5&lt;/i&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="380" y="545" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-56" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=8;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-sZunUBoSVdFQu77xVK-55" target="j9RpM40QB2oZLk69nVbn-15">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-10" value="&lt;i&gt;both.h5&lt;/i&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="654.5" y="420" width="130" height="40" as="geometry" />
+        <mxCell id="_-sZunUBoSVdFQu77xVK-55" value="&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/src/tracer/main.cc&quot;&gt;main.cc&lt;/a&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="210" y="215" width="120" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-sZunUBoSVdFQu77xVK-11" target="YKpsX4Ho8cr_-5MnQuur-29">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="_-sZunUBoSVdFQu77xVK-73" value="&lt;ul&gt;&lt;li&gt;make: builds everything&lt;/li&gt;&lt;li&gt;make dstr: builds to distribute particles, &lt;font color=&quot;#009900&quot;&gt;exec file: dstr, &lt;font color=&quot;#000000&quot;&gt;run to produce distribution.h5&lt;/font&gt;&lt;br&gt;&lt;/font&gt;&lt;/li&gt;&lt;li&gt;make ray:&amp;nbsp; builds to interpolate ray, &lt;font color=&quot;#009900&quot;&gt;exec file: ray, &lt;/font&gt;run to produce interpolated_ray.h5&lt;br&gt;&lt;/li&gt;&lt;li&gt;make tracer: builds to simulate noWPI / WPI, &lt;font color=&quot;#009900&quot;&gt;exec file: tracer,&lt;font color=&quot;#000000&quot;&gt; run to produce nowpi.h5 / both.h5&lt;/font&gt;&lt;br&gt;&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="-5.5" y="832.38" width="390" height="51.5" as="geometry" />
         </mxCell>
-        <mxCell id="_-sZunUBoSVdFQu77xVK-11" value="&lt;div&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;&lt;i&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;distribution.h5&lt;br&gt;&lt;/font&gt;&lt;/i&gt;&lt;/font&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="516" y="420" width="130" height="40" as="geometry" />
+        <mxCell id="_-sZunUBoSVdFQu77xVK-104" value="&lt;p style=&quot;line-height: 0.6&quot;&gt;&lt;/p&gt;&lt;div style=&quot;font-size: 8px&quot;&gt;&lt;font style=&quot;font-size: 8px&quot;&gt;e.g terminal commands in linux system&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 8px&quot;&gt;&lt;font style=&quot;font-size: 8px&quot;&gt;&lt;font color=&quot;#9AC7BF&quot;&gt;&lt;span style=&quot;background-color: rgb(0 , 0 , 0) ; line-height: 1.6 ; font-size: 9px&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;font style=&quot;font-size: 9px&quot;&gt;make &amp;amp;&amp;amp; ./dstr &amp;amp;&amp;amp; ./ray_int &amp;amp;&amp;amp; ./tracer no_wpi li_wpi&lt;/font&gt; &lt;br&gt;&lt;/span&gt;&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 8px&quot;&gt;&lt;font style=&quot;font-size: 8px&quot;&gt;&lt;font color=&quot;#9AC7BF&quot;&gt;&lt;span style=&quot;background-color: rgb(0 , 0 , 0) ; line-height: 1.6 ; font-size: 9px&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; python3 Post_Processing_and_Plots &amp;nbsp; &amp;nbsp; &lt;br&gt;&lt;/span&gt;&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;&lt;font style=&quot;font-size: 8px&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;p&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#000000;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="-31.75" y="893.88" width="442.5" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-110" value="" style="endArrow=none;html=1;rounded=0;fontSize=8;fontColor=#00CC00;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="24" y="884.63" as="sourcePoint" />
+            <mxPoint x="380" y="884.63" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="24" y="924.63" />
+              <mxPoint x="380" y="924.63" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-121" value="&lt;font style=&quot;font-size: 11px&quot; color=&quot;#000099&quot;&gt;parallel&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;opacity=40;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="384" y="440" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_-sZunUBoSVdFQu77xVK-122" value="&lt;a href=&quot;https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/Telescope/Makefile&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 15px&quot;&gt;Makefile&lt;/font&gt;&lt;/b&gt;&lt;/a&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=none;fontSize=10;fontColor=#000000;opacity=30;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="172" y="600" width="60" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
