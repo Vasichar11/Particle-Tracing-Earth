@@ -128,8 +128,6 @@ void whistlers(int64_t p, int64_t i, real mu, real P, real D, real S, real kz, r
 
 
 
-
-
 //For Ray Tracing
 
 
@@ -151,10 +149,10 @@ void f_packet (real &Fpar, real &Fper, real &Ftheta, real &aeq_rk, real &kz, con
 
     
     //Factor calculations for ppar ,pper and theta
-    real EL = R1*((2*Constants::m_e)/Constants::q_e)*w1;
-    real ER = R2*((2*Constants::m_e)/Constants::q_e)*w2;
-    real BR = ((2*Constants::m_e)/Constants::q_e)*w1;
-    real BL = ((2*Constants::m_e)/Constants::q_e)*w2;
+    real EL = R1*w1*(Constants::m_e/Constants::q_e);
+    real ER = R2*w2*(Constants::m_e/Constants::q_e);
+    real BR = w1*(Constants::m_e/Constants::q_e);
+    real BL = w2*(Constants::m_e/Constants::q_e);
     
     Fpar = -(pow((-1),(Constants::m_res-1))*(-Constants::q_e*(Ezw*jn( (Constants::m_res), beta)+(pper_tmp/(gama*Constants::m_e))*BR*jn( (Constants::m_res-1), beta)
                    -(pper_tmp/(gama*Constants::m_e))*BL*jn( (Constants::m_res+1), beta))));

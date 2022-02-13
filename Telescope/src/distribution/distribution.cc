@@ -81,7 +81,7 @@ int main()
 				//Projecting aeq from alpha
 				k       = ((aeq0*   Constants::R2D>90)    ? 1 : 0);     					   //kEN...(here k=0 or 1 ?)
 				alpha0  = pow(-1,k)*asin(salpha0)+k*M_PI;			 						   // sinx = a => x=(-1)^k * asin(a) + k*pi
-				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,0);
+				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0);
 				
 				//k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		
 				//alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	
@@ -108,7 +108,7 @@ int main()
 	int sec;
 	for(int p=0; p<Constants::population; p++)
 	{
-		sec = floor((dstr[p].aeq.at(0)*Constants::R2D)/sector_range); //Which sector has this particle?
+		sec = floor((dstr[p].aeq_init*Constants::R2D)/sector_range); //Which sector has this particle?
 		aeq0_bins.at(sec) ++; 										  //This sector has this particle
 	}
 	std::cout<<"\nEquatorial P.A Initialization: ";
@@ -119,26 +119,25 @@ int main()
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//
 	
-	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), deta_dt_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population);
+	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population);
 
 	//Assign from struct to 1d vectors.
 	for(int p=0; p<Constants::population; p++)
 	{
-		alpha_dstr[p]      = dstr[p].alpha.at(0);
-		lamda_dstr[p]      = dstr[p].lamda.at(0);
-		aeq_dstr[p]        = dstr[p].aeq.at(0);
-		ppar_dstr[p]       = dstr[p].ppar.at(0);
-		pper_dstr[p]       = dstr[p].pper.at(0);
-		upar_dstr[p]       = dstr[p].upar.at(0);
-		uper_dstr[p]       = dstr[p].uper.at(0);
-		eta_dstr[p]        = dstr[p].eta.at(0);
-		zeta_dstr[p]       = dstr[p].zeta.at(0);
-		deta_dt_dstr[p]    = dstr[p].deta_dt.at(0);
-		Ekin_dstr[p]       = dstr[p].Ekin.at(0);
-		M_adiabatic_dstr[p]= dstr[p].M_adiabatic.at(0);
-		time_dstr[p]       = dstr[p].time.at(0);
+		alpha_dstr[p]      = dstr[p].alpha_init;
+		lamda_dstr[p]      = dstr[p].lamda_init;
+		aeq_dstr[p]        = dstr[p].aeq_init;
+		ppar_dstr[p]       = dstr[p].ppar_init;
+		pper_dstr[p]       = dstr[p].pper_init;
+		upar_dstr[p]       = dstr[p].upar_init;
+		uper_dstr[p]       = dstr[p].uper_init;
+		eta_dstr[p]        = dstr[p].eta_init;
+		zeta_dstr[p]       = dstr[p].zeta_init;
+		Ekin_dstr[p]       = dstr[p].Ekin_init;
+		M_adiabatic_dstr[p]= dstr[p].M_adiabatic_init;
+		time_dstr[p]       = dstr[p].time_init;
 	}
-	h5::File file("h5files/distribution_test.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/10000p.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);
@@ -150,7 +149,6 @@ int main()
 	h5::DataSet data_eta            = file.createDataSet("eta", eta_dstr);
 	h5::DataSet data_zeta           = file.createDataSet("zeta", zeta_dstr);
 	h5::DataSet data_time           = file.createDataSet("time", time_dstr);
-	h5::DataSet data_deta_dt        = file.createDataSet("deta_dt", deta_dt_dstr);
 	h5::DataSet data_M_adiabatic    = file.createDataSet("M_adiabatic", M_adiabatic_dstr);
 	h5::DataSet data_Ekin           = file.createDataSet("Ekin", Ekin_dstr);
 	h5::DataSet aeq0bins            = file.createDataSet("aeq0_bins", aeq0_bins);

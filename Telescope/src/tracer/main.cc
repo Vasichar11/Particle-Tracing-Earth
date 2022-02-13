@@ -35,9 +35,9 @@ int main(int argc, char **argv)
 	std::string string_bell_wpi = "bell_wpi";
 	
 	//---ARGV ERROR---//
-	if(  argv[1]!=string_no_wpi    ||    ( argc==3 && argv[2]!=string_bell_wpi && argv[2]!=string_li_wpi ) )
+	if( argc<2   ||    argv[1]!=string_no_wpi    ||    ( argc==3 && argv[2]!=string_bell_wpi && argv[2]!=string_li_wpi ) )
 	{ 
-		std::cout<<"\n\nArgument variables don't match any of the program's possible implementations.\nSet first argv=no_wpi and third argv from the list:(bell_wpi, li_wpi).\n"<<std::endl;
+		std::cout<<"\nArgument variables don't match any of the program's possible implementations.\nSet first argv=no_wpi and third argv from the list:(bell_wpi, li_wpi) to introduce a wave.\n"<<std::endl;
 		return EXIT_FAILURE;	
 	}
 
@@ -48,16 +48,15 @@ int main(int argc, char **argv)
 	//Single particle struct.
 	Particles single; 
 
-	//Vector of structs to store desired particle states.
-	std::vector<Particles> lost_particles(Constants::population, single);	
+	//Vector of structs. Has initial states and function to save particle states in vectors.
+	std::vector<Particles> dstr(Constants::population, single);	
 
-	//Vector of structs for initial particle states.
-	std::vector<Particles> initial_particles(Constants::population, single);	
+
 
 //------------------------------------------------------------READ DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/distribution_test.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/10000p.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
-	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, deta_dt_0, M_adiabatic_0;
+	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0;
 	//Read dataset from h5file.
 	h5::DataSet data_lat 	     = distribution_file.getDataSet("lat");
 	h5::DataSet data_aeq	     = distribution_file.getDataSet("aeq");
@@ -69,7 +68,6 @@ int main(int argc, char **argv)
 	h5::DataSet data_eta 		 = distribution_file.getDataSet("eta");
 	h5::DataSet data_zeta 		 = distribution_file.getDataSet("zeta");
 	h5::DataSet data_time 		 = distribution_file.getDataSet("time");
-	h5::DataSet data_deta_dt     = distribution_file.getDataSet("deta_dt");
 	h5::DataSet data_M_adiabatic = distribution_file.getDataSet("M_adiabatic");
 	h5::DataSet data_Ekin 		 = distribution_file.getDataSet("Ekin");
 	//Convert to single vector.
@@ -83,28 +81,26 @@ int main(int argc, char **argv)
 	data_eta.read(eta_0);
 	data_zeta.read(zeta_0);
 	data_time.read(time_0);
-	data_deta_dt.read(deta_dt_0);
 	data_M_adiabatic.read(M_adiabatic_0);
 	data_Ekin.read(Ekin_0);
 	
 	//Append to struct from single vector.
 	for(int p=0; p<Constants::population; p++)
 	{
-		initial_particles[p].lamda.push_back(lamda_0.at(p));
-		initial_particles[p].alpha.push_back(alpha_0.at(p));  
-		initial_particles[p].aeq.push_back(aeq_0.at(p));
-		initial_particles[p].ppar.push_back(ppar_0.at(p));
-		initial_particles[p].pper.push_back(pper_0.at(p));
-		initial_particles[p].upar.push_back(upar_0.at(p));
-		initial_particles[p].uper.push_back(uper_0.at(p));
-		initial_particles[p].Ekin.push_back(Ekin_0.at(p));
-		initial_particles[p].time.push_back(time_0.at(p));
-		initial_particles[p].zeta.push_back(zeta_0.at(p));
-		initial_particles[p].eta.push_back(eta_0.at(p));
-		initial_particles[p].deta_dt.push_back(deta_dt_0.at(p));
-		initial_particles[p].M_adiabatic.push_back(M_adiabatic_0.at(p));
+		dstr[p].lamda_init  = lamda_0.at(p);
+		dstr[p].alpha_init  = alpha_0.at(p);  
+		dstr[p].aeq_init    = aeq_0.at(p);
+		dstr[p].ppar_init   = ppar_0.at(p);
+		dstr[p].pper_init   = pper_0.at(p);
+		dstr[p].upar_init   = upar_0.at(p);
+		dstr[p].uper_init   = uper_0.at(p);
+		dstr[p].Ekin_init   = Ekin_0.at(p);
+		dstr[p].time_init   = time_0.at(p);
+		dstr[p].zeta_init   = zeta_0.at(p);
+		dstr[p].eta_init    = eta_0.at(p);
+		dstr[p].M_adiabatic_init  = M_adiabatic_0.at(p);
 	}
-	std::cout<<"\nParticle population: "<< initial_particles.size()<<std::endl;
+	std::cout<<"\nParticle population: "<< dstr.size()<<std::endl;
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
@@ -117,8 +113,8 @@ int main(int argc, char **argv)
 	{
 		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation"<<std::endl;
 		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
-		std::cout<<"\nExecution time estimation for 20 THREAD run: "<<(Constants::population*0.017/60) * Constants::t_nowpi <<" minutes."<<std::endl;
-		std::cout<<"\nForked..."<<std::endl;
+		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Constants::population*0.017/60) * Constants::t_nowpi <<" minutes."<<std::endl;
+		std::cout<<"\nForked...";
 		//---PARALLELISM Work sharing---//
 		#pragma omp parallel
 		{
@@ -128,10 +124,10 @@ int main(int argc, char **argv)
 				for(int p=0; p<Constants::population; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
 				{
 					//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
-					no_wpi(p, lost_particles[p], ODPT, initial_particles[p]);
+					no_wpi(p, dstr[p], ODPT);
 				}
 		}	
-		std::cout<<"\n"<<"Joined"<<std::endl;
+		std::cout<<"\n\n"<<"Joined"<<std::endl;
 		real time1 = omp_get_wtime()-wtime;
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time1<<std::endl;
 	}
@@ -146,7 +142,7 @@ int main(int argc, char **argv)
 		{
 			std::cout<<"\n\n"<<Constants::t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
 			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Constants::population*0.1/60) * Constants::t_wpi <<" minutes."<<std::endl;
-			std::cout<<"\nForked..."<<std::endl;
+			std::cout<<"\nForked...";
 			//---PARALLELISM Work sharing---//
 			#pragma omp parallel
 			{
@@ -156,10 +152,11 @@ int main(int argc, char **argv)
 					for(int p=0; p<Constants::population; p++)     
 					{
 						//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
-						li_wpi(p, lost_particles[p], ODPT, initial_particles[p]);  //LI   + RAY TRACING
+						if(dstr[p].escaped == true) continue; //If this particle is lost, continue with next particle.
+						li_wpi(p, dstr[p], ODPT);  //LI   + RAY TRACING
 					}
 			}	
-			std::cout<<"\n"<<"Joined"<<std::endl;
+			std::cout<<"\n\n"<<"Joined"<<std::endl;
 			real time2 = omp_get_wtime()-wtime ;
 			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
 		}
@@ -169,6 +166,7 @@ int main(int argc, char **argv)
 		{
 			std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
 			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Constants::population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
+			std::cout<<"\nForked...";
 			//---PARALLELISM Work sharing---//
 			#pragma omp parallel
 			{
@@ -178,10 +176,10 @@ int main(int argc, char **argv)
 					for(int p=0; p<Constants::population; p++)     
 					{
 						//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
-						bell_wpi(p, lost_particles[p], ODPT, initial_particles[p]); 		//BELL + THE WAVE IS EVERYWHERE
+						bell_wpi(p, dstr[p], ODPT); 		//BELL + THE WAVE IS EVERYWHERE
 					}
 			}	
-			std::cout<<"\n"<<"Joined"<<std::endl;
+			std::cout<<"\n\n"<<"Joined"<<std::endl;
 			real time2 = omp_get_wtime()-wtime ;
 			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
 		}
@@ -198,17 +196,17 @@ int main(int argc, char **argv)
 		
 	for(int p=0; p<Constants::population; p++) 
 	{
-		if(!lost_particles[p].id.empty()) //Only precipitated were saved, other vectors in the struct are empty.
+		if(dstr[p].escaped) 
 		{
-			precip_id.push_back(lost_particles[p].id.at(0));
-			precip_lamda.push_back(lost_particles[p].lamda.at(0)); 
-			precip_alpha.push_back(lost_particles[p].alpha.at(0));
-			precip_aeq.push_back(lost_particles[p].aeq.at(0));
-			precip_time.push_back(lost_particles[p].time.at(0));
+			precip_id.push_back(dstr[p].id_lost);
+			precip_lamda.push_back(dstr[p].lamda_lost); 
+			precip_alpha.push_back(dstr[p].alpha_lost);
+			precip_aeq.push_back(dstr[p].aeq_lost);
+			precip_time.push_back(dstr[p].time_lost);
 		}
 	}
 
-	h5::File file("h5files/test.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/nowpi_10000p_5s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

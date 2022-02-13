@@ -20,5 +20,5 @@ namespace h5 = HighFive;
 
 //Function for WPI. Involves RK4 for Nsteps. 
 
-void li_wpi(real p, Particles &single, Telescope &ODPT, Particles &particle_state);
+void li_wpi(real p, Particles &single, Telescope &ODPT);
 

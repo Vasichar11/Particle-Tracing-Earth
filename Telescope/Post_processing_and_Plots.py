@@ -17,7 +17,7 @@ np.set_printoptions(threshold=sys.maxsize)
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/nowpi_2000p_10s.h5","r")
+f1 = h5py.File("h5files/test2.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -36,7 +36,7 @@ By_wave        = f1["By_wave"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/both_2000p_10s.h5","r")
+f2 = h5py.File("h5files/test.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -61,7 +61,7 @@ precip_time  = f2["precip_time"][()]
 f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/distribution_2000p.h5","r")
+f3 = h5py.File("h5files/distribution_test.h5","r")
 aeq0         = f3["aeq"][()]
 lat0         = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
@@ -114,10 +114,10 @@ ax.axhline(y = 90, color ="b", linestyle="dashed")
 fig.savefig("simulation_MM/aeq0_lat0.png",dpi=200)
 
 #Print initials
-num=0
-for pa0,l0 in zip(aeq0,lat0):
-    print("Particle",num,"aeq0",pa0*R2D,"lamda0",l0*R2D)
-    num=num+1
+#num=0
+#for pa0,l0 in zip(aeq0,lat0):
+#    print("Particle",num,"aeq0",pa0*R2D,"lamda0",l0*R2D)
+#    num=num+1
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 
 #noWPI

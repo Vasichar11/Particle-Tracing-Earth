@@ -1,17 +1,17 @@
 #include "headers/no_wpi.h"
 
 //Adiabatic motion.
-void no_wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
+void no_wpi(int p, Particles &single, Telescope &ODPT)
 {
-    real lamda    =  particle_state.lamda.front();
-    real ppar     =  particle_state.ppar.front(); 
-    real pper     =  particle_state.pper.front(); 
-    real alpha    =  particle_state.alpha.front(); 
-    real aeq      =  particle_state.aeq.front(); 
-    real time     =  particle_state.time.front();
-    //real zeta     =  particle_state.zeta.front(); 
-    //real upar     =  particle_state.upar.front(); 
-    //real uper     =  particle_state.uper.front();
+    real lamda    =  single.lamda_init;
+    real ppar     =  single.ppar_init; 
+    real pper     =  single.pper_init; 
+    real alpha    =  single.alpha_init; 
+    real aeq      =  single.aeq_init; 
+    real time     =  single.time_init;
+    //real zeta     =  single.zeta_init; 
+    //real upar     =  single.upar_init; 
+    //real uper     =  single.uper_init;
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda,new_ppar;
@@ -100,24 +100,11 @@ void no_wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state
             //To save states of precipitating particles:
             #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
             {   
-                single.save_state(p, lamda, alpha, aeq, ppar, pper, time);
+                single.save_state(p, lamda, alpha, aeq, time);
                 std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
-                
                 //This particle won't continue for the WPI simulation.
                 //Erase it's vectors. 
-                particle_state.lamda.erase(particle_state.lamda.begin());
-                particle_state.ppar.erase(particle_state.ppar.begin());
-                particle_state.pper.erase(particle_state.pper.begin());
-                particle_state.alpha.erase(particle_state.alpha.begin());
-                particle_state.aeq.erase(particle_state.aeq.begin());
-                particle_state.time.erase(particle_state.time.begin());
-                particle_state.zeta.erase(particle_state.zeta.begin());
-                particle_state.upar.erase(particle_state.upar.begin());
-                particle_state.uper.erase(particle_state.uper.begin());
-                particle_state.Ekin.erase(particle_state.Ekin.begin());
-                particle_state.eta.erase(particle_state.eta.begin());
-                particle_state.deta_dt.erase(particle_state.deta_dt.begin());
-                particle_state.M_adiabatic.erase(particle_state.M_adiabatic.begin());
+                single.escaped = true ;
             }
             break;
         }
@@ -138,17 +125,17 @@ void no_wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state
     
 
     //Save last state to return values and continue the simulation with wave (if needed). 
-    particle_state.lamda.front() = lamda;
-    particle_state.ppar.front()  = ppar;
-    particle_state.pper.front()  = pper;
-    particle_state.alpha.front() = alpha;
-    particle_state.aeq.front()   = aeq;
-    particle_state.time.front()  = time;
-    particle_state.eta.front()   = Constants::eta0;
-    //particle_state.zeta.front() = zeta;
-    //particle_state.upar.front() = upar;
-    //particle_state.uper.front() = uper;
-    //particle_state.Ekin.front() = Ekin;
+    single.lamda_init = lamda;
+    single.ppar_init  = ppar;
+    single.pper_init  = pper;
+    single.alpha_init = alpha;
+    single.aeq_init   = aeq;
+    single.time_init  = time;
+    single.eta_init   = Constants::eta0;
+    //single.zeta_init = zeta;
+    //single.upar_init = upar;
+    //single.uper_init = uper;
+    //single.Ekin_init = Ekin;
 }
 
 

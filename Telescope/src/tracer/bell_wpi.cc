@@ -1,24 +1,22 @@
 #include "headers/bell_wpi.h"
 
 //For wave-particle interaction
-void bell_wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_state)
+void bell_wpi(int p, Particles &single, Telescope &ODPT)
 {
     
 	//std::cout.precision(64);			//Output 16 decimal precise
 	//std::cout<<std::scientific;		    //For e notation representation
     
-    if(particle_state.lamda.empty()) return; //If this particle is lost, continue with next particle.
-    
-    real lamda    =  particle_state.lamda.front();
-    real ppar     =  particle_state.ppar.front(); 
-    real pper     =  particle_state.pper.front(); 
-    real alpha    =  particle_state.alpha.front(); 
-    real aeq      =  particle_state.aeq.front(); 
-    real eta      =  particle_state.eta.front(); 
-    real time     =  particle_state.time.front();
-    //real zeta     =  particle_state.zeta.front(); 
-    //real upar     =  particle_state.upar.front(); 
-    //real uper     =  particle_state.uper.front();
+    real lamda    =  single.lamda_init;
+    real ppar     =  single.ppar_init; 
+    real pper     =  single.pper_init; 
+    real alpha    =  single.alpha_init; 
+    real aeq      =  single.aeq_init; 
+    real eta      =  single.eta_init; 
+    real time     =  single.time_init;
+    //real zeta     =  single.zeta_init; 
+    //real upar     =  single.upar_init; 
+    //real uper     =  single.uper_init;
     
 
 
@@ -199,17 +197,6 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_sta
         slopes(k4, l4, m4, n4, o4, p4, q4, ppar+l3*Constants::h, pper+m3*Constants::h, lamda+o3*Constants::h, eta+n3*Constants::h, alpha+p3*Constants::h, aeq+q3*Constants::h, p_mag, w_h, dwh_ds, gama, kz, kappa, wtau_sq, w1, w2, R1, R2, beta, Bwc);
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\nq4 "<< q4 <<"\n";
        
-       
-        //Approximate new lamda first, to check if particle crosses satellite.
-        new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
-        #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
-        {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
-            if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-            {	//Check crossing.								
-                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-                ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
-            }
-        }
         
         // Old slope values kept in memory to encounter the NAN case
         // isnan(mu) --> step once more using old slopes to reach to a valid state
@@ -250,8 +237,9 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT, Particles &particle_sta
             //To save states of precipitating particles:
             #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
             {   
-                single.save_state(p, lamda, alpha, aeq, ppar, pper, time);
+                single.save_state(p, lamda, alpha, aeq, time);
                 std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
+                single.escaped = true;
             }
             break;
         }

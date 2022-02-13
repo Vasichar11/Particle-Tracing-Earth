@@ -1,7 +1,7 @@
 #include "headers/li_wpi.h"
 
 
-void li_wpi(real p, Particles &single, Telescope &ODPT, Particles &particle_state)
+void li_wpi(real p, Particles &single, Telescope &ODPT)
 {
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
     //read_vector() is a function to read HDF5 dataset as vectors. 
@@ -18,20 +18,20 @@ void li_wpi(real p, Particles &single, Telescope &ODPT, Particles &particle_stat
     static std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
 
-    if(particle_state.lamda.empty()) return; //If this particle is lost, continue with next particle.
+    
 
 
     //Assign last particle states from nowpi simulation.
-    real lamda    =  particle_state.lamda.front();
-    real ppar     =  particle_state.ppar.front(); 
-    real pper     =  particle_state.pper.front(); 
-    real alpha    =  particle_state.alpha.front(); 
-    real aeq      =  particle_state.aeq.front(); 
-    real time     =  particle_state.time.front();
-    real eta      =  particle_state.eta.front(); 
-    //real zeta     =  particle_state.zeta.front(); 
-    //real upar     =  particle_state.upar.front(); 
-    //real uper     =  particle_state.uper.front();
+    real lamda    =  single.lamda_init;
+    real ppar     =  single.ppar_init; 
+    real pper     =  single.pper_init; 
+    real alpha    =  single.alpha_init; 
+    real aeq      =  single.aeq_init; 
+    real time     =  single.time_init;
+    real eta      =  single.eta_init; 
+    //real zeta     =  single.zeta_init; 
+    //real upar     =  single.upar_init; 
+    //real uper     =  single.uper_init;
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
     int index;                              //To find minimum difference between latitudes
     int i=0;
@@ -118,8 +118,9 @@ void li_wpi(real p, Particles &single, Telescope &ODPT, Particles &particle_stat
             //To save states of precipitating particles:
             #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
             {   
-                single.save_state(p, lamda, alpha, aeq, ppar, pper, time);
+                single.save_state(p, lamda, alpha, aeq, time);
                 std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper<< " eta " << eta << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
+                single.escaped = true;
             }
             break;
         }
