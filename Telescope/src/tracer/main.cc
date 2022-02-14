@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 			int id = omp_get_thread_num();
 			if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
 			#pragma omp for schedule(dynamic)
-				for(int p=0; p<Constants::population; p++)     //dynamic because some chunks may have less workload.(particles can become invalid)
+				for(int p=0; p<Constants::population; p++)     //dynamic because some chunks may have less workload.(particles can precipitate and break out of loop)
 				{
 					//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
 					no_wpi(p, dstr[p], ODPT);
@@ -193,9 +193,25 @@ int main(int argc, char **argv)
 	std::vector<real> precip_alpha;
 	std::vector<real> precip_aeq;
 	std::vector<real> precip_time;
-		
+	std::vector<real> lamda00;	
+    std::vector<real> ppar00; 
+    std::vector<real> pper00; 
+    std::vector<real> alpha00; 
+    std::vector<real> aeq00; 
+    std::vector<real> eta00; 
+    std::vector<real> time00;
 	for(int p=0; p<Constants::population; p++) 
 	{
+		//Particle states after noWPI time.
+		lamda00.push_back(dstr[p].lamda_end);
+    	ppar00.push_back(dstr[p].ppar_end); 
+    	pper00.push_back(dstr[p].pper_end); 
+    	alpha00.push_back(dstr[p].alpha_end); 
+    	aeq00.push_back(dstr[p].aeq_end); 
+    	eta00.push_back(dstr[p].eta_end); 
+    	time00.push_back(dstr[p].time_end);
+
+		//Particles that escaped.
 		if(dstr[p].escaped) 
 		{
 			precip_id.push_back(dstr[p].id_lost);
@@ -206,7 +222,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	h5::File file("h5files/nowpi_10000p_5s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/nowpi_10000p_2.5s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
@@ -224,7 +240,6 @@ int main(int argc, char **argv)
 	h5::DataSet aeq_end_d          = file.createDataSet("aeq_end_d",    Constants::aeq_end_d);
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
 	h5::DataSet t			       = file.createDataSet("t", 			Constants::t);
-	h5::DataSet By_wave            = file.createDataSet("By_wave",		Constants::By_wave);
 	
 	//Saved Particles that Precipitate.
 	h5::DataSet saved_id     = file.createDataSet("precip_id", precip_id);
@@ -232,6 +247,17 @@ int main(int argc, char **argv)
 	h5::DataSet saved_alpha  = file.createDataSet("precip_alpha", precip_alpha);
 	h5::DataSet saved_aeq    = file.createDataSet("precip_aeq", precip_aeq);
 	h5::DataSet saved_time   = file.createDataSet("precip_time", precip_time);
+
+	//Particles states after noWPI time.
+	h5::DataSet ending_lamda = file.createDataSet("lamda00", lamda00);
+	h5::DataSet ending_ppar  = file.createDataSet("ppar00", ppar00);
+	h5::DataSet ending_pper  = file.createDataSet("pper00", pper00);
+	h5::DataSet ending_alpha = file.createDataSet("alpha00", alpha00);
+	h5::DataSet ending_aeq   = file.createDataSet("aeq00", aeq00);
+	h5::DataSet ending_eta   = file.createDataSet("eta00", eta00);
+	h5::DataSet ending_time  = file.createDataSet("time00", time00);
+
+
 
 
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//

@@ -146,7 +146,7 @@ int main()
 	h5::DataSet data_uper           = file.createDataSet("uper", uper_dstr);
 	h5::DataSet data_ppar           = file.createDataSet("ppar", ppar_dstr);
 	h5::DataSet data_pper           = file.createDataSet("pper", pper_dstr);
-	h5::DataSet data_eta            = file.createDataSet("eta", eta_dstr);
+	h5::DataSet data_eta            = file.createDataSet("eta",  eta_dstr);
 	h5::DataSet data_zeta           = file.createDataSet("zeta", zeta_dstr);
 	h5::DataSet data_time           = file.createDataSet("time", time_dstr);
 	h5::DataSet data_M_adiabatic    = file.createDataSet("M_adiabatic", M_adiabatic_dstr);

@@ -24,6 +24,8 @@ struct Particles
 	bool escaped;
 	//Initials
 	real lamda_init, zeta_init, uper_init, upar_init, ppar_init, pper_init, alpha_init, aeq_init, eta_init, M_adiabatic_init, Ekin_init, time_init;
+	//When end simulation type
+	real lamda_end, zeta_end, uper_end, upar_end, ppar_end, pper_end, alpha_end, aeq_end, eta_end, M_adiabatic_end, Ekin_end, time_end;
 	//When lost
 	real lamda_lost, alpha_lost, aeq_lost, time_lost, id_lost;  //, ppar_lost, pper_lost, zeta_lost, uper_lost, upar_lost,  eta_lost, M_adiabatic_lost, Ekin_lost;
 

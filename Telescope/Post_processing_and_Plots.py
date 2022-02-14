@@ -12,12 +12,15 @@ from collections import Counter
 import math as mt
 from scipy.stats import norm
 import re
+import csv
 
 np.set_printoptions(threshold=sys.maxsize)
+D2R=np.pi/180
+R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/test2.h5","r")
+f1 = h5py.File("h5files/nowpi_10000p_5s.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -32,11 +35,22 @@ lamda_end_d    = f1["lamda_end_d"][()]
 aeq_start_d    = f1["aeq_start_d"][()]
 aeq_end_d      = f1["aeq_end_d"][()]
 Ekev0          = f1["Ekev0"][()]
-By_wave        = f1["By_wave"][()]
+#lamda00        = f1["lamda00"][()] #States when noWPI stops
+#ppar00         = f1["ppar00"][()]
+#pper00         = f1["pper00"][()]
+#alpha00        = f1["alpha00"][()]
+#aeq00          = f1["aeq00"][()]
+#eta00          = f1["eta00"][()]
+#time00         = f1["time00"][()]
+precip_id      = f1["precip_id"][()]
+precip_lamda   = f1["precip_lamda"][()]
+precip_alpha   = f1["precip_alpha"][()]
+precip_aeq     = f1["precip_aeq"][()]
+precip_time    = f1["precip_time"][()] 
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/test.h5","r")
+f2 = h5py.File("h5files/both_10000p_5s.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -51,27 +65,37 @@ lamda_end_d_both    = f2["lamda_end_d"][()]
 aeq_start_d_both    = f2["aeq_start_d"][()]
 aeq_end_d_both      = f2["aeq_end_d"][()]
 Ekev0_both          = f2["Ekev0"][()]
-By_wave_both        = f2["By_wave"][()]
-#Particles that escaped.
-precip_id    = f2["precip_id"][()]
-precip_lamda = f2["precip_lamda"][()]
-precip_alpha = f2["precip_alpha"][()]
-precip_aeq   = f2["precip_aeq"][()]
-precip_time  = f2["precip_time"][()] 
+#lamda00_both        = f2["lamda00"][()] #States when noWPI stops
+#ppar00_both         = f2["ppar00"][()]
+#pper00_both         = f2["pper00"][()]
+#alpha00_both        = f2["alpha00"][()]
+#aeq00_both          = f2["aeq00"][()]
+#eta00_both          = f2["eta00"][()]
+#time00_both         = f2["time00"][()]
+precip_id_both      = f2["precip_id"][()]
+precip_lamda_both   = f2["precip_lamda"][()]
+precip_alpha_both   = f2["precip_alpha"][()]
+precip_aeq_both     = f2["precip_aeq"][()]
+precip_time_both    = f2["precip_time"][()] 
 f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/distribution_test.h5","r")
+f3 = h5py.File("h5files/10000p.h5","r")
 aeq0         = f3["aeq"][()]
-lat0         = f3["lat"][()]
+lamda0       = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
 f3.close()
-
-
-D2R=np.pi/180
-R2D=1/D2R
-
-
+#Save initials to CSV file
+#header = ['id', 'aeq0', 'lamda0', 'aeq00 after nowpi', 'lamda00 after nowpi']
+#data = []
+#p=0
+#for a0,l0,a00,l00 in zip(aeq0, lamda0, aeq00_both, lamda00_both):
+#    data.extend([[p,a0*R2D,l0*R2D,a00*R2D,l00*R2D]])
+#    p=p+1 #id is the element's location in the list since the particles were saved like that
+#with open("test.csv", "w") as f:
+#    writer = csv.writer(f)
+#    writer.writerow(header)
+#    writer.writerows(data)
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -82,7 +106,7 @@ R2D=1/D2R
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 0.2                 #seconds to distinquish events(time resolution)
+time_bin  = 0.1                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
 sector_range = 1 #P.A bins #1deg
@@ -107,17 +131,13 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 #fig.savefig("simulation_MM/aeq0.png",dpi=200)
 
 fig, ax = plt.subplots()
-ax.scatter(lat0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
+ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(aeq_start_d,aeq_end_d),xlim=(lamda_start_d,lamda_end_d),xticks=np.linspace(lamda_start_d,lamda_end_d,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/aeq0_lat0.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_lamda0.png",dpi=200)
 
-#Print initials
-#num=0
-#for pa0,l0 in zip(aeq0,lat0):
-#    print("Particle",num,"aeq0",pa0*R2D,"lamda0",l0*R2D)
-#    num=num+1
+
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 
 #noWPI
@@ -157,7 +177,7 @@ for time,pa in zip(detected_time,detected_aeq): #Iterate in both array elements.
 #BOTH
 sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_both  = [  0 for i in range(timesteps)]
-for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id): #Iterate in both array elements. No sorting required.
+for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id):
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
     if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
@@ -172,7 +192,7 @@ for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id): #Iterat
 #These particles escape with alpha close to 90(?), binning with equatorial pitch angle to compare them with the particles that are crossing the equator--> equatorial P.A
 sctr_flux_precip = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_precip = [0 for i in range(timesteps)]
-for time,pa in zip(precip_time,precip_aeq): #Iterate in both array elements. No sorting required.
+for time,pa in zip(precip_time_both,precip_aeq_both):
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
     #if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?

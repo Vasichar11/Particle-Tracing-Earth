@@ -7,16 +7,16 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT)
 	//std::cout.precision(64);			//Output 16 decimal precise
 	//std::cout<<std::scientific;		    //For e notation representation
     
-    real lamda    =  single.lamda_init;
-    real ppar     =  single.ppar_init; 
-    real pper     =  single.pper_init; 
-    real alpha    =  single.alpha_init; 
-    real aeq      =  single.aeq_init; 
-    real eta      =  single.eta_init; 
-    real time     =  single.time_init;
-    //real zeta     =  single.zeta_init; 
-    //real upar     =  single.upar_init; 
-    //real uper     =  single.uper_init;
+    real lamda    =  single.lamda_end;
+    real ppar     =  single.ppar_end; 
+    real pper     =  single.pper_end; 
+    real alpha    =  single.alpha_end; 
+    real aeq      =  single.aeq_end; 
+    real eta      =  single.eta_end; 
+    real time     =  single.time_end;
+    //real zeta     =  single.zeta_end; 
+    //real upar     =  single.upar_end; 
+    //real uper     =  single.uper_end;
     
 
 

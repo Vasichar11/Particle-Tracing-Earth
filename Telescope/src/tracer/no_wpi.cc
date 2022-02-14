@@ -125,17 +125,17 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     
 
     //Save last state to return values and continue the simulation with wave (if needed). 
-    single.lamda_init = lamda;
-    single.ppar_init  = ppar;
-    single.pper_init  = pper;
-    single.alpha_init = alpha;
-    single.aeq_init   = aeq;
-    single.time_init  = time;
-    single.eta_init   = Constants::eta0;
-    //single.zeta_init = zeta;
-    //single.upar_init = upar;
-    //single.uper_init = uper;
-    //single.Ekin_init = Ekin;
+    single.lamda_end = lamda;
+    single.ppar_end  = ppar;
+    single.pper_end  = pper;
+    single.alpha_end = alpha;
+    single.aeq_end   = aeq;
+    single.time_end  = time;
+    single.eta_end   = Constants::eta0;
+    //single.zeta_end = zeta;
+    //single.upar_end = upar;
+    //single.uper_end = uper;
+    //single.Ekin_end = Ekin;
 }
 
 
