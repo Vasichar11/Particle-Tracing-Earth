@@ -1,6 +1,8 @@
 # Particle-Tracing-Earth
 Stelios Tourgaidis code py to c++ conversion.
 
-Click on the chart and select Raw to use the hyperlinks of the flowchart.![code drawio](https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/More/code.drawio.svg)]
+Download Flow-Charts pdfs and open them in browser to use the hyperlinks
 
+[code.pdf](https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/More/code.drawio.pdf)
 
+[Particle_distribution.pdf](https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/More/Particle_distribution.pdf)
