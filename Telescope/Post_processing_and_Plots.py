@@ -20,7 +20,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/nowpi_10000p_5s.h5","r")
+f1 = h5py.File("h5files/nowpi_10000p_60s.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -50,7 +50,7 @@ precip_time    = f1["precip_time"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/both_10000p_5s.h5","r")
+f2 = h5py.File("h5files/both_10000p_60s.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -106,7 +106,7 @@ f3.close()
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 0.1                 #seconds to distinquish events(time resolution)
+time_bin  = 2                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
 sector_range = 1 #P.A bins #1deg
@@ -216,7 +216,7 @@ for timestep in range(0,timesteps):
         ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, c="red", label="noWPI && WPI")  
     if timestep==0:#plot legend once
         ax.legend()
-plt.savefig("simulation_MM/Particle_sum.png", dpi=100)
+plt.savefig("simulation_MM/Particle_sum_bins"+str(time_bin)+"s.png", dpi=100)
 
 ##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################
 moved  = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[timesteps][sectors]

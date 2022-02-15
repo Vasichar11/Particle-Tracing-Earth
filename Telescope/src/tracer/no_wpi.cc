@@ -101,9 +101,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
             #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
             {   
                 single.save_state(p, lamda, alpha, aeq, time);
-                std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
-                //This particle won't continue for the WPI simulation.
-                //Erase it's vectors. 
+                //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
                 single.escaped = true ;
             }
             break;
