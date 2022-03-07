@@ -44,7 +44,8 @@ int main()
 	{
 		aeq0 = (Constants::aeq_start_d + aeq_count*Constants::aeq_step_d) * Constants::D2R;	  	  //linspace(start,stop,aeq_dstr)					
 		lamda_end_d = 90; //default ending value
-		//Find first valid lamda0 for this alpha0
+		
+		//Find valid lamda range for this alpha0
 		for(real lamda0_d=0;lamda0_d<90;lamda0_d+=Constants::h)
 		{
 			Blam0 	   = Bmag_dipole(lamda0_d*Constants::D2R);
@@ -130,7 +131,7 @@ int main()
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic_init;
 		time_dstr[p]       = dstr[p].time_init;
 	}
-	h5::File file("h5files/test_new.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/10000p.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);
