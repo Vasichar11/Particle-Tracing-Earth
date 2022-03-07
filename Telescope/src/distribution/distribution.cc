@@ -28,22 +28,13 @@ int main()
 	//std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
 	//std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
 	std::cout<<"\nWith aeq fixed step distribution in degrees"<<"\n|From "<<" To|";
-	std::cout<<"\n| "<<Constants::aeq_start_d << "  "<< " " << Constants::aeq_end_d <<"|\n";
-	std::cout<<"\nAeq step is: "<<Constants::aeq_step_d<< " degrees\n";
-	//std::cout<<"\nWith lamda distribution in degrees"<<"\n|From "<<" To|";
-	std::cout<<"\nWith latitude uniformly distributed, with varying interval"<<"\n|From "<<" To|";
-	std::cout<<"\n| "<<Constants::lamda_start_d << "  "<< " " << Constants::lamda_end_d <<"|\n";
+	std::cout<<"\n| "<<Constants::aeq_start_d << "  "<< " " << Constants::aeq_end_d <<"|";
+	std::cout<<"\naeq step is: "<<Constants::aeq_step_d<< " degrees\n";
 
 	Particles single; //Single particle struct.
 	std::vector<Particles> dstr(Constants::population, single);	//Vector of structs for particle distribution.
-	real lamda0,Blam0,aeq0,salpha0,alpha0,k;
+	real lamda0,Blam0,aeq0,salpha0,alpha0,k,lamda_start_d,lamda_end_d,lamda_step_d;
 	real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
-	//real lamda0_mr,Blam0_mr,k_mr,aeq0_mr,salpha0_mr,alpha0_mr;
-
-	std::random_device seed;         //Random seed. 
-    std::mt19937 generator(seed());  //PRNG initialized with seed.
-	real number;
-	real interval;
 
 
 
@@ -52,47 +43,49 @@ int main()
 	while(aeq_count<Constants::aeq_dstr)
 	{
 		aeq0 = (Constants::aeq_start_d + aeq_count*Constants::aeq_step_d) * Constants::D2R;	  	  //linspace(start,stop,aeq_dstr)					
-		//aeq0_mr = aeq0 + M_PI/2;		 													  	  //Mirror aeq  														
-		//Varying interval for latitude selection - 2x2 linear system.
-		//Aeq defines valid latitude interval.
-		//Aeq~90, interval is small. Moving away from 90, interval increases.
-		if      (0<aeq0 && aeq0<(M_PI/2)) 		interval = 180 - (2*aeq0*Constants::R2D); 
-		else if ((M_PI/2)<aeq0 && aeq0<M_PI)    interval = (2*aeq0*Constants::R2D) - 180;
-		//else if (aeq0==M_PI/2) 					interval = 0.1 ; //Equator particles, aeq=90, lamda~=0
-		else if (aeq0==M_PI/2) 					interval = 0;    //Try only lamda=0?? Otherwise these particles would develop huge negative aeq for lamda=~0. 
-		else { std::cout<<"\nError aeq0 initialization. aeq0= " << aeq0*Constants::R2D << std::endl; return EXIT_FAILURE;}
+		lamda_end_d = 90; //default ending value
+		//Find first valid lamda0 for this alpha0
+		for(real lamda0_d=0;lamda0_d<90;lamda0_d+=Constants::h)
+		{
+			Blam0 	   = Bmag_dipole(lamda0_d*Constants::D2R);
+			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0); 
+			if(   (salpha0>1) || (salpha0<-1) || (salpha0==0)   ) 
+			{	//invalid lamda0_d
+				std::cout<<"\nInvalid when lamda0_d = "<<lamda0_d<<" salpha0 = "<<salpha0;
+				lamda_end_d = lamda0_d - Constants::h; //the last valid value
+				break;
+			}
+		}
+		//Now we have the first and last valid lamda0 for this aeq0
+		lamda_start_d  = -lamda_end_d;			 				
+		lamda_step_d   = (lamda_end_d - lamda_start_d)/(Constants::lamda_dstr-1); 	
+		std::cout<<"\nFor aeq0 = "<<aeq0*Constants::R2D<<" degrees";
+		std::cout<<"\nThe lamda fixed step distribution in degrees"<<"\n|From "<<" To|";
+		std::cout<<"\n| "<<lamda_start_d << "  "<< " " << lamda_end_d <<"|";
+		std::cout<<"\nlamda step is: "<<lamda_step_d<< " degrees\n";
 
-		int lat_count = 0;
-		while(lat_count<Constants::lamda_dstr)												   //"Brute Force domain validation". Better solution? 
+		int lamda_count = 0;
+		while(lamda_count<Constants::lamda_dstr)												   //"Brute Force domain validation". Better solution? 
 		{																				   	   //Loop until <lamda_dstr> valid states for this aeq0.
-			std::uniform_real_distribution <real> distribution(-interval/2, interval/2);       //Uniform distribution with varying interval.
-			number  = distribution(generator);											       //When aeq~90, interval is small. Moving away from 90, interval increases.
-
-			//Find P.A at lamda0.
-			lamda0 	= number * Constants::D2R;											    
+			lamda0 = (lamda_start_d + lamda_count*lamda_step_d) * Constants::D2R;	  	  //linspace(start,stop,lamda_dstr)					
 			Blam0 	   = Bmag_dipole(lamda0);
 			salpha0    = sin(aeq0)*sqrt(Blam0/Beq0); 										   //(2.20) Bortnik thesis
 
-			//lamda0_mr 	= - lamda0;											 			   //Mirror lamda
-			//Blam0_mr   = Bmag_dipole(lamda0_mr);
-			//salpha0_mr    = sin(aeq0_mr)*sqrt(Blam0_mr/Beq0);  
 			if(   !( (salpha0>1) || (salpha0<-1) || (salpha0==0) )   )  //|| (salpha0_mr>1) || (salpha0_mr<-1) || (salpha0_mr==0)
 			{																			 	   //NOR of these should be true. Otherwise domain error.
 				//Projecting aeq from alpha
 				k       = ((aeq0*   Constants::R2D>90)    ? 1 : 0);     					   //kEN...(here k=0 or 1 ?)
 				alpha0  = pow(-1,k)*asin(salpha0)+k*M_PI;			 						   // sinx = a => x=(-1)^k * asin(a) + k*pi
 				dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0);
-				
-				//k_mr    = ((aeq0_mr*Constants::R2D>90)    ? 1 : 0); 		
-				//alpha0_mr  = pow(-1,k_mr)*asin(salpha0_mr)+k_mr*M_PI;			 	
-				//dstr[p+1].initialize(Constants::eta0,aeq0_mr,alpha0_mr,lamda0_mr,Constants::Ekev0,Blam0_mr,0,0,0);
-				
+
 				//Print initial state of particles.
-				//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
-				//std::cout<<"\nParticle"<<p+1<<" aeq0: "<< aeq0_mr*Constants::R2D <<", lamda0: "<< lamda0_mr*Constants::R2D <<" gives alpha0: "<<alpha0_mr*Constants::R2D<<std::endl;
+				std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
 				
-				p++; lat_count++;
-				//p+=2; lat_count+=2;
+				p++; lamda_count++;
+			}
+			else
+			{
+				std::cout<<"\nError.";
 			}
 		}	
 		aeq_count++;
@@ -137,7 +130,7 @@ int main()
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic_init;
 		time_dstr[p]       = dstr[p].time_init;
 	}
-	h5::File file("h5files/10000p.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/test_new.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);

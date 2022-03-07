@@ -20,7 +20,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/nowpi_10000p_60s.h5","r")
+f1 = h5py.File("h5files/nowpi_5000p_5s.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -35,13 +35,13 @@ lamda_end_d    = f1["lamda_end_d"][()]
 aeq_start_d    = f1["aeq_start_d"][()]
 aeq_end_d      = f1["aeq_end_d"][()]
 Ekev0          = f1["Ekev0"][()]
-#lamda00        = f1["lamda00"][()] #States when noWPI stops
-#ppar00         = f1["ppar00"][()]
-#pper00         = f1["pper00"][()]
-#alpha00        = f1["alpha00"][()]
-#aeq00          = f1["aeq00"][()]
-#eta00          = f1["eta00"][()]
-#time00         = f1["time00"][()]
+lamda00        = f1["lamda00"][()] #States when noWPI stops
+ppar00         = f1["ppar00"][()]
+pper00         = f1["pper00"][()]
+alpha00        = f1["alpha00"][()]
+aeq00          = f1["aeq00"][()]
+eta00          = f1["eta00"][()]
+time00         = f1["time00"][()]
 precip_id      = f1["precip_id"][()]
 precip_lamda   = f1["precip_lamda"][()]
 precip_alpha   = f1["precip_alpha"][()]
@@ -50,7 +50,7 @@ precip_time    = f1["precip_time"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/both_10000p_60s.h5","r")
+f2 = h5py.File("h5files/both_5000p_5s.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -65,13 +65,13 @@ lamda_end_d_both    = f2["lamda_end_d"][()]
 aeq_start_d_both    = f2["aeq_start_d"][()]
 aeq_end_d_both      = f2["aeq_end_d"][()]
 Ekev0_both          = f2["Ekev0"][()]
-#lamda00_both        = f2["lamda00"][()] #States when noWPI stops
-#ppar00_both         = f2["ppar00"][()]
-#pper00_both         = f2["pper00"][()]
-#alpha00_both        = f2["alpha00"][()]
-#aeq00_both          = f2["aeq00"][()]
-#eta00_both          = f2["eta00"][()]
-#time00_both         = f2["time00"][()]
+lamda00_both        = f2["lamda00"][()] #States when noWPI stops
+ppar00_both         = f2["ppar00"][()]
+pper00_both         = f2["pper00"][()]
+alpha00_both        = f2["alpha00"][()]
+aeq00_both          = f2["aeq00"][()]
+eta00_both          = f2["eta00"][()]
+time00_both         = f2["time00"][()]
 precip_id_both      = f2["precip_id"][()]
 precip_lamda_both   = f2["precip_lamda"][()]
 precip_alpha_both   = f2["precip_alpha"][()]
@@ -80,22 +80,22 @@ precip_time_both    = f2["precip_time"][()]
 f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/10000p.h5","r")
+f3 = h5py.File("h5files/test_new.h5","r")
 aeq0         = f3["aeq"][()]
 lamda0       = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
 f3.close()
 #Save initials to CSV file
-#header = ['id', 'aeq0', 'lamda0', 'aeq00 after nowpi', 'lamda00 after nowpi']
-#data = []
-#p=0
-#for a0,l0,a00,l00 in zip(aeq0, lamda0, aeq00_both, lamda00_both):
-#    data.extend([[p,a0*R2D,l0*R2D,a00*R2D,l00*R2D]])
-#    p=p+1 #id is the element's location in the list since the particles were saved like that
-#with open("test.csv", "w") as f:
-#    writer = csv.writer(f)
-#    writer.writerow(header)
-#    writer.writerows(data)
+header = ['id', 'aeq0', 'lamda0', 'aeq00 after nowpi', 'lamda00 after nowpi']
+data = []
+p=0
+for a0,l0,a00,l00 in zip(aeq0, lamda0, aeq00_both, lamda00_both):
+    data.extend([[p,a0*R2D,l0*R2D,a00*R2D,l00*R2D]])
+    p=p+1 #id is the element's location in the list since the particles were saved like that
+with open("test.csv", "w") as f:
+    writer = csv.writer(f)
+    writer.writerow(header)
+    writer.writerows(data)
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -109,7 +109,7 @@ f3.close()
 time_bin  = 2                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
-sector_range = 1 #P.A bins #1deg
+sector_range = 10 #P.A bins #1deg
 sectors = int(view/sector_range)
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
@@ -170,6 +170,9 @@ sum_flux  = [  0 for i in range(timesteps)]
 for time,pa in zip(detected_time,detected_aeq): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
+    if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+        print("Particle",id,"with pa",pa*R2D,"needs sector",sector,"in timestep",timestep)
+        continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.

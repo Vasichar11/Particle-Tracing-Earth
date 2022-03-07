@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	//---ARGV ERROR---//
 	if( argc<2   ||    argv[1]!=string_no_wpi    ||    ( argc==3 && argv[2]!=string_bell_wpi && argv[2]!=string_li_wpi ) )
 	{ 
-		std::cout<<"\nArgument variables don't match any of the program's possible implementations.\nSet first argv=no_wpi and third argv from the list:(bell_wpi, li_wpi) to introduce a wave.\n"<<std::endl;
+		std::cout<<"\nArgument variables don't match any of the program's possible implementations.\nSet second argv=no_wpi and third argv from the list:(bell_wpi, li_wpi) to introduce a wave.\n"<<std::endl;
 		return EXIT_FAILURE;	
 	}
 
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/10000p.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/5000p.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0;
 	//Read dataset from h5file.
@@ -188,18 +188,7 @@ int main(int argc, char **argv)
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
 	//Assign from struct to vectors.
-	std::vector<real> precip_id;
-	std::vector<real> precip_lamda;
-	std::vector<real> precip_alpha;
-	std::vector<real> precip_aeq;
-	std::vector<real> precip_time;
-	std::vector<real> lamda00;	
-    std::vector<real> ppar00; 
-    std::vector<real> pper00; 
-    std::vector<real> alpha00; 
-    std::vector<real> aeq00; 
-    std::vector<real> eta00; 
-    std::vector<real> time00;
+	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
 	for(int p=0; p<Constants::population; p++) 
 	{
 		//Particle states after noWPI time.
@@ -222,7 +211,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	h5::File file("h5files/both_10000p_60s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/nowpi_5000p_2s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
