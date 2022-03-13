@@ -1,6 +1,6 @@
 #include "headers/struct_Particles.h"
 
-void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real Ekev0, real Blam0, real zeta0, real time0)
+void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real Ekev0, real Blam0, real zeta0, real time0, real lamda_start_d, real lamda_end_d)
 {
 	//Find momentum from energy.
 	real Ejoule0=1.602176487E-16*Ekev0; //Kev to Joule
@@ -23,12 +23,17 @@ void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real 
 	time_init = time0 ;
 	escaped = false;	
 
+	lamda_start_d = lamda_start_d;
+	lamda_end_d   = lamda_end_d;
+
+
 	//Else Invalid
 	/*-1<salpha || salpha>1 => domain error
 	aeq0=0||180 => salpha0 = 0 => alpha0 = 0 => pper0 = 0 => PROBLEM IN Bell_param, a2(division with 0).
 	sin(pi) is actually not zero in C++... */
 
 }
+
 
 //Member function to save particle states
 void Particles::save_state(int id, real new_lamda, real new_alpha, real new_aeq, real new_time)

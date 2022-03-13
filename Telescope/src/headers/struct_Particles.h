@@ -13,17 +13,20 @@
 struct Particles
 { 				
 	//Member function to initialize particle population.
-	void initialize(real eta0, real aeq0, real alpha0, real lamda0, real Ekev0, real Blam0, real zeta0, real time0);
+	void initialize(real eta0, real aeq0, real alpha0, real lamda0, real Ekev0, real Blam0, real zeta0, real time0, real lamda_start_d, real lamda_end_d);
 		
 	//Member function to save particle states.
 	void save_state(int id,real new_lamda, real new_alpha, real new_aeq, real new_time);
 
+	void lamda_domain(real aeq0);
 
 
 	//Member variables.
 	bool escaped;
 	//Initials
 	real lamda_init, zeta_init, uper_init, upar_init, ppar_init, pper_init, alpha_init, aeq_init, eta_init, M_adiabatic_init, Ekin_init, time_init;
+	//Domain variables
+	real lamda_start_d, lamda_end_d;
 	//When end simulation type
 	real lamda_end, zeta_end, uper_end, upar_end, ppar_end, pper_end, alpha_end, aeq_end, eta_end, M_adiabatic_end, Ekin_end, time_end;
 	//When lost

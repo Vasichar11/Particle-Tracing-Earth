@@ -62,13 +62,15 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 10;  	    		    
+const int64_t aeq_dstr    = 100;  	    		    
 const int64_t lamda_dstr  = 10;					
 const int64_t population  = lamda_dstr * aeq_dstr;   
-//Aeq dstr					 
+//Aeq dstr
 const real aeq_start_d    = 1;    		  			 				
 const real aeq_end_d      = 179;  			
 const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	//step for linspace(start,end,aeq_dstr) 
+const real mean           = 90; //Mean of the normal dstr
+const real stdev          = 20;  //Standard deviation of the normal dstr
 
 //Eta dstr
 //const real eta_start_d    = eta0_deg;     //Degrees 	 
