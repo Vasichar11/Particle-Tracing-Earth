@@ -41,20 +41,9 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;	
 	}
 
-	
-	//Object for Particle Telescope.		
-	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);		
-	
-	//Single particle struct.
-	Particles single; 
 
-	//Vector of structs. Has initial states and function to save particle states in vectors.
-	std::vector<Particles> dstr(Constants::population, single);	
-
-
-
-//------------------------------------------------------------READ DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/10000p.h5", h5::File::ReadOnly);
+//------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
+	h5::File distribution_file("h5files/10e5p.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0;
 	//Read dataset from h5file.
@@ -83,9 +72,16 @@ int main(int argc, char **argv)
 	data_time.read(time_0);
 	data_M_adiabatic.read(M_adiabatic_0);
 	data_Ekin.read(Ekin_0);
-	
+
+
+	int Population = lamda_0.size(); //Take the population from the h5 file to avoid mistakes.
+	//Single particle struct.
+	Particles single; 
+	//Vector of structs. Has initial states and function to save particle states in vectors.
+	std::vector<Particles> dstr(Population, single);	
+
 	//Append to struct from single vector.
-	for(int p=0; p<Constants::population; p++)
+	for(int p=0; p<Population; p++)
 	{
 		dstr[p].lamda_init  = lamda_0.at(p);
 		dstr[p].alpha_init  = alpha_0.at(p);  
@@ -100,7 +96,12 @@ int main(int argc, char **argv)
 		dstr[p].eta_init    = eta_0.at(p);
 		dstr[p].M_adiabatic_init  = M_adiabatic_0.at(p);
 	}
-	std::cout<<"\nParticle population: "<< dstr.size()<<std::endl;
+	std::cout<<"\nParticle population: "<< Population <<std::endl;
+
+	
+
+	//Object for Particle Telescope.		
+	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);	
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
@@ -112,8 +113,8 @@ int main(int argc, char **argv)
 	if(argv[1]==string_no_wpi)
 	{
 		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation"<<std::endl;
-		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Constants::population*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
-		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Constants::population*0.017/60) * Constants::t_nowpi <<" minutes."<<std::endl;
+		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Population*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
+		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.017/60) * Constants::t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"\nForked...";
 		//---PARALLELISM Work sharing---//
 		#pragma omp parallel
@@ -121,7 +122,7 @@ int main(int argc, char **argv)
 			int id = omp_get_thread_num();
 			if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
 			#pragma omp for schedule(dynamic)
-				for(int p=0; p<Constants::population; p++)     //dynamic because some chunks may have less workload.(particles can precipitate and break out of loop)
+				for(int p=0; p<Population; p++)     //dynamic because some chunks may have less workload.(particles can precipitate and break out of loop)
 				{
 					//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
 					no_wpi(p, dstr[p], ODPT);
@@ -141,7 +142,7 @@ int main(int argc, char **argv)
 		if(argv[2]==string_li_wpi)
 		{
 			std::cout<<"\n\n"<<Constants::t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
-			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Constants::population*0.1/60) * Constants::t_wpi <<" minutes."<<std::endl;
+			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.1/60) * Constants::t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
 			//---PARALLELISM Work sharing---//
 			#pragma omp parallel
@@ -149,7 +150,7 @@ int main(int argc, char **argv)
 				int id = omp_get_thread_num();
 				if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
 				#pragma omp for schedule(dynamic)
-					for(int p=0; p<Constants::population; p++)     
+					for(int p=0; p<Population; p++)     
 					{
 						//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
 						if(dstr[p].escaped == true) continue; //If this particle is lost, continue with next particle.
@@ -165,7 +166,7 @@ int main(int argc, char **argv)
 		else if(argv[2]==string_bell_wpi)
 		{
 			std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
-			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Constants::population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
+			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
 			//---PARALLELISM Work sharing---//
 			#pragma omp parallel
@@ -173,7 +174,7 @@ int main(int argc, char **argv)
 				int id = omp_get_thread_num();
 				if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
 				#pragma omp for schedule(dynamic)
-					for(int p=0; p<Constants::population; p++)     
+					for(int p=0; p<Population; p++)     
 					{
 						//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
 						bell_wpi(p, dstr[p], ODPT); 		//BELL + THE WAVE IS EVERYWHERE
@@ -189,7 +190,7 @@ int main(int argc, char **argv)
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
 	//Assign from struct to vectors.
 	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
-	for(int p=0; p<Constants::population; p++) 
+	for(int p=0; p<Population; p++) 
 	{
 		//Particle states after noWPI time.
 		lamda00.push_back(dstr[p].lamda_end);
@@ -211,7 +212,13 @@ int main(int argc, char **argv)
 		}
 	}
 
-	h5::File file("h5files/nowpi_10000p_15s.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/nowpi_10e5p.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	
+	//Simulation data and Telescope specification - Scalars 
+	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
+	h5::DataSet data_population    = file.createDataSet("population", 	Population);
+	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
+	h5::DataSet t			       = file.createDataSet("t", 			Constants::t);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
@@ -220,14 +227,7 @@ int main(int argc, char **argv)
 	h5::DataSet detected_alpha      = file.createDataSet("ODPT.alpha", ODPT.alpha);
 	h5::DataSet detected_aeq        = file.createDataSet("ODPT.aeq", ODPT.aeq);
 
-	//Simulation data and Telescope specification - Scalars 
-	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
-	h5::DataSet population         = file.createDataSet("population", 	Constants::population);
-	h5::DataSet aeq_start_d        = file.createDataSet("aeq_start_d",  Constants::aeq_start_d);
-	h5::DataSet aeq_end_d          = file.createDataSet("aeq_end_d",    Constants::aeq_end_d);
-	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
-	h5::DataSet t			       = file.createDataSet("t", 			Constants::t);
-	
+
 	//Saved Particles that Precipitate.
 	h5::DataSet saved_id     = file.createDataSet("precip_id", precip_id);
 	h5::DataSet saved_lamda  = file.createDataSet("precip_lamda", precip_lamda);

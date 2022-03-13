@@ -54,9 +54,10 @@ directories:
 clean: 
 	@rm  -rf ${OBJDIR} ${BIN}
 	@echo Removed objects and executables ;
-allclean:
-	@rm -rf **.out ${BIN} ${OBJDIR} ${H5DIR} ${SIMDIR}
-	@echo Removed all. Restored to default ;
+#Comment to avoid removing directories by mistake.
+#allclean:
+#	@rm -rf **.out ${BIN} ${OBJDIR} ${H5DIR} ${SIMDIR}
+#	@echo Removed all. Restored to default ;
 
 .PHONY: clean allclean
 

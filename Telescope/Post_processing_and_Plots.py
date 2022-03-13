@@ -20,7 +20,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-#f1 = h5py.File("h5files/nowpi_10000p_15s.h5","r")
+#f1 = h5py.File("h5files/nowpi.h5","r")
 ##print("Keys: %s" % f1.keys())
 #detected_lamda = f1["ODPT.lamda"][()]
 #detected_time  = f1["ODPT.time"][()]
@@ -30,10 +30,6 @@ R2D=1/D2R
 #telescope_lamda= f1["ODPT.latitude"][()]
 #population     = f1["population"][()]
 #t              = f1["t"][()]
-#lamda_start_d  = f1["lamda_start_d"][()]
-#lamda_end_d    = f1["lamda_end_d"][()]
-#aeq_start_d    = f1["aeq_start_d"][()]
-#aeq_end_d      = f1["aeq_end_d"][()]
 #Ekev0          = f1["Ekev0"][()]
 #lamda00        = f1["lamda00"][()] #States when noWPI stops
 #ppar00         = f1["ppar00"][()]
@@ -50,7 +46,7 @@ R2D=1/D2R
 #f1.close()
 
 #noWPI and WPI afterwards read
-#f2 = h5py.File("h5files/both_10000p_15s.h5","r")
+#f2 = h5py.File("h5files/both.h5","r")
 ##print("Keys: %s" % f2.keys())
 #detected_lamda_both = f2["ODPT.lamda"][()]
 #detected_time_both  = f2["ODPT.time"][()]
@@ -60,10 +56,6 @@ R2D=1/D2R
 #telescope_lamda_both= f2["ODPT.latitude"][()]
 #population_both     = f2["population"][()]
 #t_both              = f2["t"][()]
-#lamda_start_d_both  = f2["lamda_start_d"][()]
-#lamda_end_d_both    = f2["lamda_end_d"][()]
-#aeq_start_d_both    = f2["aeq_start_d"][()]
-#aeq_end_d_both      = f2["aeq_end_d"][()]
 #Ekev0_both          = f2["Ekev0"][()]
 #lamda00_both        = f2["lamda00"][()] #States when noWPI stops
 #ppar00_both         = f2["ppar00"][()]
@@ -80,7 +72,7 @@ R2D=1/D2R
 #f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/10000p.h5","r")
+f3 = h5py.File("h5files/100_000p.h5","r")
 aeq0         = f3["aeq"][()]
 lamda0       = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
@@ -92,7 +84,7 @@ f3.close()
 #for a0,l0,a00,l00 in zip(aeq0, lamda0, aeq00_both, lamda00_both):
 #    data.extend([[p,a0*R2D,l0*R2D,a00*R2D,l00*R2D]])
 #    p=p+1 #id is the element's location in the list since the particles were saved like that
-#with open("test.csv", "w") as f:
+#with open("dstr_before_and_after_WPI.csv", "w") as f:
 #    writer = csv.writer(f)
 #    writer.writerow(header)
 #    writer.writerows(data)
@@ -145,7 +137,7 @@ fig, ax = plt.subplots()
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
-plt.title("$Population$: " +str(population)+ ", $lamda$: [" +str(lamda_start_d)+", "+str(lamda_end_d)+ "], $aeq0$: ["+str(aeq_start_d)+", "+str(aeq_end_d)+"]\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
+plt.title("$Population$: " +str(population)+"]\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")

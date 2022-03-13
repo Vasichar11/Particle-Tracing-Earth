@@ -63,6 +63,8 @@ int main(int argc, char **argv)
 	//const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 	std::random_device seed;         //Random seed. 
 	std::mt19937 generator(seed());  //PRNG initialized with seed.
+	std::normal_distribution       <real> normal(Constants::mean, Constants::stdev);	//Goal is: reach normal dstr in logarithm scale.
+	std::uniform_real_distribution <real> uniform_aeq(Constants::aeq_start_d, Constants::aeq_end_d); //All aeq in this range are equally probable. Goal is: randomness
 
 	int p=0;
 	int aeq_count = 0;
@@ -78,8 +80,7 @@ int main(int argc, char **argv)
 		//Uniformly dstr
 		else if (argv[1]==string_uniform)   			
 		{
-			std::uniform_real_distribution <real> uniform(Constants::aeq_start_d, Constants::aeq_end_d); //All aeq in this range are equally probable. Goal is: randomness
-			aeq0  = uniform(generator) * Constants::D2R; 	
+			aeq0  = uniform_aeq(generator) * Constants::D2R; 	
 		}
 		//Normaly dstr
 		else if (argv[1]==string_normal)   			
@@ -87,7 +88,6 @@ int main(int argc, char **argv)
 			real number;
 			do
 			{
-				std::normal_distribution <real> normal(Constants::mean, Constants::stdev);	//mean=90, std=5. Goal is: reach normal dstr in logarithm scale.
 				number = normal(generator);
 
 			}while(number<=0 && number>=180); //Until valid aeq=(0,180).
@@ -106,10 +106,10 @@ int main(int argc, char **argv)
 
 		//--------------Latitude dstr--------------//
 		int lamda_count = 0;
+		std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); //All latitudes in this range are equally probable. Goal is: randomness
 		while(lamda_count<Constants::lamda_dstr)  
 		{
-			std::uniform_real_distribution <real> uniform(lamda_start_d, lamda_end_d); //All latitudes in this range are equally probable. Goal is: randomness
-			lamda0          = uniform(generator) * Constants::D2R; 
+			lamda0          = uniform_lamda(generator) * Constants::D2R; 
 			const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 			Blam0           = Bmag_dipole(lamda0);
 			salpha0         = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
@@ -125,8 +125,8 @@ int main(int argc, char **argv)
 
 		aeq_count++;
 	}
+	std::cout<<"\nDistribution done!";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
-
 	//AEQ0 DISTRIBUTION CHECK
 	const int sector_range = 10;
 	const int view = 180;
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic_init;
 		time_dstr[p]       = dstr[p].time_init;
 	}
-	h5::File file("h5files/10000p.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/test.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);
