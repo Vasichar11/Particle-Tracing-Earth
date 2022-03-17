@@ -116,12 +116,12 @@ sectors = int(view/sector_range)
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 
 fig, ax = plt.subplots()
-ax.set_yscale("log")
 for sec in range(0,sectors):
     ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
-fig.savefig("simulation_MM/smooth.png",dpi=200)
+ax.set_yscale("log")
+fig.savefig("simulation_MM/smooth2.png",dpi=200)
 
 fig, ax = plt.subplots()
 ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
