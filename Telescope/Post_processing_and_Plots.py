@@ -72,7 +72,7 @@ R2D=1/D2R
 #f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/test.h5","r")
+f3 = h5py.File("h5files/10e6_normals.h5","r")
 aeq0         = f3["aeq"][()]
 lamda0       = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
@@ -121,14 +121,14 @@ for sec in range(0,sectors):
 ax.grid(alpha=.3)
 ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
 ax.set_yscale("log")
-fig.savefig("simulation_MM/smooth2.png",dpi=200)
+fig.savefig("simulation_MM/10e6_normals.png",dpi=200)
 
 fig, ax = plt.subplots()
-ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
+ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)s
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/smooth_2.png",dpi=200)
+fig.savefig("simulation_MM/10e6_normals_2.png",dpi=200)
 
 
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
