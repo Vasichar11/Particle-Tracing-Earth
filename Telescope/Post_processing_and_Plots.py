@@ -120,14 +120,14 @@ for sec in range(0,sectors):
     ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
-fig.savefig("simulation_MM/aeq0_dstr.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_dstr_10stdev.png",dpi=200)
 
 fig, ax = plt.subplots()
 ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/aeq0_lamda0_dstr.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_lamda0_dstr_10stdev.png",dpi=200)
 
 
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################

@@ -76,7 +76,7 @@ const real lamda_step_d	  = (lamda_end_d - lamda_start_d)/(lamda_dstr-1);
 const real mean_aeq       = 90;  //Mean of the normal dstr
 const real mean_lamda     = 0; 
 const real stdev_aeq      = 30;  //Standard deviation of the normal dstr
-const real stdev_lamda    = 30;  
+const real stdev_lamda    = 10;  
 
 //Eta dstr
 //const real eta_start_d    = eta0_deg;     //Degrees 	 
