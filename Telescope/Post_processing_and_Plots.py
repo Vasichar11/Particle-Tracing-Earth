@@ -20,74 +20,74 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/nowpi_10e5p_15s.h5","r")
+#f1 = h5py.File("h5files/nowpi_10e5p_15s.h5","r")
 #print("Keys: %s" % f1.keys())
-detected_lamda = f1["ODPT.lamda"][()]
-detected_time  = f1["ODPT.time"][()]
-detected_id    = f1["ODPT.id"][()]
-detected_alpha = f1["ODPT.alpha"][()]
-detected_aeq   = f1["ODPT.aeq"][()]
-telescope_lamda= f1["ODPT.latitude"][()]
-population     = f1["population"][()]
-t              = f1["t"][()]
-Ekev0          = f1["Ekev0"][()]
-lamda00        = f1["lamda00"][()] #States when noWPI stops
-ppar00         = f1["ppar00"][()]
-pper00         = f1["pper00"][()]
-alpha00        = f1["alpha00"][()]
-aeq00          = f1["aeq00"][()]
-eta00          = f1["eta00"][()]
-time00         = f1["time00"][()]
-precip_id      = f1["precip_id"][()]
-precip_lamda   = f1["precip_lamda"][()]
-precip_alpha   = f1["precip_alpha"][()]
-precip_aeq     = f1["precip_aeq"][()]
-precip_time    = f1["precip_time"][()] 
-f1.close()
+#detected_lamda = f1["ODPT.lamda"][()]
+#detected_time  = f1["ODPT.time"][()]
+#detected_id    = f1["ODPT.id"][()]
+#detected_alpha = f1["ODPT.alpha"][()]
+#detected_aeq   = f1["ODPT.aeq"][()]
+#telescope_lamda= f1["ODPT.latitude"][()]
+#population     = f1["population"][()]
+#t              = f1["t"][()]
+#Ekev0          = f1["Ekev0"][()]
+#lamda00        = f1["lamda00"][()] #States when noWPI stops
+#ppar00         = f1["ppar00"][()]
+#pper00         = f1["pper00"][()]
+#alpha00        = f1["alpha00"][()]
+#aeq00          = f1["aeq00"][()]
+#eta00          = f1["eta00"][()]
+#time00         = f1["time00"][()]
+#precip_id      = f1["precip_id"][()]
+#precip_lamda   = f1["precip_lamda"][()]
+#precip_alpha   = f1["precip_alpha"][()]
+#precip_aeq     = f1["precip_aeq"][()]
+#precip_time    = f1["precip_time"][()] 
+#f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/both_10e5p_15s.h5","r")
-#print("Keys: %s" % f2.keys())
-detected_lamda_both = f2["ODPT.lamda"][()]
-detected_time_both  = f2["ODPT.time"][()]
-detected_id_both    = f2["ODPT.id"][()]
-detected_alpha_both = f2["ODPT.alpha"][()]
-detected_aeq_both   = f2["ODPT.aeq"][()]
-telescope_lamda_both= f2["ODPT.latitude"][()]
-population_both     = f2["population"][()]
-t_both              = f2["t"][()]
-Ekev0_both          = f2["Ekev0"][()]
-lamda00_both        = f2["lamda00"][()] #States when noWPI stops
-ppar00_both         = f2["ppar00"][()]
-pper00_both         = f2["pper00"][()]
-alpha00_both        = f2["alpha00"][()]
-aeq00_both          = f2["aeq00"][()]
-eta00_both          = f2["eta00"][()]
-time00_both         = f2["time00"][()]
-precip_id_both      = f2["precip_id"][()]
-precip_lamda_both   = f2["precip_lamda"][()]
-precip_alpha_both   = f2["precip_alpha"][()]
-precip_aeq_both     = f2["precip_aeq"][()]
-precip_time_both    = f2["precip_time"][()] 
-f2.close()
+#f2 = h5py.File("h5files/both_10e5p_15s.h5","r")
+##print("Keys: %s" % f2.keys())
+#detected_lamda_both = f2["ODPT.lamda"][()]
+#detected_time_both  = f2["ODPT.time"][()]
+#detected_id_both    = f2["ODPT.id"][()]
+#detected_alpha_both = f2["ODPT.alpha"][()]
+#detected_aeq_both   = f2["ODPT.aeq"][()]
+#telescope_lamda_both= f2["ODPT.latitude"][()]
+#population_both     = f2["population"][()]
+#t_both              = f2["t"][()]
+#Ekev0_both          = f2["Ekev0"][()]
+#lamda00_both        = f2["lamda00"][()] #States when noWPI stops
+#ppar00_both         = f2["ppar00"][()]
+#pper00_both         = f2["pper00"][()]
+#alpha00_both        = f2["alpha00"][()]
+#aeq00_both          = f2["aeq00"][()]
+#eta00_both          = f2["eta00"][()]
+#time00_both         = f2["time00"][()]
+#precip_id_both      = f2["precip_id"][()]
+#precip_lamda_both   = f2["precip_lamda"][()]
+#precip_alpha_both   = f2["precip_alpha"][()]
+#precip_aeq_both     = f2["precip_aeq"][()]
+#precip_time_both    = f2["precip_time"][()] 
+#f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/10e5p_normalAeq_uniformLat.h5","r")
+f3 = h5py.File("h5files/test.h5","r")
 aeq0         = f3["aeq"][()]
 lamda0       = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
 f3.close()
 #Save initials to CSV file
-header = ['id', 'aeq0', 'lamda0', 'aeq00 after nowpi', 'lamda00 after nowpi']
-data = []
-p=0
-for a0,l0,a00,l00 in zip(aeq0, lamda0, aeq00_both, lamda00_both):
-    data.extend([[p,a0*R2D,l0*R2D,a00*R2D,l00*R2D]])
-    p=p+1 #id is the element's location in the list since the particles were saved like that
-with open("dstr_before_and_after_WPI.csv", "w") as f:
-    writer = csv.writer(f)
-    writer.writerow(header)
-    writer.writerows(data)
+#header = ['id', 'aeq0', 'lamda0', 'aeq00 after nowpi', 'lamda00 after nowpi']
+#data = []
+#p=0
+#for a0,l0,a00,l00 in zip(aeq0, lamda0, aeq00_both, lamda00_both):
+#    data.extend([[p,a0*R2D,l0*R2D,a00*R2D,l00*R2D]])
+#    p=p+1 #id is the element's location in the list since the particles were saved like that
+#with open("dstr_before_and_after_WPI.csv", "w") as f:
+#    writer = csv.writer(f)
+#    writer.writerow(header)
+#    writer.writerows(data)
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -98,19 +98,19 @@ with open("dstr_before_and_after_WPI.csv", "w") as f:
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 2                 #seconds to distinquish events(time resolution)
-timesteps = int (t / time_bin)
+#time_bin  = 2                 #seconds to distinquish events(time resolution)
+#timesteps = int (t / time_bin)
 view = 180 
 sector_range = 10 #P.A bins #1deg
 sectors = int(view/sector_range)
 ########################################### FONTS AND COLORS #############################################
-font = {'family': 'serif',
-        'color':  'blue',
-        'weight': 'bold',
-        'size': 12}
-colors = []
-for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
-    colors.append('#%06X' % randint(0, 0xFFFFFF))
+#font = {'family': 'serif',
+#        'color':  'blue',
+#        'weight': 'bold',
+#        'size': 12}
+#colors = []
+#for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
+#    colors.append('#%06X' % randint(0, 0xFFFFFF))
 
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
@@ -120,18 +120,18 @@ for sec in range(0,sectors):
     ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
-fig.savefig("simulation_MM/10e4p_uniformAeq_oneLat_1.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_dstr.png",dpi=200)
 
 fig, ax = plt.subplots()
 ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/10e4p_uniformAeq_oneLat_2.png",dpi=200)
+fig.savefig("simulation_MM/aeq0_lamda0_dstr.png",dpi=200)
 
 
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
-
+"""
 #noWPI
 fig, ax = plt.subplots()
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
@@ -263,3 +263,4 @@ with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_
         writer.grab_frame()
         ax.clear() #clear data 
 
+"""

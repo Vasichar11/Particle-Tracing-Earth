@@ -69,7 +69,6 @@ int main(int argc, char **argv)
 	std::normal_distribution       <real> normal_aeq   (Constants::mean_aeq, Constants::stdev_aeq);		   //Goal is: reach normal dstr in logarithm scale.
 	std::normal_distribution       <real> normal_lamda (Constants::mean_lamda, Constants::stdev_lamda);
 	std::uniform_real_distribution <real> uniform_aeq  (Constants::aeq_start_d, Constants::aeq_end_d);     //All values in this range are equally probable. Goal is: randomness
-	std::uniform_real_distribution <real> uniform_lamda(Constants::lamda_start_d, Constants::lamda_end_d); 
 	int p=0;
 	int aeq_count = 0;
 	//Loop for <lamda_dstr> different particle latitudes.
@@ -134,7 +133,7 @@ int main(int argc, char **argv)
 				{
 					number = normal_lamda(generator);
 
-				}while(number<-90 || number>90); //Until valid lamda=(0,180).
+				}while(number<lamda_start_d || number>lamda_end_d); //Until valid lamda=(0,180).
 				lamda0  = number * Constants::D2R; 	
 			}
 			else if (argv[2]==string_test)
