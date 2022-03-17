@@ -116,6 +116,7 @@ sectors = int(view/sector_range)
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 
 fig, ax = plt.subplots()
+ax.set_yscale("log")
 for sec in range(0,sectors):
     ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
 ax.grid(alpha=.3)
