@@ -40,16 +40,19 @@ void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 int main(int argc, char **argv)
 {
 
+	//std::cout.precision(8);			//Output 16 decimal precise
+	//std::cout<<std::scientific;		//For e notation representation
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	
 	std::string string_evenly   = "evenly";
 	std::string string_normal   = "normal";
 	std::string string_uniform  = "uniform";
+	std::string string_test     = "test";
 	
 	//---ARGV ERROR---//
-	if( argc!=2   ||   ( argv[1]!=string_evenly   &&   argv[1]!=string_uniform    &&    argv[1]!=string_normal  ) )
+	if( argc!=3   ||   ( argv[1]!=string_evenly  &&  argv[1]!=string_uniform  &&  argv[1]!=string_normal  &&   argv[1]!=string_test)   ||   ( argv[2]!=string_evenly  &&   argv[2]!=string_uniform   &&  argv[2]!=string_normal  &&   argv[2]!=string_test) )
 	{ 
-		std::cout<<"\nArgument variables don't match any of the program's possible implementations.\nSet second argv from the list:(evenly, uniform, normal) to distribute the particles.\n"<<std::endl;
+		std::cout<<"\nArgument variables don't match any of the program's possible implementations.\nSet second and third argvs from the list:(evenly, uniform, normal, test) to distribute the particles.\n"<<std::endl;
 		return EXIT_FAILURE;	
 	}
 	std::cout<<"\n\nParticle population: " << Constants::population;
@@ -63,9 +66,10 @@ int main(int argc, char **argv)
 	//const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 	std::random_device seed;         //Random seed. 
 	std::mt19937 generator(seed());  //PRNG initialized with seed.
-	std::normal_distribution       <real> normal(Constants::mean, Constants::stdev);	//Goal is: reach normal dstr in logarithm scale.
-	std::uniform_real_distribution <real> uniform_aeq(Constants::aeq_start_d, Constants::aeq_end_d); //All aeq in this range are equally probable. Goal is: randomness
-
+	std::normal_distribution       <real> normal_aeq   (Constants::mean_aeq, Constants::stdev_aeq);		   //Goal is: reach normal dstr in logarithm scale.
+	std::normal_distribution       <real> normal_lamda (Constants::mean_lamda, Constants::stdev_lamda);
+	std::uniform_real_distribution <real> uniform_aeq  (Constants::aeq_start_d, Constants::aeq_end_d);     //All values in this range are equally probable. Goal is: randomness
+	std::uniform_real_distribution <real> uniform_lamda(Constants::lamda_start_d, Constants::lamda_end_d); 
 	int p=0;
 	int aeq_count = 0;
 	//Loop for <lamda_dstr> different particle latitudes.
@@ -88,10 +92,14 @@ int main(int argc, char **argv)
 			real number;
 			do
 			{
-				number = normal(generator);
+				number = normal_aeq(generator);
 
-			}while(number<=0 && number>=180); //Until valid aeq=(0,180).
+			}while(number<=0 || number>=180); //Until valid aeq=(0,180).
 			aeq0  = number * Constants::D2R; 	
+		}
+		else if (argv[1]==string_test)
+		{
+			aeq0 = Constants::aeq0;
 		}
 		else return EXIT_FAILURE;
 		//----------------P.A dstr-----------------//
@@ -104,24 +112,50 @@ int main(int argc, char **argv)
 		//-------------Latitude domain-------------//
 
 
-		//--------------Latitude dstr--------------//
 		int lamda_count = 0;
 		std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); //All latitudes in this range are equally probable. Goal is: randomness
 		while(lamda_count<Constants::lamda_dstr)  
 		{
-			lamda0          = uniform_lamda(generator) * Constants::D2R; 
+		//--------------Latitude dstr--------------//
+			if(argv[2]==string_evenly)   
+			{
+				lamda0 = (Constants::lamda_start_d + lamda_count*Constants::lamda_step_d) * Constants::D2R;	  	  //linspace(start,stop,lamda_dstr). Goal is: symmetry				
+			}
+			//Uniformly dstr
+			else if (argv[2]==string_uniform)   			
+			{
+				lamda0  = uniform_lamda(generator) * Constants::D2R; 	
+			}
+			//Normaly dstr
+			else if (argv[2]==string_normal)   			
+			{
+				real number;
+				do
+				{
+					number = normal_lamda(generator);
+
+				}while(number<-90 || number>90); //Until valid lamda=(0,180).
+				lamda0  = number * Constants::D2R; 	
+			}
+			else if (argv[2]==string_test)
+			{
+				lamda0 = Constants::lamda0;
+			}
+			else return EXIT_FAILURE;
+		//--------------Latitude dstr--------------//
+
+
 			const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 			Blam0           = Bmag_dipole(lamda0);
 			salpha0         = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
 			k               = ((aeq0*   Constants::R2D>90)    ? 1 : 0);     					   //kEN...(here k=0 or 1 ?)
 			alpha0          = pow(-1,k)*asin(salpha0)+k*M_PI;			 						   // sinx = a => x=(-1)^k * asin(a) + k*pi
-			
 			//Initialize and print particle state for this equatorial P.A and latitude.
 			dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,lamda_start_d,lamda_end_d);
-			//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D <<" gives alpha0: "<<alpha0*Constants::R2D<<std::endl;	
+			//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D;	
 			p++; lamda_count++; //Next particle
+
 		}	
-		//--------------Latitude dstr--------------//
 
 		aeq_count++;
 	}

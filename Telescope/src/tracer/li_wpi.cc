@@ -40,9 +40,9 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     real p_mag,gama,w_h,dwh_ds,kz,Fpar,Fper,Ftheta;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real new_lamda, new_aeq, new_ppar;
-    bool trapped = 1;                       //Particles trapped in Earth's magnetic field.
+    bool trapped = true;                       //Particles trapped in Earth's magnetic field.
 
-    //std::cout.precision(64);                //Output 16 decimal precise
+    //std::cout.precision(8);                //Output 16 decimal precise
 	//std::cout<<std::scientific;		        //For e notation representation
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
@@ -109,7 +109,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
         new_aeq = aeq + (Constants::h/6)*(q1+2*q2+2*q3+q4);
         if( (0<new_aeq && new_aeq<Constants::alpha_lc) || (new_aeq>M_PI-Constants::alpha_lc && new_aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
         {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
-            trapped = 0;
+            trapped = false;
         }
         //Check Precipitation:
         new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);

@@ -17,7 +17,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     real new_lamda,new_ppar;
     real w_h, dwh_ds, Bmag, p_mag, gama;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,o1,o2,o3,o4,p1,p2,p3,p4;
-    bool trapped=1;
+    bool trapped = true;
 
     //Objects for each specie.
     Species electron(Constants::m_e,  Constants::q_e, 1); 
@@ -25,8 +25,8 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     Species hydrogen(Constants::m_H,  Constants::q_i, 0.94); 
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
     
-	//std::cout.precision(64);			//Output 16 decimal precise
-	//std::cout<<std::scientific;		//For e notation representation
+	std::cout.precision(8);			//Output 16 decimal precise
+	std::cout<<std::scientific;		//For e notation representation
 
     int i=0;
     
@@ -90,7 +90,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         //Check Trapping:
         if( (0<aeq && aeq<Constants::alpha_lc) || (aeq>M_PI-Constants::alpha_lc && aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
         {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
-            trapped = 0;
+            trapped = false;
         }
 
         //Check Precipitation:
@@ -114,7 +114,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
 
 		//To save states:
 		//single.save_state(aeq,alpha,lamda,deta_dt,time);
-        //std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda<< "\naeq " <<aeq ;
+        std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda<< "\naeq " <<aeq ;
 
         //Stop at equator:
         //if(eql_dstr[p].lamda.at(i)>0) {	

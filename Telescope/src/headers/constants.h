@@ -26,12 +26,12 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6/m-3
 //particle initials
 const real L_shell=5; 			 				//L_shell of particle. Constant for now.
 const real Ekev0=590;               			//Initial energy keV
-//const real aeq0_deg=30;            		    //Initial equatorial pitch angle, deg.
-//const real aeq0=aeq0_deg*D2R;
-//const real lamda0_deg=0;						//Initial latitude, deg.
-//const real lamda0=lamda0_deg*D2R;	     		
 const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
+const real aeq0_deg=10;                          //If single values are used.
+const real aeq0=aeq0_deg*D2R;
+const real lamda0_deg=0;
+const real lamda0=lamda0_deg*D2R;
 const real hm = 100*pow(10,3);                  //Minimum allowable mirroring altitude in m.
 const real zm = (Re + hm)/(L_shell*Re);
 const real alpha_lc = asin(sqrt(pow(zm,3)/sqrt(1+3*(1-zm)))); //Loss cone angle in radians.
@@ -45,14 +45,15 @@ const real theta0=theta0_deg*D2R;
 //Li && ray tracing
 const real pwr = pow(10,-2);                    //From the power we get the intensity of the ray. Poynting flux [W/m 2].
 const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
-//Bell code only where the wave is everywhere
+
+//Bell code ONLY. Wave is everywhere
 const real By_wave=1*pow(10,-9);  
 
 //--Simulation parameters--//
-const real t = 15;        				  	    //Simulation time in seconds.
-const real t_nowpi = 10;                         //NoWPI time.
+const real t = 1;        				  	    //Simulation time in seconds.
+const real t_nowpi = 1;                        //NoWPI time.
 const real t_wpi = t - t_nowpi;                 //WPI time.
-const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
+const real h=0.1;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
 const int64_t Nsteps_nowpi= t_nowpi/h;          //noWPI step count
 const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
@@ -62,15 +63,20 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 10000;  	    		    
-const int64_t lamda_dstr  = 10;					
+const int64_t aeq_dstr    = 1;  	    		    
+const int64_t lamda_dstr  = 1; //only one latitude per aeq					
 const int64_t population  = lamda_dstr * aeq_dstr;   
-//Aeq dstr
+
 const real aeq_start_d    = 1;    		  			 				
 const real aeq_end_d      = 179;  			
-const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	//step for linspace(start,end,aeq_dstr) 
-const real mean           = 90; //Mean of the normal dstr
-const real stdev          = 20;  //Standard deviation of the normal dstr
+const real aeq_step_d	  = (aeq_end_d - aeq_start_d)/(aeq_dstr-1); 	    //step for linspace(start,end,aeq_dstr) 
+const real lamda_start_d  =-90;    		  			 				
+const real lamda_end_d    = 90;  			
+const real lamda_step_d	  = (lamda_end_d - lamda_start_d)/(lamda_dstr-1); 
+const real mean_aeq       = 90;  //Mean of the normal dstr
+const real stdev_aeq      = 30;  //Standard deviation of the normal dstr
+const real mean_lamda     = 0; 
+const real stdev_lamda    = 30;  
 
 //Eta dstr
 //const real eta_start_d    = eta0_deg;     //Degrees 	 
