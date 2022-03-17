@@ -66,9 +66,6 @@ int main(int argc, char **argv)
 	//const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 	std::random_device seed;         //Random seed. 
 	std::mt19937 generator(seed());  //PRNG initialized with seed.
-	std::normal_distribution       <real> normal_aeq   (Constants::mean_aeq, Constants::stdev_aeq);		   //Goal is: reach normal dstr in logarithm scale.
-	std::normal_distribution       <real> normal_lamda (Constants::mean_lamda, Constants::stdev_lamda);
-	std::uniform_real_distribution <real> uniform_aeq  (Constants::aeq_start_d, Constants::aeq_end_d);     //All values in this range are equally probable. Goal is: randomness
 	int p=0;
 	int aeq_count = 0;
 	//Loop for <lamda_dstr> different particle latitudes.
@@ -83,6 +80,7 @@ int main(int argc, char **argv)
 		//Uniformly dstr
 		else if (argv[1]==string_uniform)   			
 		{
+			std::uniform_real_distribution <real> uniform_aeq  (Constants::aeq_start_d, Constants::aeq_end_d);     //All values in this range are equally probable. Goal is: randomness
 			aeq0  = uniform_aeq(generator) * Constants::D2R; 	
 		}
 		//Normaly dstr
@@ -91,6 +89,7 @@ int main(int argc, char **argv)
 			real number;
 			do
 			{
+				std::normal_distribution <real> normal_aeq(Constants::mean_aeq, Constants::stdev_aeq);		   //Goal is: reach normal dstr in logarithm scale.
 				number = normal_aeq(generator);
 
 			}while(number<=0 || number>=180); //Until valid aeq=(0,180).
@@ -112,7 +111,6 @@ int main(int argc, char **argv)
 
 
 		int lamda_count = 0;
-		std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); //All latitudes in this range are equally probable. Goal is: randomness
 		while(lamda_count<Constants::lamda_dstr)  
 		{
 		//--------------Latitude dstr--------------//
@@ -123,6 +121,7 @@ int main(int argc, char **argv)
 			//Uniformly dstr
 			else if (argv[2]==string_uniform)   			
 			{
+				std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); //All latitudes in this range are equally probable. Goal is: randomness
 				lamda0  = uniform_lamda(generator) * Constants::D2R; 	
 			}
 			//Normaly dstr
@@ -131,6 +130,10 @@ int main(int argc, char **argv)
 				real number;
 				do
 				{
+					//Adaptive stdev according to the lamda domain range. Domain range (min,max) = (0,180).
+					//That way for bigger domain ranges we have extended gausian, while for les wide ranges we have more "sharp".
+					real stdev = (std::abs(lamda_end_d - lamda_start_d) / 180 ) * Constants::stdev_lamda;
+					std::normal_distribution <real> normal_lamda(Constants::mean_lamda, stdev);
 					number = normal_lamda(generator);
 
 				}while(number<lamda_start_d || number>lamda_end_d); //Until valid lamda=(0,180).
