@@ -1,0 +1,2092 @@
+
+Particle population: 1000000
+
+
+15 sec NoWPI Simulation
+
+Execution time estimation for 8 THREAD run: 2000 minutes.
+Execution time estimation for 20 THREAD run: 4250 minutes.
+
+Forked...
+Running threads: 8
+
+Particle 103 negative p.a
+Particle 117 breaks
+Particle 751 breaks
+Particle 1079 breaks
+Particle 1692 negative p.a
+Particle 1886 breaks
+Particle 3443 breaks
+Particle 3515 breaks
+Particle 3829 breaks
+Particle 4161 breaks
+Particle 4574 negative p.a
+Particle 4915 breaks
+Particle 7621 negative p.a
+Particle 8265 breaks
+Particle 9062 breaks
+Particle 9676 breaks
+Particle 9776 breaks
+Particle 10027 negative p.a
+Particle 10978 breaks
+Particle 11926 breaks
+Particle 12551 breaks
+Particle 13032 breaks
+Particle 15270 breaks
+Particle 15992 negative p.a
+Particle 16006 breaks
+Particle 16861 breaks
+Particle 17016 breaks
+Particle 17596 negative p.a
+Particle 17840 breaks
+Particle 18125 breaks
+Particle 20098 negative p.a
+Particle 21110 breaks
+Particle 21487 breaks
+Particle 21671 breaks
+Particle 21697 negative p.a
+Particle 22047 breaks
+Particle 22052 breaks
+Particle 22559 breaks
+Particle 23725 negative p.a
+Particle 24331 breaks
+Particle 24709 breaks
+Particle 25221 negative p.a
+Particle 25967 breaks
+Particle 26218 breaks
+Particle 26251 breaks
+Particle 26909 breaks
+Particle 29118 negative p.a
+Particle 29558 negative p.a
+Particle 29608 negative p.a
+Particle 30518 breaks
+Particle 31773 breaks
+Particle 31809 breaks
+Particle 32559 negative p.a
+Particle 33415 breaks
+Particle 33418 breaks
+Particle 33860 breaks
+Particle 35209 negative p.a
+Particle 35264 breaks
+Particle 35287 breaks
+Particle 35631 breaks
+Particle 35777 breaks
+Particle 36218 breaks
+Particle 36451 negative p.a
+Particle 36527 breaks
+Particle 36560 breaks
+Particle 36769 breaks
+Particle 36841 negative p.a
+Particle 37240 breaks
+Particle 37983 negative p.a
+Particle 38600 negative p.a
+Particle 38752 negative p.a
+Particle 38785 breaks
+Particle 39269 breaks
+Particle 40215 breaks
+Particle 40778 breaks
+Particle 40911 breaks
+Particle 41104 negative p.a
+Particle 41987 breaks
+Particle 42060 breaks
+Particle 42261 breaks
+Particle 42325 breaks
+Particle 42349 breaks
+Particle 42676 breaks
+Particle 42815 breaks
+Particle 43517 breaks
+Particle 44224 negative p.a
+Particle 45009 breaks
+Particle 45309 breaks
+Particle 45930 breaks
+Particle 46037 breaks
+Particle 46608 breaks
+Particle 47652 breaks
+Particle 47796 breaks
+Particle 48362 breaks
+Particle 48444 negative p.a
+Particle 48743 breaks
+Particle 50170 breaks
+Particle 51170 negative p.a
+Particle 51562 breaks
+Particle 52101 breaks
+Particle 52343 breaks
+Particle 52820 breaks
+Particle 54525 breaks
+Particle 54665 breaks
+Particle 54893 negative p.a
+Particle 55045 breaks
+Particle 55786 breaks
+Particle 56182 breaks
+Particle 56744 negative p.a
+Particle 56951 breaks
+Particle 57886 breaks
+Particle 57970 breaks
+Particle 58316 negative p.a
+Particle 59866 negative p.a
+Particle 60387 breaks
+Particle 60811 breaks
+Particle 60957 breaks
+Particle 61457 breaks
+Particle 61519 breaks
+Particle 61922 negative p.a
+Particle 62496 negative p.a
+Particle 62828 breaks
+Particle 64128 negative p.a
+Particle 65496 breaks
+Particle 65954 breaks
+Particle 66218 breaks
+Particle 66307 breaks
+Particle 67519 breaks
+Particle 67547 negative p.a
+Particle 69026 negative p.a
+Particle 69921 breaks
+Particle 69948 breaks
+Particle 69965 breaks
+Particle 70817 breaks
+Particle 71215 breaks
+Particle 71223 breaks
+Particle 71813 breaks
+Particle 71854 breaks
+Particle 72306 breaks
+Particle 73248 breaks
+Particle 73806 breaks
+Particle 74362 breaks
+Particle 74389 breaks
+Particle 75713 breaks
+Particle 76367 breaks
+Particle 76395 breaks
+Particle 77089 breaks
+Particle 77573 breaks
+Particle 79616 breaks
+Particle 79731 breaks
+Particle 79864 breaks
+Particle 80770 breaks
+Particle 80849 breaks
+Particle 81058 negative p.a
+Particle 81427 negative p.a
+Particle 81452 breaks
+Particle 82800 breaks
+Particle 82853 breaks
+Particle 82985 breaks
+Particle 83102 negative p.a
+Particle 83392 negative p.a
+Particle 84208 breaks
+Particle 84368 breaks
+Particle 84774 breaks
+Particle 84915 breaks
+Particle 85286 breaks
+Particle 85887 breaks
+Particle 86043 breaks
+Particle 86456 breaks
+Particle 87901 negative p.a
+Particle 88216 breaks
+Particle 89548 breaks
+Particle 89955 negative p.a
+Particle 90028 negative p.a
+Particle 90882 negative p.a
+Particle 92048 breaks
+Particle 92718 negative p.a
+Particle 92870 breaks
+Particle 93151 breaks
+Particle 93382 breaks
+Particle 94523 breaks
+Particle 94581 breaks
+Particle 95111 breaks
+Particle 95575 negative p.a
+Particle 95672 breaks
+Particle 95796 breaks
+Particle 96037 breaks
+Particle 96528 breaks
+Particle 97195 breaks
+Particle 99271 breaks
+Particle 99653 breaks
+Particle 99724 breaks
+Particle 99751 breaks
+Particle 100687 negative p.a
+Particle 101292 negative p.a
+Particle 101970 negative p.a
+Particle 102062 negative p.a
+Particle 103183 negative p.a
+Particle 103271 breaks
+Particle 103451 negative p.a
+Particle 103940 breaks
+Particle 104324 breaks
+Particle 104792 breaks
+Particle 104939 breaks
+Particle 105752 negative p.a
+Particle 105889 negative p.a
+Particle 106501 negative p.a
+Particle 107623 breaks
+Particle 107875 negative p.a
+Particle 108027 breaks
+Particle 108244 breaks
+Particle 108310 breaks
+Particle 109507 breaks
+Particle 109881 negative p.a
+Particle 109984 breaks
+Particle 110114 breaks
+Particle 110144 breaks
+Particle 110168 breaks
+Particle 110840 breaks
+Particle 111141 negative p.a
+Particle 111182 breaks
+Particle 112515 breaks
+Particle 112553 breaks
+Particle 113331 breaks
+Particle 113691 negative p.a
+Particle 115509 breaks
+Particle 116295 negative p.a
+Particle 116443 breaks
+Particle 116841 negative p.a
+Particle 117147 breaks
+Particle 117194 breaks
+Particle 117251 breaks
+Particle 117410 breaks
+Particle 117553 negative p.a
+Particle 117695 negative p.a
+Particle 118981 breaks
+Particle 119190 breaks
+Particle 120374 breaks
+Particle 120409 breaks
+Particle 120944 breaks
+Particle 121855 negative p.a
+Particle 124378 breaks
+Particle 124663 breaks
+Particle 124683 negative p.a
+Particle 125015 negative p.a
+Particle 125753 breaks
+Particle 126748 breaks
+Particle 127381 breaks
+Particle 127653 breaks
+Particle 129007 breaks
+Particle 129310 breaks
+Particle 130543 breaks
+Particle 131108 breaks
+Particle 131763 breaks
+Particle 131932 negative p.a
+Particle 132039 breaks
+Particle 132187 breaks
+Particle 133154 breaks
+Particle 133737 breaks
+Particle 133777 breaks
+Particle 134414 breaks
+Particle 135364 breaks
+Particle 135913 negative p.a
+Particle 135982 breaks
+Particle 136336 breaks
+Particle 137551 breaks
+Particle 138507 breaks
+Particle 138683 negative p.a
+Particle 138760 breaks
+Particle 138817 breaks
+Particle 139124 negative p.a
+Particle 139566 breaks
+Particle 139777 breaks
+Particle 139850 breaks
+Particle 141143 breaks
+Particle 141504 breaks
+Particle 141943 negative p.a
+Particle 142160 breaks
+Particle 142552 breaks
+Particle 142572 breaks
+Particle 142653 negative p.a
+Particle 142712 breaks
+Particle 142879 negative p.a
+Particle 143932 negative p.a
+Particle 144362 breaks
+Particle 144418 breaks
+Particle 144567 breaks
+Particle 144690 negative p.a
+Particle 145129 breaks
+Particle 145349 negative p.a
+Particle 145522 breaks
+Particle 145547 breaks
+Particle 145710 breaks
+Particle 146317 breaks
+Particle 146634 breaks
+Particle 146787 negative p.a
+Particle 147027 breaks
+Particle 147230 breaks
+Particle 147860 breaks
+Particle 147910 breaks
+Particle 147982 breaks
+Particle 148509 breaks
+Particle 149780 breaks
+Particle 150459 breaks
+Particle 150577 breaks
+Particle 150758 breaks
+Particle 151062 breaks
+Particle 151690 breaks
+Particle 152190 breaks
+Particle 152813 negative p.a
+Particle 153766 breaks
+Particle 153768 breaks
+Particle 154080 negative p.a
+Particle 154668 breaks
+Particle 155930 breaks
+Particle 155953 breaks
+Particle 155958 breaks
+Particle 156280 negative p.a
+Particle 156778 breaks
+Particle 156805 breaks
+Particle 157126 breaks
+Particle 157371 breaks
+Particle 158599 breaks
+Particle 158913 breaks
+Particle 159166 breaks
+Particle 159631 breaks
+Particle 159785 breaks
+Particle 160105 breaks
+Particle 160394 breaks
+Particle 160726 breaks
+Particle 160837 breaks
+Particle 161493 negative p.a
+Particle 162141 negative p.a
+Particle 162171 breaks
+Particle 162179 breaks
+Particle 163205 negative p.a
+Particle 163728 breaks
+Particle 165680 negative p.a
+Particle 166115 breaks
+Particle 166239 breaks
+Particle 166279 breaks
+Particle 166322 breaks
+Particle 166585 breaks
+Particle 167415 breaks
+Particle 167523 breaks
+Particle 167733 breaks
+Particle 167777 breaks
+Particle 167919 negative p.a
+Particle 170155 breaks
+Particle 170569 negative p.a
+Particle 170594 negative p.a
+Particle 171366 breaks
+Particle 172639 breaks
+Particle 173010 breaks
+Particle 173090 breaks
+Particle 173257 negative p.a
+Particle 173281 breaks
+Particle 173558 breaks
+Particle 173563 negative p.a
+Particle 174480 breaks
+Particle 176366 breaks
+Particle 176554 breaks
+Particle 177581 breaks
+Particle 177623 breaks
+Particle 177952 breaks
+Particle 177976 negative p.a
+Particle 178089 breaks
+Particle 179879 negative p.a
+Particle 179991 breaks
+Particle 180304 negative p.a
+Particle 181694 breaks
+Particle 181884 negative p.a
+Particle 183343 breaks
+Particle 183562 breaks
+Particle 185947 breaks
+Particle 186346 breaks
+Particle 186411 negative p.a
+Particle 186463 breaks
+Particle 186533 breaks
+Particle 187343 negative p.a
+Particle 187871 breaks
+Particle 188206 breaks
+Particle 188270 breaks
+Particle 189430 negative p.a
+Particle 189742 breaks
+Particle 190829 breaks
+Particle 191991 negative p.a
+Particle 193245 breaks
+Particle 194227 breaks
+Particle 194543 breaks
+Particle 194678 negative p.a
+Particle 196026 negative p.a
+Particle 196864 breaks
+Particle 199428 breaks
+Particle 199606 negative p.a
+Particle 199734 breaks
+Particle 200348 breaks
+Particle 201506 negative p.a
+Particle 201946 negative p.a
+Particle 202526 negative p.a
+Particle 202898 breaks
+Particle 203216 breaks
+Particle 203711 negative p.a
+Particle 203802 breaks
+Particle 204032 breaks
+Particle 205772 breaks
+Particle 206082 breaks
+Particle 206204 breaks
+Particle 206549 breaks
+Particle 206612 breaks
+Particle 207523 breaks
+Particle 207865 negative p.a
+Particle 207909 breaks
+Particle 209944 breaks
+Particle 209991 breaks
+Particle 210198 breaks
+Particle 210279 breaks
+Particle 210618 breaks
+Particle 211051 breaks
+Particle 211204 negative p.a
+Particle 212008 breaks
+Particle 212439 breaks
+Particle 213068 breaks
+Particle 213884 breaks
+Particle 214694 negative p.a
+Particle 215284 breaks
+Particle 216800 negative p.a
+Particle 216903 breaks
+Particle 217777 breaks
+Particle 217805 breaks
+Particle 219800 breaks
+Particle 219948 breaks
+Particle 220476 breaks
+Particle 220977 negative p.a
+Particle 222729 breaks
+Particle 223268 breaks
+Particle 223311 breaks
+Particle 223602 breaks
+Particle 224205 negative p.a
+Particle 224835 breaks
+Particle 224928 breaks
+Particle 224945 negative p.a
+Particle 225446 negative p.a
+Particle 226229 negative p.a
+Particle 226271 breaks
+Particle 226798 negative p.a
+Particle 227010 breaks
+Particle 227252 breaks
+Particle 228553 negative p.a
+Particle 230696 breaks
+Particle 230754 breaks
+Particle 231096 breaks
+Particle 231764 breaks
+Particle 232071 breaks
+Particle 232225 breaks
+Particle 232961 breaks
+Particle 233270 negative p.a
+Particle 233368 breaks
+Particle 234401 breaks
+Particle 234878 breaks
+Particle 235523 breaks
+Particle 235979 negative p.a
+Particle 236366 negative p.a
+Particle 237217 breaks
+Particle 237299 negative p.a
+Particle 238014 breaks
+Particle 238170 breaks
+Particle 238309 breaks
+Particle 239401 negative p.a
+Particle 240009 breaks
+Particle 240484 breaks
+Particle 240681 breaks
+Particle 241572 breaks
+Particle 241574 breaks
+Particle 242120 negative p.a
+Particle 242186 breaks
+Particle 242314 breaks
+Particle 242363 breaks
+Particle 242915 breaks
+Particle 244268 negative p.a
+Particle 244574 breaks
+Particle 244579 negative p.a
+Particle 245723 breaks
+Particle 245770 breaks
+Particle 246168 breaks
+Particle 246238 negative p.a
+Particle 246376 breaks
+Particle 246417 breaks
+Particle 246890 breaks
+Particle 247218 negative p.a
+Particle 247356 breaks
+Particle 248273 breaks
+Particle 248688 negative p.a
+Particle 249096 breaks
+Particle 249232 negative p.a
+Particle 249770 breaks
+Particle 250525 breaks
+Particle 250689 negative p.a
+Particle 250810 breaks
+Particle 250918 breaks
+Particle 252512 breaks
+Particle 252716 negative p.a
+Particle 253161 negative p.a
+Particle 254182 breaks
+Particle 255026 breaks
+Particle 255293 breaks
+Particle 255536 breaks
+Particle 255784 breaks
+Particle 256193 breaks
+Particle 256386 negative p.a
+Particle 256651 negative p.a
+Particle 257001 negative p.a
+Particle 257351 breaks
+Particle 257675 breaks
+Particle 257954 breaks
+Particle 258047 breaks
+Particle 258059 breaks
+Particle 258210 breaks
+Particle 258347 breaks
+Particle 258726 negative p.a
+Particle 259009 breaks
+Particle 259054 negative p.a
+Particle 259210 negative p.a
+Particle 259642 breaks
+Particle 261111 negative p.a
+Particle 263099 breaks
+Particle 263125 negative p.a
+Particle 263801 breaks
+Particle 264471 negative p.a
+Particle 265310 breaks
+Particle 265545 negative p.a
+Particle 265839 breaks
+Particle 265893 breaks
+Particle 266463 negative p.a
+Particle 267734 negative p.a
+Particle 268044 negative p.a
+Particle 268455 breaks
+Particle 268561 breaks
+Particle 268634 breaks
+Particle 269287 negative p.a
+Particle 269990 breaks
+Particle 270756 negative p.a
+Particle 271250 breaks
+Particle 271549 negative p.a
+Particle 273053 breaks
+Particle 273689 breaks
+Particle 274144 negative p.a
+Particle 274269 negative p.a
+Particle 274620 breaks
+Particle 274826 negative p.a
+Particle 275425 breaks
+Particle 276569 breaks
+Particle 276821 breaks
+Particle 276837 negative p.a
+Particle 276855 breaks
+Particle 277562 breaks
+Particle 277822 breaks
+Particle 278350 breaks
+Particle 279356 negative p.a
+Particle 280744 breaks
+Particle 280946 negative p.a
+Particle 280958 breaks
+Particle 281084 breaks
+Particle 281262 breaks
+Particle 281972 breaks
+Particle 282202 breaks
+Particle 282216 negative p.a
+Particle 283592 breaks
+Particle 283794 breaks
+Particle 284339 breaks
+Particle 284799 breaks
+Particle 285783 breaks
+Particle 285832 negative p.a
+Particle 286978 breaks
+Particle 287210 negative p.a
+Particle 288080 breaks
+Particle 289286 breaks
+Particle 289700 breaks
+Particle 291951 breaks
+Particle 292316 negative p.a
+Particle 292866 negative p.a
+Particle 293238 negative p.a
+Particle 293404 breaks
+Particle 293978 negative p.a
+Particle 294303 breaks
+Particle 295136 negative p.a
+Particle 295364 negative p.a
+Particle 295941 breaks
+Particle 296367 breaks
+Particle 297920 breaks
+Particle 297952 breaks
+Particle 299599 breaks
+Particle 299969 breaks
+Particle 301147 breaks
+Particle 301206 breaks
+Particle 301881 breaks
+Particle 302015 breaks
+Particle 302087 breaks
+Particle 302152 breaks
+Particle 302300 negative p.a
+Particle 302873 negative p.a
+Particle 302930 breaks
+Particle 303165 negative p.a
+Particle 303622 breaks
+Particle 304077 breaks
+Particle 304764 negative p.a
+Particle 305435 negative p.a
+Particle 305727 breaks
+Particle 306022 breaks
+Particle 306770 negative p.a
+Particle 307942 negative p.a
+Particle 308350 breaks
+Particle 308783 breaks
+Particle 308817 breaks
+Particle 309305 breaks
+Particle 310593 breaks
+Particle 310867 breaks
+Particle 310987 breaks
+Particle 311159 breaks
+Particle 311174 breaks
+Particle 311217 negative p.a
+Particle 311407 breaks
+Particle 311530 negative p.a
+Particle 311680 breaks
+Particle 311850 breaks
+Particle 312180 breaks
+Particle 312201 breaks
+Particle 312562 breaks
+Particle 312670 breaks
+Particle 313093 breaks
+Particle 313338 breaks
+Particle 314279 breaks
+Particle 314473 breaks
+Particle 314500 breaks
+Particle 315526 breaks
+Particle 316202 breaks
+Particle 316338 breaks
+Particle 317164 breaks
+Particle 317386 negative p.a
+Particle 317424 breaks
+Particle 317425 negative p.a
+Particle 318137 negative p.a
+Particle 318377 breaks
+Particle 318485 negative p.a
+Particle 319061 breaks
+Particle 319560 negative p.a
+Particle 320157 breaks
+Particle 320316 breaks
+Particle 321650 negative p.a
+Particle 322059 breaks
+Particle 322124 breaks
+Particle 322396 breaks
+Particle 322796 breaks
+Particle 323314 negative p.a
+Particle 323696 negative p.a
+Particle 323954 breaks
+Particle 325661 breaks
+Particle 326312 breaks
+Particle 326591 breaks
+Particle 327250 breaks
+Particle 328867 breaks
+Particle 329448 negative p.a
+Particle 330170 breaks
+Particle 330226 breaks
+Particle 330969 negative p.a
+Particle 331136 breaks
+Particle 331284 breaks
+Particle 331984 breaks
+Particle 332051 breaks
+Particle 332231 breaks
+Particle 332287 breaks
+Particle 332486 breaks
+Particle 332947 breaks
+Particle 333140 breaks
+Particle 333309 breaks
+Particle 333546 breaks
+Particle 333738 breaks
+Particle 333803 breaks
+Particle 334273 breaks
+Particle 334843 breaks
+Particle 335088 breaks
+Particle 335172 breaks
+Particle 335919 breaks
+Particle 336793 breaks
+Particle 336829 negative p.a
+Particle 336872 breaks
+Particle 337194 breaks
+Particle 337574 negative p.a
+Particle 337584 negative p.a
+Particle 337621 breaks
+Particle 337861 breaks
+Particle 338389 breaks
+Particle 338726 negative p.a
+Particle 338744 breaks
+Particle 339581 negative p.a
+Particle 340207 negative p.a
+Particle 340255 negative p.a
+Particle 340951 breaks
+Particle 341603 breaks
+Particle 341648 breaks
+Particle 341997 breaks
+Particle 342276 negative p.a
+Particle 343164 breaks
+Particle 343202 negative p.a
+Particle 343433 breaks
+Particle 343918 negative p.a
+Particle 344354 breaks
+Particle 344745 breaks
+Particle 345711 breaks
+Particle 345743 breaks
+Particle 345821 breaks
+Particle 346092 breaks
+Particle 349430 breaks
+Particle 350001 negative p.a
+Particle 350149 negative p.a
+Particle 351098 negative p.a
+Particle 351383 negative p.a
+Particle 351447 negative p.a
+Particle 352730 breaks
+Particle 352903 breaks
+Particle 353107 breaks
+Particle 353663 breaks
+Particle 353944 breaks
+Particle 353945 breaks
+Particle 354965 breaks
+Particle 354995 negative p.a
+Particle 355431 breaks
+Particle 355619 breaks
+Particle 357315 breaks
+Particle 357871 negative p.a
+Particle 358052 negative p.a
+Particle 358653 breaks
+Particle 358671 breaks
+Particle 358726 breaks
+Particle 358804 negative p.a
+Particle 359599 breaks
+Particle 361345 negative p.a
+Particle 361347 breaks
+Particle 362589 breaks
+Particle 362665 breaks
+Particle 363045 breaks
+Particle 366320 breaks
+Particle 366876 breaks
+Particle 367083 breaks
+Particle 367847 negative p.a
+Particle 368015 breaks
+Particle 368466 negative p.a
+Particle 368975 negative p.a
+Particle 369162 breaks
+Particle 369358 breaks
+Particle 370244 breaks
+Particle 370866 breaks
+Particle 371851 breaks
+Particle 371895 breaks
+Particle 372093 breaks
+Particle 372997 breaks
+Particle 373185 negative p.a
+Particle 373284 breaks
+Particle 373414 negative p.a
+Particle 374405 breaks
+Particle 374748 breaks
+Particle 374825 breaks
+Particle 374920 breaks
+Particle 375173 breaks
+Particle 375694 breaks
+Particle 376277 breaks
+Particle 376555 breaks
+Particle 377820 breaks
+Particle 377911 breaks
+Particle 378597 breaks
+Particle 379215 breaks
+Particle 380772 breaks
+Particle 381548 breaks
+Particle 382164 breaks
+Particle 383549 breaks
+Particle 383555 breaks
+Particle 384055 breaks
+Particle 384152 breaks
+Particle 384471 breaks
+Particle 385013 breaks
+Particle 385169 negative p.a
+Particle 385339 negative p.a
+Particle 385614 breaks
+Particle 385836 breaks
+Particle 385845 negative p.a
+Particle 386913 negative p.a
+Particle 387015 breaks
+Particle 387743 breaks
+Particle 388217 breaks
+Particle 388841 breaks
+Particle 388935 breaks
+Particle 388960 negative p.a
+Particle 390662 breaks
+Particle 390732 negative p.a
+Particle 391377 breaks
+Particle 391596 negative p.a
+Particle 393166 breaks
+Particle 393701 negative p.a
+Particle 394132 breaks
+Particle 394355 breaks
+Particle 394448 breaks
+Particle 394650 breaks
+Particle 396177 breaks
+Particle 396715 breaks
+Particle 397411 breaks
+Particle 398001 negative p.a
+Particle 398282 breaks
+Particle 398558 breaks
+Particle 398752 breaks
+Particle 399939 breaks
+Particle 400358 negative p.a
+Particle 400382 breaks
+Particle 400985 breaks
+Particle 401246 breaks
+Particle 401297 breaks
+Particle 401440 negative p.a
+Particle 401718 negative p.a
+Particle 401826 breaks
+Particle 402870 breaks
+Particle 403056 breaks
+Particle 403607 breaks
+Particle 403679 breaks
+Particle 404184 negative p.a
+Particle 404203 negative p.a
+Particle 404562 breaks
+Particle 405514 breaks
+Particle 406192 breaks
+Particle 406697 breaks
+Particle 406903 breaks
+Particle 407967 breaks
+Particle 408117 breaks
+Particle 408598 breaks
+Particle 408742 negative p.a
+Particle 411025 negative p.a
+Particle 411344 breaks
+Particle 412405 breaks
+Particle 412408 breaks
+Particle 412637 breaks
+Particle 413198 breaks
+Particle 413912 breaks
+Particle 414259 negative p.a
+Particle 415010 breaks
+Particle 415345 breaks
+Particle 415580 negative p.a
+Particle 415945 negative p.a
+Particle 416095 breaks
+Particle 416255 breaks
+Particle 416361 breaks
+Particle 416446 breaks
+Particle 416762 breaks
+Particle 417007 breaks
+Particle 417413 breaks
+Particle 417437 breaks
+Particle 417571 breaks
+Particle 417612 breaks
+Particle 419706 negative p.a
+Particle 419988 negative p.a
+Particle 420972 breaks
+Particle 421356 negative p.a
+Particle 421513 negative p.a
+Particle 421568 breaks
+Particle 421683 negative p.a
+Particle 421690 breaks
+Particle 422566 negative p.a
+Particle 422793 breaks
+Particle 423189 breaks
+Particle 423793 breaks
+Particle 423880 negative p.a
+Particle 425279 breaks
+Particle 425298 negative p.a
+Particle 427252 breaks
+Particle 427759 breaks
+Particle 428555 breaks
+Particle 428709 breaks
+Particle 428901 breaks
+Particle 429106 breaks
+Particle 430129 breaks
+Particle 430212 negative p.a
+Particle 430716 negative p.a
+Particle 431088 breaks
+Particle 431494 breaks
+Particle 431662 breaks
+Particle 432000 breaks
+Particle 432616 negative p.a
+Particle 433057 breaks
+Particle 433125 negative p.a
+Particle 434027 breaks
+Particle 434079 breaks
+Particle 434666 negative p.a
+Particle 434712 negative p.a
+Particle 434851 breaks
+Particle 435521 breaks
+Particle 435773 breaks
+Particle 436826 breaks
+Particle 437663 breaks
+Particle 439160 negative p.a
+Particle 439262 breaks
+Particle 439357 negative p.a
+Particle 440364 negative p.a
+Particle 440461 negative p.a
+Particle 441147 breaks
+Particle 441479 negative p.a
+Particle 441908 breaks
+Particle 442033 breaks
+Particle 442065 breaks
+Particle 442255 breaks
+Particle 442683 breaks
+Particle 443705 breaks
+Particle 444033 breaks
+Particle 444084 breaks
+Particle 444807 negative p.a
+Particle 445872 negative p.a
+Particle 446149 breaks
+Particle 447421 breaks
+Particle 448367 breaks
+Particle 448686 negative p.a
+Particle 449184 breaks
+Particle 449998 negative p.a
+Particle 450525 breaks
+Particle 450646 breaks
+Particle 450682 breaks
+Particle 451798 breaks
+Particle 451950 breaks
+Particle 452931 breaks
+Particle 453156 breaks
+Particle 453310 breaks
+Particle 453373 breaks
+Particle 454421 negative p.a
+Particle 454724 negative p.a
+Particle 454801 breaks
+Particle 455008 breaks
+Particle 455519 negative p.a
+Particle 456449 breaks
+Particle 456639 negative p.a
+Particle 457399 negative p.a
+Particle 457775 breaks
+Particle 457981 breaks
+Particle 458584 negative p.a
+Particle 459248 breaks
+Particle 459346 negative p.a
+Particle 459392 negative p.a
+Particle 459618 breaks
+Particle 459682 breaks
+Particle 460943 breaks
+Particle 461534 breaks
+Particle 461651 breaks
+Particle 461849 breaks
+Particle 462183 breaks
+Particle 462257 breaks
+Particle 462438 breaks
+Particle 463446 negative p.a
+Particle 463868 negative p.a
+Particle 463960 breaks
+Particle 463988 breaks
+Particle 464034 breaks
+Particle 464133 breaks
+Particle 464663 negative p.a
+Particle 466523 breaks
+Particle 466861 breaks
+Particle 467341 negative p.a
+Particle 467350 breaks
+Particle 467360 breaks
+Particle 468684 negative p.a
+Particle 468765 negative p.a
+Particle 469042 negative p.a
+Particle 469285 breaks
+Particle 469489 breaks
+Particle 469684 breaks
+Particle 469715 breaks
+Particle 470267 negative p.a
+Particle 470536 breaks
+Particle 470782 breaks
+Particle 471085 breaks
+Particle 471136 breaks
+Particle 471705 negative p.a
+Particle 472840 negative p.a
+Particle 473659 negative p.a
+Particle 474058 breaks
+Particle 474822 breaks
+Particle 474912 breaks
+Particle 476201 negative p.a
+Particle 476360 breaks
+Particle 476652 breaks
+Particle 476942 negative p.a
+Particle 477362 breaks
+Particle 478129 breaks
+Particle 479499 breaks
+Particle 479556 breaks
+Particle 479866 negative p.a
+Particle 481058 negative p.a
+Particle 481233 breaks
+Particle 481627 breaks
+Particle 481796 breaks
+Particle 482353 negative p.a
+Particle 482443 breaks
+Particle 483289 negative p.a
+Particle 483971 negative p.a
+Particle 484059 breaks
+Particle 484678 breaks
+Particle 485314 negative p.a
+Particle 486313 breaks
+Particle 486552 breaks
+Particle 486557 breaks
+Particle 486699 negative p.a
+Particle 487381 breaks
+Particle 487609 negative p.a
+Particle 488371 breaks
+Particle 488860 breaks
+Particle 490133 breaks
+Particle 491028 breaks
+Particle 491177 breaks
+Particle 491770 breaks
+Particle 491942 breaks
+Particle 493067 breaks
+Particle 493342 breaks
+Particle 493421 breaks
+Particle 493617 negative p.a
+Particle 494268 breaks
+Particle 494645 breaks
+Particle 494794 breaks
+Particle 496129 breaks
+Particle 497853 breaks
+Particle 498634 breaks
+Particle 499003 negative p.a
+Particle 499288 negative p.a
+Particle 499631 breaks
+Particle 500879 breaks
+Particle 501424 breaks
+Particle 501559 breaks
+Particle 501868 breaks
+Particle 502750 negative p.a
+Particle 502950 negative p.a
+Particle 503847 breaks
+Particle 505054 negative p.a
+Particle 505244 breaks
+Particle 505785 breaks
+Particle 505847 breaks
+Particle 505988 breaks
+Particle 506247 breaks
+Particle 507148 breaks
+Particle 507465 negative p.a
+Particle 507496 breaks
+Particle 507831 negative p.a
+Particle 508028 breaks
+Particle 508462 breaks
+Particle 509256 breaks
+Particle 509486 breaks
+Particle 510246 breaks
+Particle 510967 breaks
+Particle 511081 breaks
+Particle 511150 negative p.a
+Particle 511171 breaks
+Particle 511824 negative p.a
+Particle 512187 breaks
+Particle 513740 breaks
+Particle 514449 breaks
+Particle 515141 breaks
+Particle 515602 breaks
+Particle 515867 breaks
+Particle 515983 breaks
+Particle 516692 breaks
+Particle 516818 breaks
+Particle 517175 breaks
+Particle 517324 breaks
+Particle 517325 negative p.a
+Particle 517410 breaks
+Particle 517601 negative p.a
+Particle 518184 breaks
+Particle 518228 breaks
+Particle 520310 breaks
+Particle 520354 breaks
+Particle 520657 breaks
+Particle 520664 negative p.a
+Particle 521055 breaks
+Particle 521288 breaks
+Particle 521702 negative p.a
+Particle 521780 negative p.a
+Particle 522733 negative p.a
+Particle 522923 breaks
+Particle 522982 breaks
+Particle 523175 breaks
+Particle 523308 breaks
+Particle 523417 breaks
+Particle 523979 negative p.a
+Particle 524166 negative p.a
+Particle 524328 breaks
+Particle 524599 breaks
+Particle 525352 breaks
+Particle 526292 breaks
+Particle 527505 breaks
+Particle 528001 breaks
+Particle 528364 breaks
+Particle 528684 breaks
+Particle 529129 negative p.a
+Particle 529309 breaks
+Particle 529374 breaks
+Particle 529624 breaks
+Particle 529838 negative p.a
+Particle 529889 breaks
+Particle 530283 negative p.a
+Particle 530769 negative p.a
+Particle 531185 negative p.a
+Particle 531248 breaks
+Particle 531831 breaks
+Particle 531837 breaks
+Particle 531917 breaks
+Particle 532099 breaks
+Particle 532194 breaks
+Particle 532910 negative p.a
+Particle 534442 negative p.a
+Particle 534606 breaks
+Particle 534732 negative p.a
+Particle 534873 negative p.a
+Particle 535139 breaks
+Particle 535184 negative p.a
+Particle 535348 breaks
+Particle 536582 breaks
+Particle 536873 breaks
+Particle 537784 breaks
+Particle 538375 breaks
+Particle 539024 negative p.a
+Particle 539244 breaks
+Particle 539660 breaks
+Particle 541249 breaks
+Particle 541459 breaks
+Particle 542001 breaks
+Particle 543684 breaks
+Particle 544436 breaks
+Particle 544533 breaks
+Particle 544595 breaks
+Particle 544693 breaks
+Particle 545225 breaks
+Particle 545451 breaks
+Particle 545452 breaks
+Particle 545650 negative p.a
+Particle 547112 breaks
+Particle 547466 breaks
+Particle 547667 breaks
+Particle 547792 negative p.a
+Particle 547947 negative p.a
+Particle 549618 breaks
+Particle 550276 breaks
+Particle 550571 breaks
+Particle 550611 breaks
+Particle 550931 breaks
+Particle 551553 breaks
+Particle 551564 breaks
+Particle 551797 negative p.a
+Particle 552103 breaks
+Particle 553007 breaks
+Particle 553049 negative p.a
+Particle 553503 negative p.a
+Particle 553650 negative p.a
+Particle 553853 negative p.a
+Particle 553988 breaks
+Particle 554111 breaks
+Particle 554279 negative p.a
+Particle 554283 breaks
+Particle 554504 negative p.a
+Particle 555462 breaks
+Particle 555789 breaks
+Particle 556019 breaks
+Particle 556397 breaks
+Particle 556447 breaks
+Particle 556858 breaks
+Particle 556947 breaks
+Particle 557079 negative p.a
+Particle 557354 breaks
+Particle 558388 breaks
+Particle 559379 negative p.a
+Particle 559674 breaks
+Particle 561107 breaks
+Particle 562122 breaks
+Particle 562126 breaks
+Particle 562166 breaks
+Particle 562385 negative p.a
+Particle 562629 breaks
+Particle 562990 negative p.a
+Particle 563281 negative p.a
+Particle 563513 breaks
+Particle 563544 breaks
+Particle 564098 breaks
+Particle 564602 breaks
+Particle 565062 breaks
+Particle 565346 breaks
+Particle 566257 breaks
+Particle 567128 negative p.a
+Particle 567217 breaks
+Particle 567271 breaks
+Particle 567417 negative p.a
+Particle 567547 breaks
+Particle 568095 negative p.a
+Particle 569048 breaks
+Particle 570447 breaks
+Particle 571336 breaks
+Particle 571595 negative p.a
+Particle 572841 breaks
+Particle 573767 negative p.a
+Particle 574254 negative p.a
+Particle 574713 negative p.a
+Particle 574792 negative p.a
+Particle 575723 breaks
+Particle 575855 breaks
+Particle 575884 breaks
+Particle 575894 breaks
+Particle 576054 breaks
+Particle 576355 breaks
+Particle 576752 breaks
+Particle 577471 breaks
+Particle 578556 negative p.a
+Particle 579458 negative p.a
+Particle 579729 breaks
+Particle 579768 breaks
+Particle 580217 negative p.a
+Particle 580626 breaks
+Particle 582973 breaks
+Particle 583290 breaks
+Particle 584309 breaks
+Particle 584945 breaks
+Particle 585117 breaks
+Particle 585946 negative p.a
+Particle 587614 breaks
+Particle 587637 breaks
+Particle 587862 negative p.a
+Particle 588188 negative p.a
+Particle 589632 negative p.a
+Particle 589687 breaks
+Particle 589824 breaks
+Particle 589952 breaks
+Particle 591033 breaks
+Particle 591064 breaks
+Particle 591548 breaks
+Particle 592112 breaks
+Particle 593359 breaks
+Particle 593634 breaks
+Particle 594121 negative p.a
+Particle 594183 breaks
+Particle 594292 negative p.a
+Particle 594637 breaks
+Particle 594974 breaks
+Particle 595419 negative p.a
+Particle 596263 breaks
+Particle 596509 negative p.a
+Particle 597247 breaks
+Particle 598380 breaks
+Particle 598416 breaks
+Particle 598866 breaks
+Particle 598914 breaks
+Particle 599294 breaks
+Particle 599302 breaks
+Particle 599500 breaks
+Particle 599775 breaks
+Particle 600168 negative p.a
+Particle 600958 negative p.a
+Particle 601118 breaks
+Particle 601287 negative p.a
+Particle 602360 breaks
+Particle 604244 breaks
+Particle 605549 breaks
+Particle 606324 breaks
+Particle 606749 breaks
+Particle 607004 breaks
+Particle 607178 breaks
+Particle 607352 negative p.a
+Particle 607448 breaks
+Particle 607490 breaks
+Particle 607507 breaks
+Particle 607652 breaks
+Particle 608425 negative p.a
+Particle 608757 breaks
+Particle 609015 breaks
+Particle 611124 breaks
+Particle 611230 breaks
+Particle 612465 breaks
+Particle 614196 breaks
+Particle 614218 negative p.a
+Particle 614313 breaks
+Particle 614419 breaks
+Particle 614704 breaks
+Particle 614781 breaks
+Particle 615335 breaks
+Particle 616455 breaks
+Particle 616963 breaks
+Particle 617356 negative p.a
+Particle 617426 breaks
+Particle 617654 breaks
+Particle 617979 breaks
+Particle 618338 breaks
+Particle 619151 breaks
+Particle 619640 breaks
+Particle 619866 breaks
+Particle 620071 negative p.a
+Particle 621041 breaks
+Particle 622099 breaks
+Particle 623644 negative p.a
+Particle 624400 negative p.a
+Particle 624896 breaks
+Particle 624996 negative p.a
+Particle 625176 breaks
+Particle 625262 breaks
+Particle 625356 breaks
+Particle 626281 breaks
+Particle 626677 breaks
+Particle 627051 breaks
+Particle 627359 breaks
+Particle 627531 breaks
+Particle 628101 breaks
+Particle 628796 breaks
+Particle 628901 negative p.a
+Particle 630128 breaks
+Particle 630524 breaks
+Particle 630569 breaks
+Particle 631049 negative p.a
+Particle 631479 breaks
+Particle 631647 breaks
+Particle 632593 breaks
+Particle 633695 negative p.a
+Particle 634060 breaks
+Particle 634656 negative p.a
+Particle 634671 breaks
+Particle 634728 breaks
+Particle 634741 breaks
+Particle 636048 breaks
+Particle 637148 breaks
+Particle 638248 negative p.a
+Particle 640126 breaks
+Particle 641634 breaks
+Particle 642162 breaks
+Particle 642423 breaks
+Particle 642489 breaks
+Particle 643038 negative p.a
+Particle 643056 breaks
+Particle 643072 negative p.a
+Particle 643318 negative p.a
+Particle 643892 negative p.a
+Particle 644491 breaks
+Particle 644974 negative p.a
+Particle 645925 breaks
+Particle 646201 breaks
+Particle 648925 breaks
+Particle 649023 negative p.a
+Particle 649836 breaks
+Particle 651448 negative p.a
+Particle 651768 negative p.a
+Particle 652146 breaks
+Particle 653857 breaks
+Particle 654123 breaks
+Particle 654331 negative p.a
+Particle 655542 breaks
+Particle 656579 negative p.a
+Particle 656987 breaks
+Particle 657064 breaks
+Particle 657103 breaks
+Particle 658165 breaks
+Particle 658686 negative p.a
+Particle 658882 breaks
+Particle 658947 negative p.a
+Particle 659217 breaks
+Particle 659420 breaks
+Particle 660606 breaks
+Particle 660691 breaks
+Particle 661329 breaks
+Particle 661875 breaks
+Particle 662054 breaks
+Particle 662090 negative p.a
+Particle 662312 breaks
+Particle 662664 breaks
+Particle 662896 breaks
+Particle 663363 breaks
+Particle 663364 breaks
+Particle 663810 negative p.a
+Particle 663835 breaks
+Particle 664037 breaks
+Particle 664305 negative p.a
+Particle 664791 breaks
+Particle 665839 breaks
+Particle 666074 negative p.a
+Particle 666133 negative p.a
+Particle 666541 breaks
+Particle 667003 breaks
+Particle 667223 negative p.a
+Particle 667484 breaks
+Particle 667763 breaks
+Particle 668312 breaks
+Particle 668555 breaks
+Particle 668661 breaks
+Particle 669095 negative p.a
+Particle 669108 breaks
+Particle 669117 negative p.a
+Particle 669210 breaks
+Particle 669563 breaks
+Particle 669577 breaks
+Particle 669973 negative p.a
+Particle 670562 negative p.a
+Particle 670796 negative p.a
+Particle 671383 negative p.a
+Particle 672240 breaks
+Particle 672358 breaks
+Particle 672724 breaks
+Particle 673222 negative p.a
+Particle 673812 breaks
+Particle 674508 breaks
+Particle 675141 breaks
+Particle 675944 negative p.a
+Particle 676032 breaks
+Particle 676556 breaks
+Particle 676752 breaks
+Particle 678079 breaks
+Particle 679128 breaks
+Particle 679213 breaks
+Particle 679306 negative p.a
+Particle 679514 breaks
+Particle 680055 breaks
+Particle 680400 negative p.a
+Particle 682136 breaks
+Particle 682311 negative p.a
+Particle 682718 negative p.a
+Particle 683292 breaks
+Particle 684242 breaks
+Particle 684918 breaks
+Particle 684945 negative p.a
+Particle 685384 breaks
+Particle 685979 breaks
+Particle 686125 breaks
+Particle 686772 breaks
+Particle 688478 breaks
+Particle 689251 negative p.a
+Particle 689368 breaks
+Particle 689762 negative p.a
+Particle 689805 breaks
+Particle 689867 breaks
+Particle 690067 breaks
+Particle 690480 breaks
+Particle 690965 breaks
+Particle 692026 breaks
+Particle 692320 breaks
+Particle 692579 breaks
+Particle 693450 breaks
+Particle 693821 breaks
+Particle 694204 negative p.a
+Particle 694639 negative p.a
+Particle 695143 breaks
+Particle 695761 negative p.a
+Particle 696031 negative p.a
+Particle 696288 breaks
+Particle 696658 breaks
+Particle 696727 negative p.a
+Particle 697318 breaks
+Particle 697847 negative p.a
+Particle 698759 breaks
+Particle 700692 negative p.a
+Particle 701104 breaks
+Particle 701891 negative p.a
+Particle 701924 negative p.a
+Particle 701983 breaks
+Particle 702402 breaks
+Particle 703175 breaks
+Particle 703539 negative p.a
+Particle 704142 breaks
+Particle 705463 breaks
+Particle 705729 breaks
+Particle 705793 negative p.a
+Particle 705860 breaks
+Particle 706208 negative p.a
+Particle 706240 negative p.a
+Particle 707271 negative p.a
+Particle 707459 breaks
+Particle 708145 negative p.a
+Particle 708498 breaks
+Particle 708625 breaks
+Particle 709881 breaks
+Particle 710122 negative p.a
+Particle 710434 breaks
+Particle 710840 negative p.a
+Particle 711522 negative p.a
+Particle 711538 breaks
+Particle 711646 breaks
+Particle 712000 breaks
+Particle 712678 breaks
+Particle 713055 breaks
+Particle 713303 breaks
+Particle 714424 breaks
+Particle 714565 negative p.a
+Particle 714834 breaks
+Particle 715713 breaks
+Particle 716172 negative p.a
+Particle 716274 breaks
+Particle 716819 negative p.a
+Particle 717539 breaks
+Particle 718254 breaks
+Particle 718751 breaks
+Particle 719337 breaks
+Particle 719655 breaks
+Particle 720002 negative p.a
+Particle 720020 breaks
+Particle 720707 breaks
+Particle 721001 breaks
+Particle 721110 breaks
+Particle 721578 breaks
+Particle 721870 breaks
+Particle 723017 negative p.a
+Particle 723286 breaks
+Particle 724220 breaks
+Particle 724900 breaks
+Particle 725297 negative p.a
+Particle 725692 negative p.a
+Particle 726242 breaks
+Particle 726358 breaks
+Particle 726458 negative p.a
+Particle 727078 breaks
+Particle 727082 breaks
+Particle 727202 breaks
+Particle 727261 breaks
+Particle 727457 breaks
+Particle 728695 breaks
+Particle 729429 negative p.a
+Particle 729891 breaks
+Particle 731871 breaks
+Particle 732024 breaks
+Particle 732322 breaks
+Particle 732626 breaks
+Particle 732631 negative p.a
+Particle 732943 negative p.a
+Particle 734072 negative p.a
+Particle 734137 breaks
+Particle 734197 breaks
+Particle 734447 breaks
+Particle 734669 breaks
+Particle 735029 negative p.a
+Particle 736676 breaks
+Particle 738067 breaks
+Particle 738271 breaks
+Particle 738483 breaks
+Particle 740500 breaks
+Particle 740637 breaks
+Particle 740864 negative p.a
+Particle 740902 breaks
+Particle 741170 negative p.a
+Particle 741650 breaks
+Particle 743558 breaks
+Particle 743586 breaks
+Particle 743861 breaks
+Particle 744451 breaks
+Particle 745051 negative p.a
+Particle 745550 breaks
+Particle 746193 breaks
+Particle 746732 breaks
+Particle 747511 negative p.a
+Particle 747873 negative p.a
+Particle 748907 negative p.a
+Particle 749853 breaks
+Particle 750509 breaks
+Particle 750714 breaks
+Particle 751233 breaks
+Particle 751280 breaks
+Particle 751312 breaks
+Particle 752006 breaks
+Particle 752480 breaks
+Particle 753110 breaks
+Particle 753288 negative p.a
+Particle 753439 breaks
+Particle 754143 breaks
+Particle 754531 breaks
+Particle 754624 breaks
+Particle 754728 breaks
+Particle 754805 breaks
+Particle 756242 negative p.a
+Particle 757272 negative p.a
+Particle 758348 breaks
+Particle 759022 breaks
+Particle 759990 breaks
+Particle 760086 breaks
+Particle 760103 breaks
+Particle 760957 breaks
+Particle 761337 negative p.a
+Particle 762317 breaks
+Particle 762482 breaks
+Particle 762703 negative p.a
+Particle 763835 negative p.a
+Particle 764000 breaks
+Particle 764595 breaks
+Particle 764619 negative p.a
+Particle 764837 breaks
+Particle 765263 breaks
+Particle 765360 breaks
+Particle 765915 breaks
+Particle 766090 breaks
+Particle 766399 breaks
+Particle 767283 negative p.a
+Particle 767949 negative p.a
+Particle 768084 breaks
+Particle 768527 breaks
+Particle 768607 breaks
+Particle 769253 negative p.a
+Particle 769734 breaks
+Particle 771271 breaks
+Particle 771783 negative p.a
+Particle 772135 breaks
+Particle 772204 breaks
+Particle 773636 breaks
+Particle 773840 breaks
+Particle 774708 breaks
+Particle 774939 breaks
+Particle 774962 breaks
+Particle 775010 negative p.a
+Particle 775830 breaks
+Particle 776318 breaks
+Particle 776535 breaks
+Particle 777295 breaks
+Particle 777725 breaks
+Particle 778331 breaks
+Particle 778994 negative p.a
+Particle 780723 breaks
+Particle 781066 negative p.a
+Particle 781707 breaks
+Particle 781965 breaks
+Particle 782098 breaks
+Particle 783844 breaks
+Particle 783914 breaks
+Particle 784284 breaks
+Particle 785627 breaks
+Particle 785957 negative p.a
+Particle 786188 negative p.a
+Particle 786245 negative p.a
+Particle 786748 breaks
+Particle 787019 negative p.a
+Particle 787725 negative p.a
+Particle 787748 negative p.a
+Particle 788093 negative p.a
+Particle 789004 breaks
+Particle 789660 negative p.a
+Particle 790589 negative p.a
+Particle 790733 breaks
+Particle 791077 breaks
+Particle 793321 negative p.a
+Particle 793811 negative p.a
+Particle 793888 negative p.a
+Particle 793960 negative p.a
+Particle 794961 breaks
+Particle 795280 negative p.a
+Particle 795502 negative p.a
+Particle 795795 breaks
+Particle 797118 breaks
+Particle 797519 negative p.a
+Particle 797662 negative p.a
+Particle 799444 breaks
+Particle 801284 breaks
+Particle 801302 breaks
+Particle 801896 negative p.a
+Particle 802492 breaks
+Particle 802631 breaks
+Particle 802661 negative p.a
+Particle 802797 breaks
+Particle 802801 negative p.a
+Particle 802809 negative p.a
+Particle 804073 breaks
+Particle 805350 breaks
+Particle 805435 breaks
+Particle 805835 breaks
+Particle 805949 breaks
+Particle 806383 negative p.a
+Particle 806515 breaks
+Particle 807390 negative p.a
+Particle 807918 breaks
+Particle 808854 breaks
+Particle 808957 breaks
+Particle 809127 breaks
+Particle 809191 breaks
+Particle 810046 breaks
+Particle 811762 breaks
+Particle 811825 breaks
+Particle 811965 breaks
+Particle 811999 negative p.a
+Particle 812040 breaks
+Particle 814789 negative p.a
+Particle 814794 breaks
+Particle 815573 breaks
+Particle 815924 breaks
+Particle 816211 breaks
+Particle 816293 negative p.a
+Particle 816974 negative p.a
+Particle 817153 negative p.a
+Particle 817495 negative p.a
+Particle 817739 breaks
+Particle 817803 breaks
+Particle 818109 breaks
+Particle 818214 negative p.a
+Particle 818467 breaks
+Particle 819737 breaks
+Particle 819752 breaks
+Particle 820070 breaks
+Particle 820478 negative p.a
+Particle 820665 breaks
+Particle 821406 negative p.a
+Particle 821605 breaks
+Particle 821871 breaks
+Particle 822771 negative p.a
+Particle 824655 breaks
+Particle 824944 breaks
+Particle 826593 negative p.a
+Particle 827506 negative p.a
+Particle 828225 breaks
+Particle 829064 breaks
+Particle 829317 breaks
+Particle 830151 breaks
+Particle 830686 breaks
+Particle 831068 breaks
+Particle 831613 breaks
+Particle 831910 breaks
+Particle 832011 breaks
+Particle 832580 breaks
+Particle 834642 breaks
+Particle 834785 breaks
+Particle 834921 negative p.a
+Particle 834946 breaks
+Particle 835032 breaks
+Particle 835473 negative p.a
+Particle 835652 breaks
+Particle 835667 breaks
+Particle 835768 breaks
+Particle 836156 breaks
+Particle 836387 breaks
+Particle 836647 breaks
+Particle 837402 breaks
+Particle 837550 breaks
+Particle 837610 breaks
+Particle 837805 breaks
+Particle 838982 breaks
+Particle 839362 negative p.a
+Particle 839391 negative p.a
+Particle 840346 negative p.a
+Particle 840431 negative p.a
+Particle 840572 negative p.a
+Particle 840807 breaks
+Particle 840918 negative p.a
+Particle 841695 breaks
+Particle 843644 breaks
+Particle 844375 breaks
+Particle 844477 breaks
+Particle 845028 breaks
+Particle 845731 breaks
+Particle 845859 breaks
+Particle 846617 breaks
+Particle 846846 breaks
+Particle 847694 breaks
+Particle 847754 breaks
+Particle 847832 negative p.a
+Particle 848788 breaks
+Particle 849415 breaks
+Particle 849582 breaks
+Particle 849830 negative p.a
+Particle 850017 breaks
+Particle 851030 breaks
+Particle 851550 breaks
+Particle 851552 breaks
+Particle 851731 negative p.a
+Particle 852761 negative p.a
+Particle 852979 negative p.a
+Particle 854019 breaks
+Particle 855425 breaks
+Particle 855684 breaks
+Particle 856105 breaks
+Particle 856583 breaks
+Particle 857011 negative p.a
+Particle 857294 breaks
+Particle 857429 breaks
+Particle 858155 breaks
+Particle 858593 negative p.a
+Particle 860171 breaks
+Particle 860233 breaks
+Particle 860700 breaks
+Particle 861186 negative p.a
+Particle 861301 negative p.a
+Particle 861416 negative p.a
+Particle 862558 breaks
+Particle 862573 breaks
+Particle 862673 negative p.a
+Particle 862963 breaks
+Particle 863285 breaks
+Particle 863457 negative p.a
+Particle 863558 negative p.a
+Particle 863755 breaks
+Particle 863992 breaks
+Particle 864180 breaks
+Particle 864830 breaks
+Particle 865402 breaks
+Particle 865983 breaks
+Particle 866947 breaks
+Particle 867064 breaks
+Particle 867170 breaks
+Particle 868351 breaks
+Particle 868420 breaks
+Particle 868425 breaks
+Particle 868557 negative p.a
+Particle 868797 breaks
+Particle 869180 negative p.a
+Particle 869326 breaks
+Particle 869896 breaks
+Particle 870311 breaks
+Particle 871972 breaks
+Particle 872173 breaks
+Particle 872462 breaks
+Particle 872745 breaks
+Particle 872907 negative p.a
+Particle 873384 breaks
+Particle 876260 breaks
+Particle 876408 breaks
+Particle 876490 negative p.a
+Particle 877186 negative p.a
+Particle 877193 negative p.a
+Particle 877719 breaks
+Particle 878374 breaks
+Particle 878433 negative p.a
+Particle 878692 breaks
+Particle 879322 negative p.a
+Particle 879770 breaks
+Particle 881203 breaks
+Particle 881348 breaks
+Particle 882013 breaks
+Particle 883896 breaks
+Particle 885523 breaks
+Particle 886521 negative p.a
+Particle 887570 negative p.a
+Particle 887956 breaks
+Particle 888785 breaks
+Particle 889670 breaks
+Particle 890686 breaks
+Particle 890721 negative p.a
+Particle 890995 negative p.a
+Particle 892359 breaks
+Particle 892492 negative p.a
+Particle 892770 breaks
+Particle 893010 negative p.a
+Particle 893173 breaks
+Particle 893603 breaks
+Particle 894171 breaks
+Particle 894696 breaks
+Particle 894708 breaks
+Particle 895091 breaks
+Particle 895325 breaks
+Particle 895674 breaks
+Particle 896641 breaks
+Particle 896716 breaks
+Particle 897656 breaks
+Particle 897673 breaks
+Particle 897779 negative p.a
+Particle 898117 negative p.a
+Particle 898398 negative p.a
+Particle 898962 breaks
+Particle 899088 breaks
+Particle 899491 breaks
+Particle 901132 negative p.a
+Particle 901256 breaks
+Particle 901535 breaks
+Particle 901804 breaks
+Particle 901924 breaks
+Particle 902044 negative p.a
+Particle 902299 negative p.a
+Particle 902956 negative p.a
+Particle 902986 breaks
+Particle 903079 negative p.a
+Particle 903243 breaks
+Particle 903963 breaks
+Particle 904962 breaks
+Particle 905077 breaks
+Particle 905272 breaks
+Particle 905382 negative p.a
+Particle 905418 breaks
+Particle 905475 breaks
+Particle 905736 breaks
+Particle 905764 breaks
+Particle 905900 negative p.a
+Particle 906005 breaks
+Particle 907146 breaks
+Particle 907157 negative p.a
+Particle 907213 negative p.a
+Particle 907245 negative p.a
+Particle 907315 breaks
+Particle 909152 negative p.a
+Particle 912138 breaks
+Particle 912225 negative p.a
+Particle 912262 breaks
+Particle 913028 breaks
+Particle 913458 breaks
+Particle 913981 breaks
+Particle 914082 breaks
+Particle 914778 breaks
+Particle 914883 breaks
+Particle 915810 breaks
+Particle 916294 breaks
+Particle 917149 breaks
+Particle 917176 breaks
+Particle 919282 negative p.a
+Particle 919763 negative p.a
+Particle 920300 breaks
+Particle 920552 breaks
+Particle 921103 negative p.a
+Particle 921479 breaks
+Particle 921771 negative p.a
+Particle 921854 breaks
+Particle 921984 breaks
+Particle 922737 breaks
+Particle 923084 breaks
+Particle 923653 breaks
+Particle 923660 breaks
+Particle 924122 breaks
+Particle 924426 breaks
+Particle 924546 breaks
+Particle 925008 breaks
+Particle 926585 breaks
+Particle 926760 negative p.a
+Particle 926807 breaks
+Particle 928705 breaks
+Particle 928991 breaks
+Particle 929362 breaks
+Particle 929411 breaks
+Particle 930368 breaks
+Particle 930660 breaks
+Particle 930734 breaks
+Particle 931157 negative p.a
+Particle 931604 negative p.a
+Particle 931622 breaks
+Particle 932186 negative p.a
+Particle 932328 breaks
+Particle 933355 breaks
+Particle 933891 negative p.a
+Particle 933965 breaks
+Particle 934075 negative p.a
+Particle 935054 negative p.a
+Particle 935086 breaks
+Particle 935175 breaks
+Particle 935274 negative p.a
+Particle 936502 breaks
+Particle 936574 breaks
+Particle 936612 breaks
+Particle 937105 breaks
+Particle 937436 breaks
+Particle 937445 breaks
+Particle 937854 negative p.a
+Particle 938048 breaks
+Particle 938264 breaks
+Particle 938556 breaks
+Particle 938811 negative p.a
+Particle 939207 breaks
+Particle 940044 breaks
+Particle 942161 breaks
+Particle 943077 negative p.a
+Particle 943727 negative p.a
+Particle 943826 breaks
+Particle 944847 breaks
+Particle 945141 breaks
+Particle 945733 breaks
+Particle 945848 breaks
+Particle 946290 breaks
+Particle 946336 breaks
+Particle 947026 breaks
+Particle 947486 breaks
+Particle 947557 negative p.a
+Particle 947966 breaks
+Particle 948722 breaks
+Particle 949300 breaks
+Particle 950863 breaks
+Particle 951829 breaks
+Particle 952062 breaks
+Particle 952799 negative p.a
+Particle 953029 breaks
+Particle 953238 breaks
+Particle 953284 breaks
+Particle 953809 breaks
+Particle 954455 breaks
+Particle 954481 negative p.a
+Particle 954512 breaks
+Particle 954978 breaks
+Particle 954979 negative p.a
+Particle 955170 negative p.a
+Particle 955229 breaks
+Particle 955862 negative p.a
+Particle 956022 breaks
+Particle 956281 negative p.a
+Particle 956691 breaks
+Particle 956766 negative p.a
+Particle 957036 breaks
+Particle 957181 breaks
+Particle 958397 negative p.a
+Particle 958547 negative p.a
+Particle 958577 breaks
+Particle 959518 breaks
+Particle 959959 breaks
+Particle 960054 negative p.a
+Particle 960180 negative p.a
+Particle 962849 breaks
+Particle 963343 breaks
+Particle 964349 breaks
+Particle 964417 breaks
+Particle 966233 breaks
+Particle 967563 breaks
+Particle 967848 breaks
+Particle 968044 breaks
+Particle 968365 negative p.a
+Particle 968731 breaks
+Particle 969144 negative p.a
+Particle 969760 negative p.a
+Particle 970378 breaks
+Particle 970489 breaks
+Particle 970576 breaks
+Particle 971140 breaks
+Particle 971184 breaks
+Particle 971282 breaks
+Particle 971599 breaks
+Particle 971640 breaks
+Particle 971646 negative p.a
+Particle 971671 breaks
+Particle 972828 breaks
+Particle 974108 negative p.a
+Particle 974405 breaks
+Particle 974632 negative p.a
+Particle 977680 breaks
+Particle 977806 breaks
+Particle 978158 breaks
+Particle 978625 breaks
+Particle 978646 breaks
+Particle 978808 breaks
+Particle 978867 negative p.a
+Particle 979020 negative p.a
+Particle 979098 negative p.a
+Particle 979513 negative p.a
+Particle 980817 breaks
+Particle 981545 breaks
+Particle 982581 breaks
+Particle 982832 breaks
+Particle 982996 negative p.a
+Particle 983134 breaks
+Particle 983582 breaks
+Particle 983695 negative p.a
+Particle 983840 breaks
+Particle 983856 breaks
+Particle 984469 negative p.a
+Particle 984476 breaks
+Particle 984966 breaks
+Particle 986666 breaks
+Particle 986731 negative p.a
+Particle 987159 breaks
+Particle 987723 breaks
+Particle 988492 breaks
+Particle 988546 breaks
+Particle 988905 breaks
+Particle 989130 negative p.a
+Particle 989645 breaks
+Particle 990732 breaks
+Particle 990852 breaks
+Particle 990932 negative p.a
+Particle 991073 breaks
+Particle 991835 breaks
+Particle 992196 negative p.a
+Particle 992525 breaks
+Particle 992742 negative p.a
+Particle 993485 breaks
+Particle 993805 breaks
+Particle 994083 negative p.a
+Particle 994326 breaks
+Particle 994499 breaks
+Particle 995165 breaks
+Particle 995377 negative p.a
+Particle 995868 breaks
+Particle 995919 breaks
+Particle 996383 negative p.a
+Particle 996887 breaks
+Particle 997196 breaks
+Particle 997354 negative p.a
+Particle 997573 breaks
+Particle 997883 negative p.a
+Particle 997926 breaks
+Particle 998121 breaks
+Particle 998313 negative p.a
+Particle 998412 breaks
+Particle 999621 breaks
+
+Joined
+
+Execution time using 8 thread(s), is: 2.35577146e+01

@@ -114,7 +114,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
 
 		//To save states:
 		//single.save_state(aeq,alpha,lamda,deta_dt,time);
-        std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda<< "\naeq " <<aeq ;
+        //std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda<< "\naeq " <<aeq ;
 
         //Stop at equator:
         //if(eql_dstr[p].lamda.at(i)>0) {	

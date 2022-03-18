@@ -18,6 +18,9 @@
 
 namespace h5 = HighFive;
 
+
+
+
 //Member function to find valid latitude range
 void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 {
@@ -36,6 +39,8 @@ void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 	lamda_end_d   -= Constants::h;     //This is the last (positive) valid value.
 	lamda_start_d  = -lamda_end_d;	 //This would be the first (negative) valid value. 		
 }
+
+
 
 int main(int argc, char **argv)
 {
