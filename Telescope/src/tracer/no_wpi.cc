@@ -74,8 +74,16 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
 
         //Check Validity:
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
-        if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break; }
-        if(alpha<0 || aeq<0)      { std::cout<<"\nParticle "<<p<<" negative p.a"; break; }
+        if(std::isnan(new_lamda)) 
+        { 
+            //std::cout<<"\nParticle "<<p<<" breaks"; 
+            break; 
+        }
+        if(alpha<0 || aeq<0)      
+        { 
+            //std::cout<<"\nParticle "<<p<<" negative p.a";
+            break;
+        }
 
         //Check Crossing:
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.

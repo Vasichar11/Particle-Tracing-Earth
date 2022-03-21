@@ -98,7 +98,7 @@ with open("dstr_before_and_after_WPI.csv", "w") as f:
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 2                 #seconds to distinquish events(time resolution)
+time_bin  = 3                 #seconds to distinquish events(time resolution)
 timesteps = int (t / time_bin)
 view = 180 
 sector_range = 10 #P.A bins #1deg
@@ -245,6 +245,7 @@ with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_
 
         ax.bar(np.arange(0.5,sectors+0.5),moved[timestep], width=0.3,color='blue',label="moved particles")               #plot difference with bars
         ax.bar(np.arange(0.5,sectors+0.5),precip[timestep], width=0.3, bottom=moved[timestep], color='orange', label="precipitated particles")#plot difference precipitated
+        ax.set_yscale("log")
 
         #Sector red ticks
         ax.set_xticks(ticks=np.arange(0.5,sectors,10)) 
