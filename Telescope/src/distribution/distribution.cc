@@ -206,7 +206,7 @@ int main(int argc, char **argv)
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic_init;
 		time_dstr[p]       = dstr[p].time_init;
 	}
-	h5::File file("h5files/static_test.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	h5::File file("h5files/test.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);

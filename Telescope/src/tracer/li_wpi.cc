@@ -42,8 +42,8 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     real new_lamda, new_aeq, new_ppar;
     bool trapped = true;                       //Particles trapped in Earth's magnetic field.
 
-    //std::cout.precision(8);                //Output 16 decimal precise
-	//std::cout<<std::scientific;		        //For e notation representation
+    std::cout.precision(8);                //Output 16 decimal precise
+	std::cout<<std::scientific;		        //For e notation representation
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
     while(i<Constants::Nsteps_wpi)          
@@ -129,7 +129,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         i++;  
 
-        //std::cout<<"\n\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda*Constants::R2D<< "\nalpha "<< alpha*Constants::R2D << "\naeq " <<aeq*Constants::R2D ;
+        std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda<< "\naeq " <<aeq ;
     }
 
 

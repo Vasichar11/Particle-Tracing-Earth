@@ -28,7 +28,7 @@ const real L_shell=5; 			 				//L_shell of particle. Constant for now.
 const real Ekev0=590;               			//Initial energy keV
 const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
-const real aeq0_deg=10;                          //If single values are used.
+const real aeq0_deg=60;                          //If single values are used.
 const real aeq0=aeq0_deg*D2R;
 const real lamda0_deg=0;
 const real lamda0=lamda0_deg*D2R;
@@ -53,7 +53,7 @@ const real By_wave=1*pow(10,-9);
 const real t = 1;        				  	    //Simulation time in seconds.
 const real t_nowpi = 1;                        //NoWPI time.
 const real t_wpi = t - t_nowpi;                 //WPI time.
-const real h=0.1;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
+const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
 const int64_t Nsteps_nowpi= t_nowpi/h;          //noWPI step count
 const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
@@ -63,8 +63,8 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 10000;  	    		    
-const int64_t lamda_dstr  = 10000; //only one latitude per aeq					
+const int64_t aeq_dstr    = 1;  	    		    
+const int64_t lamda_dstr  = 1; //only one latitude per aeq					
 const int64_t population  = lamda_dstr * aeq_dstr;   
 
 const real aeq_start_d    = 1;    		  			 				
