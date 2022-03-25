@@ -25,7 +25,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     Species hydrogen(Constants::m_H,  Constants::q_i, 0.94); 
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
     
-	std::cout.precision(32);			//Output 16 decimal precise
+	std::cout.precision(8);			//Output 16 decimal precise
 	std::cout<<std::scientific;		//For e notation representation
 
     int i=0;
