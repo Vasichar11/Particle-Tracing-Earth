@@ -34,7 +34,6 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT)
     //real vres, Eres;
     real Bxwc,Bzwc,Bywc,Exwc,Eywc,Ezwc,Bwc;
     real p_mag;
-    bool trapped=1;
     //Tuples for WPI
     std::tuple<real, real, real, real, real> stix;
     std::tuple<real, real, real, real> disp;
@@ -227,17 +226,17 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT)
         new_aeq = aeq + (Constants::h/6)*(q1+2*q2+2*q3+q4);
         if( (0<new_aeq && new_aeq<Constants::alpha_lc) || (new_aeq>M_PI-Constants::alpha_lc && new_aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
         {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
-            trapped = 0;
+            single.trapped = 0;
         }
 
         //Check Precipitation:
         new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        if(!trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
+        if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
         {   
             //To save states of precipitating particles:
             #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
             {   
-                single.save_state(p, lamda, alpha, aeq, time);
+                single.escaping_state(p, lamda, alpha, aeq, time);
                 //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
                 single.escaped = true;
             }
@@ -248,13 +247,10 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         i++;  
 
-		//To save states:
-		//single.save_state(aeq,alpha,lamda,deta_dt,time);
-        //std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper<< "\neta " << eta << "\nlamda " <<lamda<< "\naeq " <<aeq ;
+        //To save any states:
+		single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
+        std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
-        //Stop at equator:
-        //if(eql_dstr[p].lamda.at(i)>0) {	
-        //	break;}	
     }
 
 }

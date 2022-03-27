@@ -40,7 +40,6 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     real p_mag,gama,w_h,dwh_ds,kz,Fpar,Fper,Ftheta;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real new_lamda, new_aeq, new_ppar;
-    bool trapped = true;                       //Particles trapped in Earth's magnetic field.
 
     std::cout.precision(8);                //Output 16 decimal precise
 	std::cout<<std::scientific;		        //For e notation representation
@@ -109,16 +108,16 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
         new_aeq = aeq + (Constants::h/6)*(q1+2*q2+2*q3+q4);
         if( (0<new_aeq && new_aeq<Constants::alpha_lc) || (new_aeq>M_PI-Constants::alpha_lc && new_aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
         {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
-            trapped = false;
+            single.trapped = false;
         }
         //Check Precipitation:
         new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        if(!trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
+        if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
         {   
             //To save states of precipitating particles:
             #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
             {   
-                single.save_state(p, lamda, alpha, aeq, time);
+                single.escaping_state(p, lamda, alpha, aeq, time);
                 //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper<< " eta " << eta << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
                 single.escaped = true;
             }
@@ -128,8 +127,10 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
         new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, o1, o2, o3, o4, p1, p2, p3, p4, q1, q2, q3, q4);
         time  = time + Constants::h; 
         i++;  
-
-        std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda<< "\naeq " <<aeq ;
+		
+        //To save any states:
+		single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
+        //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
     }
 
 

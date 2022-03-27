@@ -20,7 +20,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/nowpi15s_10e6_normals.h5","r")
+f1 = h5py.File("h5files/1p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -43,10 +43,17 @@ precip_lamda   = f1["precip_lamda"][()]
 precip_alpha   = f1["precip_alpha"][()]
 precip_aeq     = f1["precip_aeq"][()]
 precip_time    = f1["precip_time"][()] 
+saved_id    = f1["saved_id"][()]
+saved_lamda = f1["saved_lamda"][()]
+saved_alpha = f1["saved_alpha"][()]
+saved_aeq   = f1["saved_aeq"][()]
+saved_ppar  = f1["saved_ppar"][()]
+saved_pper  = f1["saved_pper"][()]
+saved_time  = f1["saved_time"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/both15s_10e6_normals.h5","r")
+f2 = h5py.File("h5files/1p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -69,10 +76,17 @@ precip_lamda_both   = f2["precip_lamda"][()]
 precip_alpha_both   = f2["precip_alpha"][()]
 precip_aeq_both     = f2["precip_aeq"][()]
 precip_time_both    = f2["precip_time"][()] 
+savedwpi_id    = f2["saved_id"][()]
+savedwpi_lamda = f2["saved_lamda"][()]
+savedwpi_alpha = f2["saved_alpha"][()]
+savedwpi_aeq   = f2["saved_aeq"][()]
+savedwpi_ppar  = f2["saved_ppar"][()]
+savedwpi_pper  = f2["saved_pper"][()]
+savedwpi_time  = f2["saved_time"][()]
 f2.close()
 
 #Distribution read
-f3 = h5py.File("h5files/10e6_normals.h5","r")
+f3 = h5py.File("h5files/1p_testAEQ_testLAMDA.h5","r")
 aeq0         = f3["aeq"][()]
 lamda0       = f3["lat"][()]
 aeq0_bins    = f3["aeq0_bins"][()]
@@ -113,8 +127,29 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
     colors.append('#%06X' % randint(0, 0xFFFFFF))
 
 
-######################################## PLOT INITIAL DISTRIBUTION #######################################
+######################################## PLOT SAVED PARTICLE #######################################
+#"""
+fig,ax = plt.subplots(2,2)
+ax[0,0].scatter(saved_time,saved_lamda*R2D, s=1)
+ax[0,0].scatter(savedwpi_time,savedwpi_lamda*R2D, s=1, alpha=0.01)
+ax[0,0].set(xlabel="Time", ylabel="lamda")
 
+ax[0,1].scatter(saved_lamda*R2D,saved_alpha*R2D, s=1)
+ax[0,1].scatter(savedwpi_lamda*R2D,savedwpi_alpha*R2D, s=1, alpha=0.01)
+ax[0,1].set(xlabel="lamda", ylabel="alpha")
+
+ax[1,0].scatter(saved_alpha*R2D,saved_ppar, s=1)
+ax[1,0].scatter(savedwpi_alpha*R2D,savedwpi_ppar, s=1, alpha=0.01)
+ax[1,0].set(xlabel="alpha", ylabel="ppar")
+
+ax[1,1].scatter(saved_alpha*R2D,saved_pper, s=1)
+ax[1,1].scatter(savedwpi_alpha*R2D,savedwpi_pper, s=1, alpha=0.01)
+ax[1,1].set(xlabel="alpha", ylabel="pper")
+#fig.savefig("SingleParticle.png",dpi=200)
+
+#"""
+######################################## PLOT INITIAL DISTRIBUTION #######################################
+#"""
 fig, ax = plt.subplots()
 for sec in range(0,sectors):
     ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
@@ -129,10 +164,9 @@ ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
 fig.savefig("simulation_MM/10e6_normals_2.png",dpi=200)
-
-
+#"""
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
-
+#"""
 #noWPI
 fig, ax = plt.subplots()
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
@@ -154,9 +188,9 @@ plt.annotate("SATELLITE",xy=(t_both/2,telescope_lamda_both+0.0002),color="blue",
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
-
+#"""
 ############################################## BINNING ####################################################
-#Binning aeq0 or aeq? Satellite @ equator.
+#"""
 #noWPI
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux  = [  0 for i in range(timesteps)]
@@ -199,8 +233,9 @@ for time,pa in zip(precip_time_both,precip_aeq_both):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_precip[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux_precip[timestep] += 1
-
+#"""
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
+#"""
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
 ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flux")
@@ -214,8 +249,9 @@ for timestep in range(0,timesteps):
     if timestep==0:#plot legend once
         ax.legend()
 plt.savefig("simulation_MM/Particle_sum_bins"+str(time_bin)+"s.png", dpi=100)
-
+#"""
 ##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################
+#"""
 moved  = [ [0 for i in range(sectors)] for j in range(timesteps) ]   #sctr_flux[timesteps][sectors]
 precip = [ [0 for i in range(sectors)] for j in range(timesteps) ]   
 lost   = [ 0 for i in range(sectors)]   
@@ -225,8 +261,9 @@ for sector in range(0,sectors):
         precip[timestep][sector] = sctr_flux_precip[sector][timestep] #particles that got lost in this timestep and sector.
         lost[sector] = lost[sector] + precip[timestep][sector]        #lost particles until this timestep, for this sector.
         moved[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - lost[sector] #find difference between simulations and remove lost particles
-        
+ #"""       
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
+#"""
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
 metadata2 = dict(title="P.A binning",comment="P.A bins of"+str(sector_range)+"degrees")
@@ -264,3 +301,4 @@ with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_
         ax.legend()
         writer.grab_frame()
         ax.clear() #clear data 
+#"""

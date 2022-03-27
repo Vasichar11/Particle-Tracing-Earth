@@ -14,10 +14,9 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     //real uper     =  single.uper_init;
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
-    real new_lamda,new_ppar;
+    real new_lamda, new_ppar;
     real w_h, dwh_ds, Bmag, p_mag, gama;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,o1,o2,o3,o4,p1,p2,p3,p4;
-    bool trapped = true;
 
     //Objects for each specie.
     Species electron(Constants::m_e,  Constants::q_e, 1); 
@@ -74,16 +73,8 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
 
         //Check Validity:
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
-        if(std::isnan(new_lamda)) 
-        { 
-            //std::cout<<"\nParticle "<<p<<" breaks"; 
-            break; 
-        }
-        if(alpha<0 || aeq<0)      
-        { 
-            //std::cout<<"\nParticle "<<p<<" negative p.a";
-            break;
-        }
+        if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break; }
+        if(alpha<0 || aeq<0)      { std::cout<<"\nParticle "<<p<<" negative p.a"; break; }
 
         //Check Crossing:
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
@@ -98,17 +89,17 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         //Check Trapping:
         if( (0<aeq && aeq<Constants::alpha_lc) || (aeq>M_PI-Constants::alpha_lc && aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
         {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
-            trapped = false;
+            single.trapped = false;
         }
 
         //Check Precipitation:
         new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        if(!trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
+        if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
         {   
             //To save states of precipitating particles:
             #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
             {   
-                single.save_state(p, lamda, alpha, aeq, time);
+                single.escaping_state(p, lamda, alpha, aeq, time);
                 //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
                 single.escaped = true ;
             }
@@ -124,14 +115,10 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         i++;  
        
+		//To save any states:
+		single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
+        //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
-		//To save states:
-		//single.save_state(aeq,alpha,lamda,deta_dt,time);
-        std::cout<<"\n\nalpha "<<alpha << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda<< "\naeq "<<aeq;
-
-        //Stop at equator:
-        //if(eql_dstr[p].lamda.at(i)>0) {	
-        //	break;}	
     }
     
 

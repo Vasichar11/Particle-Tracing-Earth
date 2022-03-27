@@ -152,11 +152,12 @@ int main(int argc, char **argv)
 		//--------------Latitude dstr--------------//
 
 
-			const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
+			const real Beq0 = Bmag_dipole(0);   		    //Beq isn't always Beq0?
 			Blam0           = Bmag_dipole(lamda0);
 			salpha0         = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
-			k               = ((aeq0*   Constants::R2D>90)    ? 1 : 0);     					   //kEN...(here k=0 or 1 ?)
-			alpha0          = pow(-1,k)*asin(salpha0)+k*M_PI;			 						   // sinx = a => x=(-1)^k * asin(a) + k*pi
+			if(aeq0*Constants::R2D>90) k=1;				   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
+			else					   k=0;				   //We do this to distribute them, half upwards, half downwards.
+			alpha0 = pow(-1,k)*asin(salpha0)+k*M_PI;       // sinx = a => x=(-1)^k * asin(a) + k*pi
 			//Initialize and print particle state for this equatorial P.A and latitude.
 			dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,lamda_start_d,lamda_end_d);
 			//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D;	
@@ -188,7 +189,7 @@ int main(int argc, char **argv)
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//
 	
-	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population);
+	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population), trapped_dstr(Constants::population), escaped_dstr(Constants::population);
 
 	//Assign from struct to 1d vectors.
 	for(int p=0; p<Constants::population; p++)
@@ -205,8 +206,12 @@ int main(int argc, char **argv)
 		Ekin_dstr[p]       = dstr[p].Ekin_init;
 		M_adiabatic_dstr[p]= dstr[p].M_adiabatic_init;
 		time_dstr[p]       = dstr[p].time_init;
+		trapped_dstr[p]    = dstr[p].trapped;
+		escaped_dstr[p]    = dstr[p].escaped;
 	}
-	h5::File file("h5files/test.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+	
+	std::string file_name = "h5files/" + std::to_string(Constants::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA.h5";
+	h5::File file(file_name, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
 	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);
@@ -220,6 +225,8 @@ int main(int argc, char **argv)
 	h5::DataSet data_time           = file.createDataSet("time", time_dstr);
 	h5::DataSet data_M_adiabatic    = file.createDataSet("M_adiabatic", M_adiabatic_dstr);
 	h5::DataSet data_Ekin           = file.createDataSet("Ekin", Ekin_dstr);
+	h5::DataSet data_trapped        = file.createDataSet("trapped", trapped_dstr);
+	h5::DataSet data_escaped        = file.createDataSet("escaped", escaped_dstr);
 	h5::DataSet aeq0bins            = file.createDataSet("aeq0_bins", aeq0_bins);
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//

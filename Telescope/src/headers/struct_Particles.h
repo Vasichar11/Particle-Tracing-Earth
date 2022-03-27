@@ -16,13 +16,15 @@ struct Particles
 	void initialize(real eta0, real aeq0, real alpha0, real lamda0, real Ekev0, real Blam0, real zeta0, real time0, real lamda_start_d, real lamda_end_d);
 		
 	//Member function to save particle states.
-	void save_state(int id,real new_lamda, real new_alpha, real new_aeq, real new_time);
+	void escaping_state(int id,real new_lamda, real new_alpha, real new_aeq, real new_time);
+	void save_state(int id, real new_lamda, real new_alpha, real new_aeq, real new_ppar, real new_pper, real new_time);
+	
 
 	void lamda_domain(real aeq0);
 
 
 	//Member variables.
-	bool escaped;
+	bool escaped,trapped;
 	//Initials
 	real lamda_init, zeta_init, uper_init, upar_init, ppar_init, pper_init, alpha_init, aeq_init, eta_init, M_adiabatic_init, Ekin_init, time_init;
 	//Domain variables
@@ -32,7 +34,7 @@ struct Particles
 	//When lost
 	real lamda_lost, alpha_lost, aeq_lost, time_lost, id_lost;  //, ppar_lost, pper_lost, zeta_lost, uper_lost, upar_lost,  eta_lost, M_adiabatic_lost, Ekin_lost;
 
-	//If vectors are needed.
-	//std::vector<real> id, lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, deta_dt, Ekin, time; 
+	//If vectors for save_state are needed;
+	std::vector<real> id, lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, deta_dt, Ekin, time; 
 
 };  	

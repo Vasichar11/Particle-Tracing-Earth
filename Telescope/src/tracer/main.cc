@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 	std::string string_bell_wpi = "bell_wpi";
 	
 	//---ARGV ERROR---//
-	if( argc<2   ||    argv[1]!=string_no_wpi    ||    ( argc==3 && argv[2]!=string_bell_wpi && argv[2]!=string_li_wpi ) )
+	if( (argc<2 || argc>3)   ||    argv[1]!=string_no_wpi    ||    ( argc==3 && argv[2]!=string_bell_wpi && argv[2]!=string_li_wpi ) )
 	{ 
 		std::cout<<"\nArgument variables don't match any of the program's possible implementations.\nSet second argv=no_wpi and third argv from the list:(bell_wpi, li_wpi) to introduce a wave.\n"<<std::endl;
 		return EXIT_FAILURE;	
@@ -43,9 +43,9 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/test.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/10000p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
-	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0;
+	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0;
 	//Read dataset from h5file.
 	h5::DataSet data_lat 	     = distribution_file.getDataSet("lat");
 	h5::DataSet data_aeq	     = distribution_file.getDataSet("aeq");
@@ -59,6 +59,8 @@ int main(int argc, char **argv)
 	h5::DataSet data_time 		 = distribution_file.getDataSet("time");
 	h5::DataSet data_M_adiabatic = distribution_file.getDataSet("M_adiabatic");
 	h5::DataSet data_Ekin 		 = distribution_file.getDataSet("Ekin");
+	h5::DataSet data_trapped     = distribution_file.getDataSet("trapped");
+	h5::DataSet data_escaped	 = distribution_file.getDataSet("escaped");
 	//Convert to single vector.
 	data_lat.read(lamda_0);
 	data_aeq.read(aeq_0);
@@ -72,6 +74,8 @@ int main(int argc, char **argv)
 	data_time.read(time_0);
 	data_M_adiabatic.read(M_adiabatic_0);
 	data_Ekin.read(Ekin_0);
+	data_trapped.read(trapped_0);
+	data_escaped.read(escaped_0);
 
 
 	int Population = lamda_0.size(); //Take the population from the h5 file to avoid mistakes.
@@ -95,6 +99,9 @@ int main(int argc, char **argv)
 		dstr[p].zeta_init   = zeta_0.at(p);
 		dstr[p].eta_init    = eta_0.at(p);
 		dstr[p].M_adiabatic_init  = M_adiabatic_0.at(p);
+		dstr[p].trapped     = trapped_0.at(p);
+		dstr[p].escaped     = escaped_0.at(p);
+
 	}
 	std::cout<<"\nParticle population: "<< Population <<std::endl;
 
@@ -188,11 +195,32 @@ int main(int argc, char **argv)
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
+ 
 	//Assign from struct to vectors.
 	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
+	std::vector<real> saved_id, saved_lamda, saved_alpha, saved_aeq, saved_time, saved_ppar, saved_pper; //(declare if needed)
+
+	//Find Nsteps. Depends on simulation type.
+	int64_t Nsteps=Constants::Nsteps_nowpi;
+	if (argc==3) Nsteps += Constants::Nsteps_wpi; //If WPI simulation follows.
+	
+
 	for(int p=0; p<Population; p++) 
 	{
-		//Particle states after noWPI time.
+		
+		//All particle states(if needed)
+		for(int i=0;i<Nsteps;i++)
+		{			
+			saved_id.push_back(dstr[p].id.at(i));
+			saved_lamda.push_back(dstr[p].lamda.at(i));
+			saved_aeq.push_back(dstr[p].aeq.at(i));
+			saved_alpha.push_back(dstr[p].alpha.at(i));
+			saved_ppar.push_back(dstr[p].ppar.at(i));
+			saved_pper.push_back(dstr[p].pper.at(i));
+			saved_time.push_back(dstr[p].time.at(i));
+		}
+
+		//Last particle states(that can become first states for next simulation).
 		lamda00.push_back(dstr[p].lamda_end);
     	ppar00.push_back(dstr[p].ppar_end); 
     	pper00.push_back(dstr[p].pper_end); 
@@ -201,7 +229,7 @@ int main(int argc, char **argv)
     	eta00.push_back(dstr[p].eta_end); 
     	time00.push_back(dstr[p].time_end);
 
-		//Particles that escaped.
+		//Precipitating Particles
 		if(dstr[p].escaped) 
 		{
 			precip_id.push_back(dstr[p].id_lost);
@@ -212,13 +240,20 @@ int main(int argc, char **argv)
 		}
 	}
 
-	h5::File file("h5files/test_result.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+
+	//File name based on the argument variables
+	std::string  save_file = "h5files/" + std::to_string(Constants::population) + "p_";   
+	if 	  	(argc==2) save_file = save_file  + std::string(argv[1]) ;
+	else if (argc==3) save_file = save_file  + std::string("both"); 
+	save_file = save_file + ".h5";
+
+	h5::File file(save_file, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Simulation data and Telescope specification - Scalars 
 	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
 	h5::DataSet data_population    = file.createDataSet("population", 	Population);
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
-	h5::DataSet t			       = file.createDataSet("t", 			Constants::t);
+	h5::DataSet t			       = file.createDataSet("t", 			Nsteps*Constants::h);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
@@ -227,13 +262,22 @@ int main(int argc, char **argv)
 	h5::DataSet detected_alpha      = file.createDataSet("ODPT.alpha", ODPT.alpha);
 	h5::DataSet detected_aeq        = file.createDataSet("ODPT.aeq", ODPT.aeq);
 
+	//Precipitating Particles
+	h5::DataSet lost_id     = file.createDataSet("precip_id", precip_id);
+	h5::DataSet lost_lamda  = file.createDataSet("precip_lamda", precip_lamda);
+	h5::DataSet lost_alpha  = file.createDataSet("precip_alpha", precip_alpha);
+	h5::DataSet lost_aeq    = file.createDataSet("precip_aeq", precip_aeq);
+	h5::DataSet lost_time   = file.createDataSet("precip_time", precip_time);
 
-	//Saved Particles that Precipitate.
-	h5::DataSet saved_id     = file.createDataSet("precip_id", precip_id);
-	h5::DataSet saved_lamda  = file.createDataSet("precip_lamda", precip_lamda);
-	h5::DataSet saved_alpha  = file.createDataSet("precip_alpha", precip_alpha);
-	h5::DataSet saved_aeq    = file.createDataSet("precip_aeq", precip_aeq);
-	h5::DataSet saved_time   = file.createDataSet("precip_time", precip_time);
+
+	//All particle states(if needed)
+	h5::DataSet all_id     = file.createDataSet("saved_id", saved_id);
+	h5::DataSet all_lamda  = file.createDataSet("saved_lamda", saved_lamda);
+	h5::DataSet all_alpha  = file.createDataSet("saved_alpha", saved_alpha);
+	h5::DataSet all_aeq    = file.createDataSet("saved_aeq", saved_aeq);
+	h5::DataSet all_ppar   = file.createDataSet("saved_ppar", saved_ppar);
+	h5::DataSet all_pper   = file.createDataSet("saved_pper", saved_pper);
+	h5::DataSet all_time   = file.createDataSet("saved_time", saved_time);
 
 	//Particles states after noWPI time.
 	h5::DataSet ending_lamda = file.createDataSet("lamda00", lamda00);
