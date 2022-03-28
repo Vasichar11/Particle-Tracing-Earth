@@ -1,3 +1,4 @@
+from ipaddress import summarize_address_range
 import numpy as np 
 import random
 import sys
@@ -20,7 +21,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/1p_no_wpi.h5","r")
+f1 = h5py.File("h5files/10000p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -31,13 +32,13 @@ telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
 Ekev0          = f1["Ekev0"][()]
-lamda00        = f1["lamda00"][()] #States when noWPI stops
-ppar00         = f1["ppar00"][()]
-pper00         = f1["pper00"][()]
-alpha00        = f1["alpha00"][()]
-aeq00          = f1["aeq00"][()]
-eta00          = f1["eta00"][()]
-time00         = f1["time00"][()]
+#lamda00        = f1["lamda00"][()] #States when noWPI stops
+#ppar00         = f1["ppar00"][()]
+#pper00         = f1["pper00"][()]
+#alpha00        = f1["alpha00"][()]
+#aeq00          = f1["aeq00"][()]
+#eta00          = f1["eta00"][()]
+#time00         = f1["time00"][()]
 precip_id      = f1["precip_id"][()]
 precip_lamda   = f1["precip_lamda"][()]
 precip_alpha   = f1["precip_alpha"][()]
@@ -53,7 +54,7 @@ precip_time    = f1["precip_time"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/1p_both.h5","r")
+f2 = h5py.File("h5files/10000p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -64,13 +65,13 @@ telescope_lamda_both= f2["ODPT.latitude"][()]
 population_both     = f2["population"][()]
 t_both              = f2["t"][()]
 Ekev0_both          = f2["Ekev0"][()]
-lamda00_both        = f2["lamda00"][()] #States when noWPI stops
-ppar00_both         = f2["ppar00"][()]
-pper00_both         = f2["pper00"][()]
-alpha00_both        = f2["alpha00"][()]
-aeq00_both          = f2["aeq00"][()]
-eta00_both          = f2["eta00"][()]
-time00_both         = f2["time00"][()]
+#lamda00_both        = f2["lamda00"][()] #States when noWPI stops
+#ppar00_both         = f2["ppar00"][()]
+#pper00_both         = f2["pper00"][()]
+#alpha00_both        = f2["alpha00"][()]
+#aeq00_both          = f2["aeq00"][()]
+#eta00_both          = f2["eta00"][()]
+#time00_both         = f2["time00"][()]
 precip_id_both      = f2["precip_id"][()]
 precip_lamda_both   = f2["precip_lamda"][()]
 precip_alpha_both   = f2["precip_alpha"][()]
@@ -96,8 +97,8 @@ f2.close()
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 3                 #seconds to distinquish events(time resolution)
-timesteps = int (t / time_bin)
+time_bin  = 1                 #seconds to distinquish events(time resolution)
+timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
 view = 180 
 sector_range = 10 #P.A bins #1deg
 sectors = int(view/sector_range)
@@ -130,9 +131,7 @@ ax[1,1].scatter(saved_alpha*R2D,saved_pper, s=1)
 ax[1,1].scatter(savedwpi_alpha*R2D,savedwpi_pper, s=1, alpha=0.01)
 ax[1,1].set(xlabel="alpha", ylabel="pper")
 fig.savefig("SingleParticle.png",dpi=200)
-
 """
-
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 #"""
 #noWPI
@@ -162,11 +161,12 @@ plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
 #noWPI
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux  = [  0 for i in range(timesteps)]
-for time,pa in zip(detected_time,detected_aeq): #Iterate in both array elements. No sorting required.
+for time,pa,id in zip(detected_time,detected_aeq,detected_id): #Iterate in both array elements. No sorting required.
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
-        print("Particle",id,"with pa",pa*R2D,"needs sector",sector,"in timestep",timestep)
+    if(sector>=sectors or timestep>timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+        #print("noWPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
+        #sys.exit(1) 
         continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
@@ -176,11 +176,12 @@ for time,pa in zip(detected_time,detected_aeq): #Iterate in both array elements.
 #BOTH
 sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_both  = [  0 for i in range(timesteps)]
-for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id):
+for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id_both):
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
-        print("Particle",id,"with pa",pa*R2D,"needs sector",sector,"in timestep",timestep)
+    if(sector>=sectors or timestep>timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+        #print("WPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
+        #sys.exit(1)
         continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
@@ -194,9 +195,10 @@ sum_flux_precip = [0 for i in range(timesteps)]
 for time,pa in zip(precip_time_both,precip_aeq_both):
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    #if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
-    #    print("Particle with pa",pa*R2D,"needs sector",sector,"in timestep",timestep)
-    #    continue 
+    if(sector>=sectors or timestep>timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+        #print("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
+        #sys.exit(1) 
+        continue 
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_precip[sector][timestep] += 1              #Number of detected particles in this sector-timestep.

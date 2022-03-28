@@ -18,7 +18,8 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     static std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
 
-    
+    std::cout.precision(64);                //Output 16 decimal precise
+	std::cout<<std::scientific;		        //For e notation representation
 
 
     //Assign last particle states from nowpi simulation.
@@ -32,6 +33,8 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     //real zeta     =  single.zeta_end; 
     //real upar     =  single.upar_end; 
     //real uper     =  single.uper_end;
+    std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
     int index;                              //To find minimum difference between latitudes
     int i=0;
@@ -41,8 +44,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real new_lamda, new_aeq, new_ppar;
 
-    std::cout.precision(8);                //Output 16 decimal precise
-	std::cout<<std::scientific;		        //For e notation representation
+
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
     while(i<Constants::Nsteps_wpi)          
@@ -131,7 +133,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
 		
         //To save any states:
 		//single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
-        //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+        std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
     }
 
 

@@ -3,6 +3,10 @@
 //Adiabatic motion.
 void no_wpi(int p, Particles &single, Telescope &ODPT)
 {
+        
+	std::cout.precision(64);			//Output 16 decimal precise
+	std::cout<<std::scientific;		//For e notation representation
+
     real lamda    =  single.lamda_init;
     real ppar     =  single.ppar_init; 
     real pper     =  single.pper_init; 
@@ -12,6 +16,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     //real zeta     =  single.zeta_init; 
     //real upar     =  single.upar_init; 
     //real uper     =  single.uper_init;
+    std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda, new_ppar;
@@ -23,9 +28,6 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     Species oxygen  (Constants::m_O,  Constants::q_i, 0.006); 
     Species hydrogen(Constants::m_H,  Constants::q_i, 0.94); 
     Species helium  (Constants::m_He, Constants::q_i, 0.054);
-    
-	std::cout.precision(8);			//Output 16 decimal precise
-	std::cout<<std::scientific;		//For e notation representation
 
     int i=0;
     
@@ -117,7 +119,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
        
 		//To save any states:
 		//single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
-        //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+        std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
     }
     
