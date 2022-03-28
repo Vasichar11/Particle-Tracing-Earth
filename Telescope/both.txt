@@ -1,0 +1,109 @@
+
+Particle population: 10000
+
+
+10 sec NoWPI Simulation
+
+Execution time estimation for 8 THREAD run: 13.3333 minutes.
+Execution time estimation for 20 THREAD run: 28.3333 minutes.
+
+Forked...
+Running threads: 20
+
+
+Joined
+
+Execution time using 20 thread(s), is: 1.02771291e+03
+
+
+5.00000000e+00 sec ray tracing WPI Simulation using Li formulas.
+Execution time estimation for 20 THREAD run: 8.33333333e+01 minutes.
+
+Forked...
+Running threads: 20
+
+Particle 9.70000000e+01 negative p.a
+Particle 1.78000000e+02 negative p.a
+Particle 1.76000000e+02 negative p.a
+Particle 2.38000000e+02 negative p.a
+Particle 3.62000000e+02 negative p.a
+Particle 3.67000000e+02 negative p.a
+Particle 3.83000000e+02 negative p.a
+Particle 4.29000000e+02 negative p.a
+Particle 4.36000000e+02 negative p.a
+Particle 9.95000000e+02 negative p.a
+Particle 1.17100000e+03 negative p.a
+Particle 1.19600000e+03 negative p.a
+Particle 1.59900000e+03 negative p.a
+Particle 1.98900000e+03 negative p.a
+Particle 2.49800000e+03 negative p.a
+Particle 2.76600000e+03 negative p.a
+Particle 2.76800000e+03 negative p.a
+Particle 2.79200000e+03 negative p.a
+Particle 2.87600000e+03 negative p.a
+Particle 2.99400000e+03 negative p.a
+Particle 3.01300000e+03 negative p.a
+Particle 3.05200000e+03 negative p.a
+Particle 3.06900000e+03 negative p.a
+Particle 3.15400000e+03 negative p.a
+Particle 3.22700000e+03 negative p.a
+Particle 3.24300000e+03 negative p.a
+Particle 3.32400000e+03 negative p.a
+Particle 3.36000000e+03 negative p.a
+Particle 4.03300000e+03 negative p.a
+Particle 4.11100000e+03 negative p.a
+Particle 4.13500000e+03 negative p.a
+Particle 4.35700000e+03 negative p.a
+Particle 4.48600000e+03 negative p.a
+Particle 4.50000000e+03 negative p.a
+Particle 4.67600000e+03 negative p.a
+Particle 4.77800000e+03 negative p.a
+Particle 4.78300000e+03 negative p.a
+Particle 4.84300000e+03 negative p.a
+Particle 4.85600000e+03 negative p.a
+Particle 4.85500000e+03 negative p.a
+Particle 5.14400000e+03 negative p.a
+Particle 5.20500000e+03 negative p.a
+Particle 5.22200000e+03 negative p.a
+Particle 5.28400000e+03 negative p.a
+Particle 5.45100000e+03 negative p.a
+Particle 5.72200000e+03 negative p.a
+Particle 5.87000000e+03 negative p.a
+Particle 5.87600000e+03 negative p.a
+Particle 5.89100000e+03 negative p.a
+Particle 6.15300000e+03 negative p.a
+Particle 6.47700000e+03 negative p.a
+Particle 6.59400000e+03 negative p.a
+Particle 6.60900000e+03 negative p.a
+Particle 6.62800000e+03 negative p.a
+Particle 6.63800000e+03 negative p.a
+Particle 6.71300000e+03 negative p.a
+Particle 6.84000000e+03 negative p.a
+Particle 6.86900000e+03 negative p.a
+Particle 7.08900000e+03 negative p.a
+Particle 7.11400000e+03 negative p.a
+Particle 7.22400000e+03 negative p.a
+Particle 7.25100000e+03 negative p.a
+Particle 7.26000000e+03 negative p.a
+Particle 7.32700000e+03 negative p.a
+Particle 7.37600000e+03 negative p.a
+Particle 7.58500000e+03 negative p.a
+Particle 7.64400000e+03 negative p.a
+Particle 7.66500000e+03 negative p.a
+Particle 7.97800000e+03 negative p.a
+Particle 8.08500000e+03 negative p.a
+Particle 8.18600000e+03 negative p.a
+Particle 8.66400000e+03 negative p.a
+Particle 8.87400000e+03 negative p.a
+Particle 8.92800000e+03 negative p.a
+Particle 9.08000000e+03 negative p.a
+Particle 9.09600000e+03 negative p.a
+Particle 9.37800000e+03 negative p.a
+Particle 9.40100000e+03 negative p.a
+Particle 9.46800000e+03 negative p.a
+Particle 9.93700000e+03 negative p.a
+Particle 9.95400000e+03 negative p.a
+
+Joined
+
+Execution time using 20 thread(s), is: 7.36037074e+03

@@ -43,13 +43,13 @@ precip_lamda   = f1["precip_lamda"][()]
 precip_alpha   = f1["precip_alpha"][()]
 precip_aeq     = f1["precip_aeq"][()]
 precip_time    = f1["precip_time"][()] 
-saved_id    = f1["saved_id"][()]
-saved_lamda = f1["saved_lamda"][()]
-saved_alpha = f1["saved_alpha"][()]
-saved_aeq   = f1["saved_aeq"][()]
-saved_ppar  = f1["saved_ppar"][()]
-saved_pper  = f1["saved_pper"][()]
-saved_time  = f1["saved_time"][()]
+#saved_id    = f1["saved_id"][()]
+#saved_lamda = f1["saved_lamda"][()]
+#saved_alpha = f1["saved_alpha"][()]
+#saved_aeq   = f1["saved_aeq"][()]
+#saved_ppar  = f1["saved_ppar"][()]
+#saved_pper  = f1["saved_pper"][()]
+#saved_time  = f1["saved_time"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
@@ -76,32 +76,16 @@ precip_lamda_both   = f2["precip_lamda"][()]
 precip_alpha_both   = f2["precip_alpha"][()]
 precip_aeq_both     = f2["precip_aeq"][()]
 precip_time_both    = f2["precip_time"][()] 
-savedwpi_id    = f2["saved_id"][()]
-savedwpi_lamda = f2["saved_lamda"][()]
-savedwpi_alpha = f2["saved_alpha"][()]
-savedwpi_aeq   = f2["saved_aeq"][()]
-savedwpi_ppar  = f2["saved_ppar"][()]
-savedwpi_pper  = f2["saved_pper"][()]
-savedwpi_time  = f2["saved_time"][()]
+#savedwpi_id    = f2["saved_id"][()]
+#savedwpi_lamda = f2["saved_lamda"][()]
+#savedwpi_alpha = f2["saved_alpha"][()]
+#savedwpi_aeq   = f2["saved_aeq"][()]
+#savedwpi_ppar  = f2["saved_ppar"][()]
+#savedwpi_pper  = f2["saved_pper"][()]
+#savedwpi_time  = f2["saved_time"][()]
 f2.close()
 
-#Distribution read
-f3 = h5py.File("h5files/1p_testAEQ_testLAMDA.h5","r")
-aeq0         = f3["aeq"][()]
-lamda0       = f3["lat"][()]
-aeq0_bins    = f3["aeq0_bins"][()]
-f3.close()
-#Save initials to CSV file
-header = ['id', 'aeq0', 'lamda0', 'aeq00 after nowpi', 'lamda00 after nowpi']
-data = []
-p=0
-for a0,l0,a00,l00 in zip(aeq0, lamda0, aeq00_both, lamda00_both):
-    data.extend([[p,a0*R2D,l0*R2D,a00*R2D,l00*R2D]])
-    p=p+1 #id is the element's location in the list since the particles were saved like that
-with open("dstr_before_and_after_WPI.csv", "w") as f:
-    writer = csv.writer(f)
-    writer.writerow(header)
-    writer.writerows(data)
+
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -128,7 +112,7 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 
 
 ######################################## PLOT SAVED PARTICLE #######################################
-#"""
+"""
 fig,ax = plt.subplots(2,2)
 ax[0,0].scatter(saved_time,saved_lamda*R2D, s=1)
 ax[0,0].scatter(savedwpi_time,savedwpi_lamda*R2D, s=1, alpha=0.01)
@@ -145,26 +129,10 @@ ax[1,0].set(xlabel="alpha", ylabel="ppar")
 ax[1,1].scatter(saved_alpha*R2D,saved_pper, s=1)
 ax[1,1].scatter(savedwpi_alpha*R2D,savedwpi_pper, s=1, alpha=0.01)
 ax[1,1].set(xlabel="alpha", ylabel="pper")
-#fig.savefig("SingleParticle.png",dpi=200)
+fig.savefig("SingleParticle.png",dpi=200)
 
-#"""
-######################################## PLOT INITIAL DISTRIBUTION #######################################
-#"""
-fig, ax = plt.subplots()
-for sec in range(0,sectors):
-    ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
-ax.grid(alpha=.3)
-ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
-ax.set_yscale("log")
-fig.savefig("simulation_MM/10e6_normals.png",dpi=200)
+"""
 
-fig, ax = plt.subplots()
-ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
-ax.grid(alpha=.3)
-ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
-ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/10e6_normals_2.png",dpi=200)
-#"""
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 #"""
 #noWPI

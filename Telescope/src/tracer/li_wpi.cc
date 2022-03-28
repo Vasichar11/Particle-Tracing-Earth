@@ -51,6 +51,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Minimum lat of wave(in pulse duration).
         max_lat=*max_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Max lat of wave.
         //std::cout<<"\n" << lamda*Constants::R2D << " " << min_lat << "" << max_lat << " "<< lat_int.at(i) << " " << lat_int.back(); 
+
         
         f_always(p_mag, gama, w_h, dwh_ds, lamda, ppar, pper); 
         kz = Ftheta = Fpar = Fper = q1 = 0; 
@@ -129,7 +130,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
         i++;  
 		
         //To save any states:
-		single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
+		//single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
         //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
     }
 

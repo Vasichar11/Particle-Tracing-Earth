@@ -4,6 +4,7 @@
 #include <vector> 
 #include <random> 
 #include <iomanip>  //For std::setprecision()
+#include <omp.h>
 
 #include "headers/common.h"
 #include "headers/struct_Particles.h"   
@@ -72,9 +73,8 @@ int main(int argc, char **argv)
 	std::random_device seed;         //Random seed. 
 	std::mt19937 generator(seed());  //PRNG initialized with seed.
 	int p=0;
-	int aeq_count = 0;
 	//Loop for <lamda_dstr> different particle latitudes.
-	while(aeq_count<Constants::aeq_dstr)  
+	for(int aeq_count=0; aeq_count<Constants::aeq_dstr; aeq_count++)
 	{
 		//----------------P.A dstr-----------------//
 		//Evenly dstr
@@ -115,8 +115,7 @@ int main(int argc, char **argv)
 		//-------------Latitude domain-------------//
 
 
-		int lamda_count = 0;
-		while(lamda_count<Constants::lamda_dstr)  
+		for(int lamda_count=0; lamda_count<Constants::lamda_dstr; lamda_count++)
 		{
 		//--------------Latitude dstr--------------//
 			if(argv[2]==string_evenly)   
@@ -161,11 +160,9 @@ int main(int argc, char **argv)
 			//Initialize and print particle state for this equatorial P.A and latitude.
 			dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,lamda_start_d,lamda_end_d);
 			//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D;	
-			p++; lamda_count++; //Next particle
+			p++; //Next particle
 
 		}	
-
-		aeq_count++;
 	}
 	std::cout<<"\nDistribution done!";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
