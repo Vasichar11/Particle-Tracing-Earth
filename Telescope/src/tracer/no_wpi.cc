@@ -4,7 +4,7 @@
 void no_wpi(int p, Particles &single, Telescope &ODPT)
 {
         
-	std::cout.precision(64);			//Output 16 decimal precise
+	std::cout.precision(128);			//Output 16 decimal precise
 	std::cout<<std::scientific;		//For e notation representation
 
     real lamda    =  single.lamda_init;
