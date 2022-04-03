@@ -21,7 +21,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/10000p_no_wpi.h5","r")
+f1 = h5py.File("h5files/100000p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -54,7 +54,7 @@ precip_time    = f1["precip_time"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/10000p_both.h5","r")
+f2 = h5py.File("h5files/100000p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]

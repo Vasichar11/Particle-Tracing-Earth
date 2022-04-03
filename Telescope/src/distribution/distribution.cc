@@ -34,7 +34,7 @@ void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 		//("Brute Force domain validation")
 		real Blam0   = Bmag_dipole(lamda_end_d*Constants::D2R);
 		salpha0      = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
-		lamda_end_d += Constants::h; //Gradually increase and check if salpha0 is valid.
+		lamda_end_d += 0.001; //increase by h to make better estimation//Gradually increase and check if salpha0 is valid.
 	}
 	while( (salpha0<=1) && (salpha0>=-1) && (salpha0!=0) ) ; // &&lamda0<M_PI
 	lamda_end_d   -= Constants::h;     //This is the last (positive) valid value.
