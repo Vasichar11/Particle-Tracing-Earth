@@ -154,8 +154,12 @@ int main(int argc, char **argv)
 			const real Beq0 = Bmag_dipole(0);   		    //Beq isn't always Beq0?
 			Blam0           = Bmag_dipole(lamda0);
 			salpha0         = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
-			if(aeq0*Constants::R2D>90) k=1;				   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
-			else					   k=0;				   //We do this to distribute them, half upwards, half downwards.
+			if(aeq0*Constants::R2D>90)   k=1;			   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
+			else					     k=0;			   //This way we distribute them: half upwards, half downwards.
+			//srand (time(NULL)); //random seed using clock of computer
+			//int k = rand() % 2; //rand number, 0 or 1.
+			//If k=0 then alpha0<90 --> particle is northward
+			//If k=1 then alpha0>90 --> particle is southward
 			alpha0 = pow(-1,k)*asin(salpha0)+k*M_PI;       // sinx = a => x=(-1)^k * asin(a) + k*pi
 			//Initialize and print particle state for this equatorial P.A and latitude.
 			dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,lamda_start_d,lamda_end_d);

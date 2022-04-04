@@ -16,13 +16,13 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     //real zeta     =  single.zeta_init; 
     //real upar     =  single.upar_init; 
     //real uper     =  single.uper_init;
-    //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+    std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda, new_ppar;
     real w_h, dwh_ds, Bmag, p_mag, gama;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,o1,o2,o3,o4,p1,p2,p3,p4;
-
+    int k;
     //Objects for each specie.
     Species electron(Constants::m_e,  Constants::q_e, 1); 
     Species oxygen  (Constants::m_O,  Constants::q_i, 0.006); 
@@ -83,7 +83,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
             {	//Check crossing.								
-                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+                std::cout<<"\nParticle "<< p <<" with pa " << aeq*Constants::R2D <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
                 ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
             }
         }
@@ -111,8 +111,10 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         //Next step:
         new_values_RK4(lamda, ppar, pper, alpha, l1, l2, l3, l4, m1, m2, m3, m4, o1, o2, o3, o4, p1, p2, p3, p4);
         
-        //Find aeq from alpha and lamda.
-        aeq = asin(sin(alpha)*sqrt(Bmag_dipole(0)/Bmag_dipole(lamda))); 
+        
+        if(ppar<0) k=1;
+        else k=0;
+        aeq = pow(-1,k) * asin(sin(alpha)*sqrt(Bmag_dipole(0)/Bmag_dipole(lamda))) + k*M_PI; 
         
         time  = time + Constants::h; 
         i++;  
@@ -120,6 +122,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
 		//To save any states:
 		//single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
         //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+        std::cout<< "\nlatitude "<<lamda*Constants::R2D<< " pa " << aeq*Constants::R2D;
 
     }
     

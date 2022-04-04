@@ -85,8 +85,9 @@ precip_time_both    = f2["precip_time"][()]
 #savedwpi_pper  = f2["saved_pper"][()]
 #savedwpi_time  = f2["saved_time"][()]
 f2.close()
-
-
+for i in detected_aeq:
+    if(i*R2D>90):
+        print(i*R2D)
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -97,12 +98,11 @@ f2.close()
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 0.2                #seconds to distinquish events(time resolution)
+time_bin  = 0.1                #seconds to distinquish events(time resolution)
 timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
 view = 180 
 sector_range = 10 #P.A bins #1deg
 sectors = int(view/sector_range)
-print(timesteps,sectors)
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
         'color':  'blue',
@@ -163,10 +163,13 @@ plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux  = [  0 for i in range(timesteps)]
 for time,pa,id in zip(detected_time,detected_aeq,detected_id): #Iterate in both array elements. No sorting required.
+    if (pa<0):
+        print("Negative pa")
+        sys.exit(1)
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    if(sector>=sectors or timestep>timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
-        #print("noWPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
+    if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+        print("noWPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
         #sys.exit(1) 
         continue 
     if(pa*R2D==180):
@@ -178,6 +181,9 @@ for time,pa,id in zip(detected_time,detected_aeq,detected_id): #Iterate in both 
 sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_both  = [  0 for i in range(timesteps)]
 for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id_both):
+    if (pa<0):
+        print("Negative pa")
+        sys.exit(1)
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
     #print("WPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
@@ -195,10 +201,13 @@ for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id_both):
 sctr_flux_precip = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_precip = [0 for i in range(timesteps)]
 for time,pa in zip(precip_time_both,precip_aeq_both):
+    if (pa<0):
+        print("Negative pa")
+        sys.exit(1)
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    if(sector>=sectors or timestep>timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
-        #print("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
+    if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+        print("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
         #sys.exit(1) 
         continue 
     if(pa*R2D==180):
@@ -249,21 +258,19 @@ with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_
 
             if(sctr_flux[sector][timestep]!=0): #plot only non zero dots
                 ax.scatter(sector+0.5, sctr_flux[sector][timestep],c="black",s=1) 
-            if(sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot dot only when it differs with noWPI
+            if(sctr_flux_both[sector][timestep]!=0 and sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot dot only when it differs with noWPI
                 ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red",s=1) 
 
         ax.bar(np.arange(0.5,sectors+0.5),moved[timestep], width=0.3,color='blue',label="moved particles")               #plot difference with bars
         ax.bar(np.arange(0.5,sectors+0.5),precip[timestep], width=0.3, bottom=moved[timestep], color='orange', label="precipitated particles")#plot difference precipitated
-        ax.set_yscale("log")
 
         #Sector red ticks
-        ax.set_xticks(ticks=np.arange(0.5,sectors,10)) 
-        ax.set_xticklabels(labels=np.arange(0,sectors,10),color="red",size="small")
+        ax.set_xticks(ticks=np.arange(0.5,sectors)) 
+        ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
         #P.A black ticks
         #ax.set_xticks(ticks=np.arange(0,sectors,),minor=True) 
         #ax.set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
-
-        ax.set_ylim(0, max(np.amax(sctr_flux)+(0.1*np.amax(sctr_flux)), np.amax(sctr_flux_both)+(0.1*np.amax(sctr_flux_both)) ) )
+        ax.set_ylim(0, max(np.amax(sctr_flux), np.amax(sctr_flux_both)) )
         ax.set_xlim(0,sectors)
         ax.set(ylabel="count")
         ax.set(xlabel="P.A bins(black): "+str(sector_range)+" deg   Sectors(red): "+str(sectors))
