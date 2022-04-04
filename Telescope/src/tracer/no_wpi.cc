@@ -16,7 +16,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     //real zeta     =  single.zeta_init; 
     //real upar     =  single.upar_init; 
     //real uper     =  single.uper_init;
-    std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+    //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda, new_ppar;

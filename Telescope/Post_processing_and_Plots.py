@@ -21,7 +21,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/100000p_no_wpi.h5","r")
+f1 = h5py.File("h5files/1000p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -54,7 +54,7 @@ precip_time    = f1["precip_time"][()]
 f1.close()
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/100000p_both.h5","r")
+f2 = h5py.File("h5files/1000p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -97,11 +97,12 @@ f2.close()
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 1                 #seconds to distinquish events(time resolution)
+time_bin  = 0.2                #seconds to distinquish events(time resolution)
 timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
 view = 180 
 sector_range = 10 #P.A bins #1deg
 sectors = int(view/sector_range)
+print(timesteps,sectors)
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
         'color':  'blue',
@@ -179,8 +180,9 @@ sum_flux_both  = [  0 for i in range(timesteps)]
 for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id_both):
     timestep = math.floor(time/time_bin)
     sector   = math.floor(pa*R2D/sector_range)
-    if(sector>=sectors or timestep>timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
-        #print("WPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
+    #print("WPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
+    if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+        print("WPI Particle",id,"with pa",pa*R2D,"at time",time,"needs sector",sector,"in timestep",timestep)
         #sys.exit(1)
         continue 
     if(pa*R2D==180):

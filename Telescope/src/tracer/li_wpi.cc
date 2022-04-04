@@ -33,7 +33,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     //real zeta     =  single.zeta_end; 
     //real upar     =  single.upar_end; 
     //real uper     =  single.uper_end;
-    std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+    //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
     int index;                              //To find minimum difference between latitudes

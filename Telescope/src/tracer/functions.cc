@@ -145,7 +145,7 @@ void f_packet (real &Fpar, real &Fper, real &Ftheta, real &aeq_rk, real &kz, con
 
     //Calculate beta 
     real beta = (kx_ray*pper_tmp)/(Constants::m_e*gama*w_h); //[Bortnic thesis]. No need to return.
-    std::cout<<"\nBzw "<<Bzw;     //It's negative-> domain error for std::cyl_bessel_j().
+    //std::cout<<"\nBzw "<<Bzw;     //It's negative-> domain error for std::cyl_bessel_j().
 
     
     //Factor calculations for ppar ,pper and theta
@@ -153,7 +153,7 @@ void f_packet (real &Fpar, real &Fper, real &Ftheta, real &aeq_rk, real &kz, con
     real ER = R2*w2*(Constants::m_e/Constants::q_e);
     real BR = w1*(Constants::m_e/Constants::q_e);
     real BL = w2*(Constants::m_e/Constants::q_e);
-    std::cout<<"\n"<<pper_tmp<< " " << ppar_tmp;
+    //std::cout<<"\n"<<pper_tmp<< " " << ppar_tmp;
     
     Fpar = -(pow((-1),(Constants::m_res-1))*(-Constants::q_e*(Ezw*jn( (Constants::m_res), beta)+(pper_tmp/(gama*Constants::m_e))*BR*jn( (Constants::m_res-1), beta)
                    -(pper_tmp/(gama*Constants::m_e))*BL*jn( (Constants::m_res+1), beta))));
