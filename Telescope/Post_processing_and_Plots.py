@@ -85,9 +85,8 @@ precip_time_both    = f2["precip_time"][()]
 #savedwpi_pper  = f2["saved_pper"][()]
 #savedwpi_time  = f2["saved_time"][()]
 f2.close()
-for i in detected_aeq:
-    if(i*R2D>90):
-        print(i*R2D)
+
+
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -145,7 +144,6 @@ plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="se
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles.png", dpi=100)
-
 #BOTH
 fig, ax = plt.subplots()
 ax.scatter(detected_time_both, detected_lamda_both*R2D, c = detected_id_both, s=0.3, cmap="viridis")

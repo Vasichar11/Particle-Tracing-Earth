@@ -136,7 +136,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
 		
         //To save any states:
 		//single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
-        //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+        //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
     }
 
 

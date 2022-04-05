@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/1p_testAEQ_testLAMDA.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/1000p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0;
 	//Read dataset from h5file.
@@ -200,11 +200,6 @@ int main(int argc, char **argv)
 	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
 	//$std::vector<real> saved_id, saved_lamda, saved_alpha, saved_aeq, saved_time, saved_ppar, saved_pper; //(declare if needed)
 
-	//Find Nsteps. Depends on simulation type.
-	int64_t Nsteps=Constants::Nsteps_nowpi;
-	if (argc==3) Nsteps += Constants::Nsteps_wpi; //If WPI simulation follows.
-	
-
 	for(int p=0; p<Population; p++) 
 	{
 		
@@ -253,7 +248,7 @@ int main(int argc, char **argv)
 	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
 	h5::DataSet data_population    = file.createDataSet("population", 	Population);
 	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
-	h5::DataSet t			       = file.createDataSet("t", 			Nsteps*Constants::h);
+	h5::DataSet t			       = file.createDataSet("t", 			Constants::t);
 	
 	//Detected particles
 	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);

@@ -31,11 +31,13 @@ void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 	real salpha0;
 	do
 	{
+		lamda_end_d += 0.0001; //increase by h to make better estimation
+		//Gradually increase and check if salpha0 is valid.
 		//("Brute Force domain validation")
 		real Blam0   = Bmag_dipole(lamda_end_d*Constants::D2R);
 		salpha0      = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
-		lamda_end_d += 0.001; //increase by h to make better estimation//Gradually increase and check if salpha0 is valid.
-	}
+							  
+	}					//e.g aeq0_deg=89.9989367479725, lamda0_deg=0.000514656086141539 
 	while( (salpha0<=1) && (salpha0>=-1) && (salpha0!=0) ) ; // &&lamda0<M_PI
 	lamda_end_d   -= Constants::h;     //This is the last (positive) valid value.
 	lamda_start_d  = -lamda_end_d;	 //This would be the first (negative) valid value. 		
@@ -73,6 +75,9 @@ int main(int argc, char **argv)
 	std::random_device seed;         //Random seed. 
 	std::mt19937 generator(seed());  //PRNG initialized with seed.
 	int p=0;
+	
+
+
 	//Loop for <lamda_dstr> different particle latitudes.
 	for(int aeq_count=0; aeq_count<Constants::aeq_dstr; aeq_count++)
 	{
@@ -80,7 +85,8 @@ int main(int argc, char **argv)
 		//Evenly dstr
 		if(argv[1]==string_evenly)   
 		{
-			aeq0 = (Constants::aeq_start_d + aeq_count*Constants::aeq_step_d) * Constants::D2R;	  	  //linspace(start,stop,aeq_dstr). Goal is: symmetry				
+			const real aeq_step_d	  = (Constants::aeq_end_d - Constants::aeq_start_d)/(Constants::aeq_dstr-1); 	//step for linspace(start,end,aeq_dstr) 
+			aeq0 = (Constants::aeq_start_d + aeq_count*aeq_step_d) * Constants::D2R;	  	  				//Goal is: symmetry				
 		}
 		//Uniformly dstr
 		else if (argv[1]==string_uniform)   			
@@ -94,7 +100,7 @@ int main(int argc, char **argv)
 			real number;
 			do
 			{
-				std::normal_distribution <real> normal_aeq(Constants::mean_aeq, Constants::stdev_aeq);		   //Goal is: reach normal dstr in logarithm scale.
+				std::normal_distribution <real> normal_aeq(Constants::mean_aeq, Constants::stdev_aeq);		  	 //Goal is: reach normal dstr in logarithm scale.
 				number = normal_aeq(generator);
 
 			}while(number<=0 || number>=180); //Until valid aeq=(0,180).
@@ -120,13 +126,14 @@ int main(int argc, char **argv)
 		//--------------Latitude dstr--------------//
 			if(argv[2]==string_evenly)   
 			{
-				lamda0 = (Constants::lamda_start_d + lamda_count*Constants::lamda_step_d) * Constants::D2R;	  	  //linspace(start,stop,lamda_dstr). Goal is: symmetry				
+				const real lamda_step_d	  = (Constants::lamda_end_d - Constants::lamda_start_d)/(Constants::lamda_dstr-1);						//linspace(start,stop,lamda_dstr).
+				lamda0 = (Constants::lamda_start_d + lamda_count*lamda_step_d) * Constants::D2R;	  	//Goal is: symmetry				
 			}
 			//Uniformly dstr
 			else if (argv[2]==string_uniform)   			
 			{
-				std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); //All latitudes in this range are equally probable. Goal is: randomness
-				lamda0  = uniform_lamda(generator) * Constants::D2R; 	
+				std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); //All latitudes in this range are equally probable. 
+				lamda0  = uniform_lamda(generator) * Constants::D2R; 							 //Goal is: randomness
 			}
 			//Normaly dstr
 			else if (argv[2]==string_normal)   			
@@ -135,7 +142,7 @@ int main(int argc, char **argv)
 				do
 				{
 					//Adaptive stdev according to the lamda domain range. Domain range (min,max) = (0,180).
-					//That way for bigger domain ranges we have extended gausian, while for les wide ranges we have more "sharp".
+					//That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
 					real stdev = (std::abs(lamda_end_d - lamda_start_d) / 180 ) * Constants::stdev_lamda;
 					std::normal_distribution <real> normal_lamda(Constants::mean_lamda, stdev);
 					number = normal_lamda(generator);
@@ -158,8 +165,8 @@ int main(int argc, char **argv)
 			else					     k=0;			   //This way we distribute them: half upwards, half downwards.
 			//srand (time(NULL)); //random seed using clock of computer
 			//int k = rand() % 2; //rand number, 0 or 1.
-			//If k=0 then alpha0<90 --> particle is northward
-			//If k=1 then alpha0>90 --> particle is southward
+			//If aeq<90 then k=0 then alpha0<90 <--> particle is northward, ppar>0
+			//If aeq>90 then k=1 then alpha0>90 <--> particle is southward, ppar<0
 			alpha0 = pow(-1,k)*asin(salpha0)+k*M_PI;       // sinx = a => x=(-1)^k * asin(a) + k*pi
 			//Initialize and print particle state for this equatorial P.A and latitude.
 			dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,lamda_start_d,lamda_end_d);
