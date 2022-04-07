@@ -122,7 +122,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         i++;  
        
 		//To save any states:
-		//single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
+		single.save_state( p, lamda, aeq, time);
         //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
         //std::cout<< "\nlatitude "<<lamda*Constants::R2D<< " pa " <<alpha*Constants::R2D<<" aeq " << aeq*Constants::R2D;
 

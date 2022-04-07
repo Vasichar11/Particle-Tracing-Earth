@@ -21,7 +21,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/1000p_no_wpi.h5","r")
+f1 = h5py.File("h5files/200000p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -52,9 +52,8 @@ precip_time    = f1["precip_time"][()]
 #saved_pper  = f1["saved_pper"][()]
 #saved_time  = f1["saved_time"][()]
 f1.close()
-
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/1000p_both.h5","r")
+f2 = h5py.File("h5files/200000p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -85,8 +84,6 @@ precip_time_both    = f2["precip_time"][()]
 #savedwpi_pper  = f2["saved_pper"][()]
 #savedwpi_time  = f2["saved_time"][()]
 f2.close()
-
-
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################

@@ -248,8 +248,8 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT)
         i++;  
 
         //To save any states:
-		single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
-        std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+		//single.save_state( p, lamda, alpha, aeq, ppar, pper, time);
+        //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
     }
 

@@ -55,13 +55,13 @@ void Particles::escaping_state(int id, real new_lamda, real new_alpha, real new_
 }
 
 //Member function to save all particle states(if needed). Need for vectors, save values in every step of the simulation.
-void Particles::save_state(int id, real new_lamda, real new_alpha, real new_aeq, real new_ppar, real new_pper, real new_time)
+void Particles::save_state(int id, real new_lamda, real new_aeq, real new_time)
 {
 	this->id.push_back(id);
 	this->lamda.push_back(new_lamda);      				
-	this->ppar.push_back(new_ppar);		 
-	this->pper.push_back(new_pper);
-	this->alpha.push_back(new_alpha);	
+	//this->ppar.push_back(new_ppar);		 
+	//this->pper.push_back(new_pper);
+	//this->alpha.push_back(new_alpha);	
 	this->aeq.push_back(new_aeq);
 	this->time.push_back(new_time);
 	//this->zeta.push_back(new_zeta);

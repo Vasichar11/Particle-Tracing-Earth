@@ -17,7 +17,7 @@ struct Particles
 		
 	//Member function to save particle states.
 	void escaping_state(int id,real new_lamda, real new_alpha, real new_aeq, real new_time);
-	void save_state(int id, real new_lamda, real new_alpha, real new_aeq, real new_ppar, real new_pper, real new_time);
+	void save_state(int id, real new_lamda, real new_aeq, real new_time);
 	
 
 	void lamda_domain(real aeq0);

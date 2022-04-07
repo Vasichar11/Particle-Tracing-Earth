@@ -2,10 +2,10 @@
 Particle population: 200000
 
 
-14 sec NoWPI Simulation
+5 sec NoWPI Simulation
 
-Execution time estimation for 8 THREAD run: 373.333 minutes.
-Execution time estimation for 20 THREAD run: 793.333 minutes.
+Execution time estimation for 8 THREAD run: 133.333 minutes.
+Execution time estimation for 20 THREAD run: 283.333 minutes.
 
 Forked...
 Running threads: 8
