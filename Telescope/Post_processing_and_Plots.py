@@ -21,7 +21,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/200000p_no_wpi.h5","r")
+f1 = h5py.File("h5files/5s_200p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -32,13 +32,6 @@ telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
 Ekev0          = f1["Ekev0"][()]
-#lamda00        = f1["lamda00"][()] #States when noWPI stops
-#ppar00         = f1["ppar00"][()]
-#pper00         = f1["pper00"][()]
-#alpha00        = f1["alpha00"][()]
-#aeq00          = f1["aeq00"][()]
-#eta00          = f1["eta00"][()]
-#time00         = f1["time00"][()]
 precip_id      = f1["precip_id"][()]
 precip_lamda   = f1["precip_lamda"][()]
 precip_alpha   = f1["precip_alpha"][()]
@@ -46,14 +39,16 @@ precip_aeq     = f1["precip_aeq"][()]
 precip_time    = f1["precip_time"][()] 
 #saved_id    = f1["saved_id"][()]
 #saved_lamda = f1["saved_lamda"][()]
-#saved_alpha = f1["saved_alpha"][()]
 #saved_aeq   = f1["saved_aeq"][()]
+#saved_time  = f1["saved_time"][()]
+#saved_alpha = f1["saved_alpha"][()]
 #saved_ppar  = f1["saved_ppar"][()]
 #saved_pper  = f1["saved_pper"][()]
-#saved_time  = f1["saved_time"][()]
 f1.close()
+
+
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/200000p_both.h5","r")
+f2 = h5py.File("h5files/5s_200p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -64,13 +59,6 @@ telescope_lamda_both= f2["ODPT.latitude"][()]
 population_both     = f2["population"][()]
 t_both              = f2["t"][()]
 Ekev0_both          = f2["Ekev0"][()]
-#lamda00_both        = f2["lamda00"][()] #States when noWPI stops
-#ppar00_both         = f2["ppar00"][()]
-#pper00_both         = f2["pper00"][()]
-#alpha00_both        = f2["alpha00"][()]
-#aeq00_both          = f2["aeq00"][()]
-#eta00_both          = f2["eta00"][()]
-#time00_both         = f2["time00"][()]
 precip_id_both      = f2["precip_id"][()]
 precip_lamda_both   = f2["precip_lamda"][()]
 precip_alpha_both   = f2["precip_alpha"][()]
@@ -78,11 +66,11 @@ precip_aeq_both     = f2["precip_aeq"][()]
 precip_time_both    = f2["precip_time"][()] 
 #savedwpi_id    = f2["saved_id"][()]
 #savedwpi_lamda = f2["saved_lamda"][()]
-#savedwpi_alpha = f2["saved_alpha"][()]
 #savedwpi_aeq   = f2["saved_aeq"][()]
+#savedwpi_time  = f2["saved_time"][()]
+#savedwpi_alpha = f2["saved_alpha"][()]
 #savedwpi_ppar  = f2["saved_ppar"][()]
 #savedwpi_pper  = f2["saved_pper"][()]
-#savedwpi_time  = f2["saved_time"][()]
 f2.close()
 ##########################################################################################################
 ##########################################################################################################

@@ -198,21 +198,21 @@ int main(int argc, char **argv)
  
 	//Assign from struct to vectors.
 	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
-	std::vector<real> saved_id, saved_lamda, saved_aeq, saved_time; //(declare if needed)
+	//std::vector<real> saved_id, saved_lamda, saved_aeq, saved_time; //(declare if needed)
 
 	for(int p=0; p<Population; p++) 
 	{
 		
 		//All particle states(if needed)
-		for(int i=0;i<3;i++){
-		
-		saved_id.push_back(dstr[p].id.at(i));
-		saved_lamda.push_back(dstr[p].lamda.at(i));
-		saved_aeq.push_back(dstr[p].aeq.at(i));
-		//saved_alpha.push_back(dstr[p].alpha.at(i));
-		//saved_ppar.push_back(dstr[p].ppar.at(i));
-		//saved_pper.push_back(dstr[p].pper.at(i));
-		saved_time.push_back(dstr[p].time.at(i));}
+		//for(int i=0;i<3;i++){
+		//
+		//saved_id.push_back(dstr[p].id.at(i));
+		//saved_lamda.push_back(dstr[p].lamda.at(i));
+		//saved_aeq.push_back(dstr[p].aeq.at(i));
+		////saved_alpha.push_back(dstr[p].alpha.at(i));
+		////saved_ppar.push_back(dstr[p].ppar.at(i));
+		////saved_pper.push_back(dstr[p].pper.at(i));
+		//saved_time.push_back(dstr[p].time.at(i));}
 		
 
 		//Last particle states(that can become first states for next simulation).
@@ -237,7 +237,7 @@ int main(int argc, char **argv)
 
 
 	//File name based on the argument variables
-	std::string  save_file = "h5files/5s_" + std::to_string(Constants::population) + "p_";   
+	std::string  save_file = "h5files/" + std::to_string(Constants::population) + "p_";   
 	if 	  	(argc==2) save_file = save_file  + std::string(argv[1]) ;
 	else if (argc==3) save_file = save_file  + std::string("both"); 
 	save_file = save_file + ".h5";
@@ -266,13 +266,13 @@ int main(int argc, char **argv)
 
 
 	//All particle states(if needed)
-	h5::DataSet all_id     = file.createDataSet("saved_id", saved_id);
-	h5::DataSet all_lamda  = file.createDataSet("saved_lamda", saved_lamda);
+	//h5::DataSet all_id     = file.createDataSet("saved_id", saved_id);
+	//h5::DataSet all_lamda  = file.createDataSet("saved_lamda", saved_lamda);
 	//h5::DataSet all_alpha  = file.createDataSet("saved_alpha", saved_alpha);
-	h5::DataSet all_aeq    = file.createDataSet("saved_aeq", saved_aeq);
+	//h5::DataSet all_aeq    = file.createDataSet("saved_aeq", saved_aeq);
 	//h5::DataSet all_ppar   = file.createDataSet("saved_ppar", saved_ppar);
 	//h5::DataSet all_pper   = file.createDataSet("saved_pper", saved_pper);
-	h5::DataSet all_time   = file.createDataSet("saved_time", saved_time);
+	//h5::DataSet all_time   = file.createDataSet("saved_time", saved_time);
 
 	//Particles states after noWPI time.
 	h5::DataSet ending_lamda = file.createDataSet("lamda00", lamda00);

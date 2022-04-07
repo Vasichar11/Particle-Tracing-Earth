@@ -3,7 +3,6 @@
 //Adiabatic motion.
 void no_wpi(int p, Particles &single, Telescope &ODPT)
 {
-        
 	//std::cout.precision(64);			//Output 16 decimal precise
 	//std::cout<<std::scientific;		//For e notation representation
 
@@ -122,7 +121,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         i++;  
        
 		//To save any states:
-		single.save_state( p, lamda, aeq, time);
+        //single.save_state( p, lamda, aeq, time);
         //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
         //std::cout<< "\nlatitude "<<lamda*Constants::R2D<< " pa " <<alpha*Constants::R2D<<" aeq " << aeq*Constants::R2D;
 
