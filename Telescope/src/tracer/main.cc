@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/10p_uniformAEQ_uniformLAMDA.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/1000p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0;
 	//Read dataset from h5file.

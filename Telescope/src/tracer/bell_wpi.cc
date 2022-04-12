@@ -246,7 +246,7 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT)
         //Check Precipitation:
         if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
         {
-            single.escaping_state(p, lamda, alpha, aeq, time);
+            single.escaping_state(p, lamda, aeq, time);
             single.escaped = true;
             std::cout<<"\n\nParticle "<<p<<" escaped with aeq " <<aeq*Constants::R2D<< " at time " << time ;
             break;
