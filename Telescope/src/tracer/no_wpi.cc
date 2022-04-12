@@ -3,22 +3,36 @@
 //Adiabatic motion.
 void no_wpi(int p, Particles &single, Telescope &ODPT)
 {
-	//std::cout.precision(64);			//Output 16 decimal precise
-	//std::cout<<std::scientific;		//For e notation representation
+	std::cout.precision(12);			//Output 16 decimal precise
+	std::cout<<std::scientific;		//For e notation representation
 
-    real lamda    =  single.lamda_init;
-    real ppar     =  single.ppar_init; 
-    real pper     =  single.pper_init; 
-    real alpha    =  single.alpha_init; 
-    real aeq      =  single.aeq_init; 
-    real time     =  single.time_init;
-    //real zeta     =  single.zeta_init; 
-    //real upar     =  single.upar_init; 
-    //real uper     =  single.uper_init;
-    //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+    real lamda0    =  single.lamda0;
+    real ppar0     =  single.ppar0; 
+    real pper0     =  single.pper0; 
+    real alpha0    =  single.alpha0; 
+    real aeq0      =  single.aeq0; 
+    real time0     =  single.time0;
+    //real zeta0     =  single.zeta0; 
+    //real upar0     =  single.upar0; 
+    //real uper0     =  single.uper0;
+
+    real lamda     =   lamda0;
+    real ppar      =   ppar0;
+    real pper      =   pper0;
+    real alpha     =   alpha0;
+    real aeq       =   aeq0;
+    real time      =   time0;
+    //real zeta      =   zeta0;
+    //real upar      =   upar0;
+    //real uper      =   uper0;
+
+    //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+
+
+
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
-    real new_lamda, new_ppar;
+    real new_lamda, new_ppar, new_aeq;
     real w_h, dwh_ds, Bmag, p_mag, gama;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,o1,o2,o3,o4,p1,p2,p3,p4;
     //Objects for each specie.
@@ -71,75 +85,91 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         slopes(k4, l4, m4, o4, p4, ppar+(l3*Constants::h), pper+(m3*Constants::h), lamda+(o3*Constants::h), w_h, dwh_ds, gama);
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 <<"\no4 " << o4 << "\np4 " << p4 << "\n";
 
-        //Check Validity:
-        new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
-        if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break;  }
-        if(alpha<0 || aeq<0)      { std::cout<<"\nParticle "<<p<<" negative p.a"; single.negative=true; single.save_state( p, lamda, aeq, ppar, pper, alpha, time); break; }
 
-        //Check Crossing:
-        #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
-        {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
-            if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-            {	//Check crossing.								
-                //std::cout<<"\nParticle "<< p <<" with pa " << aeq*Constants::R2D <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-                ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
-            }
-        }
 
-        //Check Trapping:
-        if( (0<aeq && aeq<Constants::alpha_lc) || (aeq>M_PI-Constants::alpha_lc && aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
-        {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
-            single.trapped = false;
-        }
 
-        //Check Precipitation:
-        new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
-        {   
-            //To save states of precipitating particles:
-            #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
-            {   
-                single.escaping_state(p, lamda, alpha, aeq, time);
-                //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
-                single.escaped = true ;
-            }
-            break;
-        }
 
-        //Next step:
-        new_values_RK4(lamda, ppar, pper, alpha, l1, l2, l3, l4, m1, m2, m3, m4, o1, o2, o3, o4, p1, p2, p3, p4);
-        
-        
+        //Runge kutta 4 first estimations:
+        //First make the next step increments(lamda,aeq,ppar) that are needed to characterize crossing-validity-trapping. 
+        new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
         //Adiabatic motion. Aeq stays the same or changes between two values
-        //These may not be right
+        //This won't work well
         //int k;
         //if(ppar<0) k=1;
         //else k=0;
-        //aeq = pow(-1,k) * asin(sin(alpha)*sqrt(Bmag_dipole(0)/Bmag_dipole(lamda))) + k*M_PI; 
+        //new_aeq = pow(-1,k) * asin(sin(alpha)*sqrt(Bmag_dipole(0)/Bmag_dipole(ne_lamda))) + k*M_PI; 
+        new_aeq   = aeq;
+        new_ppar  = ppar  + (Constants::h/6)*(l1+2*l2+2*l3+l4);
+        
+
+        //Check Validity:
+        if(std::isnan(new_lamda*new_aeq*new_ppar))
+        {
+            std::cout<<"\nParticle "<<p<<" nan"; break; 
+        }
+        //Check Negative P.A:
+        if(alpha<0 || aeq<0)
+        {
+            single.negative_state( p, lamda0, aeq0, alpha0, ppar0, pper0, time); //Save the initial state (start of noWPI) for the particle and the time that P.A turned out negative.
+            single.negative = true;
+            std::cout<<"\nParticle "<<p<<" negative p.a duting noWPI!";
+            break;
+        }
+        //Check Trapping:
+        if( (0<new_aeq && new_aeq<Constants::alpha_lc) || (new_aeq>M_PI-Constants::alpha_lc && new_aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
+        {
+            single.trapped = false;
+        }
+        //Check Precipitation:
+        if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
+        {
+            single.escaping_state(p, lamda, aeq, time);
+            single.escaped = true;
+            std::cout<<"\n\nParticle "<<p<<" escaped with aeq " <<aeq*Constants::R2D<< " at time " << time ;
+            break;
+        }
+
+        //Critical Region to push back values in shared memory ODPT object:
+        #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
+        {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
+            //Check Crossing:
+            if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	
+            {									
+                ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
+                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+            }
+
+        }
+        
+        
+        //Runge kutta 4 estimations:
+        lamda   = new_lamda;
+        aeq     = new_aeq;
+        ppar    = new_ppar;
+        //Rest increments for the next step:
+        alpha  +=  (Constants::h/6)*(p1+2*p2+2*p3+p4);
+        pper   +=  (Constants::h/6)*(m1+2*m2+2*m3+m4);
         
         time  = time + Constants::h; 
         i++;  
        
-		//To save any states:
-        //single.save_state( p, lamda, aeq, time);
+		
         //std::cout<<"\n\ntime "<< time<< " \nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
-        //std::cout<< "\nlatitude "<<lamda*Constants::R2D<< " pa " <<alpha*Constants::R2D<<" aeq " << aeq*Constants::R2D;
-
     }
     
 
     //Save last state to return values and continue the simulation with wave (if needed). 
-    single.lamda_end = lamda;
-    single.ppar_end  = ppar;
-    single.pper_end  = pper;
-    single.alpha_end = alpha;
-    single.aeq_end   = aeq;
-    single.time_end  = time;
-    single.eta_end   = Constants::eta0;
-    //single.zeta_end = zeta;
-    //single.upar_end = upar;
-    //single.uper_end = uper;
-    //single.Ekin_end = Ekin;
+    single.lamda00 = lamda;
+    single.ppar00  = ppar;
+    single.pper00  = pper;
+    single.alpha00 = alpha;
+    single.aeq00   = aeq;
+    single.time00  = time;
+    single.eta00   = Constants::eta0; //Particle "gyrophase" initialization 
+    //single.zeta00 = zeta;
+    //single.upar00 = upar;
+    //single.uper00 = uper;
+    //single.Ekin00 = Ekin;
 }
 
 

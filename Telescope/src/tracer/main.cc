@@ -43,24 +43,26 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/200000p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/10p_uniformAEQ_uniformLAMDA.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
-	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0;
+	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0;
 	//Read dataset from h5file.
-	h5::DataSet data_lat 	     = distribution_file.getDataSet("lat");
-	h5::DataSet data_aeq	     = distribution_file.getDataSet("aeq");
-	h5::DataSet data_alpha 		 = distribution_file.getDataSet("alpha");
-	h5::DataSet data_upar 		 = distribution_file.getDataSet("upar");
-	h5::DataSet data_uper 		 = distribution_file.getDataSet("uper");
-	h5::DataSet data_ppar 		 = distribution_file.getDataSet("ppar");
-	h5::DataSet data_pper 		 = distribution_file.getDataSet("pper");
-	h5::DataSet data_eta 		 = distribution_file.getDataSet("eta");
-	h5::DataSet data_zeta 		 = distribution_file.getDataSet("zeta");
-	h5::DataSet data_time 		 = distribution_file.getDataSet("time");
-	h5::DataSet data_M_adiabatic = distribution_file.getDataSet("M_adiabatic");
-	h5::DataSet data_Ekin 		 = distribution_file.getDataSet("Ekin");
-	h5::DataSet data_trapped     = distribution_file.getDataSet("trapped");
-	h5::DataSet data_escaped	 = distribution_file.getDataSet("escaped");
+	h5::DataSet data_lat 	     = distribution_file.getDataSet("lamda0");
+	h5::DataSet data_aeq	     = distribution_file.getDataSet("aeq0");
+	h5::DataSet data_alpha 		 = distribution_file.getDataSet("alpha0");
+	h5::DataSet data_upar 		 = distribution_file.getDataSet("upar0");
+	h5::DataSet data_uper 		 = distribution_file.getDataSet("uper0");
+	h5::DataSet data_ppar 		 = distribution_file.getDataSet("ppar0");
+	h5::DataSet data_pper 		 = distribution_file.getDataSet("pper0");
+	h5::DataSet data_eta 		 = distribution_file.getDataSet("eta0");
+	h5::DataSet data_zeta 		 = distribution_file.getDataSet("zeta0");
+	h5::DataSet data_time 		 = distribution_file.getDataSet("time0");
+	h5::DataSet data_M_adiabatic = distribution_file.getDataSet("M_adiabatic0");
+	h5::DataSet data_Ekin 		 = distribution_file.getDataSet("Ekin0");
+	h5::DataSet data_trapped     = distribution_file.getDataSet("trapped0");
+	h5::DataSet data_escaped	 = distribution_file.getDataSet("escaped0");
+	h5::DataSet data_nan	 	 = distribution_file.getDataSet("nan0");
+	h5::DataSet data_negative	 = distribution_file.getDataSet("negative0");
 	//Convert to single vector.
 	data_lat.read(lamda_0);
 	data_aeq.read(aeq_0);
@@ -76,6 +78,8 @@ int main(int argc, char **argv)
 	data_Ekin.read(Ekin_0);
 	data_trapped.read(trapped_0);
 	data_escaped.read(escaped_0);
+	data_escaped.read(nan_0);
+	data_escaped.read(negative_0);
 
 
 	int Population = lamda_0.size(); //Take the population from the h5 file to avoid mistakes.
@@ -87,25 +91,25 @@ int main(int argc, char **argv)
 	//Append to struct from single vector.
 	for(int p=0; p<Population; p++)
 	{
-		dstr[p].lamda_init  = lamda_0.at(p);
-		dstr[p].alpha_init  = alpha_0.at(p);  
-		dstr[p].aeq_init    = aeq_0.at(p);
-		dstr[p].ppar_init   = ppar_0.at(p);
-		dstr[p].pper_init   = pper_0.at(p);
-		dstr[p].upar_init   = upar_0.at(p);
-		dstr[p].uper_init   = uper_0.at(p);
-		dstr[p].Ekin_init   = Ekin_0.at(p);
-		dstr[p].time_init   = time_0.at(p);
-		dstr[p].zeta_init   = zeta_0.at(p);
-		dstr[p].eta_init    = eta_0.at(p);
-		dstr[p].M_adiabatic_init  = M_adiabatic_0.at(p);
-		dstr[p].trapped     = trapped_0.at(p);
-		dstr[p].escaped     = escaped_0.at(p);
-
+		dstr[p].lamda0  	  	  = lamda_0.at(p);
+		dstr[p].alpha0  	  	  = alpha_0.at(p);  
+		dstr[p].aeq0    	  	  = aeq_0.at(p);
+		dstr[p].ppar0   	  	  = ppar_0.at(p);
+		dstr[p].pper0   	  	  = pper_0.at(p);
+		dstr[p].upar0   	  	  = upar_0.at(p);
+		dstr[p].uper0   	  	  = uper_0.at(p);
+		dstr[p].Ekin0   	  	  = Ekin_0.at(p);
+		dstr[p].time0   	  	  = time_0.at(p);
+		dstr[p].zeta0   	  	  = zeta_0.at(p);
+		dstr[p].eta0    	  	  = eta_0.at(p);
+		dstr[p].M_adiabatic0  	  = M_adiabatic_0.at(p);
+		dstr[p].trapped           = trapped_0.at(p);
+		dstr[p].escaped           = escaped_0.at(p);
+		dstr[p].nan           	  = nan_0.at(p);
+		dstr[p].negative          = negative_0.at(p);
 	}
 	std::cout<<"\nParticle population: "<< Population <<std::endl;
 
-	
 
 	//Object for Particle Telescope.		
 	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);	
@@ -202,32 +206,19 @@ int main(int argc, char **argv)
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
  
 	//Assign from struct to vectors.
-	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
-	//std::vector<real> saved_id, saved_lamda, saved_aeq, saved_time; //(declare if needed)
+	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, neg_lamda, neg_alpha, neg_aeq, neg_ppar, neg_pper, neg_time, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
 
 	for(int p=0; p<Population; p++) 
 	{
-		
-		//All particle states(if needed)
-		//for(int i=0;i<3;i++){
-		//
-		//saved_id.push_back(dstr[p].id.at(i));
-		//saved_lamda.push_back(dstr[p].lamda.at(i));
-		//saved_aeq.push_back(dstr[p].aeq.at(i));
-		//saved_alpha.push_back(dstr[p].alpha.at(i));
-		//saved_ppar.push_back(dstr[p].ppar.at(i));
-		//saved_pper.push_back(dstr[p].pper.at(i));
-		//saved_time.push_back(dstr[p].time.at(i));}
-		
-
 		//Last particle states(that can become first states for next simulation).
-		lamda00.push_back(dstr[p].lamda_end);
-    	ppar00.push_back(dstr[p].ppar_end); 
-    	pper00.push_back(dstr[p].pper_end); 
-    	alpha00.push_back(dstr[p].alpha_end); 
-    	aeq00.push_back(dstr[p].aeq_end); 
-    	eta00.push_back(dstr[p].eta_end); 
-    	time00.push_back(dstr[p].time_end);
+		lamda00.push_back(dstr[p].lamda00);
+    	ppar00.push_back(dstr[p].ppar00); 
+    	pper00.push_back(dstr[p].pper00); 
+    	alpha00.push_back(dstr[p].alpha00); 
+    	aeq00.push_back(dstr[p].aeq00); 
+    	eta00.push_back(dstr[p].eta00); 
+    	time00.push_back(dstr[p].time00);
+		
 
 		//Precipitating Particles
 		if(dstr[p].escaped) 
@@ -239,7 +230,17 @@ int main(int argc, char **argv)
 			precip_time.push_back(dstr[p].time_lost);
 		}
 
-		if(dstr[p])
+		//Negative P.A Particles
+		if(dstr[p].negative) 
+		{
+			neg_id.push_back(dstr[p].id_neg);
+			neg_lamda.push_back(dstr[p].lamda_neg); 
+			neg_alpha.push_back(dstr[p].alpha_neg);
+			neg_aeq.push_back(dstr[p].aeq_neg);
+			neg_pper.push_back(dstr[p].pper_neg);
+			neg_ppar.push_back(dstr[p].ppar_neg);
+			neg_time.push_back(dstr[p].time_neg);
+		}
 	}
 
 
@@ -254,44 +255,41 @@ int main(int argc, char **argv)
 	h5::File file(save_file, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Simulation data and Telescope specification - Scalars 
-	h5::DataSet telescope_lamda    = file.createDataSet("ODPT.latitude", ODPT.latitude);
-	h5::DataSet data_population    = file.createDataSet("population", 	Population);
-	h5::DataSet Ekev0	           = file.createDataSet("Ekev0",   		Constants::Ekev0);
-	h5::DataSet t			       = file.createDataSet("t", 			Constants::t);
+	h5::DataSet telescope_lamda= file.createDataSet("ODPT.latitude", ODPT.latitude);
+	h5::DataSet data_population= file.createDataSet("population", 	Population);
+	h5::DataSet Ekev0	       = file.createDataSet("Ekev0",   		Constants::Ekev0);
+	h5::DataSet t			   = file.createDataSet("t", 			Constants::t);
 	
 	//Detected particles
-	h5::DataSet detected_lamda      = file.createDataSet("ODPT.lamda", ODPT.lamda);
-	h5::DataSet detected_time       = file.createDataSet("ODPT.time", ODPT.time);
-	h5::DataSet detected_id         = file.createDataSet("ODPT.id", ODPT.id);
-	h5::DataSet detected_alpha      = file.createDataSet("ODPT.alpha", ODPT.alpha);
-	h5::DataSet detected_aeq        = file.createDataSet("ODPT.aeq", ODPT.aeq);
+	h5::DataSet detected_lamda = file.createDataSet("ODPT.lamda", ODPT.lamda);
+	h5::DataSet detected_time  = file.createDataSet("ODPT.time", ODPT.time);
+	h5::DataSet detected_id    = file.createDataSet("ODPT.id", ODPT.id);
+	h5::DataSet detected_alpha = file.createDataSet("ODPT.alpha", ODPT.alpha);
+	h5::DataSet detected_aeq   = file.createDataSet("ODPT.aeq", ODPT.aeq);
 
 	//Precipitating Particles
-	h5::DataSet lost_id     = file.createDataSet("precip_id", 	 precip_id);
-	h5::DataSet lost_lamda  = file.createDataSet("precip_lamda", precip_lamda);
-	h5::DataSet lost_alpha  = file.createDataSet("precip_alpha", precip_alpha);
-	h5::DataSet lost_aeq    = file.createDataSet("precip_aeq", 	 precip_aeq);
-	h5::DataSet lost_time   = file.createDataSet("precip_time",	 precip_time);
+	h5::DataSet precipitated_id        = file.createDataSet("precip_id", 	 precip_id);
+	h5::DataSet precipitated_lamda     = file.createDataSet("precip_lamda", precip_lamda);
+	h5::DataSet precipitated_aeq       = file.createDataSet("precip_aeq", 	 precip_aeq);
+	h5::DataSet precipitated_time      = file.createDataSet("precip_time",	 precip_time);
 
+	//Negative P.A Particles
+	h5::DataSet negative_id            = file.createDataSet("neg_id", 	 neg_id);
+	h5::DataSet negative_lamda         = file.createDataSet("neg_lamda", neg_lamda);
+	h5::DataSet negative_alpha         = file.createDataSet("neg_alpha", neg_alpha);
+	h5::DataSet negative_aeq           = file.createDataSet("neg_aeq", 	 neg_aeq);
+	h5::DataSet negative_ppar          = file.createDataSet("neg_ppar",  neg_ppar);
+	h5::DataSet negative_pper          = file.createDataSet("neg_pper",  neg_pper);
+	h5::DataSet negative_time          = file.createDataSet("neg_time",	 neg_time);
 
-	//All particle states(if needed)
-	//h5::DataSet all_id     = file.createDataSet("saved_id", saved_id);
-	//h5::DataSet all_lamda  = file.createDataSet("saved_lamda", saved_lamda);
-	//h5::DataSet all_alpha  = file.createDataSet("saved_alpha", saved_alpha);
-	//h5::DataSet all_aeq    = file.createDataSet("saved_aeq", saved_aeq);
-	//h5::DataSet all_ppar   = file.createDataSet("saved_ppar", saved_ppar);
-	//h5::DataSet all_pper   = file.createDataSet("saved_pper", saved_pper);
-	//h5::DataSet all_time   = file.createDataSet("saved_time", saved_time);
-
-	//Particles states after noWPI time.
-	h5::DataSet ending_lamda = file.createDataSet("lamda00", lamda00);
-	h5::DataSet ending_ppar  = file.createDataSet("ppar00", ppar00);
-	h5::DataSet ending_pper  = file.createDataSet("pper00", pper00);
-	h5::DataSet ending_alpha = file.createDataSet("alpha00", alpha00);
-	h5::DataSet ending_aeq   = file.createDataSet("aeq00", aeq00);
-	h5::DataSet ending_eta   = file.createDataSet("eta00", eta00);
-	h5::DataSet ending_time  = file.createDataSet("time00", time00);
-
+	//Particles states at noWPI end.
+	h5::DataSet ending_lamda   = file.createDataSet("lamda00", lamda00);
+	h5::DataSet ending_ppar    = file.createDataSet("ppar00",  ppar00);
+	h5::DataSet ending_pper    = file.createDataSet("pper00",  pper00);
+	h5::DataSet ending_alpha   = file.createDataSet("alpha00", alpha00);
+	h5::DataSet ending_aeq     = file.createDataSet("aeq00",   aeq00);
+	h5::DataSet ending_eta     = file.createDataSet("eta00",   eta00);
+	h5::DataSet ending_time    = file.createDataSet("time00",  time00);
 
 
 

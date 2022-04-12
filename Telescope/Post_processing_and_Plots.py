@@ -21,7 +21,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/200000p_no_wpi.h5","r")
+f1 = h5py.File("h5files/10p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -34,7 +34,6 @@ t              = f1["t"][()]
 Ekev0          = f1["Ekev0"][()]
 precip_id      = f1["precip_id"][()]
 precip_lamda   = f1["precip_lamda"][()]
-precip_alpha   = f1["precip_alpha"][()]
 precip_aeq     = f1["precip_aeq"][()]
 precip_time    = f1["precip_time"][()] 
 #saved_id    = f1["saved_id"][()]
@@ -48,7 +47,7 @@ f1.close()
 
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/200000p_both.h5","r")
+f2 = h5py.File("h5files/10p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -61,7 +60,6 @@ t_both              = f2["t"][()]
 Ekev0_both          = f2["Ekev0"][()]
 precip_id_both      = f2["precip_id"][()]
 precip_lamda_both   = f2["precip_lamda"][()]
-precip_alpha_both   = f2["precip_alpha"][()]
 precip_aeq_both     = f2["precip_aeq"][()]
 precip_time_both    = f2["precip_time"][()] 
 #savedwpi_id    = f2["saved_id"][()]
@@ -82,7 +80,7 @@ f2.close()
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 2                #seconds to distinquish events(time resolution)
+time_bin  = 0.1                #seconds to distinquish events(time resolution)
 timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
 
 view = 180 

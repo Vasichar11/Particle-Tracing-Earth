@@ -81,6 +81,8 @@ int main(int argc, char **argv)
 	//Loop for <lamda_dstr> different particle latitudes.
 	for(int aeq_count=0; aeq_count<Constants::aeq_dstr; aeq_count++)
 	{
+
+
 		//----------------P.A dstr-----------------//
 		//Evenly dstr
 		if(argv[1]==string_evenly)   
@@ -106,6 +108,7 @@ int main(int argc, char **argv)
 			}while(number<=0 || number>=180); //Until valid aeq=(0,180).
 			aeq0  = number * Constants::D2R; 	
 		}
+		//Test particle
 		else if (argv[1]==string_test)
 		{
 			aeq0 = Constants::aeq0;
@@ -114,11 +117,18 @@ int main(int argc, char **argv)
 		//----------------P.A dstr-----------------//
 
 
+
+
+
 		//-------------Latitude domain-------------//
 		real lamda_end_d, lamda_start_d;
 		lamda_domain(aeq0, lamda_start_d, lamda_end_d); //Finds lamda_start_d && lamda_end_d. 
 		//std::cout<<"\nFor aeq0 = "<<aeq0*Constants::R2D<<" degrees\nThe latitude domain in degrees"<<"\n|From "<<" To|\n| "<<lamda_start_d << "  "<< " " << lamda_end_d <<"|\n";
 		//-------------Latitude domain-------------//
+
+
+
+
 
 
 		for(int lamda_count=0; lamda_count<Constants::lamda_dstr; lamda_count++)
@@ -150,6 +160,7 @@ int main(int argc, char **argv)
 				}while(number<lamda_start_d || number>lamda_end_d); //Until valid lamda=(0,180).
 				lamda0  = number * Constants::D2R; 	
 			}
+			//Test particle
 			else if (argv[2]==string_test)
 			{
 				lamda0 = Constants::lamda0;
@@ -169,8 +180,8 @@ int main(int argc, char **argv)
 			//If aeq>90 then k=1 then alpha0>90 <--> particle is southward, ppar<0
 			alpha0 = pow(-1,k)*asin(salpha0)+k*M_PI;       // sinx = a => x=(-1)^k * asin(a) + k*pi
 			//Initialize and print particle state for this equatorial P.A and latitude.
-			dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0,lamda_start_d,lamda_end_d);
-			//std::cout<<"\nParticle"<<p<<" aeq0: "<< aeq0*Constants::R2D <<", lamda0: "<< lamda0*Constants::R2D;	
+			dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0);
+			//std::cout<<"\nParticle"<<p<<" aeq0: "<< dstr[p].aeq0*Constants::R2D <<", lamda0: "<< dstr[p].lamda0*Constants::R2D;	
 			p++; //Next particle
 
 		}	
@@ -186,7 +197,7 @@ int main(int argc, char **argv)
 	int sec;
 	for(int p=0; p<Constants::population; p++)
 	{
-		sec = floor((dstr[p].aeq_init*Constants::R2D)/sector_range); //Which sector has this particle?
+		sec = floor((dstr[p].aeq0*Constants::R2D)/sector_range); //Which sector has this particle?
 		aeq0_bins.at(sec) ++; 										  //This sector has this particle
 	}
 	std::cout<<"\nEquatorial P.A Initialization: ";
@@ -197,44 +208,48 @@ int main(int argc, char **argv)
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//
 	
-	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population), trapped_dstr(Constants::population), escaped_dstr(Constants::population);
+	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population), trapped_dstr(Constants::population), escaped_dstr(Constants::population), nan_dstr(Constants::population), negative_dstr(Constants::population);
 
 	//Assign from struct to 1d vectors.
 	for(int p=0; p<Constants::population; p++)
 	{
-		alpha_dstr[p]      = dstr[p].alpha_init;
-		lamda_dstr[p]      = dstr[p].lamda_init;
-		aeq_dstr[p]        = dstr[p].aeq_init;
-		ppar_dstr[p]       = dstr[p].ppar_init;
-		pper_dstr[p]       = dstr[p].pper_init;
-		upar_dstr[p]       = dstr[p].upar_init;
-		uper_dstr[p]       = dstr[p].uper_init;
-		eta_dstr[p]        = dstr[p].eta_init;
-		zeta_dstr[p]       = dstr[p].zeta_init;
-		Ekin_dstr[p]       = dstr[p].Ekin_init;
-		M_adiabatic_dstr[p]= dstr[p].M_adiabatic_init;
-		time_dstr[p]       = dstr[p].time_init;
+		alpha_dstr[p]      = dstr[p].alpha0;
+		lamda_dstr[p]      = dstr[p].lamda0;
+		aeq_dstr[p]        = dstr[p].aeq0;
+		ppar_dstr[p]       = dstr[p].ppar0;
+		pper_dstr[p]       = dstr[p].pper0;
+		upar_dstr[p]       = dstr[p].upar0;
+		uper_dstr[p]       = dstr[p].uper0;
+		eta_dstr[p]        = dstr[p].eta0;
+		zeta_dstr[p]       = dstr[p].zeta0;
+		Ekin_dstr[p]       = dstr[p].Ekin0;
+		M_adiabatic_dstr[p]= dstr[p].M_adiabatic0;
+		time_dstr[p]       = dstr[p].time0;
 		trapped_dstr[p]    = dstr[p].trapped;
 		escaped_dstr[p]    = dstr[p].escaped;
+		negative_dstr[p]   = dstr[p].negative;
+		nan_dstr[p]    	   = dstr[p].nan;
 	}
 	
 	std::string file_name = "h5files/" + std::to_string(Constants::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA.h5";
 	h5::File file(file_name, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
-	h5::DataSet data_lat            = file.createDataSet("lat", lamda_dstr);
-	h5::DataSet data_aeq            = file.createDataSet("aeq", aeq_dstr);
-	h5::DataSet data_alpha          = file.createDataSet("alpha", alpha_dstr);
-	h5::DataSet data_upar           = file.createDataSet("upar", upar_dstr);
-	h5::DataSet data_uper           = file.createDataSet("uper", uper_dstr);
-	h5::DataSet data_ppar           = file.createDataSet("ppar", ppar_dstr);
-	h5::DataSet data_pper           = file.createDataSet("pper", pper_dstr);
-	h5::DataSet data_eta            = file.createDataSet("eta",  eta_dstr);
-	h5::DataSet data_zeta           = file.createDataSet("zeta", zeta_dstr);
-	h5::DataSet data_time           = file.createDataSet("time", time_dstr);
-	h5::DataSet data_M_adiabatic    = file.createDataSet("M_adiabatic", M_adiabatic_dstr);
-	h5::DataSet data_Ekin           = file.createDataSet("Ekin", Ekin_dstr);
-	h5::DataSet data_trapped        = file.createDataSet("trapped", trapped_dstr);
-	h5::DataSet data_escaped        = file.createDataSet("escaped", escaped_dstr);
+	h5::DataSet data_lat            = file.createDataSet("lamda0", lamda_dstr);
+	h5::DataSet data_aeq            = file.createDataSet("aeq0", aeq_dstr);
+	h5::DataSet data_alpha          = file.createDataSet("alpha0", alpha_dstr);
+	h5::DataSet data_upar           = file.createDataSet("upar0", upar_dstr);
+	h5::DataSet data_uper           = file.createDataSet("uper0", uper_dstr);
+	h5::DataSet data_ppar           = file.createDataSet("ppar0", ppar_dstr);
+	h5::DataSet data_pper           = file.createDataSet("pper0", pper_dstr);
+	h5::DataSet data_eta            = file.createDataSet("eta0",  eta_dstr);
+	h5::DataSet data_zeta           = file.createDataSet("zeta0", zeta_dstr);
+	h5::DataSet data_time           = file.createDataSet("time0", time_dstr);
+	h5::DataSet data_M_adiabatic    = file.createDataSet("M_adiabatic0", M_adiabatic_dstr);
+	h5::DataSet data_Ekin           = file.createDataSet("Ekin0", Ekin_dstr);
+	h5::DataSet data_trapped        = file.createDataSet("trapped0", trapped_dstr);
+	h5::DataSet data_escaped        = file.createDataSet("escaped0", escaped_dstr);
+	h5::DataSet data_nan       	    = file.createDataSet("nan0", nan_dstr);
+	h5::DataSet data_negative       = file.createDataSet("negative0", negative_dstr);
 	h5::DataSet aeq0bins            = file.createDataSet("aeq0_bins", aeq0_bins);
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//
