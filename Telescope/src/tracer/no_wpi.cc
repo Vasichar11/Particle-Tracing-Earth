@@ -73,8 +73,8 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
 
         //Check Validity:
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
-        if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break; }
-        if(alpha<0 || aeq<0)      { std::cout<<"\nParticle "<<p<<" negative p.a"; break; }
+        if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break;  }
+        if(alpha<0 || aeq<0)      { std::cout<<"\nParticle "<<p<<" negative p.a"; single.negative=true; single.save_state( p, lamda, aeq, ppar, pper, alpha, time); break; }
 
         //Check Crossing:
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
@@ -122,7 +122,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
        
 		//To save any states:
         //single.save_state( p, lamda, aeq, time);
-        //std::cout<<"\n\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+        //std::cout<<"\n\ntime "<< time<< " \nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
         //std::cout<< "\nlatitude "<<lamda*Constants::R2D<< " pa " <<alpha*Constants::R2D<<" aeq " << aeq*Constants::R2D;
 
     }

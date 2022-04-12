@@ -21,7 +21,7 @@ R2D=1/D2R
 
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/5s_200p_no_wpi.h5","r")
+f1 = h5py.File("h5files/200000p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -48,7 +48,7 @@ f1.close()
 
 
 #noWPI and WPI afterwards read
-f2 = h5py.File("h5files/5s_200p_both.h5","r")
+f2 = h5py.File("h5files/200000p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -82,10 +82,11 @@ f2.close()
 
 
 ############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 0.1                #seconds to distinquish events(time resolution)
+time_bin  = 2                #seconds to distinquish events(time resolution)
 timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
+
 view = 180 
-sector_range = 10 #P.A bins #1deg
+sector_range = 15 #P.A bins #1deg
 sectors = int(view/sector_range)
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
@@ -124,7 +125,7 @@ fig, ax = plt.subplots()
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
-plt.title("$Population$: " +str(population)+"]\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
+plt.title("$Population$: " +str(population)+"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
@@ -248,7 +249,7 @@ with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_
         ax.bar(np.arange(0.5,sectors+0.5),precip[timestep], width=0.3, bottom=moved[timestep], color='orange', label="precipitated particles")#plot difference precipitated
 
         #Sector red ticks
-        ax.set_xticks(ticks=np.arange(0.5,sectors)) 
+        ax.set_xticks(ticks=np.arange(0,sectors)) 
         ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
         #P.A black ticks
         #ax.set_xticks(ticks=np.arange(0,sectors,),minor=True) 

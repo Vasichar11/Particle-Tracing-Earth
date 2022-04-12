@@ -98,37 +98,41 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
 
         //Check Validity:
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4); //Approximate new lamda first
-        if(std::isnan(new_lamda)) { std::cout<<"\nParticle "<<p<<" breaks"; break; }
-        if(alpha<0 || aeq<0)      { std::cout<<"\nParticle "<<p<<" negative p.a"; break; }
-        
-        //Check Crossing:
+        new_aeq  = aeq  + (Constants::h/6)*(q1+2*q2+2*q3+q4);
+        new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
+            if(std::isnan(new_lamda))
+            {
+                std::cout<<"\nParticle "<<p<<" breaks"; break; 
+            }
+        //Check Crossing, Trapping:
         #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
         {                    //This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
-            if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 
-            {	//Check crossing.								
-                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
+            if(alpha<0 || aeq<0)
+            {
+                std::cout<<"\nParticle "<<p<<" negative p.a";
+                single.save_state( p, lamda, aeq,alpha,ppar,pper, time);
+                single.negative = true;
+                break;
+            }
+
+            if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	 //Check crossing.
+            {									
                 ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
+                //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
             }
-        }
-        //Check Trapping:
-        new_aeq = aeq + (Constants::h/6)*(q1+2*q2+2*q3+q4);
-        if( (0<new_aeq && new_aeq<Constants::alpha_lc) || (new_aeq>M_PI-Constants::alpha_lc && new_aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).
-        {                                                //If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
-            single.trapped = false;
-        }
-        //Check Precipitation:
-        new_ppar = ppar + (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
-        {   
-            //To save states of precipitating particles:
-            #pragma omp critical //Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
-            {   
+            if( (0<new_aeq && new_aeq<Constants::alpha_lc) || (new_aeq>M_PI-Constants::alpha_lc && new_aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
+            {
+                single.trapped = false;
+            }
+            if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
+            {
                 single.escaping_state(p, lamda, alpha, aeq, time);
-                //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper<< " eta " << eta << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
                 single.escaped = true;
+                //std::cout<<"\n\nParticle "<<p<<" escaped with ppar "<<ppar<< " new_ppar would be "<<new_ppar<<" pper " << pper<< " eta " << eta << " lamda " <<lamda*Constants::R2D<< " alpha "<< alpha*Constants::R2D << " aeq " <<aeq*Constants::R2D<< " at time " << time ;
+                break;
             }
-            break;
         }
+
         //Next step:
         new_values_RK4(lamda, ppar, pper, eta, alpha, aeq, l1, l2, l3, l4, m1, m2, m3, m4, n1, n2, n3, n4, o1, o2, o3, o4, p1, p2, p3, p4, q1, q2, q3, q4);
         time  = time + Constants::h; 

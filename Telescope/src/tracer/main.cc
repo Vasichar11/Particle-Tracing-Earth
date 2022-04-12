@@ -160,7 +160,9 @@ int main(int argc, char **argv)
 					for(int p=0; p<Population; p++)     
 					{
 						//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
-						if(dstr[p].escaped == true) continue; //If this particle is lost, continue with next particle.
+						if(dstr[p].escaped  == true) continue; //If this particle is lost, continue with next particle.
+						if(dstr[p].negative == true) continue; //If this particle came out with aeq negative, continue with next particle.
+						if(dstr[p].nan 	    == true) continue; //If this particle came out with aeq nan     , continue with next particle.
 						li_wpi(p, dstr[p], ODPT);  //LI   + RAY TRACING
 					}
 			}	
@@ -184,6 +186,9 @@ int main(int argc, char **argv)
 					for(int p=0; p<Population; p++)     
 					{
 						//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
+						if(dstr[p].escaped  == true) continue; //If this particle is lost, continue with next particle.
+						if(dstr[p].negative == true) continue; //If this particle came out with aeq negative, continue with next particle.
+						if(dstr[p].nan 	    == true) continue; //If this particle came out with aeq nan     , continue with next particle.
 						bell_wpi(p, dstr[p], ODPT); 		//BELL + THE WAVE IS EVERYWHERE
 					}
 			}	
@@ -209,9 +214,9 @@ int main(int argc, char **argv)
 		//saved_id.push_back(dstr[p].id.at(i));
 		//saved_lamda.push_back(dstr[p].lamda.at(i));
 		//saved_aeq.push_back(dstr[p].aeq.at(i));
-		////saved_alpha.push_back(dstr[p].alpha.at(i));
-		////saved_ppar.push_back(dstr[p].ppar.at(i));
-		////saved_pper.push_back(dstr[p].pper.at(i));
+		//saved_alpha.push_back(dstr[p].alpha.at(i));
+		//saved_ppar.push_back(dstr[p].ppar.at(i));
+		//saved_pper.push_back(dstr[p].pper.at(i));
 		//saved_time.push_back(dstr[p].time.at(i));}
 		
 
@@ -233,7 +238,11 @@ int main(int argc, char **argv)
 			precip_aeq.push_back(dstr[p].aeq_lost);
 			precip_time.push_back(dstr[p].time_lost);
 		}
+
+		if(dstr[p])
 	}
+
+
 
 
 	//File name based on the argument variables
@@ -258,11 +267,11 @@ int main(int argc, char **argv)
 	h5::DataSet detected_aeq        = file.createDataSet("ODPT.aeq", ODPT.aeq);
 
 	//Precipitating Particles
-	h5::DataSet lost_id     = file.createDataSet("precip_id", precip_id);
+	h5::DataSet lost_id     = file.createDataSet("precip_id", 	 precip_id);
 	h5::DataSet lost_lamda  = file.createDataSet("precip_lamda", precip_lamda);
 	h5::DataSet lost_alpha  = file.createDataSet("precip_alpha", precip_alpha);
-	h5::DataSet lost_aeq    = file.createDataSet("precip_aeq", precip_aeq);
-	h5::DataSet lost_time   = file.createDataSet("precip_time", precip_time);
+	h5::DataSet lost_aeq    = file.createDataSet("precip_aeq", 	 precip_aeq);
+	h5::DataSet lost_time   = file.createDataSet("precip_time",	 precip_time);
 
 
 	//All particle states(if needed)

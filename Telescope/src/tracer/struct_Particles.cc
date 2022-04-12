@@ -21,9 +21,10 @@ void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real 
 	M_adiabatic_init = (pper_init*pper_init) / (2*Constants::m_e*Blam0) ;	
 	Ekin_init = ((gama0-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;	 //Joule back to Kev
 	time_init = time0 ;
-	trapped = true;	
+	trapped = true;	 //Particle is trapped, and won't escape until conditions are met.
 	escaped = false;
-
+	negative = false;
+	nan = false;
 	lamda_start_d = lamda_start_d;
 	lamda_end_d   = lamda_end_d;
 
@@ -55,13 +56,13 @@ void Particles::escaping_state(int id, real new_lamda, real new_alpha, real new_
 }
 
 //Member function to save all particle states(if needed). Need for vectors, save values in every step of the simulation.
-void Particles::save_state(int id, real new_lamda, real new_aeq, real new_time)
+void Particles::save_state(int id, real new_lamda, real new_aeq, real new_ppar, real new_pper, real new_alpha, real new_time)
 {
 	this->id.push_back(id);
 	this->lamda.push_back(new_lamda);      				
-	//this->ppar.push_back(new_ppar);		 
-	//this->pper.push_back(new_pper);
-	//this->alpha.push_back(new_alpha);	
+	this->ppar.push_back(new_ppar);		 
+	this->pper.push_back(new_pper);
+	this->alpha.push_back(new_alpha);	
 	this->aeq.push_back(new_aeq);
 	this->time.push_back(new_time);
 	//this->zeta.push_back(new_zeta);

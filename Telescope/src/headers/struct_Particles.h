@@ -17,14 +17,14 @@ struct Particles
 		
 	//Member function to save particle states.
 	void escaping_state(int id,real new_lamda, real new_alpha, real new_aeq, real new_time);
-	void save_state(int id, real new_lamda, real new_aeq, real new_time);
+	void save_state(int id, real new_lamda, real new_aeq, real ppar, real pper, real alpha, real new_time);
 	
 
 	void lamda_domain(real aeq0);
 
 
 	//Member variables.
-	bool escaped,trapped;
+	bool escaped,trapped,negative,nan; //Characterize particle
 	//Initials
 	real lamda_init, zeta_init, uper_init, upar_init, ppar_init, pper_init, alpha_init, aeq_init, eta_init, M_adiabatic_init, Ekin_init, time_init;
 	//Domain variables

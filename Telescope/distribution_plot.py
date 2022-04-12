@@ -25,7 +25,7 @@ alpha00        = f2["alpha00"][()]
 aeq00          = f2["aeq00"][()]
 eta00          = f2["eta00"][()]
 time00         = f2["time00"][()]
-
+population     = f2["population"][()]
 
 #Save initials to CSV file
 header = ['id', 'aeq0_deg', 'lamda0_deg','aeq00_deg','lamda00_deg']
@@ -48,12 +48,12 @@ for sec in range(0,sectors):
 ax.grid(alpha=.3)
 ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
 ax.set_yscale("log")
-fig.savefig("simulation_MM/10e6_normals.png",dpi=200)
+fig.savefig("simulation_MM/"+str(population)+"_normals_1.png",dpi=200)
 
 fig, ax = plt.subplots()
 ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/10e6_normals_2.png",dpi=200)
+fig.savefig("simulation_MM/"+str(sector_range)+"_normals_2.png",dpi=200)
 #"""
