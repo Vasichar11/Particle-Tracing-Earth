@@ -23,7 +23,6 @@ aeq0_bins     = f1["aeq0_bins"][()]
 f1.close()
 
 f2 = h5py.File("h5files/1000p_both.h5","r")
-
 population     = f2["population"][()]
 lamda00        = f2["lamda00"][()] #states when noWPI ends
 ppar00         = f2["ppar00"][()]
@@ -32,6 +31,14 @@ alpha00        = f2["alpha00"][()]
 aeq00          = f2["aeq00"][()]
 eta00          = f2["eta00"][()]
 time00         = f2["time00"][()]
+neg_id         = f2["neg_id"][()] #initial states of particles that develop negative p.a
+neg_lamda      = f2["neg_lamda"][()]
+neg_alpha      = f2["neg_alpha"][()]
+neg_aeq        = f2["neg_aeq"][()]
+neg_ppar       = f2["neg_ppar"][()]
+neg_pper       = f2["neg_pper"][()]
+neg_time       = f2["neg_time"][()]
+
 
 
 #Save initials to CSV file
@@ -41,12 +48,23 @@ p=0
 for aq0,l0,par0,per0,a0,aq00,l00,par00,per00,a00 in zip(aeq0, lamda0, ppar0, pper0, alpha0, aeq00, lamda00, ppar00, pper00, alpha00):
     data.extend([[p,aq0*R2D,l0*R2D,par0,per0,a0*R2D, aq00*R2D,l00*R2D,par00,per00,a00*R2D]])
     p=p+1 #id is the element's location in the list since the particles were saved like that
-with open("dstr_data.csv", "w") as f:
-    writer = csv.writer(f)
+with open("dstr_data.csv", "w") as file1:
+    writer = csv.writer(file1)
     writer.writerow(header)
     writer.writerows(data)
 
 
+#Save initial state of Particles that developed negative P.A to CSV file
+header2 = ['id', 'aeq0_deg', 'lamda0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'time']
+data2 = []
+p2=0
+for aq00,l00,par00,per00,a00,time in zip(neg_aeq, neg_lamda, neg_ppar, neg_pper, neg_alpha, neg_time):
+    data2.extend([[p,aq00*R2D,l00*R2D,par00,per00,a00*R2D,time]])
+    p2=p2+1 #id is the element's location in the list since the particles were saved like that
+with open("negative_particles.csv", "w") as file2:
+    writer = csv.writer(file2)
+    writer.writerow(header2)
+    writer.writerows(data2)
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 #"""
 fig, ax = plt.subplots()
