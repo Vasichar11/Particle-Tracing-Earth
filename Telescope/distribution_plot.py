@@ -41,7 +41,9 @@ neg_time       = f2["neg_time"][()]
 
 
 
-#Save initials to CSV file
+
+############################################### SAVE CSV FILES ######################################################33
+#Initials to CSV file
 header = ['id', 'aeq0_deg', 'lamda0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'aeq00_deg','lamda00_deg','ppar00','pper00','alpha00_deg']
 data = []
 p=0
@@ -54,7 +56,7 @@ with open("dstr_data.csv", "w") as file1:
     writer.writerows(data)
 
 
-#Save initial state of Particles that developed negative P.A to CSV file
+#Initials of Particles that developed negative P.A to CSV file
 header2 = ['id', 'aeq0_deg', 'lamda0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'time']
 data2 = []
 p2=0
