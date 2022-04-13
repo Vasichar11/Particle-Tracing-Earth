@@ -22,7 +22,7 @@ int main()
 //-------------------------------------------------- READ CSV --------------------------------------------------------// 
     //Using function "rcsv" to read Ray data && store values in a single(!) vector.
 
-    std::vector<std::pair<std::string, std::vector<real>>> ray_tracing = rcsv("L2_freq2500_psi-89_lat_0_damping.csv");
+    std::vector<std::pair<std::string, std::vector<double>>> ray_tracing = rcsv("L2_freq2500_psi-89_lat_0_damping.csv");
 
     int column_size = ray_tracing.at(0).second.size() ;       //Size of columns
 
