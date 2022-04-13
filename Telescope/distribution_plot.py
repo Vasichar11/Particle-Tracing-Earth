@@ -11,7 +11,7 @@ sector_range = 10 #P.A bins #1deg
 sectors = int(view/sector_range)
 
 #Distribution read
-f1 = h5py.File("h5files/1000p_normalAEQ_normalLAMDA.h5","r")
+f1 = h5py.File("h5files/10p_normalAEQ_normalLAMDA.h5","r")
 lamda0        = f1["lamda0"][()] #states when noWPI starts
 ppar0         = f1["ppar0"][()]
 pper0         = f1["pper0"][()]
@@ -22,7 +22,7 @@ time0         = f1["time0"][()]
 aeq0_bins     = f1["aeq0_bins"][()]
 f1.close()
 
-f2 = h5py.File("h5files/1000p_both.h5","r")
+f2 = h5py.File("h5files/10p_both.h5","r")
 population     = f2["population"][()]
 lamda00        = f2["lamda00"][()] #states when noWPI ends
 ppar00         = f2["ppar00"][()]
@@ -32,14 +32,13 @@ aeq00          = f2["aeq00"][()]
 eta00          = f2["eta00"][()]
 time00         = f2["time00"][()]
 neg_id         = f2["neg_id"][()] #initial states of particles that develop negative p.a
-neg_lamda      = f2["neg_lamda"][()]
-neg_alpha      = f2["neg_alpha"][()]
-neg_aeq        = f2["neg_aeq"][()]
-neg_ppar       = f2["neg_ppar"][()]
-neg_pper       = f2["neg_pper"][()]
-neg_time       = f2["neg_time"][()]
+nan_id         = f2["nan_id"][()] #initial states of particles that develop nan
+high_id        = f2["high_id"][()] #initial states of particles that develop high p.a
 
 
+print(neg_id)
+print(high_id)
+print(nan_id)
 
 
 ############################################### SAVE CSV FILES ######################################################33
@@ -54,17 +53,6 @@ with open("dstr_data.csv", "w") as file1:
     writer = csv.writer(file1)
     writer.writerow(header)
     writer.writerows(data)
-
-
-#Initials of Particles that developed negative P.A to CSV file
-header2 = ['id', 'aeq00_deg', 'lamda00_deg', 'ppar00', 'pper00', 'alpha00_deg', 'time']
-data2 = []
-for id00,aq00,l00,par00,per00,a00,time in zip(neg_id, neg_aeq, neg_lamda, neg_ppar, neg_pper, neg_alpha, neg_time):
-    data2.extend([[id00,aq00*R2D,l00*R2D,par00,per00,a00*R2D,time]])
-with open("negative_particles.csv", "w") as file2:
-    writer = csv.writer(file2)
-    writer.writerow(header2)
-    writer.writerows(data2)
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 #"""
 fig, ax = plt.subplots()

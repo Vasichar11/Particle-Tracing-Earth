@@ -43,9 +43,9 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/1p_testAEQ_testLAMDA.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/10p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
-	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0;
+	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
 	h5::DataSet data_lat 	     = distribution_file.getDataSet("lamda0");
 	h5::DataSet data_aeq	     = distribution_file.getDataSet("aeq0");
@@ -63,6 +63,7 @@ int main(int argc, char **argv)
 	h5::DataSet data_escaped	 = distribution_file.getDataSet("escaped0");
 	h5::DataSet data_nan	 	 = distribution_file.getDataSet("nan0");
 	h5::DataSet data_negative	 = distribution_file.getDataSet("negative0");
+	h5::DataSet data_high    	 = distribution_file.getDataSet("high0");
 	//Convert to single vector.
 	data_lat.read(lamda_0);
 	data_aeq.read(aeq_0);
@@ -80,6 +81,7 @@ int main(int argc, char **argv)
 	data_escaped.read(escaped_0);
 	data_escaped.read(nan_0);
 	data_escaped.read(negative_0);
+	data_escaped.read(high_0);
 
 
 	int Population = lamda_0.size(); //Take the population from the h5 file to avoid mistakes.
@@ -107,6 +109,7 @@ int main(int argc, char **argv)
 		dstr[p].escaped           = escaped_0.at(p);
 		dstr[p].nan           	  = nan_0.at(p);
 		dstr[p].negative          = negative_0.at(p);
+		dstr[p].high          	  = high_0.at(p);
 	}
 	std::cout<<"\nParticle population: "<< Population <<std::endl;
 
@@ -206,7 +209,7 @@ int main(int argc, char **argv)
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
  
 	//Assign from struct to vectors.
-	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, neg_lamda, neg_alpha, neg_aeq, neg_ppar, neg_pper, neg_time, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
+	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
 
 	for(int p=0; p<Population; p++) 
 	{
@@ -234,12 +237,16 @@ int main(int argc, char **argv)
 		if(dstr[p].negative) 
 		{
 			neg_id.push_back(dstr[p].id_neg);
-			neg_lamda.push_back(dstr[p].lamda_neg); 
-			neg_alpha.push_back(dstr[p].alpha_neg);
-			neg_aeq.push_back(dstr[p].aeq_neg);
-			neg_pper.push_back(dstr[p].pper_neg);
-			neg_ppar.push_back(dstr[p].ppar_neg);
-			neg_time.push_back(dstr[p].time_neg);
+		}
+		//High P.A Particles
+		if(dstr[p].high) 
+		{
+			high_id.push_back(dstr[p].id_neg);
+		}
+		//High P.A Particles
+		if(dstr[p].nan) 
+		{
+			nan_id.push_back(dstr[p].id_nan);
 		}
 	}
 
@@ -269,18 +276,19 @@ int main(int argc, char **argv)
 
 	//Precipitating Particles
 	h5::DataSet precipitated_id        = file.createDataSet("precip_id", 	 precip_id);
-	h5::DataSet precipitated_lamda     = file.createDataSet("precip_lamda", precip_lamda);
+	h5::DataSet precipitated_lamda     = file.createDataSet("precip_lamda",  precip_lamda);
 	h5::DataSet precipitated_aeq       = file.createDataSet("precip_aeq", 	 precip_aeq);
 	h5::DataSet precipitated_time      = file.createDataSet("precip_time",	 precip_time);
 
 	//Negative P.A Particles
-	h5::DataSet negative_id            = file.createDataSet("neg_id", 	 neg_id);
-	h5::DataSet negative_lamda         = file.createDataSet("neg_lamda", neg_lamda);
-	h5::DataSet negative_alpha         = file.createDataSet("neg_alpha", neg_alpha);
-	h5::DataSet negative_aeq           = file.createDataSet("neg_aeq", 	 neg_aeq);
-	h5::DataSet negative_ppar          = file.createDataSet("neg_ppar",  neg_ppar);
-	h5::DataSet negative_pper          = file.createDataSet("neg_pper",  neg_pper);
-	h5::DataSet negative_time          = file.createDataSet("neg_time",	 neg_time);
+	h5::DataSet data_neg_id           = file.createDataSet("neg_id", 	 neg_id);
+
+	//High P.A Particles
+	h5::DataSet data_high_id          = file.createDataSet("high_id", 	 high_id);
+
+	//High P.A Particles
+	h5::DataSet data_nan_id           = file.createDataSet("nan_id", 	 nan_id);
+
 
 	//Particles states at noWPI end.
 	h5::DataSet ending_lamda   = file.createDataSet("lamda00", lamda00);

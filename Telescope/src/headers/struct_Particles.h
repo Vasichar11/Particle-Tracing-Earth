@@ -17,7 +17,9 @@ struct Particles
 		
 	//Member function to save particle states.
 	void escaping_state(int id,real new_lamda, real new_aeq, real new_time);
-	void negative_state(int id, real new_lamda, real new_aeq ,real new_alpha, real new_ppar, real new_pper, real new_time);
+	void negative_state(int id);
+	void high_state(int id);
+	void nan_state(int id);
 	//void save_state(int id, real new_lamda, real new_aeq, real ppar, real pper, real alpha, real new_time);
 	
 
@@ -25,7 +27,7 @@ struct Particles
 
 
 	//Member variables.
-	bool escaped,trapped,negative,nan; //Characterize particle
+	bool escaped,trapped,negative,nan,high; //Characterize particle
 	//Starting noWPI states
 	real lamda0, zeta0, uper0, upar0, ppar0, pper0, alpha0, aeq0, eta0, M_adiabatic0, Ekin0, time0;
 	//Ending noWPI and Starting WPI states
@@ -33,7 +35,11 @@ struct Particles
 	//If lost
 	real lamda_lost, alpha_lost, aeq_lost, time_lost, id_lost;  //, ppar_lost, pper_lost, zeta_lost, uper_lost, upar_lost,  eta_lost, M_adiabatic_lost, Ekin_lost;
 	//If negative P.A
-	real lamda_neg, alpha_neg, aeq_neg, time_neg, id_neg, ppar_neg, pper_neg; // zeta_neg, uper_neg, upar_neg,  eta_neg, M_adiabatic_neg, Ekin_neg;
+	real id_neg;
+	//If higher than 180 P.A
+	real id_high;
+	//If nan
+	real id_nan;
 
 	//If vectors for save_state are needed;
 	//std::vector<real> id, lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, deta_dt, Ekin, time; 

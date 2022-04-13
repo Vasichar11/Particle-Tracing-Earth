@@ -119,13 +119,11 @@ int main(int argc, char **argv)
 
 
 
-
 		//-------------Latitude domain-------------//
 		real lamda_end_d, lamda_start_d;
 		lamda_domain(aeq0, lamda_start_d, lamda_end_d); //Finds lamda_start_d && lamda_end_d. 
 		//std::cout<<"\nFor aeq0 = "<<aeq0*Constants::R2D<<" degrees\nThe latitude domain in degrees"<<"\n|From "<<" To|\n| "<<lamda_start_d << "  "<< " " << lamda_end_d <<"|\n";
 		//-------------Latitude domain-------------//
-
 
 
 
@@ -208,7 +206,7 @@ int main(int argc, char **argv)
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//
 	
-	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population), trapped_dstr(Constants::population), escaped_dstr(Constants::population), nan_dstr(Constants::population), negative_dstr(Constants::population);
+	std::vector<real> lamda_dstr(Constants::population), alpha_dstr(Constants::population), aeq_dstr(Constants::population), upar_dstr(Constants::population), uper_dstr(Constants::population), ppar_dstr(Constants::population), pper_dstr(Constants::population), eta_dstr(Constants::population), M_adiabatic_dstr(Constants::population), time_dstr(Constants::population), Ekin_dstr(Constants::population), zeta_dstr(Constants::population), trapped_dstr(Constants::population), escaped_dstr(Constants::population), nan_dstr(Constants::population), negative_dstr(Constants::population), high_dstr(Constants::population);
 
 	//Assign from struct to 1d vectors.
 	for(int p=0; p<Constants::population; p++)
@@ -229,6 +227,7 @@ int main(int argc, char **argv)
 		escaped_dstr[p]    = dstr[p].escaped;
 		negative_dstr[p]   = dstr[p].negative;
 		nan_dstr[p]    	   = dstr[p].nan;
+		high_dstr[p]	   = dstr[p].high;
 	}
 	
 	std::string file_name = "h5files/" + std::to_string(Constants::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA.h5";
@@ -250,6 +249,7 @@ int main(int argc, char **argv)
 	h5::DataSet data_escaped        = file.createDataSet("escaped0", escaped_dstr);
 	h5::DataSet data_nan       	    = file.createDataSet("nan0", nan_dstr);
 	h5::DataSet data_negative       = file.createDataSet("negative0", negative_dstr);
+	h5::DataSet data_high      	    = file.createDataSet("high0", high_dstr);
 	h5::DataSet aeq0bins            = file.createDataSet("aeq0_bins", aeq0_bins);
 
 //----------------------------------------WRITE TO HDF5 FILE------------------------------------//

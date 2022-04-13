@@ -26,6 +26,7 @@ void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real 
 	this->escaped  = false;
 	this->negative = false; //May it develop negative P.A
 	this->nan      = false; //May it develop NaN state
+	this->high     = false; //May it develop NaN state
 
 	//Else Invalid
 	/*-1<salpha || salpha>1 => domain error
@@ -53,24 +54,23 @@ void Particles::escaping_state(int id, real new_lamda, real new_aeq, real new_ti
 }
 
 
-//Member function to save precipitating particle states. No need for vectors, just one saved value.
-void Particles::negative_state(int id, real new_lamda, real new_aeq ,real new_alpha, real new_ppar, real new_pper, real new_time)
+//Member function to save particles that develop negative aeq.
+void Particles::negative_state(int id)
 {	
 	id_neg     =	id;
-	lamda_neg  =	new_lamda;
-	alpha_neg  =	new_alpha;
-	aeq_neg    =	new_aeq	;
-	time_neg   =	new_time;
-	ppar_neg   =	new_ppar;
-	pper_neg   =	new_pper;
-	//zeta_neg   =	new_zeta;
-	//uper_neg   =	new_uper;
-	//upar_neg   =	new_upar;
-	//eta_neg  	 =	new_eta	;
-	//Ekin_neg   =	new_Ekin;
-	//M_adiabatic_neg   =	new_M_adiabatic	;
 }
 
+//Member function to save precipitating that develop higher than 180 aeq.
+void Particles::high_state(int id)
+{	
+	id_high     =	id;
+}
+
+//Member function to save precipitating that develop higher than na.
+void Particles::nan_state(int id)
+{	
+	id_nan    =	id;
+}
 
 //Member function to save all particle states(if needed). Need for vectors, save values in every step of the simulation.
 /*

@@ -105,14 +105,25 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         //Check Validity:
         if(std::isnan(new_lamda*new_aeq*new_ppar))
         {
-            std::cout<<"\nParticle "<<p<<" nan"; break; 
+            single.nan = true;
+            single.nan_state( p ); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
+            std::cout<<"\nParticleV "<<p<<" nan";
+            break; 
         }
         //Check Negative P.A:
         if(alpha<0 || aeq<0)
         {
-            single.negative_state( p, lamda0, aeq0, alpha0, ppar0, pper0, time); //Save the initial state (start of noWPI) for the particle and the time that P.A turned out negative.
             single.negative = true;
-            std::cout<<"\nParticle "<<p<<" negative p.a duting noWPI!";
+            single.negative_state( p ); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
+            std::cout<<"\nParticleN "<<p<<" negative p.a";
+            break;
+        }
+        //Check higher than 180 P.A:
+        if(alpha>M_PI)
+        {
+            single.high = true;
+            single.high_state( p ); //Save the initial state (after noWPI) for the particle and the time that P.A turned out higher than 180.
+            std::cout<<"\nParticleH "<<p<<" above 180 p.a";
             break;
         }
         //Check Trapping:
@@ -125,7 +136,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         {
             single.escaping_state(p, lamda, aeq, time);
             single.escaped = true;
-            std::cout<<"\n\nParticle "<<p<<" escaped with aeq " <<aeq*Constants::R2D<< " at time " << time ;
+            std::cout<<"\n\nParticleE "<<p<<" escaped with aeq " <<aeq*Constants::R2D<< " at time " << time ;
             break;
         }
 
