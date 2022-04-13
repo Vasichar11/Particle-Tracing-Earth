@@ -48,7 +48,7 @@ header = ['id', 'aeq0_deg', 'lamda0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'aeq00
 data = []
 id=0
 for aq0,l0,par0,per0,a0,aq00,l00,par00,per00,a00 in zip(aeq0, lamda0, ppar0, pper0, alpha0, aeq00, lamda00, ppar00, pper00, alpha00):
-    data.extend([[p,aq0*R2D,l0*R2D,par0,per0,a0*R2D, aq00*R2D,l00*R2D,par00,per00,a00*R2D]])
+    data.extend([[id,aq0*R2D,l0*R2D,par0,per0,a0*R2D, aq00*R2D,l00*R2D,par00,per00,a00*R2D]])
     id=id+1 #id is the element's location in the list since the particles were saved like that
 with open("dstr_data.csv", "w") as file1:
     writer = csv.writer(file1)
@@ -57,7 +57,7 @@ with open("dstr_data.csv", "w") as file1:
 
 
 #Initials of Particles that developed negative P.A to CSV file
-header2 = ['id', 'aeq0_deg', 'lamda0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'time']
+header2 = ['id', 'aeq00_deg', 'lamda00_deg', 'ppar00', 'pper00', 'alpha00_deg', 'time']
 data2 = []
 for id00,aq00,l00,par00,per00,a00,time in zip(neg_id, neg_aeq, neg_lamda, neg_ppar, neg_pper, neg_alpha, neg_time):
     data2.extend([[id00,aq00*R2D,l00*R2D,par00,per00,a00*R2D,time]])

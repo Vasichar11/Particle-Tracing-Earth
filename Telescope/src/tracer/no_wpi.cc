@@ -3,8 +3,8 @@
 //Adiabatic motion.
 void no_wpi(int p, Particles &single, Telescope &ODPT)
 {
-	std::cout.precision(12);			//Output 16 decimal precise
-	std::cout<<std::scientific;		//For e notation representation
+	//std::cout.precision(64);			//Output 16 decimal precise
+	//std::cout<<std::scientific;		//For e notation representation
 
     real lamda0    =  single.lamda0;
     real ppar0     =  single.ppar0; 
@@ -153,7 +153,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         i++;  
        
-		
+
         //std::cout<<"\n\ntime "<< time<< " \nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
     }
     

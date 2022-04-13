@@ -18,8 +18,8 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     static std::vector <real> R2            =   read_vector("R2",            "h5files/interpolated_ray.h5");
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
 
-    std::cout.precision(12);                //Output 16 decimal precise
-	std::cout<<std::scientific;		        //For e notation representation
+    //std::cout.precision(64);                //Output 16 decimal precise
+	//std::cout<<std::scientific;		        //For e notation representation
 
 
     //Assign last particle states from nowpi simulation.
@@ -34,6 +34,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     //real upar00     =  single.upar00; 
     //real uper00     =  single.uper00;
 
+
     real lamda      = lamda00;
     real ppar       = ppar00; 
     real pper       = pper00; 
@@ -45,7 +46,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
     //real upar     = upar00; 
     //real uper     = uper00;
 
-    //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+    //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
 
 
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
@@ -171,7 +172,8 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         i++;  
 
-        //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
+        //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
+
     }
 
 

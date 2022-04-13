@@ -7,11 +7,11 @@ void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real 
 	real gama0=(Ejoule0/(Constants::m_e*pow(Constants::c,2))) + 1;
 	real speed0=sqrt( 1 - (1/pow(gama0,2)) ) * Constants::c;
 	//std::cout<<"\nBouncing period estimation: "<< (4*Constants::L_shell*Constants::Re/speed0)*(1.3 - 0.5*sin(aeq0)); //[Orlova1,Shprits2,2011]
-	
+
 	//Assign initial state.
 	this->lamda0 = lamda0;
 	this->aeq0 = aeq0;
-	this->eta0 = eta0;
+	this->eta0   = eta0;
 	this->alpha0 = alpha0;
 	this->upar0 = speed0*cos(alpha0) ;
 	this->uper0 = speed0*sin(alpha0) ;
