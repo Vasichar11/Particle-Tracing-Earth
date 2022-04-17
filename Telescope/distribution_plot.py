@@ -11,7 +11,7 @@ sector_range = 10 #P.A bins #1deg
 sectors = int(view/sector_range)
 
 #Distribution read
-f1 = h5py.File("h5files/10p_normalAEQ_normalLAMDA.h5","r")
+f1 = h5py.File("h5files/1000p_normalAEQ_normalLAMDA.h5","r")
 lamda0        = f1["lamda0"][()] #states when noWPI starts
 ppar0         = f1["ppar0"][()]
 pper0         = f1["pper0"][()]
@@ -22,7 +22,7 @@ time0         = f1["time0"][()]
 aeq0_bins     = f1["aeq0_bins"][()]
 f1.close()
 
-f2 = h5py.File("h5files/10p_both.h5","r")
+f2 = h5py.File("h5files/1000p_both.h5","r")
 population     = f2["population"][()]
 lamda00        = f2["lamda00"][()] #states when noWPI ends
 ppar00         = f2["ppar00"][()]
