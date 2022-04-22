@@ -272,7 +272,7 @@ int main(int argc, char **argv)
 	h5::DataSet detected_time  = file.createDataSet("ODPT.time", ODPT.time);
 	h5::DataSet detected_id    = file.createDataSet("ODPT.id", ODPT.id);
 	h5::DataSet detected_alpha = file.createDataSet("ODPT.alpha", ODPT.alpha);
-	h5::DataSet detected_aeq   = file.createDataSet("ODPT.aeq", ODPT.aeq);
+	h5::DataSet detected_aeq   = file.createDataSet("ODPT.aeq", ODPT.aeq); //Formula for aeq is not valid. Do the binning with local P.A since satellite is @0deg aeq~=alpha.
 
 	//Precipitating Particles
 	h5::DataSet precipitated_id        = file.createDataSet("precip_id", 	 precip_id);
