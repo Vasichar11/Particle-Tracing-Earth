@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/1p_testAEQ_testLAMDA.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/100000p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
@@ -262,32 +262,33 @@ int main(int argc, char **argv)
 	h5::File file(save_file, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Simulation data and Telescope specification - Scalars 
-	h5::DataSet telescope_lamda= file.createDataSet("ODPT.latitude", ODPT.latitude);
-	h5::DataSet data_population= file.createDataSet("population", 	Population);
-	h5::DataSet Ekev0	       = file.createDataSet("Ekev0",   		Constants::Ekev0);
-	h5::DataSet t			   = file.createDataSet("t", 			Constants::t);
+	h5::DataSet telescope_lamda = file.createDataSet("ODPT.latitude", ODPT.latitude);
+	h5::DataSet data_population = file.createDataSet("population", 	Population);
+	h5::DataSet Ekev0	        = file.createDataSet("Ekev0",   	Constants::Ekev0);
+	h5::DataSet t			    = file.createDataSet("t", 			Constants::t);
 	
 	//Detected particles
-	h5::DataSet detected_lamda = file.createDataSet("ODPT.lamda", ODPT.lamda);
-	h5::DataSet detected_time  = file.createDataSet("ODPT.time", ODPT.time);
-	h5::DataSet detected_id    = file.createDataSet("ODPT.id", ODPT.id);
-	h5::DataSet detected_alpha = file.createDataSet("ODPT.alpha", ODPT.alpha);
-	h5::DataSet detected_aeq   = file.createDataSet("ODPT.aeq", ODPT.aeq); //Formula for aeq is not valid. Do the binning with local P.A since satellite is @0deg aeq~=alpha.
+	h5::DataSet detected_lamda  = file.createDataSet("ODPT.lamda", ODPT.lamda);
+	h5::DataSet detected_time   = file.createDataSet("ODPT.time", ODPT.time);
+	h5::DataSet detected_id     = file.createDataSet("ODPT.id", ODPT.id);
+	h5::DataSet detected_alpha  = file.createDataSet("ODPT.alpha", ODPT.alpha);
+	h5::DataSet detected_aeq    = file.createDataSet("ODPT.aeq", ODPT.aeq); 
 
 	//Precipitating Particles
 	h5::DataSet precipitated_id        = file.createDataSet("precip_id", 	 precip_id);
 	h5::DataSet precipitated_lamda     = file.createDataSet("precip_lamda",  precip_lamda);
 	h5::DataSet precipitated_aeq       = file.createDataSet("precip_aeq", 	 precip_aeq);
+	h5::DataSet precipitated_alpha     = file.createDataSet("precip_alpha",  precip_alpha);
 	h5::DataSet precipitated_time      = file.createDataSet("precip_time",	 precip_time);
 
 	//Negative P.A Particles
-	h5::DataSet data_neg_id           = file.createDataSet("neg_id", 	 neg_id);
+	h5::DataSet data_neg_id            = file.createDataSet("neg_id", 	 neg_id);
 
 	//High P.A Particles
-	h5::DataSet data_high_id          = file.createDataSet("high_id", 	 high_id);
+	h5::DataSet data_high_id           = file.createDataSet("high_id", 	 high_id);
 
 	//High P.A Particles
-	h5::DataSet data_nan_id           = file.createDataSet("nan_id", 	 nan_id);
+	h5::DataSet data_nan_id            = file.createDataSet("nan_id", 	 nan_id);
 
 
 	//Particles states at noWPI end.

@@ -153,7 +153,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
         //Check Precipitation:
         if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
         {
-            single.escaping_state(p, lamda, aeq, time);
+            single.escaping_state(p, lamda, aeq, alpha, time);
             single.escaped = true;
             std::cout<<"\n\nParticleE "<<p<<" escaped with aeq " <<aeq*Constants::R2D<< " at time " << time ;
             break;
@@ -165,7 +165,7 @@ void li_wpi(real p, Particles &single, Telescope &ODPT)
             //Check Crossing:
             if( ODPT.crossing(new_lamda*Constants::R2D, lamda*Constants::R2D, Constants::L_shell) )	
             {									
-                ODPT.store( p, lamda, alpha, aeq, time); //Store its state(it's before crossing the satellite!).		        	
+                ODPT.store( p, lamda, aeq, alpha, time); //Store its state(it's before crossing the satellite!).		        	
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
             }
 

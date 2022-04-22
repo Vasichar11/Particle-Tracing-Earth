@@ -35,6 +35,7 @@ Ekev0          = f1["Ekev0"][()]
 precip_id      = f1["precip_id"][()]
 precip_lamda   = f1["precip_lamda"][()]
 precip_aeq     = f1["precip_aeq"][()]
+precip_alpha   = f1["precip_alpha"][()]
 precip_time    = f1["precip_time"][()] 
 #saved_id    = f1["saved_id"][()]
 #saved_lamda = f1["saved_lamda"][()]
@@ -61,6 +62,7 @@ Ekev0_both          = f2["Ekev0"][()]
 precip_id_both      = f2["precip_id"][()]
 precip_lamda_both   = f2["precip_lamda"][()]
 precip_aeq_both     = f2["precip_aeq"][()]
+precip_alpha_both   = f2["precip_alpha"][()]
 precip_time_both    = f2["precip_time"][()] 
 #savedwpi_id    = f2["saved_id"][()]
 #savedwpi_lamda = f2["saved_lamda"][()]
@@ -144,7 +146,10 @@ plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
 #noWPI
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux  = [  0 for i in range(timesteps)]
-for time,pa,id in zip(detected_time,detected_aeq,detected_id): #Iterate in both array elements. No sorting required.
+
+###BINNING WITH LOCAL PITCH ANGLE: detected_alpha not detected_aeq
+#Formula for aeq is not valid. Do the binning with local P.A since satellite is @0deg aeq~=alpha.
+for time,pa,id in zip(detected_time,detected_alpha,detected_id): #Iterate in both array elements. No sorting required.
     if (pa<0):
         print("Negative pa")
         sys.exit(1)
@@ -162,7 +167,7 @@ for time,pa,id in zip(detected_time,detected_aeq,detected_id): #Iterate in both 
 #BOTH
 sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_both  = [  0 for i in range(timesteps)]
-for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id_both):
+for time,pa,id in zip(detected_time_both,detected_alpha_both,detected_id_both):
     if (pa<0):
         print("Negative pa")
         sys.exit(1)
@@ -182,7 +187,7 @@ for time,pa,id in zip(detected_time_both,detected_aeq_both,detected_id_both):
 #These particles escape with alpha close to 90(?), binning with equatorial pitch angle to compare them with the particles that are crossing the equator--> equatorial P.A
 sctr_flux_precip = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_precip = [0 for i in range(timesteps)]
-for time,pa in zip(precip_time_both,precip_aeq_both):
+for time,pa in zip(precip_time_both,precip_alpha_both):
     if (pa<0):
         print("Negative pa")
         sys.exit(1)

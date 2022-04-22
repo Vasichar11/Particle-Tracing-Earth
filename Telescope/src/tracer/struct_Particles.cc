@@ -37,11 +37,12 @@ void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real 
 
 
 //Member function to save precipitating particle states. No need for vectors, just one saved value.
-void Particles::escaping_state(int id, real new_lamda, real new_aeq, real new_time)
+void Particles::escaping_state(int id, real new_lamda, real new_aeq, real new_alpha, real new_time)
 {	
 	id_lost     =	id;
 	lamda_lost  =	new_lamda;
-	aeq_lost  	 =	new_aeq	;
+	aeq_lost  	=	new_aeq	;
+	alpha_lost  =	new_alpha;
 	time_lost   =	new_time;
 	//ppar_lost   =	new_ppar;
 	//pper_lost   =	new_pper;

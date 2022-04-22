@@ -16,7 +16,7 @@ struct Particles
 	void initialize(real eta0, real aeq0, real alpha0, real lamda0, real Ekev0, real Blam0, real zeta0, real time0);
 		
 	//Member function to save particle states.
-	void escaping_state(int id,real new_lamda, real new_aeq, real new_time);
+	void escaping_state(int id,real new_lamda, real new_aeq, real new_alpha, real new_time);
 	void negative_state(int id);
 	void high_state(int id);
 	void nan_state(int id);
