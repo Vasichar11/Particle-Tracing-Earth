@@ -2,7 +2,7 @@
 
 
 //Function to read HDF5 datasets.
- std::vector<real> read_vector(const std::string& dataset_name, const std::string& file_name)
+ std::vector<real> read_hdf5(const std::string& dataset_name, const std::string& file_name)
  { 
      std::vector<real> read_data;
 

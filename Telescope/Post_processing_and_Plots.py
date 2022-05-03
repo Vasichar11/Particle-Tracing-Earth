@@ -18,10 +18,10 @@ import csv
 np.set_printoptions(threshold=sys.maxsize)
 D2R=np.pi/180
 R2D=1/D2R
-
+print(len(np.arange(0.5,90+0.5)))
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/10p_no_wpi.h5","r")
+f1 = h5py.File("h5files/20000p_no_wpi.h5","r")
 #print("Keys: %s" % f1.keys())
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
@@ -37,6 +37,10 @@ precip_lamda   = f1["precip_lamda"][()]
 precip_aeq     = f1["precip_aeq"][()]
 precip_alpha   = f1["precip_alpha"][()]
 precip_time    = f1["precip_time"][()] 
+neg_id         = f1["neg_id"][()]
+high_id        = f1["high_id"][()]
+nan_id         = f1["nan_id"][()]
+#noWPI and WPI afterwards read
 #saved_id    = f1["saved_id"][()]
 #saved_lamda = f1["saved_lamda"][()]
 #saved_aeq   = f1["saved_aeq"][()]
@@ -46,9 +50,7 @@ precip_time    = f1["precip_time"][()]
 #saved_pper  = f1["saved_pper"][()]
 f1.close()
 
-
-#noWPI and WPI afterwards read
-f2 = h5py.File("h5files/10p_both.h5","r")
+f2 = h5py.File("h5files/20000p_both.h5","r")
 #print("Keys: %s" % f2.keys())
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -64,6 +66,10 @@ precip_lamda_both   = f2["precip_lamda"][()]
 precip_aeq_both     = f2["precip_aeq"][()]
 precip_alpha_both   = f2["precip_alpha"][()]
 precip_time_both    = f2["precip_time"][()] 
+neg_id_both         = f2["neg_id"][()]
+high_id_both        = f2["high_id"][()]
+nan_id_both         = f2["nan_id"][()]
+#noWPI and WPI afterwards read
 #savedwpi_id    = f2["saved_id"][()]
 #savedwpi_lamda = f2["saved_lamda"][()]
 #savedwpi_aeq   = f2["saved_aeq"][()]
@@ -72,22 +78,34 @@ precip_time_both    = f2["precip_time"][()]
 #savedwpi_ppar  = f2["saved_ppar"][()]
 #savedwpi_pper  = f2["saved_pper"][()]
 f2.close()
+
+############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
+time_bin  = 2                #seconds to distinquish events(time resolution)
+timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
+view = 180
+sector_range = 2 #P.A bins #1deg
+sectors = int(view/sector_range)
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
 ##########################################################################################################
 ##########################################################################################################
+print()
+print("Population     :",population)
+print("Simulation time:",t,"seconds")
+print("Time bins      :",time_bin,"   seconds") #Sampling frequency should comply with Nyquist
+print("Timesteps      :",timesteps) 
+print("P.A bins       :",sector_range,"degrees")
+print("Sectors        :",sectors)
+print()
+print("|noWPI   WPI|")
+print(" ",len(precip_id),"     ",len(precip_id_both)," particles escaped")
+print(" ",len(neg_id),"     ",len(neg_id_both),"particles developed negative P.A")
+print(" ",len(high_id),"     ",len(high_id_both),"  particles developed high P.A")
+print(" ",len(nan_id),"     ",len(nan_id_both),"  particles developed nan P.A") 
+print("These particles will be excluded from the bining population losing:", ((len(neg_id)+len(neg_id_both)+len(nan_id)+len(nan_id_both)+len(high_id)+len(high_id_both))/population)*100,"% of the population\n")
 
 
-
-
-############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
-time_bin  = 0.1                #seconds to distinquish events(time resolution)
-timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
-
-view = 180 
-sector_range = 15 #P.A bins #1deg
-sectors = int(view/sector_range)
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
         'color':  'blue',
@@ -96,30 +114,10 @@ font = {'family': 'serif',
 colors = []
 for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
     colors.append('#%06X' % randint(0, 0xFFFFFF))
-
-
 ######################################## PLOT SAVED PARTICLE #######################################
-"""
-fig,ax = plt.subplots(2,2)
-ax[0,0].scatter(saved_time,saved_lamda*R2D, s=1)
-ax[0,0].scatter(savedwpi_time,savedwpi_lamda*R2D, s=1, alpha=0.01)
-ax[0,0].set(xlabel="Time", ylabel="lamda")
-
-ax[0,1].scatter(saved_lamda*R2D,saved_alpha*R2D, s=1)
-ax[0,1].scatter(savedwpi_lamda*R2D,savedwpi_alpha*R2D, s=1, alpha=0.01)
-ax[0,1].set(xlabel="lamda", ylabel="alpha")
-
-ax[1,0].scatter(saved_alpha*R2D,saved_ppar, s=1)
-ax[1,0].scatter(savedwpi_alpha*R2D,savedwpi_ppar, s=1, alpha=0.01)
-ax[1,0].set(xlabel="alpha", ylabel="ppar")
-
-ax[1,1].scatter(saved_alpha*R2D,saved_pper, s=1)
-ax[1,1].scatter(savedwpi_alpha*R2D,savedwpi_pper, s=1, alpha=0.01)
-ax[1,1].set(xlabel="alpha", ylabel="pper")
-fig.savefig("SingleParticle.png",dpi=200)
-"""
+"""$fig,ax = plt.subplots(2,2)$ax[0,0].scatter(saved_time,saved_lamda*R2D, s=1)$ax[0,0].scatter(savedwpi_time,savedwpi_lamda*R2D, s=1, alpha=0.01)$ax[0,0].set(xlabel="Time", ylabel="lamda")$ax[0,1].scatter(saved_lamda*R2D,saved_alpha*R2D, s=1)$ax[0,1].scatter(savedwpi_lamda*R2D,savedwpi_alpha*R2D, s=1, alpha=0.01)$ax[0,1].set(xlabel="lamda", ylabel="alpha")$ax[1,0].scatter(saved_alpha*R2D,saved_ppar, s=1)$ax[1,0].scatter(savedwpi_alpha*R2D,savedwpi_ppar, s=1, alpha=0.01)$ax[1,0].set(xlabel="alpha", ylabel="ppar")$ax[1,1].scatter(saved_alpha*R2D,saved_pper, s=1)$ax[1,1].scatter(savedwpi_alpha*R2D,savedwpi_pper, s=1, alpha=0.01)$ax[1,1].set(xlabel="alpha", ylabel="pper")$fig.savefig("SingleParticle.png",dpi=200)"""
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
-#"""
+
 #noWPI
 fig, ax = plt.subplots()
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
@@ -140,7 +138,7 @@ plt.annotate("SATELLITE",xy=(t_both/2,telescope_lamda_both+0.0002),color="blue",
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
-#"""
+
 ############################################## BINNING ####################################################
 #"""
 #noWPI
@@ -159,6 +157,8 @@ for time,pa,id in zip(detected_time,detected_alpha,detected_id): #Iterate in bot
         print("noWPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
         #sys.exit(1) 
         continue 
+    if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+        continue #don't include these particles
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
@@ -178,16 +178,18 @@ for time,pa,id in zip(detected_time_both,detected_alpha_both,detected_id_both):
         print("WPI Particle",id,"with pa",pa*R2D,"at time",time,"needs sector",sector,"in timestep",timestep)
         #sys.exit(1)
         continue 
+    if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+        continue #don't include these particles
     if(pa*R2D==180):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_both[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux_both[timestep] += 1
 
 #PRECIPITATING
-#These particles escape with alpha close to 90(?), binning with equatorial pitch angle to compare them with the particles that are crossing the equator--> equatorial P.A
+#These particles escape with alpha close to 90(?), pitch angle binning to compare them with the particles that are crossing the equator
 sctr_flux_precip = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux_precip = [0 for i in range(timesteps)]
-for time,pa in zip(precip_time_both,precip_alpha_both):
+for time,pa in zip(precip_time_both,precip_aeq_both):
     if (pa<0):
         print("Negative pa")
         sys.exit(1)
@@ -201,7 +203,6 @@ for time,pa in zip(precip_time_both,precip_alpha_both):
         sector = sectors-1 #to include p.a 180 in the last sector. Is this needed?
     sctr_flux_precip[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
     sum_flux_precip[timestep] += 1
-#"""
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
 #"""
 fig, ax = plt.subplots()
@@ -227,8 +228,8 @@ lost   = [ 0 for i in range(sectors)]
 for sector in range(0,sectors):  
     for timestep in range(0,timesteps): 
         precip[timestep][sector] = sctr_flux_precip[sector][timestep] #particles that got lost in this timestep and sector.
-        lost[sector] = lost[sector] + precip[timestep][sector]        #lost particles until this timestep, for this sector.
-        moved[timestep][sector] = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - lost[sector] #find difference between simulations and remove lost particles
+        lost[sector]             = lost[sector] + precip[timestep][sector]        #lost particles until this timestep, for this sector.
+        moved[timestep][sector]  = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - lost[sector] #find difference between simulations and remove lost particles
  #"""       
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 #"""
@@ -239,7 +240,7 @@ fps = 1
 writer = FFMpegWriter(fps=fps, metadata = metadata2)
 print("Generating P.A binning mp4 file...\nDuration of mp4 file will be:",(timesteps*fps), "seconds")
 with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_bin)+"s.mp4", 100):
-    for timestep in range(0,timestep):           
+    for timestep in range(0,timesteps):           
             
         for sector in range(0,sectors): 
 
@@ -247,24 +248,29 @@ with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_
                 ax.scatter(sector+0.5, sctr_flux[sector][timestep],c="black",s=1) 
             if(sctr_flux_both[sector][timestep]!=0 and sctr_flux_both[sector][timestep]!=sctr_flux[sector][timestep]): #plot dot only when it differs with noWPI
                 ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red",s=1) 
-
-        ax.bar(np.arange(0.5,sectors+0.5),moved[timestep], width=0.3,color='blue',label="moved particles")               #plot difference with bars
+             
+        #P.A change and precipitation histograms
+        ax.bar(np.arange(0.5,sectors+0.5),moved[timestep],  width=0.3, color='blue',label="moved particles")               #plot difference with bars
         ax.bar(np.arange(0.5,sectors+0.5),precip[timestep], width=0.3, bottom=moved[timestep], color='orange', label="precipitated particles")#plot difference precipitated
-
+        
+        
+        ax.set_yscale("log")
         #Sector red ticks
-        ax.set_xticks(ticks=np.arange(0,sectors)) 
-        ax.set_xticklabels(labels=np.arange(0,sectors),color="red",size="small")
+        ax.set_xticks(ticks=np.arange(0,sectors,10)) 
+        ax.set_xticklabels(labels=np.arange(0,sectors,10),color="red",size="small")
         #P.A black ticks
-        #ax.set_xticks(ticks=np.arange(0,sectors,),minor=True) 
-        #ax.set_xticklabels(labels=np.arange(0,view,sector_range),minor=True,size="small") 
+        #ax.set_xticks(ticks=np.arange(0,view,10),minor=True) 
+        #ax.set_xticklabels(labels=np.arange(0,view,10),minor=True,size="small") 
+        #Limits
         ax.set_ylim(0, max(np.amax(sctr_flux), np.amax(sctr_flux_both)) )
         ax.set_xlim(0,sectors)
+
         ax.set(ylabel="count")
         ax.set(xlabel="P.A bins(black): "+str(sector_range)+" deg   Sectors(red): "+str(sectors))
         ax.set_title("Equatorial P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
         ax.xaxis.grid(True, which='major')
         ax.xaxis.grid(True, which='minor')
-        ax.legend()
+        ax.legend(loc='upper right')
         writer.grab_frame()
         ax.clear() #clear data 
 #"""

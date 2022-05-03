@@ -50,8 +50,8 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 const real By_wave=1*pow(10,-9);  
 
 //--Simulation parameters--//
-const real t_nowpi = 70;        				  	//simulation time.
-const real t_wpi   = 70;          			    //no_WPI time.
+const real t_nowpi = 90;        				//simulation time.
+const real t_wpi   = 10;          			    //no_WPI time.
 const real t       = t_nowpi + t_wpi;           //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
@@ -63,7 +63,7 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 100000;  	    		    
+const int64_t aeq_dstr    = 200000;  	    		    
 const int64_t lamda_dstr  = 1; //only one latitude per aeq					
 const int64_t population  = lamda_dstr * aeq_dstr;   
 const real aeq_start_d    = 1;    		  			 				
@@ -73,7 +73,8 @@ const real lamda_end_d    = 90;
 const real mean_aeq       = 90;  //Mean of the normal dstr
 const real mean_lamda     = 0; 
 const real stdev_aeq      = 20;  //Standard deviation of the normal dstr
-const real stdev_lamda    = 20;  
+const real max_stdev_lamda= 30;  //Standard deviation when lamda domain is the biggest. Is propotional to lamda range. 
+const real lamda_domain_step = 0.001;
 
 //Eta dstr
 //const real eta_start_d    = eta0_deg;     //Degrees 	 

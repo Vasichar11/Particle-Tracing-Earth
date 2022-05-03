@@ -8,4 +8,4 @@
 
 namespace h5 = HighFive;
 
- std::vector<real> read_vector(const std::string& dataset_name, const std::string& file_name);
+ std::vector<real> read_hdf5(const std::string& dataset_name, const std::string& file_name);

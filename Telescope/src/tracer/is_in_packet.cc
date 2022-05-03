@@ -2,13 +2,13 @@
 
 //Check if the particle is within the wave's latitude.
 //Return wave's index where there's matching latitude(WPI). Will be used for wave's data.
-int is_in_packet(real min_lat, real max_lat, real lamda_tmp, int i, std::vector<real> &wave_lat)
+int is_in_packet(const real min_lat, const real max_lat, const real lamda_tmp, const int i, std::vector<real> &wave_lat)
 {
 	std::vector <real>::iterator ptr, requested_index;    //To find requested index
 	int index;
 	real diff, min_diff;                                  //To find minimum difference between latitudes
 
-          
+
     if(min_lat < (lamda_tmp*Constants::R2D) && (lamda_tmp*Constants::R2D) < max_lat)
     {       
 		min_diff = 100 ; 

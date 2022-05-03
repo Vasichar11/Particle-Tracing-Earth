@@ -6,30 +6,17 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
 	//std::cout.precision(64);			//Output 16 decimal precise
 	//std::cout<<std::scientific;		//For e notation representation
 
-    real lamda0    =  single.lamda0;
-    real ppar0     =  single.ppar0; 
-    real pper0     =  single.pper0; 
-    real alpha0    =  single.alpha0; 
-    real aeq0      =  single.aeq0; 
-    real time0     =  single.time0;
-    //real zeta0     =  single.zeta0; 
-    //real upar0     =  single.upar0; 
-    //real uper0     =  single.uper0;
-
-    real lamda     =   lamda0;
-    real ppar      =   ppar0;
-    real pper      =   pper0;
-    real alpha     =   alpha0;
-    real aeq       =   aeq0;
-    real time      =   time0;
-    //real zeta      =   zeta0;
-    //real upar      =   upar0;
-    //real uper      =   uper0;
-
+    //Assign first particle states.
+    real lamda     =  single.lamda0;
+    real ppar      =  single.ppar0;
+    real pper      =  single.pper0;
+    real alpha     =  single.alpha0;
+    real aeq       =  single.aeq0;
+    real time      =  single.time0;
+    //real zeta      =  single.zeta0;
+    //real upar      =  single.upar0;
+    //real uper      =  single.uper0;
     //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
-
-
-
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
     real new_lamda, new_ppar, new_aeq;
@@ -86,21 +73,18 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 <<"\no4 " << o4 << "\np4 " << p4 << "\n";
 
 
-
-
-
-        //Runge kutta 4 first estimations:
-        //First make the next step increments(lamda,aeq,ppar) that are needed to characterize crossing-validity-trapping. 
-        new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
-        //Adiabatic motion. Aeq stays the same or changes between two values
+        //Adiabatic motion. Aeq stays the same or changes between two values(?)
         //This won't work well
         //int k;
         //if(ppar<0) k=1;
         //else k=0;
         //new_aeq = pow(-1,k) * asin(sin(alpha)*sqrt(Bmag_dipole(0)/Bmag_dipole(ne_lamda))) + k*M_PI; 
+        
+        //Runge kutta 4 first estimations:
+        //First make the next step increments(lamda,aeq,ppar) that are needed to characterize crossing-validity-trapping. 
+        new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
         new_aeq   = aeq;
         new_ppar  = ppar  + (Constants::h/6)*(l1+2*l2+2*l3+l4);
-        
 
         //Check Validity:
         if(std::isnan(new_lamda*new_aeq*new_ppar))

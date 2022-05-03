@@ -31,7 +31,7 @@ void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 	real salpha0;
 	do
 	{
-		lamda_end_d += 0.0001; //increase by h to make better estimation
+		lamda_end_d += Constants::lamda_domain_step; //increase by h to make better estimation
 		//Gradually increase and check if salpha0 is valid.
 		//("Brute Force domain validation")
 		real Blam0   = Bmag_dipole(lamda_end_d*Constants::D2R);
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 				{
 					//Adaptive stdev according to the lamda domain range. Domain range (min,max) = (0,180).
 					//That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
-					real stdev = (std::abs(lamda_end_d - lamda_start_d) / 180 ) * Constants::stdev_lamda;
+					real stdev =((lamda_end_d-lamda_start_d)/180) * Constants::max_stdev_lamda;
 					std::normal_distribution <real> normal_lamda(Constants::mean_lamda, stdev);
 					number = normal_lamda(generator);
 
@@ -187,7 +187,7 @@ int main(int argc, char **argv)
 	std::cout<<"\nDistribution done!";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
 	//AEQ0 DISTRIBUTION CHECK
-	const int sector_range = 10;
+	const int sector_range = 1;
 	const int view = 180;
 	const int sectors = view/sector_range;
 	std::array<int, sectors> aeq0_bins;

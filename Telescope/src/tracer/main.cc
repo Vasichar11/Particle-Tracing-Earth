@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/100000p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/200000p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
@@ -124,6 +124,7 @@ int main(int argc, char **argv)
 
 
 	//---NOWPI---//
+	omp_set_num_threads(8); //Performance peaks with 8 threads.
 	if(argv[1]==string_no_wpi)
 	{
 		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation"<<std::endl;
@@ -131,6 +132,7 @@ int main(int argc, char **argv)
 		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.017/60) * Constants::t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"\nForked...";
 		//---PARALLELISM Work sharing---//
+		
 		#pragma omp parallel
 		{
 			int id = omp_get_thread_num();
@@ -150,6 +152,7 @@ int main(int argc, char **argv)
 	//Now initial_particles have the last state after NoWPI
 
 	//---WPI---//
+	omp_set_num_threads(20); //Better performance for more threads
 	if(argc==3)
 	{
 		//---LI---//
@@ -158,10 +161,23 @@ int main(int argc, char **argv)
 			std::cout<<"\n\n"<<Constants::t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
 			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.1/60) * Constants::t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
+			//--READ HDF5 files from disk to pass them to the WPI function instead of reading them in every thread - every time - accessing disk frequently --//
+			//read_hdf5() is a function to read HDF5 dataset as vectors. 
+			std::vector <real> lat_int       =   read_hdf5("lat_int",       "h5files/interpolated_ray.h5");
+			const std::vector <real> kx_ray        =   read_hdf5("kx_ray",        "h5files/interpolated_ray.h5");    
+			const std::vector <real> kz_ray        =   read_hdf5("kz_ray",        "h5files/interpolated_ray.h5");   
+			const std::vector <real> kappa_ray     =   read_hdf5("kappa_ray",     "h5files/interpolated_ray.h5");       
+			const std::vector <real> Bzw           =   read_hdf5("Bzw",           "h5files/interpolated_ray.h5");
+			const std::vector <real> Ezw           =   read_hdf5("Ezw",           "h5files/interpolated_ray.h5");
+			const std::vector <real> Bw_ray        =   read_hdf5("Bw_ray",        "h5files/interpolated_ray.h5");    
+			const std::vector <real> w1            =   read_hdf5("w1",            "h5files/interpolated_ray.h5");
+			const std::vector <real> w2            =   read_hdf5("w2",            "h5files/interpolated_ray.h5");
+			const std::vector <real> R1            =   read_hdf5("R1",            "h5files/interpolated_ray.h5");
+			const std::vector <real> R2            =   read_hdf5("R2",            "h5files/interpolated_ray.h5");
 			//---PARALLELISM Work sharing---//
 			#pragma omp parallel
 			{
-				int id = omp_get_thread_num();
+ 				int id = omp_get_thread_num();
 				if(id==0) { realthreads = omp_get_num_threads(); std::cout<<"\nRunning threads: "<<realthreads<<std::endl; }
 				#pragma omp for schedule(dynamic)
 					for(int p=0; p<Population; p++)     
@@ -170,7 +186,7 @@ int main(int argc, char **argv)
 						if(dstr[p].escaped  == true) continue; //If this particle is lost, continue with next particle.
 						if(dstr[p].negative == true) continue; //If this particle came out with aeq negative, continue with next particle.
 						if(dstr[p].nan 	    == true) continue; //If this particle came out with aeq nan     , continue with next particle.
-						li_wpi(p, dstr[p], ODPT);  //LI   + RAY TRACING
+						li_wpi(p, lat_int, kx_ray, kz_ray, kappa_ray, Bzw, Ezw, Bw_ray, w1, w2, R1, R2, dstr[p], ODPT);  //LI   + RAY TRACING
 					}
 			}	
 			std::cout<<"\n\n"<<"Joined"<<std::endl;

@@ -1,7 +1,7 @@
 BIN := tracer ray dstr
 CC  := g++
-LNK := g++ 
-OPT := -O3
+LNK := g++
+OPT := -O3 
 
 #Ubuntu includes
 INC_H5 := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fdebug-prefix-map=/build/hdf5-X9JKIg/hdf5-1.10.0-patch1+docs=. -fstack-protector-strong -Wformat -Werror=format-security -L/usr/lib/x86_64-linux-gnu/hdf5/serial /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.a /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.a -Wl,-Bsymbolic-functions -Wl,-z,relro -lpthread -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib/x86_64-linux-gnu/hdf5/serial -I/home/vchariton/HighFive/include/
@@ -13,7 +13,8 @@ INC_H5LESS := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fd
 
 
 
-
+#Profiling with gprof
+#add the -g -pg flag both for compilation and linking nad write to gmon.out. Then invoke gprof with the executable
 
 
 CPPFLAGS := -std=c++17 -lstdc++fs -Wall -g -fopenmp 
@@ -67,9 +68,9 @@ clean:
 	@rm  -rf ${OBJDIR} ${BIN}
 	@echo Removed objects and executables ;
 #Comment to avoid removing directories by mistake.
-#allclean:
-#	@rm -rf **.out ${BIN} ${OBJDIR} ${H5DIR} ${SIMDIR}
-#	@echo Removed all. Restored to default ;
+allclean:
+	@rm -rf **.out ${BIN} ${OBJDIR} ${H5DIR} ${SIMDIR}
+	@echo Removed all. Restored to default ;
 
 .PHONY: clean allclean
 
@@ -103,7 +104,7 @@ ${OBJDIR_TRACER}/li_wpi.o: ${SRCDIR_TRACER}/li_wpi.cc
 ${OBJDIR_TRACER}/main.o: ${SRCDIR_TRACER}/main.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 
-#DISTRIBUTION, WITHOUT TE SYMBOLIC LINKS FOR SOURCE CODES struct_Particles.cc, functions.cc
+#DISTRIBUTION, WITHOUT THE SYMBOLIC LINKS FOR SOURCE CODES struct_Particles.cc, functions.cc
 ${OBJDIR_DSTR}/distribution.o: ${SRCDIR_DSTR}/distribution.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5LESS}
 ${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_TRACER}/struct_Particles.cc
