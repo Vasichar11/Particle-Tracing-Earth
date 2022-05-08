@@ -1,4 +1,6 @@
-*/*.o
+bin/
+simulation_MM/
+h5files/
 */*.exe
 */*.out
 */*/*.h5
