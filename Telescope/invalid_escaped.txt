@@ -1,0 +1,12 @@
+ParticleV 15326 nan
+
+ParticleE 40882 escaped with aeq 176.602 at time 0.06627
+ParticleV 78178 nan
+ParticleV 83161 nan
+ParticleV 99846 nan
+
+ParticleE 106210 escaped with aeq 2.99162 at time 0.10511
+
+ParticleE 109341 escaped with aeq 0.664059 at time 0.18033
+ParticleV 141332 nan                                                                 
+ParticleV 165666 nan    
