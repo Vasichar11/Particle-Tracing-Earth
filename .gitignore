@@ -1,4 +1,4 @@
-bin/
+obj/
 simulation_MM/
 h5files/
 */*.exe
