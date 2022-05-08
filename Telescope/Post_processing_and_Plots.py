@@ -15,6 +15,8 @@ import math as mt
 from scipy.stats import norm
 import re
 import csv
+import threading
+
 
 np.set_printoptions(threshold=sys.maxsize)
 D2R=np.pi/180
@@ -122,6 +124,8 @@ ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
 """
 ############################################## BINNING ####################################################
+###BINNING WITH LOCAL PITCH ANGLE: detected_alpha not detected_aeq
+#Formula for aeq is not valid. Do the binning with local P.A since satellite is @0deg aeq~=alpha.
 #"""
 sctr_flux = [ [0 for i in range(timesteps)] for j in range(sectors) ]   #sctr_flux[sectors][timesteps]
 sum_flux  = [  0 for i in range(timesteps)]
@@ -129,55 +133,71 @@ sctr_flux_both = [ [0 for i in range(timesteps)] for j in range(sectors) ]
 sum_flux_both  = [  0 for i in range(timesteps)]
 sctr_flux_precip = [ [0 for i in range(timesteps)] for j in range(sectors) ]   
 sum_flux_precip = [0 for i in range(timesteps)]
-###BINNING WITH LOCAL PITCH ANGLE: detected_alpha not detected_aeq
-#Formula for aeq is not valid. Do the binning with local P.A since satellite is @0deg aeq~=alpha.
 
+
+def thread_noWPI_binning():
 #noWPI
-for time,pa,id in zip(detected_time,detected_alpha,detected_id): #Iterate in both array elements. No sorting required.
-    timestep = math.floor(time/time_bin)
-    sector   = math.floor(pa*R2D/sector_range)
-    if (pa<0):
-        raise Exception("Negative pa")
-    if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
-        raise Exception("noWPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
-    if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
-        continue #don't include these particles in the binning process
-    if(pa*R2D==180):
-        sector = sectors-1 #to include particles with p.a==180 in the last sector. Is this needed?
-    sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
-    sum_flux[timestep] += 1                       #Sum of detected particles in this timestep from all look directions.
-print("Binning noWPI done!")
+    for time,pa,id in zip(detected_time,detected_alpha,detected_id): #Iterate in both array elements. No sorting required.
+        timestep = math.floor(time/time_bin)
+        sector   = math.floor(pa*R2D/sector_range)
+        if (pa<0):
+            raise Exception("Negative pa")
+        if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
+            raise Exception("noWPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
+        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+            continue #don't include these particles in the binning process
+        if(pa*R2D==180):
+            sector = sectors-1 #to include particles with p.a==180 in the last sector. Is this needed?
+        sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
+        sum_flux[timestep] += 1                       #Sum of detected particles in this timestep from all look directions.
+    print("Binning noWPI done!")
 
+def thread_both_binning():
 #noWPI and then WPI
-for time,pa,id in zip(detected_time_both,detected_alpha_both,detected_id_both):
-    timestep = math.floor(time/time_bin)
-    sector   = math.floor(pa*R2D/sector_range)
-    if (pa<0):
-        raise Exception("Negative pa")
-    if(sector>=sectors or timestep>=timesteps): 
-        raise Exception("WPI Particle",id,"with pa",pa*R2D,"at time",time,"needs sector",sector,"in timestep",timestep)
-    if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
-        continue
-    if(pa*R2D==180):
-        sector = sectors-1 
-    sctr_flux_both[sector][timestep] += 1              
-    sum_flux_both[timestep] += 1
-print("Binning WPI done!")
+    for time,pa,id in zip(detected_time_both,detected_alpha_both,detected_id_both):
+        timestep = math.floor(time/time_bin)
+        sector   = math.floor(pa*R2D/sector_range)
+        if (pa<0):
+            raise Exception("Negative pa")
+        if(sector>=sectors or timestep>=timesteps): 
+            raise Exception("WPI Particle",id,"with pa",pa*R2D,"at time",time,"needs sector",sector,"in timestep",timestep)
+        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+            continue
+        if(pa*R2D==180):
+            sector = sectors-1 
+        sctr_flux_both[sector][timestep] += 1              
+        sum_flux_both[timestep] += 1
+    print("Binning noWPI+WPI done!")
 
+def thread_precip_binning():
 #Prepitating. Just iterating for the latter simulation(noWPI and then WPI) is enough. Particles won't precipitate after one bounce in the noWPI simulation.
 #These particles escape with alpha close to 90(?), pitch angle binning to compare them with the particles that are crossing the equator
-for time,pa in zip(precip_time_both,precip_aeq_both):
-    timestep = math.floor(time/time_bin)
-    sector   = math.floor(pa*R2D/sector_range)
-    if (pa<0):
-        raise Exception("Negative pa")
-    if(sector>=sectors or timestep>=timesteps): 
-        raise Exception("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
-    if(pa*R2D==180):
-        sector = sectors-1 
-    sctr_flux_precip[sector][timestep] += 1           
-    sum_flux_precip[timestep] += 1
-print("Binning Precipitating done!")
+    for time,pa in zip(precip_time_both,precip_aeq_both):
+        timestep = math.floor(time/time_bin)
+        sector   = math.floor(pa*R2D/sector_range)
+        if (pa<0):
+            raise Exception("Negative pa")
+        if(sector>=sectors or timestep>=timesteps): 
+            raise Exception("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
+        if(pa*R2D==180):
+            sector = sectors-1 
+        sctr_flux_precip[sector][timestep] += 1           
+        sum_flux_precip[timestep] += 1
+    print("Binning Precipitating done!")
+
+#Create thread classes
+th1=threading.Thread(target=thread_noWPI_binning)
+th2=threading.Thread(target=thread_both_binning)
+th3=threading.Thread(target=thread_precip_binning)
+th1.start()
+th2.start()
+th3.start()
+
+th1.join()
+th2.join()
+th3.join()
+#main waits until all threads are done
+
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
 #"""
 fig, ax = plt.subplots()
@@ -205,8 +225,6 @@ for sector in range(0,sectors):
         precip[timestep][sector] = sctr_flux_precip[sector][timestep] #particles lost in this timestep and sector.
         lost[sector] += precip[timestep][sector]                      #particles lost until this timestep,for this sector.
         moved[timestep][sector]  = abs(sctr_flux[sector][timestep] - sctr_flux_both[sector][timestep]) - lost[sector] #find difference between simulations and remove lost particles until this timestep for this sector
-
-precip_sum=precip.sum(axis=1) #Sum of precipitated particles for every timestep
 #"""       
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
 #"""
