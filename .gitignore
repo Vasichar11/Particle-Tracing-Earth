@@ -1,9 +1,9 @@
-obj/
-simulation_MM/
-h5files/
-*/*.exe
-*/*.out
-*/*/*.h5
+**/obj
+**/simulation_MM
+**/h5files
+**/*.exe
+**/*.out
+**/*.h5
 
 
 
