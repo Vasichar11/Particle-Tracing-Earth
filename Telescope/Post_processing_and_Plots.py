@@ -1,22 +1,12 @@
-from ipaddress import summarize_address_range
-from tkinter import E
 import numpy as np 
-import random
 import sys
 import matplotlib.pyplot as plt
-from matplotlib import cm
 import h5py
 import math
 import matplotlib.animation as manimation
 from random import randint
-from matplotlib.ticker import MaxNLocator
-from collections import Counter
-import math as mt
-from scipy.stats import norm
-import re
-import csv
 import threading
-
+import os
 
 np.set_printoptions(threshold=sys.maxsize)
 D2R=np.pi/180
@@ -63,12 +53,19 @@ high_id_both        = f2["high_id"][()]
 nan_id_both         = f2["nan_id"][()]
 f2.close()
 
-############################# TELESCOPE SPECIFICATION && VARIABLES #######################################
+######################### TELESCOPE SPECIFICATION -- BINNING PARAMETERS ###############################
 time_bin  = 2                #seconds to distinquish events(time resolution)
 timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
 view = 180
-sector_range = 2 #P.A bins #1deg
+sector_range = 2 #P.A bins, look directions
 sectors = int(view/sector_range)
+
+
+
+
+
+
+
 ##########################################################################################################
 ##########################################################################################################
 ###################################### POST PROCESSING - PLOTS ###########################################
@@ -88,8 +85,18 @@ print(" ",len(neg_id),"     ",len(neg_id_both),"particles developed negative P.A
 print(" ",len(high_id),"     ",len(high_id_both),"  particles developed high P.A")
 print(" ",len(nan_id),"     ",len(nan_id_both),"  particles developed nan P.A") 
 print("These particles will be excluded from the bining population losing:", ((len(neg_id)+len(neg_id_both)+len(nan_id)+len(nan_id_both)+len(high_id)+len(high_id_both))/population)*100,"% of the population\n")
-
-
+#Create directory for plots
+filepath_plots = 'simulation_MM_'+str(population)+"p_"+str(int(t))+"s_"+"with_NaN"
+if (os.path.exists(filepath_plots)):
+    print ("The directory %s already exists" % filepath_plots)
+else:
+    try:
+        os.makedirs(filepath_plots)
+    except OSError as error:
+        print(error)
+        print ("Creation of the directory %s failed, " % filepath_plots)
+    else:
+        print ("Successfully created the directory %s" % filepath_plots)  
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
         'color':  'blue',
@@ -111,7 +118,7 @@ plt.title("$Population$: " +str(population)+"\nNorthward particles are captured 
 plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
-plt.savefig("simulation_MM/Crossing_particles.png", dpi=100)
+plt.savefig(filepath_plots+"/Crossing_particles.png", dpi=100)
 #BOTH
 fig, ax = plt.subplots()
 ax.scatter(detected_time_both, detected_lamda_both*R2D, c = detected_id_both, s=0.3, cmap="viridis")
@@ -121,7 +128,7 @@ plt.title("$Population$: " +str(population_both)+"\nNorthward particles are capt
 plt.annotate("SATELLITE",xy=(t_both/2,telescope_lamda_both+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
-plt.savefig("simulation_MM/Crossing_particles_both.png", dpi=100)
+plt.savefig(filepath_plots+"/Crossing_particles_both.png", dpi=100)
 """
 ############################################## BINNING ####################################################
 ###BINNING WITH LOCAL PITCH ANGLE: detected_alpha not detected_aeq
@@ -179,6 +186,8 @@ def thread_precip_binning():
             raise Exception("Negative pa")
         if(sector>=sectors or timestep>=timesteps): 
             raise Exception("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
+        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+            continue
         if(pa*R2D==180):
             sector = sectors-1 
         sctr_flux_precip[sector][timestep] += 1           
@@ -212,7 +221,7 @@ for timestep in range(0,timesteps):
         ax.scatter(timestep*time_bin+time_bin/2,sum_flux_both[timestep],s=10, c="red", label="noWPI && WPI")  
     if timestep==0:#plot legend once
         ax.legend()
-plt.savefig("simulation_MM/Particle_sum_bins"+str(time_bin)+"s.png", dpi=100)
+plt.savefig(filepath_plots+"/Particle_sum_bins"+str(time_bin)+"s.png", dpi=100)
 #"""
 ##################################### WPI-NOWPI DIFF FOR HISTOGRAM #########################################
 #"""
@@ -234,7 +243,7 @@ metadata2 = dict(title="P.A binning",comment="P.A bins of"+str(sector_range)+"de
 fps = 1
 writer = FFMpegWriter(fps=fps, metadata = metadata2)
 print("Generating P.A binning mp4 file...\nDuration of mp4 file will be:",(timesteps*fps), "seconds")
-with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_bin)+"s.mp4", 100):
+with writer.saving(fig, filepath_plots+"/Bins_"+str(sector_range)+"deg_"+str(time_bin)+"s.mp4", 100):
     for timestep in range(0,timesteps):           
             
         for sector in range(0,sectors): 
@@ -245,15 +254,15 @@ with writer.saving(fig, "simulation_MM/Bins_"+str(sector_range)+"deg_"+str(time_
                 ax.scatter(sector+0.5, sctr_flux_both[sector][timestep],c="red",s=1) 
              
         #P.A change and precipitation histograms
-        ax.bar(np.arange(0.5,sectors+0.5),moved[timestep],  width=0.3, color='blue',label="moved particles")               #plot difference with bars
-        ax.bar(np.arange(0.5,sectors+0.5),precip[timestep], width=0.3, bottom=moved[timestep], color='orange', label="precipitated particles")#plot difference precipitated
+        ax.bar(np.arange(0.5,sectors+0.5),moved[timestep],  width=0.3, color='blue',label="moved")               #plot difference with bars
+        ax.bar(np.arange(0.5,sectors+0.5),precip[timestep], width=0.3, bottom=moved[timestep], color='orange', label="precip")#plot difference precipitated
         
         
         ax.set_yscale("log")
         ax.set(ylabel="count")
         ax.set(xlabel="P.A bins(black): "+str(sector_range)+" deg   Sectors(red): "+str(sectors))
         ax.set_title("Equatorial P.A dstr, $time: "+str("{:.1f}".format(timestep*time_bin))+"s$", loc="left", size="small",color="blue",x=-0.15)
-        ax.set_ylim(0, max(np.amax(sctr_flux), np.amax(sctr_flux_both)) )
+        ax.set_ylim(1, 100000 )
         ax.set_xlim(0,sectors)
         ax.legend(loc='upper right')
 

@@ -1,7 +1,9 @@
 **/obj
-**/simulation_MM
+**/simulation_MM*
 **/h5files
 **/*.exe
+**/*.mp4
+**/*.png
 **/*.out
 **/*.h5
 **/*.csv#
