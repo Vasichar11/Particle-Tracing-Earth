@@ -25,7 +25,7 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6m/m-3
 //--Constant parameters--//
 //particle initials
 const real L_shell=5; 			 				//L_shell of particle. Constant for now.
-const real Ekev0=590;               			//Initial energy keV
+const real Ekin0=590;               			//Initial energy keV
 const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
 const real aeq0_deg=91.3960666609346;           //If single values are used.
@@ -50,8 +50,8 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 const real By_wave=1*pow(10,-9);  
 
 //--Simulation parameters--//
-const real t_nowpi = 90;        				//simulation time.
-const real t_wpi   = 10;          			    //no_WPI time.
+const real t_nowpi = 0;        				//simulation time.
+const real t_wpi   = 20;          			    //no_WPI time.
 const real t       = t_nowpi + t_wpi;           //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
@@ -63,22 +63,41 @@ const real telescope_lamda = 0;
 
 //--Distribution parameters--//
 //const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 200000;  	    		    
-const int64_t lamda_dstr  = 1; //only one latitude per aeq					
-const int64_t population  = lamda_dstr * aeq_dstr;   
-const real aeq_start_d    = 1;    		  			 				
-const real aeq_end_d      = 179;  			
+const int64_t aeq_dstr    = 100;  	    		    
+const int64_t lamda_dstr  = 1; //only one latitude per aeq	
+const int64_t eta_dstr    = 1;  	    		    
+const int64_t Ekin_dstr   = 10;  	    		    
+
+//P.A dstr
+const real aeq_start_d    = 1;     //Degrees 		  			 				
+const real aeq_end_d      = 179;  
+//Latitude dstr
 const real lamda_start_d  =-90;    		  			 				
-const real lamda_end_d    = 90;  			
+const real lamda_end_d    = 90;  	
+//Eta dstr
+const real eta_start_d    = 0;      
+const real eta_end_d      = 360;   						 
+//Ekin dstr
+const real Ekin_start      = 400;   //keV 	 
+const real Ekin_end        = 600;   		
+
+//Normal dstr arguments
 const real mean_aeq       = 90;  //Mean of the normal dstr
 const real mean_lamda     = 0; 
+const real mean_eta       = 180; 
+const real mean_Ekin      = 600; 
 const real stdev_aeq      = 20;  //Standard deviation of the normal dstr
+const real stdev_eta      = 20;  //Standard deviation of the normal dstr
+const real stdev_Ekin     = 20;  //Standard deviation of the normal dstr
 const real max_stdev_lamda= 30;  //Standard deviation when lamda domain is the biggest. Is propotional to lamda range. 
-const real lamda_domain_step = 0.001;
 
-//Eta dstr
-//const real eta_start_d    = eta0_deg;     //Degrees 	 
-//const real eta_end_d      = eta0_deg;   						 
-//const real eta_step_d     = 0;//(eta_end_d - eta_start_d)/(eta_dstr-1); 	//Step in degrees.
+//Latitude domain range precision
+const real lamda_domain_step = 0.001;
+				 
+//Final population
+const int64_t population  = lamda_dstr * aeq_dstr * eta_dstr * Ekin_dstr;   
+
+
+
 };	
 

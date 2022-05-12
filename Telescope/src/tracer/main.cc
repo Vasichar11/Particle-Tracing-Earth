@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/200000p_normalAEQ_normalLAMDA.h5", h5::File::ReadOnly);
+	h5::File distribution_file("h5files/1000p_uniformAEQ_uniformLAMDA.h5", h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
@@ -226,6 +226,7 @@ int main(int argc, char **argv)
  
 	//Assign from struct to vectors.
 	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
+	std::vector<real> saved_deta_dt,saved_id,saved_alpha,saved_time;
 
 	for(int p=0; p<Population; p++) 
 	{
@@ -264,9 +265,13 @@ int main(int argc, char **argv)
 		{
 			nan_id.push_back(dstr[p].id_nan);
 		}
+
+ 		saved_deta_dt.push_back(dstr[p].saved_deta_dt);
+ 		saved_id.push_back(dstr[p].saved_id);
+ 		saved_alpha.push_back(dstr[p].saved_alpha);
+ 		saved_time.push_back(dstr[p].saved_time);
+
 	}
-
-
 
 
 	//File name based on the argument variables
@@ -280,7 +285,7 @@ int main(int argc, char **argv)
 	//Simulation data and Telescope specification - Scalars 
 	h5::DataSet telescope_lamda = file.createDataSet("ODPT.latitude", ODPT.latitude);
 	h5::DataSet data_population = file.createDataSet("population", 	Population);
-	h5::DataSet Ekev0	        = file.createDataSet("Ekev0",   	Constants::Ekev0);
+	h5::DataSet Ekin0	        = file.createDataSet("Ekin0",   	Constants::Ekin0);
 	h5::DataSet t			    = file.createDataSet("t", 			Constants::t);
 	
 	//Detected particles
@@ -317,7 +322,11 @@ int main(int argc, char **argv)
 	h5::DataSet ending_time    = file.createDataSet("time00",  time00);
 
 
-
+	//Saved Particles
+	h5::DataSet saved_id_data        = file.createDataSet("saved_id", 	 saved_id);
+	h5::DataSet saved_alpha_data     = file.createDataSet("saved_alpha",  saved_alpha);
+	h5::DataSet saved_deta_dt_data   = file.createDataSet("saved_deta_dt",  saved_deta_dt);
+	h5::DataSet saved_time_data      = file.createDataSet("saved_time",	 saved_time);
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
 return 0; 
 

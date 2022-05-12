@@ -11,13 +11,14 @@ sector_range = 1 #P.A bins #1deg
 sectors = int(view/sector_range)
 
 #Distribution read
-f1 = h5py.File("h5files/200000p_normalAEQ_normalLAMDA.h5","r")
+f1 = h5py.File("h5files/1000p_uniformAEQ_uniformLAMDA.h5","r")
 lamda0        = f1["lamda0"][()] #states when noWPI starts
 ppar0         = f1["ppar0"][()]
 pper0         = f1["pper0"][()]
 alpha0        = f1["alpha0"][()]
 aeq0          = f1["aeq0"][()]
 eta0          = f1["eta0"][()]
+Ekin0         = f1["Ekin0"][()]
 time0         = f1["time0"][()]
 aeq0_bins     = f1["aeq0_bins"][()]
 
@@ -53,18 +54,32 @@ with open("dstr_data.csv", "w") as file1:
     writer.writerows(data)
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 #"""
+#fig, ax = plt.subplots()
+#ax.scatter(lamda0*R2D,eta0*R2D)
+#ax.grid(alpha=.3)
+#ax.set(xlabel="Latitude(deg)",ylabel="Eta",title="Initial lat-eta of simulated particles")
+#fig.savefig("simulation_MM/eta_dstr.png",dpi=200)
+
 fig, ax = plt.subplots()
-for sec in range(0,sectors):
-    ax.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
+ax.scatter(aeq0*R2D,Ekin0)
 ax.grid(alpha=.3)
-ax.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors,10),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
-ax.set_yscale("log")
-fig.savefig("simulation_MM/normals_1.png",dpi=200)
+ax.set(xlabel="Latitude(deg)",ylabel="Ekin",title="Initial lat-Ekin of simulated particles")
+fig.savefig("simulation_MM/Ekin_dstr.png",dpi=200)
+
+fig, ax1 = plt.subplots()
+for sec in range(0,sectors):
+    ax1.scatter(sec,aeq0_bins[sec],s=2,alpha=1)
+ax1.grid(alpha=.3)
+ax1.set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors,10),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
+ax1.set_yscale("log")
+fig.savefig("simulation_MM/aeq_dstr.png",dpi=200)
 
 fig, ax = plt.subplots()
 ax.scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax.grid(alpha=.3)
 ax.set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
 ax.axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/normals_2.png",dpi=200)
+fig.savefig("simulation_MM/lamda_dstr.png",dpi=200)
+
+
 #"""

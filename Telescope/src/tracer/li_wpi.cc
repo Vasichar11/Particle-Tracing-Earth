@@ -17,6 +17,8 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
     real aeq        =  single.aeq00; 
     real time       =  single.time00;
     real eta        =  single.eta00; 
+    real deta_dt;
+    real min_deta_dt = 10000;
     //real zeta       =  single.zeta00; 
     //real upar       =  single.upar00; 
     //real uper       =  single.uper00;
@@ -159,9 +161,20 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
         //Rest increments for the next step:
         pper   +=  (Constants::h/6)*(m1+2*m2+2*m3+m4);
         eta    +=  (Constants::h/6)*(n1+2*n2+2*n3+n4);
+        deta_dt =  (n1+2*n2+2*n3+n4)/6;
         alpha  +=  (Constants::h/6)*(p1+2*p2+2*p3+p4);
         time  = time + Constants::h; 
         i++;  
+
+
+        //Save state where particle has the minimum(abs) deta/dt, i.e close to 0
+        if(std::abs(deta_dt)<min_deta_dt)
+        {
+            min_deta_dt = deta_dt;
+            //Save state
+            single.save_state( p,  alpha,  deta_dt,  time);
+        }
+
 
         //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
 

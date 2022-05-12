@@ -22,7 +22,7 @@ detected_aeq   = f1["ODPT.aeq"][()]
 telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
-Ekev0          = f1["Ekev0"][()]
+Ekin0          = f1["Ekin0"][()]
 precip_id      = f1["precip_id"][()]
 precip_lamda   = f1["precip_lamda"][()]
 precip_aeq     = f1["precip_aeq"][()]
@@ -42,7 +42,7 @@ detected_aeq_both   = f2["ODPT.aeq"][()]
 telescope_lamda_both= f2["ODPT.latitude"][()]
 population_both     = f2["population"][()]
 t_both              = f2["t"][()]
-Ekev0_both          = f2["Ekev0"][()]
+Ekin0_both          = f2["Ekin0"][()]
 precip_id_both      = f2["precip_id"][()]
 precip_lamda_both   = f2["precip_lamda"][()]
 precip_aeq_both     = f2["precip_aeq"][()]
@@ -54,7 +54,7 @@ nan_id_both         = f2["nan_id"][()]
 f2.close()
 
 ######################### TELESCOPE SPECIFICATION -- BINNING PARAMETERS ###############################
-time_bin  = 2                #seconds to distinquish events(time resolution)
+time_bin  = 0.5                #seconds to distinquish events(time resolution)
 timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
 view = 180
 sector_range = 2 #P.A bins, look directions
@@ -105,8 +105,6 @@ font = {'family': 'serif',
 colors = []
 for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
     colors.append('#%06X' % randint(0, 0xFFFFFF))
-######################################## PLOT SAVED PARTICLE #######################################
-"""$fig,ax = plt.subplots(2,2)$ax[0,0].scatter(saved_time,saved_lamda*R2D, s=1)$ax[0,0].scatter(savedwpi_time,savedwpi_lamda*R2D, s=1, alpha=0.01)$ax[0,0].set(xlabel="Time", ylabel="lamda")$ax[0,1].scatter(saved_lamda*R2D,saved_alpha*R2D, s=1)$ax[0,1].scatter(savedwpi_lamda*R2D,savedwpi_alpha*R2D, s=1, alpha=0.01)$ax[0,1].set(xlabel="lamda", ylabel="alpha")$ax[1,0].scatter(saved_alpha*R2D,saved_ppar, s=1)$ax[1,0].scatter(savedwpi_alpha*R2D,savedwpi_ppar, s=1, alpha=0.01)$ax[1,0].set(xlabel="alpha", ylabel="ppar")$ax[1,1].scatter(saved_alpha*R2D,saved_pper, s=1)$ax[1,1].scatter(savedwpi_alpha*R2D,savedwpi_pper, s=1, alpha=0.01)$ax[1,1].set(xlabel="alpha", ylabel="pper")$fig.savefig("SingleParticle.png",dpi=200)"""
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 #noWPI
 """
@@ -151,8 +149,8 @@ def thread_noWPI_binning():
             raise Exception("Negative pa")
         if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
             raise Exception("noWPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
-        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
-            continue #don't include these particles in the binning process
+        #if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+        #    continue #don't include these particles in the binning process
         if(pa*R2D==180):
             sector = sectors-1 #to include particles with p.a==180 in the last sector. Is this needed?
         sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
@@ -168,8 +166,8 @@ def thread_both_binning():
             raise Exception("Negative pa")
         if(sector>=sectors or timestep>=timesteps): 
             raise Exception("WPI Particle",id,"with pa",pa*R2D,"at time",time,"needs sector",sector,"in timestep",timestep)
-        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
-            continue
+        #if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+        #    continue
         if(pa*R2D==180):
             sector = sectors-1 
         sctr_flux_both[sector][timestep] += 1              
@@ -186,8 +184,8 @@ def thread_precip_binning():
             raise Exception("Negative pa")
         if(sector>=sectors or timestep>=timesteps): 
             raise Exception("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
-        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
-            continue
+        #if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+        #    continue
         if(pa*R2D==180):
             sector = sectors-1 
         sctr_flux_precip[sector][timestep] += 1           

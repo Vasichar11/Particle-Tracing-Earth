@@ -31,7 +31,7 @@ void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 	real salpha0;
 	do
 	{
-		lamda_end_d += Constants::lamda_domain_step; //increase by h to make better estimation
+		lamda_end_d += Constants::lamda_domain_step; 
 		//Gradually increase and check if salpha0 is valid.
 		//("Brute Force domain validation")
 		real Blam0   = Bmag_dipole(lamda_end_d*Constants::D2R);
@@ -45,6 +45,14 @@ void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 
 
 
+
+
+
+
+
+
+
+
 int main(int argc, char **argv)
 {
 
@@ -55,22 +63,29 @@ int main(int argc, char **argv)
 	std::string string_evenly   = "evenly";
 	std::string string_normal   = "normal";
 	std::string string_uniform  = "uniform";
-	std::string string_test     = "test";
+	std::string string_constant = "constant";
 	
 	//---ARGV ERROR---//
-	if( argc!=3   ||   ( argv[1]!=string_evenly  &&  argv[1]!=string_uniform  &&  argv[1]!=string_normal  &&   argv[1]!=string_test)   ||   ( argv[2]!=string_evenly  &&   argv[2]!=string_uniform   &&  argv[2]!=string_normal  &&   argv[2]!=string_test) )
-	{ 
-		std::cout<<"\nArgument variables don't match any of the program's possible implementations.\nSet second and third argvs from the list:(evenly, uniform, normal, test) to distribute the particles.\n"<<std::endl;
-		return EXIT_FAILURE;	
+	if(argc!=5) throw std::invalid_argument("\nSet 5 command line arguments from the list:(evenly, uniform, normal, test) to distribute the particles.\nargv[1] for P.A, argv[2] for latitude, arg[3] for eta, argv[4] for Ekin");
+	for(int arg=1;arg<=4;arg++)
+	{
+		if( (argv[arg]!=string_evenly) && (argv[arg]!=string_uniform) && (argv[arg]!=string_normal) && (argv[arg]!=string_constant) ) 
+			throw std::invalid_argument("\nArgument variables don't match any of the program's possible implementations.\nSet 4 command line arguments from the list:(evenly, uniform, normal, test) to distribute the particles.\nargv[1] for P.A, argv[2] for latitude, arg[3] for eta, argv[4] for Ekin");
 	}
+
 	std::cout<<"\n\nParticle population: " << Constants::population;
-	//std::cout<<"\n\nEta distribution in degrees"<<"\n|From "<<" To|";
-	//std::cout<<"\n| "<<Constants::eta_start_d << "  "<< " " << Constants::eta_end_d <<"|\n";
+	std::cout<<"\nDistributed as: |From    To|"<<"    (evenly, uniform, normal, test) \n";
+	std::cout<<"\nEquatorial P.A: |"<<Constants::aeq_start_d<<" "<<Constants::aeq_end_d<<"|      "<< argv[1];
+	std::cout<<"\nLatitude:       |"<<Constants::lamda_start_d<<" "<<Constants::lamda_end_d<<"|     "<< argv[2];
+	std::cout<<"\nEta:            |"<<Constants::eta_start_d<<" "<<Constants::eta_end_d<<"|      "<< argv[3];
+	std::cout<<"\nEkin:           |"<<Constants::Ekin_start<<" "<<Constants::Ekin_end<<"|    "<< argv[4]<< std::endl;
+
 
 
 	Particles single; //Single particle struct.
 	std::vector<Particles> dstr(Constants::population, single);	//Vector of structs for particle distribution.
-	real lamda0,Blam0,aeq0,salpha0,alpha0,k;
+	real lamda0,aeq0,eta0,Ekin0;
+	lamda0=aeq0=eta0=Ekin0=0;
 	//const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 	std::random_device seed;         //Random seed. 
 	std::mt19937 generator(seed());  //PRNG initialized with seed.
@@ -82,43 +97,43 @@ int main(int argc, char **argv)
 	for(int aeq_count=0; aeq_count<Constants::aeq_dstr; aeq_count++)
 	{
 
-
-		//----------------P.A dstr-----------------//
-		//Evenly dstr
+		//------------------------------------------- DISTRIBUTE P.A ------------------------------------------------//
+		//EVENLY. Goal is: symmetry	
 		if(argv[1]==string_evenly)   
 		{
-			const real aeq_step_d	  = (Constants::aeq_end_d - Constants::aeq_start_d)/(Constants::aeq_dstr-1); 	//step for linspace(start,end,aeq_dstr) 
-			aeq0 = (Constants::aeq_start_d + aeq_count*aeq_step_d) * Constants::D2R;	  	  				//Goal is: symmetry				
+			//Step for linspace(start,end,aeq_dstr) 
+			const real aeq_step_d	  = (Constants::aeq_end_d - Constants::aeq_start_d)/(Constants::aeq_dstr-1); 	
+			aeq0 = (Constants::aeq_start_d + aeq_count*aeq_step_d) * Constants::D2R;			
 		}
-		//Uniformly dstr
+		//UNIFORMLY. Goal is: randomness
 		else if (argv[1]==string_uniform)   			
 		{
-			std::uniform_real_distribution <real> uniform_aeq  (Constants::aeq_start_d, Constants::aeq_end_d);     //All values in this range are equally probable. Goal is: randomness
+			//All values in this range are equally probable.
+			std::uniform_real_distribution <real> uniform_aeq  (Constants::aeq_start_d, Constants::aeq_end_d);
 			aeq0  = uniform_aeq(generator) * Constants::D2R; 	
 		}
-		//Normaly dstr
+		//NORMALLY. Goal is: reach normal dstr in logarithm scale.
 		else if (argv[1]==string_normal)   			
 		{
 			real number;
 			do
 			{
-				std::normal_distribution <real> normal_aeq(Constants::mean_aeq, Constants::stdev_aeq);		  	 //Goal is: reach normal dstr in logarithm scale.
+				std::normal_distribution <real> normal_aeq(Constants::mean_aeq, Constants::stdev_aeq);
 				number = normal_aeq(generator);
 
 			}while(number<=0 || number>=180); //Until valid aeq=(0,180).
 			aeq0  = number * Constants::D2R; 	
 		}
-		//Test particle
-		else if (argv[1]==string_test)
+		//CONSTANT. Goal is: testing
+		else if (argv[1]==string_constant)
 		{
 			aeq0 = Constants::aeq0;
 		}
-		else return EXIT_FAILURE;
-		//----------------P.A dstr-----------------//
+		//------------------------------------------- DISTRIBUTE P.A ------------------------------------------------//
 
 
-
-
+		//----------------------------------------- DISTRIBUTE LATITUDE ----------------------------------------------//
+		
 		//-------------Latitude domain-------------//
 		real lamda_end_d, lamda_start_d;
 		lamda_domain(aeq0, lamda_start_d, lamda_end_d); //Finds lamda_start_d && lamda_end_d. 
@@ -126,62 +141,129 @@ int main(int argc, char **argv)
 		//-------------Latitude domain-------------//
 
 
-
-
-
 		for(int lamda_count=0; lamda_count<Constants::lamda_dstr; lamda_count++)
 		{
-		//--------------Latitude dstr--------------//
+			//EVENLY. Goal is: symmetry	
 			if(argv[2]==string_evenly)   
 			{
-				const real lamda_step_d	  = (Constants::lamda_end_d - Constants::lamda_start_d)/(Constants::lamda_dstr-1);						//linspace(start,stop,lamda_dstr).
-				lamda0 = (Constants::lamda_start_d + lamda_count*lamda_step_d) * Constants::D2R;	  	//Goal is: symmetry				
+				//Step for linspace(start,end,aeq_dstr) 
+				const real lamda_step_d	  = (Constants::lamda_end_d - Constants::lamda_start_d)/(Constants::lamda_dstr-1);						
+				lamda0 = (Constants::lamda_start_d + lamda_count*lamda_step_d) * Constants::D2R;	  					
 			}
-			//Uniformly dstr
+			//UNIFORMLY. Goal is: randomness
 			else if (argv[2]==string_uniform)   			
 			{
-				std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); //All latitudes in this range are equally probable. 
-				lamda0  = uniform_lamda(generator) * Constants::D2R; 							 //Goal is: randomness
+				//All latitudes in this range are equally probable. 
+				std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); 
+				lamda0  = uniform_lamda(generator) * Constants::D2R; 							 
 			}
-			//Normaly dstr
+			//NORMALLY. Goal is: reach normal dstr in logarithm scale.
 			else if (argv[2]==string_normal)   			
 			{
 				real number;
 				do
 				{
-					//Adaptive stdev according to the lamda domain range. Domain range (min,max) = (0,180).
+					//Adaptive stdev according to the lamda domain range. Domain range (min,max) = (0,90+90).
 					//That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
 					real stdev =((lamda_end_d-lamda_start_d)/180) * Constants::max_stdev_lamda;
 					std::normal_distribution <real> normal_lamda(Constants::mean_lamda, stdev);
 					number = normal_lamda(generator);
 
-				}while(number<lamda_start_d || number>lamda_end_d); //Until valid lamda=(0,180).
+				}while(number<lamda_start_d || number>lamda_end_d); //Until valid lamda=(-90,90).
 				lamda0  = number * Constants::D2R; 	
 			}
-			//Test particle
-			else if (argv[2]==string_test)
+			//CONSTANT. Goal is: testing
+			else if (argv[2]==string_constant)
 			{
 				lamda0 = Constants::lamda0;
 			}
-			else return EXIT_FAILURE;
-		//--------------Latitude dstr--------------//
+		//----------------------------------------- DISTRIBUTE LATITUDE ----------------------------------------------//
+
+			
+		//-------------------------------------------- DISTRIBUTE ETA --------------------------------------------------//
+			for(int eta_count=0; eta_count<Constants::eta_dstr; eta_count++)
+			{
+				//EVENLY. Goal is: symmetry	
+				if(argv[3]==string_evenly)   
+				{
+					//Step for linspace(start,end,eta_dstr) 
+					const real eta_step_d	  = (Constants::eta_end_d - Constants::eta_start_d)/(Constants::eta_dstr-1); 	
+					eta0 = (Constants::eta_start_d + eta_count*eta_step_d) * Constants::D2R;			
+				}
+				//UNIFORMLY. Goal is: randomness
+				else if (argv[3]==string_uniform)   			
+				{
+					//All values in this range are equally probable.
+					std::uniform_real_distribution <real> uniform_eta  (Constants::eta_start_d, Constants::eta_end_d);
+					eta0  = uniform_eta(generator) * Constants::D2R; 	
+				}
+				//NORMALLY. Goal is: reach normal dstr 
+				else if (argv[3]==string_normal)   			
+				{
+					real number;
+					do
+					{
+						std::normal_distribution <real> normal_eta(Constants::mean_eta, Constants::stdev_eta);
+						number = normal_eta(generator);
+
+					}while(number<=0 || number>=180); //Until valid eta=(0,180).
+					eta0  = number * Constants::D2R; 	
+				}
+				//CONSTANT. Goal is: testing
+				else if (argv[3]==string_constant)
+				{
+					eta0 = Constants::eta0;
+				}
+		//-------------------------------------------- DISTRIBUTE ETA --------------------------------------------------//
+				
+
+		//-------------------------------------------- DISTRIBUTE EKIN -------------------------------------------------//
+				for(int Ekin_count=0; Ekin_count<Constants::Ekin_dstr; Ekin_count++)
+				{
+					//EVENLY. Goal is: symmetry	
+					if(argv[4]==string_evenly)   
+					{
+						//Step for linspace(start,end,Ekin_dstr) 
+						const real Ekin_step = (Constants::Ekin_end - Constants::Ekin_start)/(Constants::Ekin_dstr-1); 	
+						Ekin0 = (Constants::Ekin_start + Ekin_count*Ekin_step);			
+					}
+					//UNIFORMLY. Goal is: randomness
+					else if (argv[4]==string_uniform)   			
+					{
+						//All values in this range are equally probable.
+						std::uniform_real_distribution <real> uniform_Ekin  (Constants::Ekin_start, Constants::Ekin_end);
+						Ekin0  = uniform_Ekin(generator); 	
+					}
+					//NORMALLY. Goal is: reach normal dstr 
+					else if (argv[4]==string_normal)   			
+					{
+						real number;
+						do
+						{
+							std::normal_distribution <real> normal_Ekin(Constants::mean_Ekin, Constants::stdev_Ekin);
+							number = normal_Ekin(generator);
+
+						}while(number<=0 || number>=180); //Until valid Ekin=(0,180).
+						Ekin0  = number; 	
+					}
+					//CONSTANT. Goal is: testing
+					else if (argv[4]==string_constant)
+					{
+						Ekin0 = Constants::Ekin0;
+					}
+		//-------------------------------------------- DISTRIBUTE EKIN -------------------------------------------------//
+			
 
 
-			const real Beq0 = Bmag_dipole(0);   		    //Beq isn't always Beq0?
-			Blam0           = Bmag_dipole(lamda0);
-			salpha0         = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
-			if(aeq0*Constants::R2D>90)   k=1;			   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
-			else					     k=0;			   //This way we distribute them: half upwards, half downwards.
-			//srand (time(NULL)); //random seed using clock of computer
-			//int k = rand() % 2; //rand number, 0 or 1.
-			//If aeq<90 then k=0 then alpha0<90 <--> particle is northward, ppar>0
-			//If aeq>90 then k=1 then alpha0>90 <--> particle is southward, ppar<0
-			alpha0 = pow(-1,k)*asin(salpha0)+k*M_PI;       // sinx = a => x=(-1)^k * asin(a) + k*pi
-			//Initialize and print particle state for this equatorial P.A and latitude.
-			dstr[p].initialize(Constants::eta0,aeq0,alpha0,lamda0,Constants::Ekev0,Blam0,0,0);
-			//std::cout<<"\nParticle"<<p<<" aeq0: "<< dstr[p].aeq0*Constants::R2D <<", lamda0: "<< dstr[p].lamda0*Constants::R2D;	
-			p++; //Next particle
 
+
+					//Initialize particle.
+					dstr[p].initialize(eta0,aeq0,lamda0,Ekin0,0,0);
+					std::cout<<"\nParticle"<<p<<" aeq0: "<< dstr[p].aeq0*Constants::R2D <<", lamda0: "<< dstr[p].lamda0*Constants::R2D<<" eta0: "<< dstr[p].eta0*Constants::R2D <<", Ekin0: "<< dstr[p].Ekin0;	
+					p++; //Next particle
+
+				}
+			}
 		}	
 	}
 	std::cout<<"\nDistribution done!";

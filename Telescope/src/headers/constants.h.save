@@ -25,7 +25,7 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6m/m-3
 //--Constant parameters--//
 //particle initials
 const real L_shell=5; 			 				//L_shell of particle. Constant for now.
-const real Ekev0=590;               			//Initial energy keV
+const real Ekin0=590;               			//Initial energy keV
 const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
 const real aeq0_deg=91.3960666609346;           //If single values are used.

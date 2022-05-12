@@ -1,9 +1,23 @@
 #include "headers/struct_Particles.h"
 
-void Particles::initialize(real eta0, real aeq0, real alpha0, real lamda0, real Ekev0, real Blam0, real zeta0, real time0)
+void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real zeta0, real time0)
 {
+	
+	int k;
+	const real Beq0 = Bmag_dipole(0);   		    //Beq isn't always Beq0?
+	real Blam0      = Bmag_dipole(lamda0);
+	real salpha0    = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
+	if(aeq0*Constants::R2D>90)   k=1;			   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
+	else					     k=0;			   //This way we distribute them: half upwards, half downwards.
+	//srand (time(NULL)); //random seed using clock of computer
+	//int k = rand() % 2; //rand number, 0 or 1.
+	//If aeq<90 then k=0 then alpha0<90 <--> particle is northward, ppar>0
+	//If aeq>90 then k=1 then alpha0>90 <--> particle is southward, ppar<0
+	alpha0 = pow(-1,k)*asin(salpha0)+k*M_PI;       // sinx = a => x=(-1)^k * asin(a) + k*pi
+	
+	
 	//Find momentum from energy.
-	real Ejoule0=1.602176487E-16*Ekev0; //Kev to Joule
+	real Ejoule0=1.602176487E-16*Ekin0; //Kev to Joule
 	real gama0=(Ejoule0/(Constants::m_e*pow(Constants::c,2))) + 1;
 	real speed0=sqrt( 1 - (1/pow(gama0,2)) ) * Constants::c;
 	//std::cout<<"\nBouncing period estimation: "<< (4*Constants::L_shell*Constants::Re/speed0)*(1.3 - 0.5*sin(aeq0)); //[Orlova1,Shprits2,2011]
@@ -74,16 +88,20 @@ void Particles::nan_state(int id)
 }
 
 //Member function to save all particle states(if needed). Need for vectors, save values in every step of the simulation.
-/*
-void Particles::save_state(int id, real new_lamda, real new_aeq, real new_ppar, real new_pper, real new_alpha, real new_time)
+
+void Particles::save_state(int id, real new_alpha, real new_deta_dt, real new_time)
 {
-	this->id.push_back(id);
-	this->lamda.push_back(new_lamda);      				
-	this->ppar.push_back(new_ppar);		 
-	this->pper.push_back(new_pper);
-	this->alpha.push_back(new_alpha);	
-	this->aeq.push_back(new_aeq);
-	this->time.push_back(new_time);
+	saved_id = id;
+	saved_deta_dt = new_deta_dt;
+	saved_alpha = new_alpha;
+	saved_time = new_time;	
+	//this->id.push_back(id);
+	//this->lamda.push_back(new_lamda);      				
+	//this->ppar.push_back(new_ppar);		 
+	//this->pper.push_back(new_pper);
+	//this->alpha.push_back(new_alpha);	
+	//this->aeq.push_back(new_aeq);
+	//this->time.push_back(new_time);
 	//this->zeta.push_back(new_zeta);
 	//this->upar.push_back(new_upar);
 	//this->uper.push_back(new_uper);	
@@ -92,4 +110,3 @@ void Particles::save_state(int id, real new_lamda, real new_aeq, real new_ppar, 
 	//this->M_adiabatic.push_back(new_M_adiabatic); 
 	//this->Ekin.push_back(new_Ekin); 
 }	
-*/
