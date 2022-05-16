@@ -17,6 +17,7 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
     real aeq        =  single.aeq00; 
     real time       =  single.time00;
     real eta        =  single.eta00; 
+    real Ekin       =  single.Ekin00; 
     real deta_dt;
     real min_deta_dt = 10000;
     //real zeta       =  single.zeta00; 
@@ -41,56 +42,45 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Minimum lat of wave(in pulse duration).
         max_lat=*max_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Max lat of wave.
         //std::cout<<"\n" << lamda*Constants::R2D << " " << min_lat << "" << max_lat << " "<< lat_int.at(i) << " " << lat_int.back(); 
+        //std::cout <<"\n\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";  
 
         
         f_always(p_mag, gama, w_h, dwh_ds, lamda, ppar, pper); 
         kz = Ftheta = Fpar = Fper = q1 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda, i, lat_int);  //is_in_packet returns "if and where" WPI happens. 
-        //std::cout<<"\nMin and max lat: " <<min_lat << " " << max_lat;
-	    //std::cout<<"\nlamda: "<<lamda;
+
         if(index>=0) { //Do only if there's WPI
-	        //std::cout<<"\nlat[index]: "<<lat_int.at(index);
             f_packet(Fpar, Fper, Ftheta, q1, kz, pper, ppar, eta, aeq, alpha, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
         slopes(k1,  l1,  m1,  n1,  o1,  p1, ppar, pper, alpha, lamda, eta, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz);
-        //std::cout <<"\n\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";  
         //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn1 " << n1<< "\no1 " << o1 << "\np1 " << p1 <<"\nq1 " << q1 <<"\n";
-        //std::cout<<"\nMin and max lat: " <<min_lat << " " << max_lat;
-	    //std::cout<<"\nlamda: "<<lamda;
+
         f_always(p_mag, gama, w_h, dwh_ds, lamda+0.5*Constants::h*o1, ppar+0.5*Constants::h*l1, pper+0.5*Constants::h*m1);
-    kz = Ftheta = Fpar = Fper = q2 = 0; 
+        kz = Ftheta = Fpar = Fper = q2 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda+0.5*Constants::h*o1, i, lat_int);
         if(index>=0) { //Do only if there's WPI
-            //std::cout<<"\nlat[index]: "<<lat_int.at(index);
             f_packet(Fpar, Fper, Ftheta, q2, kz, pper+0.5*Constants::h*m1, ppar+0.5*Constants::h*l1, eta+0.5*Constants::h*n1, aeq+0.5*Constants::h*q1, alpha+0.5*Constants::h*p1, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
         slopes( k2, l2, m2, n2, o2, p2, ppar + 0.5*Constants::h*l1, pper + 0.5*Constants::h*m1, alpha + 0.5*Constants::h*p1, lamda + 0.5*Constants::h*o1, eta + 0.5*Constants::h*n1, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz ); 
         //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 << "\nn2 " << n2<< "\no2 " << o2 << "\np2 " << p2 << "\nq2 "<< q2 <<"\n";
-        //std::cout <<"\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";  
-        //std::cout<<"\nMin and max lat: " <<min_lat << " " << max_lat;
-	    //std::cout<<"\nlamda: "<<lamda;
+
         f_always(p_mag, gama, w_h, dwh_ds, lamda+0.5*Constants::h*o2, ppar+0.5*Constants::h*l2, pper+0.5*Constants::h*m2);
         kz = Ftheta = Fpar = Fper = q3 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda+0.5*Constants::h*o2, i, lat_int);
         if(index>=0) { //Do only if there's WPI
-            //std::cout<<"\nlat[index]: "<<lat_int.at(index);
             f_packet(Fpar, Fper, Ftheta, q3, kz, pper+0.5*Constants::h*m2, ppar+0.5*Constants::h*l2, eta+0.5*Constants::h*n2, aeq+0.5*Constants::h*q2, alpha+0.5*Constants::h*p2, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
         slopes( k3, l3, m3, n3, o3, p3, ppar + 0.5*Constants::h*l2, pper + 0.5*Constants::h*m2, alpha + 0.5*Constants::h*p2, lamda + 0.5*Constants::h*o2, eta + 0.5*Constants::h*n2, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz );   
         //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 << "\nn3 " << n3<< "\no3 " << o3 << "\np3 " << p3 << "\nq3 "<< q3 <<"\n";
-        //std::cout <<"\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";  
-        //std::cout<<"\nMin and max lat: " <<min_lat << " " << max_lat;
-	    //std::cout<<"\nlamda: "<<lamda;
+
         f_always(p_mag, gama, w_h, dwh_ds, lamda+Constants::h*o3, ppar+Constants::h*l3, pper+Constants::h*m3);
         kz = Ftheta = Fpar = Fper = q4 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda+Constants::h*o3, i, lat_int);
         if(index>=0) { //Do only if there's WPI
-            //std::cout<<"\nlat[index]: "<<lat_int.at(index);
             f_packet(Fpar, Fper, Ftheta, q4, kz, pper+Constants::h*m3, ppar+Constants::h*l3, eta+Constants::h*n3, aeq+Constants::h*q3, alpha+Constants::h*p3, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
         slopes( k4, l4, m4, n4, o4, p4, ppar + Constants::h*l3, pper + Constants::h*m3, alpha + Constants::h*p3, lamda + Constants::h*o3, eta + Constants::h*n3, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz ); 
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn4 " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\nq4 " << q4 <<"\n";           
-        //std::cout <<"\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";  
 
 
 
@@ -151,7 +141,6 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
                 ODPT.store( p, lamda, aeq, alpha, time); //Store its state(it's before crossing the satellite!).		        	
                 //std::cout<<"\nParticle "<< p <<" at: "<<new_lamda*Constants::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
             }
-
         }
 
         //Runge kutta 4 estimations:
@@ -164,19 +153,24 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
         deta_dt =  (n1+2*n2+2*n3+n4)/6;
         alpha  +=  (Constants::h/6)*(p1+2*p2+2*p3+p4);
         time  = time + Constants::h; 
-        i++;  
 
+        //Calculate Energy
+        //p_mag  =  sqrt(ppar*ppar + pper*pper);
+        //Ekin   = std::sqrt( (p_mag*p_mag*Constants::c*Constants::c) + pow((Constants::c*Constants::c*Constants::m_e),2) ) / 1.602176487E-16;
+        Ekin   = ((gama-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;
+        
+        i++;  
 
         //Save state where particle has the minimum(abs) deta/dt, i.e close to 0
         if(std::abs(deta_dt)<min_deta_dt)
         {
             min_deta_dt = deta_dt;
             //Save state
-            single.save_state( p,  alpha,  deta_dt,  time);
+            single.save_state( p,  lamda,  deta_dt, Ekin);
         }
+        //std::cout<<"\n\ntime " << time << " Ekin " << Ekin << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
 
 
-        //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
 
     }
 

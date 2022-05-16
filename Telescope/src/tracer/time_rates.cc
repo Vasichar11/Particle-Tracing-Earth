@@ -61,5 +61,4 @@ void slopes(real &k, real &l, real &m, real &n, real &o, real &p, const real ppa
 	//P.A variation time rate.                   
 	p = (-(Fpar/pper_tmp)*(1+(cos(alpha_tmp)*cos(alpha_tmp))/(Constants::m_res*(w_h/(gama*Constants::w_wave))-1))*sin(eta_tmp) + ((1/(Constants::m_e*gama))*(pper_tmp/(2*w_h)))*dwh_ds);
 
-
 }

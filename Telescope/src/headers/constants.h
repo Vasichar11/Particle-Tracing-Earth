@@ -28,9 +28,9 @@ const real L_shell=5; 			 				//L_shell of particle. Constant for now.
 const real Ekin0=590;               			//Initial energy keV
 const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
-const real aeq0_deg=91.3960666609346;           //If single values are used.
+const real aeq0_deg=20;                         //If single values are used.
 const real aeq0=aeq0_deg*D2R;
-const real lamda0_deg=-0.147189473368701;       //If single values are used.
+const real lamda0_deg=10;                       //If single values are used.
 const real lamda0=lamda0_deg*D2R;
 const real hm = 100*pow(10,3);                  //Minimum allowable mirroring altitude in m.
 const real zm = (Re + hm)/(L_shell*Re);
@@ -50,8 +50,8 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 const real By_wave=1*pow(10,-9);  
 
 //--Simulation parameters--//
-const real t_nowpi = 0;        				//simulation time.
-const real t_wpi   = 20;          			    //no_WPI time.
+const real t_nowpi = 0;        				    //simulation time.
+const real t_wpi   = 30;          			    //no_WPI time.
 const real t       = t_nowpi + t_wpi;           //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count

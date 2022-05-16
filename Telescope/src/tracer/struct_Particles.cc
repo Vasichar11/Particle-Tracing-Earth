@@ -89,12 +89,12 @@ void Particles::nan_state(int id)
 
 //Member function to save all particle states(if needed). Need for vectors, save values in every step of the simulation.
 
-void Particles::save_state(int id, real new_alpha, real new_deta_dt, real new_time)
+void Particles::save_state(int id, real new_lamda, real new_deta_dt, real new_Ekin)
 {
 	saved_id = id;
 	saved_deta_dt = new_deta_dt;
-	saved_alpha = new_alpha;
-	saved_time = new_time;	
+	saved_lamda = new_lamda;
+	saved_Ekin = new_Ekin;
 	//this->id.push_back(id);
 	//this->lamda.push_back(new_lamda);      				
 	//this->ppar.push_back(new_ppar);		 

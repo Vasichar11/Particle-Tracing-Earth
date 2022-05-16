@@ -13,13 +13,14 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     real alpha     =  single.alpha0;
     real aeq       =  single.aeq0;
     real time      =  single.time0;
+    real Ekin      =  single.Ekin0;
     //real zeta      =  single.zeta0;
     //real upar      =  single.upar0;
     //real uper      =  single.uper0;
     //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
 
     //Declare function's variables. Once for each particle. When parallel, declare xcore times?
-    real new_lamda, new_ppar, new_aeq;
+    real new_lamda, new_ppar, new_aeq, new_Ekin;
     real w_h, dwh_ds, Bmag, p_mag, gama;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,o1,o2,o3,o4,p1,p2,p3,p4;
     //Objects for each specie.
@@ -83,7 +84,8 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         //Runge kutta 4 first estimations:
         //First make the next step increments(lamda,aeq,ppar) that are needed to characterize crossing-validity-trapping. 
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
-        new_aeq   = aeq;
+        new_aeq   = aeq;  //OK?
+        new_Ekin  = Ekin; //OK?
         new_ppar  = ppar  + (Constants::h/6)*(l1+2*l2+2*l3+l4);
 
         //Check Validity:
@@ -148,8 +150,8 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         i++;  
        
+        //std::cout<<"\n\ntime " << time << " Ekin " << Ekin << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D ;
 
-        //std::cout<<"\n\ntime "<< time<< " \nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D;
     }
     
 
@@ -160,11 +162,11 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
     single.alpha00 = alpha;
     single.aeq00   = aeq;
     single.time00  = time;
+    single.Ekin00  = Ekin;
     single.eta00   = Constants::eta0; //Particle "gyrophase" initialization 
     //single.zeta00 = zeta;
     //single.upar00 = upar;
     //single.uper00 = uper;
-    //single.Ekin00 = Ekin;
 }
 
 

@@ -4,15 +4,26 @@ import h5py
 import numpy as np
 
 f2 = h5py.File("h5files/1000p_both.h5","r")
-saved_id      = f2["saved_id"][()]
+saved_id        = f2["saved_id"][()]
 saved_deta_dt   = f2["saved_deta_dt"][()]
-saved_alpha   = f2["saved_alpha"][()]
-saved_time    = f2["saved_time"][()] 
+saved_lamda     = f2["saved_lamda"][()]
+saved_Ekin      = f2["saved_Ekin"][()]
 f2.close()
 
-#Sort to lists that reference each other
-saved_alpha, saved_deta_dt = zip(*sorted(zip(saved_alpha, saved_deta_dt)))
+print(saved_id)
+resonant = []
+for i,j in zip(saved_deta_dt,saved_id):
+    if abs(i)<0.1:
+        resonant.append(j)
+
+
+print(resonant)
+
+#For every particle in the population the state for minimum deta_dt is saved. 
 fix,ax = plt.subplots()
-ax.plot(np.rad2deg(saved_alpha),saved_deta_dt)
-ax.set(xlabel="P.A",ylabel="deta/dt",title="alpha-deta/dt plot")
-plt.savefig("alpha_detadt.png")
+cc = ax.scatter(np.rad2deg(saved_lamda),saved_deta_dt,s=1, c=saved_Ekin,cmap='jet')
+ax.set(xlabel="latitude[deg]",ylabel="deta_dt")
+cbar=plt.colorbar(cc)
+cbar.ax.set_title('Ekin[keV]')
+plt.savefig("latitude-deta_dt-Ekin.png")
+

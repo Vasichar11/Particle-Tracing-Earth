@@ -21,7 +21,7 @@ struct Particles
 	void high_state(int id);
 	void nan_state(int id);
 	//If vectors for save_state are needed;
-	void save_state(int id, real new_alpha, real new_deta_dt, real new_time);
+	void save_state(int id, real new_lamda, real new_deta_dt, real new_Ekin);
 	
 
 	void lamda_domain(real aeq0);
@@ -46,11 +46,12 @@ struct Particles
 	//For any saved state
 	int saved_id;
 	real saved_deta_dt;
-	real saved_alpha;
+	real saved_lamda;
 	real saved_time;	
+	real saved_Ekin;	
 
 	//If vectors for save_state are needed;
 	//std::vector<real> id, lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, deta_dt, Ekin, time; 
-	std::vector<real> id, alpha, deta_dt, time; 
+	std::vector<real> id, lamda, deta_dt, Ekin; 
 
 };  	

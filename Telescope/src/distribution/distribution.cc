@@ -312,7 +312,7 @@ int main(int argc, char **argv)
 		high_dstr[p]	   = dstr[p].high;
 	}
 	
-	std::string file_name = "h5files/" + std::to_string(Constants::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA.h5";
+	std::string file_name = "h5files/" + std::to_string(Constants::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA_" +std::string(argv[3])+"ETA_"+std::string(argv[4]) + "EKIN.h5";
 	h5::File file(file_name, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
 	h5::DataSet data_lat            = file.createDataSet("lamda0", lamda_dstr);

@@ -13,7 +13,7 @@
 #include "headers/no_wpi.h"
 #include "headers/bell_wpi.h"
 #include "headers/li_wpi.h"
-
+#include <filesystem>
 
 #include "headers/common.h"
 #include "headers/struct_Particles.h"   		    	
@@ -41,9 +41,17 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;	
 	}
 
+	
+	std::cout << "\nPick a particle distribution file from the below\n";
+	for (const auto & entry : std::filesystem::directory_iterator("h5files")) {
+        std::cout << entry.path() << std::endl; }
+	std::string str;
+	std::cout<<"\n";
+	std::getline(std::cin, str);
+	std::cout << "\n\nParticle distribution file: "<<str;
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file("h5files/1000p_uniformAEQ_uniformLAMDA.h5", h5::File::ReadOnly);
+	h5::File distribution_file(str, h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
@@ -225,8 +233,8 @@ int main(int argc, char **argv)
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
  
 	//Assign from struct to vectors.
-	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00;
-	std::vector<real> saved_deta_dt,saved_id,saved_alpha,saved_time;
+	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00, Ekin00;
+	std::vector<real> saved_deta_dt,saved_id,saved_lamda, saved_Ekin;
 
 	for(int p=0; p<Population; p++) 
 	{
@@ -237,6 +245,7 @@ int main(int argc, char **argv)
     	alpha00.push_back(dstr[p].alpha00); 
     	aeq00.push_back(dstr[p].aeq00); 
     	eta00.push_back(dstr[p].eta00); 
+    	Ekin00.push_back(dstr[p].Ekin00); 
     	time00.push_back(dstr[p].time00);
 		
 
@@ -268,8 +277,8 @@ int main(int argc, char **argv)
 
  		saved_deta_dt.push_back(dstr[p].saved_deta_dt);
  		saved_id.push_back(dstr[p].saved_id);
- 		saved_alpha.push_back(dstr[p].saved_alpha);
- 		saved_time.push_back(dstr[p].saved_time);
+ 		saved_lamda.push_back(dstr[p].saved_lamda);
+ 		saved_Ekin.push_back(dstr[p].saved_Ekin);
 
 	}
 
@@ -319,14 +328,15 @@ int main(int argc, char **argv)
 	h5::DataSet ending_alpha   = file.createDataSet("alpha00", alpha00);
 	h5::DataSet ending_aeq     = file.createDataSet("aeq00",   aeq00);
 	h5::DataSet ending_eta     = file.createDataSet("eta00",   eta00);
+	h5::DataSet ending_Ekin    = file.createDataSet("Ekin00",   Ekin00);
 	h5::DataSet ending_time    = file.createDataSet("time00",  time00);
 
 
 	//Saved Particles
 	h5::DataSet saved_id_data        = file.createDataSet("saved_id", 	 saved_id);
-	h5::DataSet saved_alpha_data     = file.createDataSet("saved_alpha",  saved_alpha);
+	h5::DataSet saved_lamda_data     = file.createDataSet("saved_lamda",  saved_lamda);
 	h5::DataSet saved_deta_dt_data   = file.createDataSet("saved_deta_dt",  saved_deta_dt);
-	h5::DataSet saved_time_data      = file.createDataSet("saved_time",	 saved_time);
+	h5::DataSet saved_Ekin_data      = file.createDataSet("saved_Ekin",  saved_Ekin);
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
 return 0; 
 
