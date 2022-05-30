@@ -51,7 +51,7 @@ const real By_wave=1*pow(10,-9);
 
 //--Simulation parameters--//
 const real t_nowpi = 0;        				    //simulation time.
-const real t_wpi   = 30;          			    //no_WPI time.
+const real t_wpi   = 15;          			    //no_WPI time.
 const real t       = t_nowpi + t_wpi;           //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
@@ -66,7 +66,7 @@ const real telescope_lamda = 0;
 const int64_t aeq_dstr    = 100;  	    		    
 const int64_t lamda_dstr  = 1; //only one latitude per aeq	
 const int64_t eta_dstr    = 1;  	    		    
-const int64_t Ekin_dstr   = 10;  	    		    
+const int64_t Ekin_dstr   = 1;  	    		    
 
 //P.A dstr
 const real aeq_start_d    = 1;     //Degrees 		  			 				

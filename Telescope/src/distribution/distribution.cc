@@ -93,7 +93,6 @@ int main(int argc, char **argv)
 	
 
 
-	//Loop for <lamda_dstr> different particle latitudes.
 	for(int aeq_count=0; aeq_count<Constants::aeq_dstr; aeq_count++)
 	{
 

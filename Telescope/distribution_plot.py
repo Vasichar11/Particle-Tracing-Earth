@@ -11,7 +11,7 @@ sector_range = 1 #P.A bins #1deg
 sectors = int(view/sector_range)
 
 #Distribution read
-f1 = h5py.File("h5files/1000p_uniformAEQ_uniformLAMDA.h5","r")
+f1 = h5py.File("h5files/100p_normalAEQ_uniformLAMDA_constantETA_uniformEKIN.h5","r")
 lamda0        = f1["lamda0"][()] #states when noWPI starts
 ppar0         = f1["ppar0"][()]
 pper0         = f1["pper0"][()]
