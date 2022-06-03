@@ -132,7 +132,7 @@ int main(int argc, char **argv)
 
 
 	//---NOWPI---//
-	omp_set_num_threads(8); //Performance peaks with 8 threads.
+	omp_set_num_threads(1); //Performance peaks with 8 threads.
 	if(argv[1]==string_no_wpi)
 	{
 		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation"<<std::endl;
@@ -234,7 +234,7 @@ int main(int argc, char **argv)
  
 	//Assign from struct to vectors.
 	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00, Ekin00;
-	std::vector<real> saved_deta_dt,saved_id,saved_lamda, saved_Ekin;
+	std::vector<real> saved_deta_dt,saved_id,saved_lamda, saved_Ekin, saved_alpha, saved_eta;
 
 	for(int p=0; p<Population; p++) 
 	{
@@ -275,10 +275,13 @@ int main(int argc, char **argv)
 			nan_id.push_back(dstr[p].id_nan);
 		}
 
+		//Minimum deta_dt state 
  		saved_deta_dt.push_back(dstr[p].saved_deta_dt);
  		saved_id.push_back(dstr[p].saved_id);
  		saved_lamda.push_back(dstr[p].saved_lamda);
  		saved_Ekin.push_back(dstr[p].saved_Ekin);
+ 		saved_eta.push_back(dstr[p].saved_eta);
+ 		saved_alpha.push_back(dstr[p].saved_alpha);
 
 	}
 
@@ -337,6 +340,8 @@ int main(int argc, char **argv)
 	h5::DataSet saved_lamda_data     = file.createDataSet("saved_lamda",  saved_lamda);
 	h5::DataSet saved_deta_dt_data   = file.createDataSet("saved_deta_dt",  saved_deta_dt);
 	h5::DataSet saved_Ekin_data      = file.createDataSet("saved_Ekin",  saved_Ekin);
+	h5::DataSet saved_eta_data       = file.createDataSet("saved_eta",  saved_eta);
+	h5::DataSet saved_alpha_data     = file.createDataSet("saved_alpha",  saved_alpha);
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
 return 0; 
 

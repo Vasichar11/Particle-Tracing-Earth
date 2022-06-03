@@ -21,7 +21,9 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
     real deta_dt;
     real min_deta_dt = 1000000;
     real min_lamda = lamda;
-    real min_Ekin = Ekin ;
+    real min_Ekin = Ekin;
+    real min_alpha = alpha;
+    real min_eta = eta;
     //real zeta       =  single.zeta00; 
     //real upar       =  single.upar00; 
     //real uper       =  single.uper00;
@@ -169,6 +171,8 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
             min_deta_dt = deta_dt;
             min_lamda = lamda;
             min_Ekin = Ekin;
+            min_alpha = alpha;
+            min_eta = eta;
 
         }
         //std::cout<<"\n\ntime " << time << " Ekin " << Ekin << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
@@ -178,7 +182,7 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
 
     }
     //Save state where we have minimum deta_dt.
-    single.save_state( p,  min_lamda,  min_deta_dt, min_Ekin);
+    single.save_state( p,  min_lamda,  min_deta_dt, min_Ekin, min_eta, min_alpha);
 
 }
 

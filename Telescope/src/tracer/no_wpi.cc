@@ -86,6 +86,8 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
         new_aeq   = aeq;  //OK?
         new_Ekin  = Ekin; //OK?
+        new_Ekin   = ((gama-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;
+        std::cout<<"\n"<<new_Ekin;
         new_ppar  = ppar  + (Constants::h/6)*(l1+2*l2+2*l3+l4);
 
         //Check Validity:
@@ -143,6 +145,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         lamda   = new_lamda;
         aeq     = new_aeq;
         ppar    = new_ppar;
+        Ekin    = new_Ekin;
         //Rest increments for the next step:
         alpha  +=  (Constants::h/6)*(p1+2*p2+2*p3+p4);
         pper   +=  (Constants::h/6)*(m1+2*m2+2*m3+m4);

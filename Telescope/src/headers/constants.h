@@ -50,8 +50,8 @@ const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 const real By_wave=1*pow(10,-9);  
 
 //--Simulation parameters--//
-const real t_nowpi = 0;        				    //simulation time.
-const real t_wpi   = 15;          			    //no_WPI time.
+const real t_nowpi = 1;        				    //simulation time.
+const real t_wpi   = 1;          			    //no_WPI time.
 const real t       = t_nowpi + t_wpi;           //WPI time.
 const real h=0.00001;						    //Runge kutta stepsize. Has to be much less than the particle's gyroperiod?
 const int64_t Nsteps_wpi  = t_wpi/h; 			//WPI step count
@@ -62,10 +62,9 @@ const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
 const real telescope_lamda = 0; 
 
 //--Distribution parameters--//
-//const int64_t eta_dstr    = 1;					//Number of different values for each distribution.										 
-const int64_t aeq_dstr    = 100;  	    		    
+const int64_t aeq_dstr    = 10;  	    		    
 const int64_t lamda_dstr  = 1; //only one latitude per aeq	
-const int64_t eta_dstr    = 1;  	    		    
+const int64_t eta_dstr    = 1; 	    		    
 const int64_t Ekin_dstr   = 1;  	    		    
 
 //P.A dstr
@@ -75,11 +74,11 @@ const real aeq_end_d      = 179;
 const real lamda_start_d  =-90;    		  			 				
 const real lamda_end_d    = 90;  	
 //Eta dstr
-const real eta_start_d    = 0;      
-const real eta_end_d      = 360;   						 
+const real eta_start_d    = 1;      
+const real eta_end_d      = 359;   //Issue if eta=0 or 360?				 
 //Ekin dstr
-const real Ekin_start      = 400;   //keV 	 
-const real Ekin_end        = 600;   		
+const real Ekin_start      = 200;   //keV 	 
+const real Ekin_end        = 800;   		
 
 //Normal dstr arguments
 const real mean_aeq       = 90;  //Mean of the normal dstr
@@ -95,7 +94,7 @@ const real max_stdev_lamda= 30;  //Standard deviation when lamda domain is the b
 const real lamda_domain_step = 0.001;
 				 
 //Final population
-const int64_t population  = lamda_dstr * aeq_dstr * eta_dstr * Ekin_dstr;   
+const int64_t population  = aeq_dstr * (lamda_dstr * (eta_dstr * Ekin_dstr));   
 
 
 
