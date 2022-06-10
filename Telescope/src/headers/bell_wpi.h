@@ -12,4 +12,4 @@
 #include <cmath>
 
 //Function for wave=particle interaction. Involves RK4 for Nsteps. 
-void bell_wpi(int p, Particles &single, Telescope &ODPT);
+void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODPT);

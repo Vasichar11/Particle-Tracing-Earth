@@ -1,0 +1,6 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/bill-centos/Documents/Particle-Tracing-Earth'
+make: Leaving directory '/home/bill-centos/Documents/Particle-Tracing-Earth'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+

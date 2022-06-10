@@ -7,7 +7,9 @@
 #include <random> 
 #include <iomanip>  //For std::setprecision()
 #include <omp.h>
- 
+#include <cstdlib> //atoi()
+#include <ctype.h> //isdigit()
+
 //Same directory headers							    
 //Preprocessor macro instructions are added in files to obey ODR.
 #include "headers/no_wpi.h"
@@ -30,18 +32,29 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {
-	std::string string_no_wpi   = "no_wpi";
-	std::string string_li_wpi   = "li_wpi";
-	std::string string_bell_wpi = "bell_wpi";
+	//Simulation time and steps, read from command line.
+	real t_nowpi = atoi(argv[1]);    //No WPI time from command line 
+	real t_wpi   = atoi(argv[2]);	 //WPI time from command line
+	real t = t_nowpi + t_wpi;  //Total simulation time
+	int64_t Nsteps_wpi  = t_wpi/Constants::h; 	 //WPI step count
+	int64_t Nsteps_nowpi= t_nowpi/Constants::h; //noWPI step count
 	
-	//---ARGV ERROR---//
-	if( (argc<2 || argc>3)   ||    argv[1]!=string_no_wpi    ||    ( argc==3 && argv[2]!=string_bell_wpi && argv[2]!=string_li_wpi ) )
+	std::string bell = "-bell";
+	/*//---ARGV ERROR---//
+	if( !(isdigit(argv[1])) || !(isdigit(argv[2])) )
 	{ 
-		std::cout<<"\nArgument variables don't match any of the program's possible implementations.\nSet second argv=no_wpi and third argv from the list:(bell_wpi, li_wpi) to introduce a wave.\n"<<std::endl;
+		std::cout<<"\nArgument variables are the simulation times for the NoWPI and WPI interaction. First provide the time(s) of NoWPI simulation and then the time(s) of the WPI simulation. For WPI using the Bell Formulas run with the option -bell as the last command line argument.\n"<<std::endl;
 		return EXIT_FAILURE;	
+	}*/
+	if(argc==4)
+	{
+		if(argv[3]!=bell){
+			std::cout<<"\nThird argument can be used only to run the simulation using the Bell Formulas, providing the option '-bell' as the last argument\n"<<std::endl;
+		}
 	}
 
-	
+
+
 	std::cout << "\nPick a particle distribution file from the below\n";
 	for (const auto & entry : std::filesystem::directory_iterator("h5files")) {
         std::cout << entry.path() << std::endl; }
@@ -133,11 +146,11 @@ int main(int argc, char **argv)
 
 	//---NOWPI---//
 	omp_set_num_threads(8); //Performance peaks with 8 threads.
-	if(argv[1]==string_no_wpi)
+	if(t_nowpi>0) //Run if noWPI time is more than 0 seconds.
 	{
-		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation"<<std::endl;
-		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Population*0.008/60) * Constants::t_nowpi <<" minutes."<<std::endl;
-		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.017/60) * Constants::t_nowpi <<" minutes."<<std::endl;
+		std::cout<<"\n\n"<<t_nowpi<<" sec NoWPI Simulation"<<std::endl;
+		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Population*0.008/60) * t_nowpi <<" minutes."<<std::endl;
+		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.017/60) * t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"\nForked...";
 		//---PARALLELISM Work sharing---//
 		
@@ -149,7 +162,7 @@ int main(int argc, char **argv)
 				for(int p=0; p<Population; p++)     //dynamic because some chunks may have less workload.(particles can precipitate and break out of loop)
 				{
 					//Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
-					no_wpi(p, dstr[p], ODPT);
+					no_wpi(Nsteps_nowpi, p, dstr[p], ODPT);
 				}
 		}	
 		std::cout<<"\n\n"<<"Joined"<<std::endl;
@@ -161,13 +174,13 @@ int main(int argc, char **argv)
 
 	//---WPI---//
 	omp_set_num_threads(20); //Better performance for more threads
-	if(argc==3)
+	if(t_wpi>0)//Run if WPI time is more than 0 seconds.
 	{
 		//---LI---//
-		if(argv[2]==string_li_wpi)
+		if(argc==3)//Default implementation. Means there's no option '-bell' as command line argument.
 		{
-			std::cout<<"\n\n"<<Constants::t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
-			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.1/60) * Constants::t_wpi <<" minutes."<<std::endl;
+			std::cout<<"\n\n"<<t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
+			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.1/60) * t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
 			//--READ HDF5 files from disk to pass them to the WPI function instead of reading them in every thread - every time - accessing disk frequently --//
 			//read_hdf5() is a function to read HDF5 dataset as vectors. 
@@ -194,7 +207,7 @@ int main(int argc, char **argv)
 						if(dstr[p].escaped  == true) continue; //If this particle is lost, continue with next particle.
 						if(dstr[p].negative == true) continue; //If this particle came out with aeq negative, continue with next particle.
 						if(dstr[p].nan 	    == true) continue; //If this particle came out with aeq nan     , continue with next particle.
-						li_wpi(p, lat_int, kx_ray, kz_ray, kappa_ray, Bzw, Ezw, Bw_ray, w1, w2, R1, R2, dstr[p], ODPT);  //LI   + RAY TRACING
+						li_wpi(Nsteps_wpi, p, lat_int, kx_ray, kz_ray, kappa_ray, Bzw, Ezw, Bw_ray, w1, w2, R1, R2, dstr[p], ODPT);  //LI   + RAY TRACING
 					}
 			}	
 			std::cout<<"\n\n"<<"Joined"<<std::endl;
@@ -203,10 +216,10 @@ int main(int argc, char **argv)
 		}
 
 		//---BELL---//
-		else if(argv[2]==string_bell_wpi)
+		else if(argc==4 && argv[3]==bell)
 		{
-			std::cout<<"\n\n"<<Constants::t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
-			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Population*0.036/60) * Constants::t_wpi <<" minutes."<<std::endl;
+			std::cout<<"\n\n"<<t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
+			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Population*0.036/60) * t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
 			//---PARALLELISM Work sharing---//
 			#pragma omp parallel
@@ -220,7 +233,7 @@ int main(int argc, char **argv)
 						if(dstr[p].escaped  == true) continue; //If this particle is lost, continue with next particle.
 						if(dstr[p].negative == true) continue; //If this particle came out with aeq negative, continue with next particle.
 						if(dstr[p].nan 	    == true) continue; //If this particle came out with aeq nan     , continue with next particle.
-						bell_wpi(p, dstr[p], ODPT); 		//BELL + THE WAVE IS EVERYWHERE
+						bell_wpi(Nsteps_wpi, p, dstr[p], ODPT); 		//BELL + THE WAVE IS EVERYWHERE
 					}
 			}	
 			std::cout<<"\n\n"<<"Joined"<<std::endl;
@@ -297,7 +310,7 @@ int main(int argc, char **argv)
 	//Simulation data and Telescope specification - Scalars 
 	h5::DataSet telescope_lamda = file.createDataSet("ODPT.latitude", ODPT.latitude);
 	h5::DataSet data_population = file.createDataSet("population", 	Population);
-	h5::DataSet t			    = file.createDataSet("t", 			Constants::t);
+	h5::DataSet simulation_time = file.createDataSet("t", 			t);
 	
 	//Detected particles from the satellite
 	h5::DataSet detected_lamda  = file.createDataSet("ODPT.lamda", ODPT.lamda);

@@ -1,7 +1,7 @@
 #include "headers/no_wpi.h"
 
 //Adiabatic motion.
-void no_wpi(int p, Particles &single, Telescope &ODPT)
+void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODPT)
 {
 	//std::cout.precision(64);			//Output 16 decimal precise
 	//std::cout<<std::scientific;		//For e notation representation
@@ -31,7 +31,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
 
     int i=0;
     
-    while(i<Constants::Nsteps_nowpi) 
+    while(i<Nsteps_nowpi) 
     {
 
         Bmag=Bmag_dipole(lamda);   

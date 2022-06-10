@@ -1,7 +1,7 @@
 #include "headers/bell_wpi.h"
 
 //For wave-particle interaction
-void bell_wpi(int p, Particles &single, Telescope &ODPT)
+void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODPT)
 {
     
 	//std::cout.precision(64);			//Output 16 decimal precise
@@ -38,6 +38,7 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT)
     real Bmag;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
     real l1_old,l2_old,l3_old,l4_old,m1_old,m2_old,m3_old,m4_old,n1_old,n2_old,n3_old,n4_old,o1_old,o2_old,o3_old,o4_old,p1_old,p2_old,p3_old,p4_old,q1_old,q2_old,q3_old,q4_old;
+    l1_old=l2_old=l3_old=l4_old=m1_old=m2_old=m3_old=m4_old=n1_old=n2_old=n3_old=n4_old=o1_old=o2_old=o3_old=o4_old=p1_old=p2_old=p3_old=p4_old=q1_old=q2_old=q3_old=q4_old=0;
     real gama,w1,w2,R1,R2,beta,wtau_sq;
     real S,D,P,R,L,mu,dwh_ds,kappa,kx,kz;
     //real vres, Eres;
@@ -55,7 +56,7 @@ void bell_wpi(int p, Particles &single, Telescope &ODPT)
 
     int i=0;
 
-    while(i<Constants::Nsteps_wpi) 
+    while(i<Nsteps_wpi) 
     {
         Bmag=Bmag_dipole(lamda);
         ns_e = electron.density(lamda); ns_O = oxygen.density(lamda);  ns_H = hydrogen.density(lamda); ns_He = helium.density(lamda);

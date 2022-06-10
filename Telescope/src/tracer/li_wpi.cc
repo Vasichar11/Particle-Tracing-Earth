@@ -1,7 +1,7 @@
 #include "headers/li_wpi.h"
 
 
-void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &kx_ray, const std::vector <real> &kz_ray, const std::vector <real> &kappa_ray, const std::vector <real> &Bzw, const std::vector <real> &Ezw, const std::vector <real> &Bw_ray, const std::vector <real> &w1, const std::vector <real> &w2, const std::vector <real> &R1, const std::vector <real> &R2, Particles &single, Telescope &ODPT)
+void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, const std::vector <real> &kx_ray, const std::vector <real> &kz_ray, const std::vector <real> &kappa_ray, const std::vector <real> &Bzw, const std::vector <real> &Ezw, const std::vector <real> &Bw_ray, const std::vector <real> &w1, const std::vector <real> &w2, const std::vector <real> &R1, const std::vector <real> &R2, Particles &single, Telescope &ODPT)
 {
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
 //Better read out of function and pass vectors as const reference arguments. That way we don't access disk all the time(?)
@@ -40,7 +40,7 @@ void li_wpi(const int p, std::vector <real> &lat_int, const std::vector <real> &
 
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
-    while(i<Constants::Nsteps_wpi)          
+    while(i<Nsteps_wpi)          
     {   
         //Take the data from interpolation and return (pulse_dur) of them, moved by "i" each iteration.
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Constants::puls_dur + i);  //Minimum lat of wave(in pulse duration).

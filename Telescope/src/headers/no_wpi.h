@@ -12,6 +12,6 @@
 #include <cmath>
     
 //Function for particle's adiabatic motion. Involves RK4 for Nsteps. 
-void no_wpi(int p, Particles &single, Telescope &ODPT);
+void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODPT);
 
 
