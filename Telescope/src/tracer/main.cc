@@ -132,7 +132,7 @@ int main(int argc, char **argv)
 
 
 	//---NOWPI---//
-	omp_set_num_threads(1); //Performance peaks with 8 threads.
+	omp_set_num_threads(8); //Performance peaks with 8 threads.
 	if(argv[1]==string_no_wpi)
 	{
 		std::cout<<"\n\n"<<Constants::t_nowpi<<" sec NoWPI Simulation"<<std::endl;
@@ -297,10 +297,9 @@ int main(int argc, char **argv)
 	//Simulation data and Telescope specification - Scalars 
 	h5::DataSet telescope_lamda = file.createDataSet("ODPT.latitude", ODPT.latitude);
 	h5::DataSet data_population = file.createDataSet("population", 	Population);
-	h5::DataSet Ekin0	        = file.createDataSet("Ekin0",   	Constants::Ekin0);
 	h5::DataSet t			    = file.createDataSet("t", 			Constants::t);
 	
-	//Detected particles
+	//Detected particles from the satellite
 	h5::DataSet detected_lamda  = file.createDataSet("ODPT.lamda", ODPT.lamda);
 	h5::DataSet detected_time   = file.createDataSet("ODPT.time", ODPT.time);
 	h5::DataSet detected_id     = file.createDataSet("ODPT.id", ODPT.id);
@@ -308,20 +307,18 @@ int main(int argc, char **argv)
 	h5::DataSet detected_aeq    = file.createDataSet("ODPT.aeq", ODPT.aeq); 
 
 	//Precipitating Particles
-	h5::DataSet precipitated_id        = file.createDataSet("precip_id", 	 precip_id);
-	h5::DataSet precipitated_lamda     = file.createDataSet("precip_lamda",  precip_lamda);
-	h5::DataSet precipitated_aeq       = file.createDataSet("precip_aeq", 	 precip_aeq);
-	h5::DataSet precipitated_alpha     = file.createDataSet("precip_alpha",  precip_alpha);
-	h5::DataSet precipitated_time      = file.createDataSet("precip_time",	 precip_time);
+	h5::DataSet precipitated_id    = file.createDataSet("precip_id", 	 precip_id);
+	h5::DataSet precipitated_lamda = file.createDataSet("precip_lamda",  precip_lamda);
+	h5::DataSet precipitated_aeq   = file.createDataSet("precip_aeq", 	 precip_aeq);
+	h5::DataSet precipitated_alpha = file.createDataSet("precip_alpha",  precip_alpha);
+	h5::DataSet precipitated_time  = file.createDataSet("precip_time",	 precip_time);
 
 	//Negative P.A Particles
-	h5::DataSet data_neg_id            = file.createDataSet("neg_id", 	 neg_id);
-
+	h5::DataSet data_neg_id		= file.createDataSet("neg_id", 	 neg_id);
 	//High P.A Particles
-	h5::DataSet data_high_id           = file.createDataSet("high_id", 	 high_id);
-
+	h5::DataSet data_high_id	= file.createDataSet("high_id",  high_id);
 	//High P.A Particles
-	h5::DataSet data_nan_id            = file.createDataSet("nan_id", 	 nan_id);
+	h5::DataSet data_nan_id		= file.createDataSet("nan_id", 	 nan_id);
 
 
 	//Particles states at noWPI end.
@@ -331,16 +328,16 @@ int main(int argc, char **argv)
 	h5::DataSet ending_alpha   = file.createDataSet("alpha00", alpha00);
 	h5::DataSet ending_aeq     = file.createDataSet("aeq00",   aeq00);
 	h5::DataSet ending_eta     = file.createDataSet("eta00",   eta00);
-	h5::DataSet ending_Ekin    = file.createDataSet("Ekin00",   Ekin00);
+	h5::DataSet ending_Ekin    = file.createDataSet("Ekin00",  Ekin00);
 	h5::DataSet ending_time    = file.createDataSet("time00",  time00);
 
 
 	//Saved Particles
-	h5::DataSet saved_id_data        = file.createDataSet("saved_id", 	 saved_id);
+	h5::DataSet saved_id_data        = file.createDataSet("saved_id", 	  saved_id);
 	h5::DataSet saved_lamda_data     = file.createDataSet("saved_lamda",  saved_lamda);
-	h5::DataSet saved_deta_dt_data   = file.createDataSet("saved_deta_dt",  saved_deta_dt);
-	h5::DataSet saved_Ekin_data      = file.createDataSet("saved_Ekin",  saved_Ekin);
-	h5::DataSet saved_eta_data       = file.createDataSet("saved_eta",  saved_eta);
+	h5::DataSet saved_deta_dt_data   = file.createDataSet("saved_deta_dt",saved_deta_dt);
+	h5::DataSet saved_Ekin_data      = file.createDataSet("saved_Ekin",   saved_Ekin);
+	h5::DataSet saved_eta_data       = file.createDataSet("saved_eta",    saved_eta);
 	h5::DataSet saved_alpha_data     = file.createDataSet("saved_alpha",  saved_alpha);
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
 return 0; 

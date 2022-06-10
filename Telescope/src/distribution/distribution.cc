@@ -39,6 +39,10 @@ void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
 							  
 	}					//e.g aeq0_deg=89.9989367479725, lamda0_deg=0.000514656086141539 
 	while( (salpha0<=1) && (salpha0>=-1) && (salpha0!=0) ) ; // &&lamda0<M_PI
+	//Else Invalid
+	/*-1<salpha || salpha>1 => domain error
+	aeq0=0||180 => salpha0 = 0 => alpha0 = 0 => pper0 = 0 => PROBLEM IN Bell_param, a2(division with 0).
+	sin(pi) is actually not zero in C++... */
 	lamda_end_d   -= Constants::h;     //This is the last (positive) valid value.
 	lamda_start_d  = -lamda_end_d;	 //This would be the first (negative) valid value. 		
 }

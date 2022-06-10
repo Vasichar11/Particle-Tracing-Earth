@@ -74,21 +74,20 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 <<"\no4 " << o4 << "\np4 " << p4 << "\n";
 
 
-        //Adiabatic motion. Aeq stays the same or changes between two values(?)
-        //This won't work well
-        //int k;
-        //if(ppar<0) k=1;
-        //else k=0;
-        //new_aeq = pow(-1,k) * asin(sin(alpha)*sqrt(Bmag_dipole(0)/Bmag_dipole(ne_lamda))) + k*M_PI; 
-        
+
         //Runge kutta 4 first estimations:
         //First make the next step increments(lamda,aeq,ppar) that are needed to characterize crossing-validity-trapping. 
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
-        new_aeq   = aeq;  //OK?
-        new_Ekin  = Ekin; //OK?
+        //Adiabatic motion. Aeq stays the same or changes between two values(?)
+        //Is this ok?
+        int k;
+        if(ppar<0) k=1;
+        else k=0;
+        new_aeq = pow(-1,k) * asin(sin(alpha)*sqrt(Bmag_dipole(0)/Bmag_dipole(new_lamda))) + k*M_PI; 
+        //We should have new_aeq   = aeq; and new_Ekin  = Ekin; for adiabatic motion. In practice, aeq changes between two values. One for northward motion and one for southward while on equator. (θ and 180-θ)
         new_Ekin   = ((gama-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;
-        std::cout<<"\n"<<new_Ekin;
         new_ppar  = ppar  + (Constants::h/6)*(l1+2*l2+2*l3+l4);
+
 
         //Check Validity:
         if(std::isnan(new_lamda*new_aeq*new_ppar))
@@ -153,7 +152,7 @@ void no_wpi(int p, Particles &single, Telescope &ODPT)
         time  = time + Constants::h; 
         i++;  
        
-        //std::cout<<"\n\ntime " << time << " Ekin " << Ekin << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D ;
+        //std::cout<<"\n\ntime " << time <<" latitude " << lamda*Constants::R2D<< " Ekin " << Ekin << "\nalpha "<<alpha*Constants::R2D << " aeq0 " << single.aeq0 * Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D ;
 
     }
     

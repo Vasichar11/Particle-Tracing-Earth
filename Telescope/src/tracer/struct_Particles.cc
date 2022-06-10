@@ -24,17 +24,17 @@ void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real z
 
 	//Assign initial state.
 	this->lamda0 = lamda0;
-	this->aeq0 = aeq0;
+	this->aeq0   = aeq0;
 	this->eta0   = eta0;
 	this->alpha0 = alpha0;
-	this->upar0 = speed0*cos(alpha0) ;
-	this->uper0 = speed0*sin(alpha0) ;
-	this->pper0 = gama0*Constants::m_e*uper0 ;
-	this->ppar0 = gama0*Constants::m_e*upar0 ;
-	this->zeta0 = zeta0 ;
+	this->upar0  = speed0*cos(alpha0) ;
+	this->uper0  = speed0*sin(alpha0) ;
+	this->pper0  = gama0*Constants::m_e*uper0 ;
+	this->ppar0  = gama0*Constants::m_e*upar0 ;
+	this->zeta0  = zeta0 ;
 	this->M_adiabatic0 = (pper0*pper0) / (2*Constants::m_e*Blam0) ;	
-	this->Ekin0 = ((gama0-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;	 //Joule back to Kev
-	this->time0 = time0 ;
+	this->Ekin0  = ((gama0-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;	 //Joule back to Kev
+	this->time0  = time0 ;
 	//Particle is trapped, and won't escape until conditions are met.
 	this->trapped  = true;	
 	this->escaped  = false;
@@ -42,10 +42,6 @@ void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real z
 	this->nan      = false; //May it develop NaN state
 	this->high     = false; //May it develop NaN state
 
-	//Else Invalid
-	/*-1<salpha || salpha>1 => domain error
-	aeq0=0||180 => salpha0 = 0 => alpha0 = 0 => pper0 = 0 => PROBLEM IN Bell_param, a2(division with 0).
-	sin(pi) is actually not zero in C++... */
 
 }
 
@@ -87,7 +83,8 @@ void Particles::nan_state(int id)
 	id_nan    =	id;
 }
 
-//Member function to save all particle states(if needed). Need for vectors, save values in every step of the simulation.
+//Member function to save particle states(if needed).
+//If need many values use vectors.
 
 void Particles::save_state(int id, real new_lamda, real new_deta_dt, real new_Ekin, real new_eta, real new_alpha)
 {

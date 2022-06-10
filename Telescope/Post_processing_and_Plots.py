@@ -13,7 +13,7 @@ D2R=np.pi/180
 R2D=1/D2R
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/200000p_no_wpi.h5","r")
+f1 = h5py.File("h5files/1000p_no_wpi.h5","r")
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
 detected_id    = f1["ODPT.id"][()]
@@ -22,7 +22,6 @@ detected_aeq   = f1["ODPT.aeq"][()]
 telescope_lamda= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
-Ekin0          = f1["Ekin0"][()]
 precip_id      = f1["precip_id"][()]
 precip_lamda   = f1["precip_lamda"][()]
 precip_aeq     = f1["precip_aeq"][()]
@@ -33,7 +32,7 @@ high_id        = f1["high_id"][()]
 nan_id         = f1["nan_id"][()]
 f1.close()
 
-f2 = h5py.File("h5files/200000p_both.h5","r")
+f2 = h5py.File("h5files/1000p_both.h5","r")
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
 detected_id_both    = f2["ODPT.id"][()]
@@ -42,7 +41,6 @@ detected_aeq_both   = f2["ODPT.aeq"][()]
 telescope_lamda_both= f2["ODPT.latitude"][()]
 population_both     = f2["population"][()]
 t_both              = f2["t"][()]
-Ekin0_both          = f2["Ekin0"][()]
 precip_id_both      = f2["precip_id"][()]
 precip_lamda_both   = f2["precip_lamda"][()]
 precip_aeq_both     = f2["precip_aeq"][()]
@@ -107,7 +105,7 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
     colors.append('#%06X' % randint(0, 0xFFFFFF))
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 #noWPI
-"""
+#"""
 fig, ax = plt.subplots()
 ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
 ax.grid(alpha=0.8)
@@ -127,7 +125,7 @@ plt.annotate("SATELLITE",xy=(t_both/2,telescope_lamda_both+0.0002),color="blue",
 ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig(filepath_plots+"/Crossing_particles_both.png", dpi=100)
-"""
+#"""
 ############################################## BINNING ####################################################
 ###BINNING WITH LOCAL PITCH ANGLE: detected_alpha not detected_aeq
 #Formula for aeq is not valid. Do the binning with local P.A since satellite is @0deg aeq~=alpha.
