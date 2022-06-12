@@ -146,8 +146,6 @@ int main(int argc, char **argv)
 
 	//---NOWPI---//
 	omp_set_num_threads(8); //Performance peaks with 8 threads.
-	if(t_nowpi>0) //Run if noWPI time is more than 0 seconds.
-	{
 		std::cout<<"\n\n"<<t_nowpi<<" sec NoWPI Simulation"<<std::endl;
 		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Population*0.008/60) * t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.017/60) * t_nowpi <<" minutes."<<std::endl;
@@ -168,7 +166,6 @@ int main(int argc, char **argv)
 		std::cout<<"\n\n"<<"Joined"<<std::endl;
 		real time1 = omp_get_wtime()-wtime;
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time1<<std::endl;
-	}
 
 	//Now initial_particles have the last state after NoWPI
 
@@ -179,7 +176,7 @@ int main(int argc, char **argv)
 		//---LI---//
 		if(argc==3)//Default implementation. Means there's no option '-bell' as command line argument.
 		{
-			std::cout<<"\n\n"<<t_wpi<<" sec ray tracing WPI Simulation using Li formulas."<<std::endl;
+			std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation (Li+ray tracing)."<<std::endl;
 			std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.1/60) * t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
 			//--READ HDF5 files from disk to pass them to the WPI function instead of reading them in every thread - every time - accessing disk frequently --//
@@ -218,7 +215,7 @@ int main(int argc, char **argv)
 		//---BELL---//
 		else if(argc==4 && argv[3]==bell)
 		{
-			std::cout<<"\n\n"<<t_wpi<<" sec WPI Simulation using Bell formulas. Wave magnitude(T): "<<Constants::By_wave<<std::endl;
+			std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation(Bell).\nWave magnitude(T): "<<Constants::By_wave<<std::endl;
 			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Population*0.036/60) * t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
 			//---PARALLELISM Work sharing---//
@@ -300,9 +297,9 @@ int main(int argc, char **argv)
 
 
 	//File name based on the argument variables
-	std::string  save_file = "h5files/" + std::to_string(Constants::population) + "p_";   
-	if 	  	(argc==2) save_file = save_file  + std::string(argv[1]) ;
-	else if (argc==3) save_file = save_file  + std::string("both"); 
+	std::string  save_file = "h5files/" + std::to_string(Constants::population) + "p";  
+	if  (atoi(argv[1])>0) save_file += std::string("_nowpi"); 
+	if 	(atoi(argv[2])>0) save_file += std::string("_wpi");
 	save_file = save_file + ".h5";
 
 	h5::File file(save_file, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);

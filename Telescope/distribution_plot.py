@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 import csv 
-
+import math
 D2R=np.pi/180
 R2D=1/D2R
 
@@ -11,7 +11,7 @@ sector_range = 1 #P.A bins #1deg
 sectors = int(view/sector_range)
 
 #Distribution read
-f1 = h5py.File("h5files/1000p_normalAEQ_normalLAMDA_uniformETA_uniformEKIN.h5","r")
+f1 = h5py.File("h5files/10000p_normalAEQ_normalLAMDA_uniformETA_uniformEKIN.h5","r")
 lamda0        = f1["lamda0"][()] #states when noWPI starts
 ppar0         = f1["ppar0"][()]
 pper0         = f1["pper0"][()]
@@ -52,6 +52,90 @@ with open("dstr_data.csv", "w") as file1:
     writer = csv.writer(file1)
     writer.writerow(header)
     writer.writerows(data)
+
+
+
+###################################### PLOT PIE INITIAL DISTRIBUTION ####################################
+
+##BINNING
+lamda_range = 10
+aeq_range = 10
+eta_range = 10
+Ekin_range = 10
+
+
+lamda_sectors = int((max(lamda0)-min(lamda0))*R2D / lamda_range)
+aeq_sectors   = int((max(aeq0)-min(aeq0))*R2D / aeq_range)
+eta_sectors   = int((max(eta0)-min(eta0))*R2D  / eta_range)
+Ekin_sectors  = int((max(Ekin0)-min(Ekin0))*R2D / Ekin_range)
+print(lamda_sectors, aeq_sectors, eta_sectors, Ekin_sectors)
+
+
+def thread1_binning(lamda_range): 
+    lamda_bins = [0 for i in range (lamda_sectors)]
+    for lamda in lamda0: 
+        lamda_bins[math.floor(lamda*R2D/lamda_range)] += 1  
+    return lamda_bins
+
+
+def thread2_binning(aeq_range): 
+    aeq_bins   = [0 for i in range (aeq_sectors)]
+    for aeq in aeq0: 
+        aeq_bins  [math.floor(aeq/aeq_range)] += 1
+    return aeq_bins
+
+
+def thread3_binning(eta_range): 
+    eta_bins   = [0 for i in range (eta_sectors)]
+    for eta in eta0: 
+        eta_bins  [math.floor(eta/eta_range)] += 1
+    return eta_bins
+
+
+def thread4_binning(Ekin_range): 
+    Ekin_bins  = [0 for i in range (Ekin_sectors) ]
+    for Ekin in Ekin0: 
+        Ekin_bins [math.floor(Ekin/Ekin_range)] += 1
+    return Ekin_bins
+
+lamda_bins=thread1_binning(lamda_range)
+aeq_bins=thread2_binning(aeq_range)
+eta_bins=thread3_binning(eta_range)
+Ekin_bins=thread4_binning(Ekin_range)
+
+
+lamda_labels = np.arange(min(lamda0*R2D),max(lamda0*R2D),lamda_range) 
+lamda_labels = [str(round(n,2)) for n in lamda_labels] 
+aeq_labels   = np.arange(min(aeq0*R2D),max(aeq0*R2D),lamda_range)
+aeq_labels   = [str(round(n,2)) for n in aeq_labels] 
+eta_labels   = np.arange(min(eta0*R2D),max(eta0*R2D),lamda_range)
+eta_labels   = [str(round(n,2)) for n in eta_labels] 
+Ekin_labels  = np.arange(min(Ekin0),max(Ekin0),lamda_range)
+Ekin_labels  = [str(round(n,2)) for n in Ekin_labels] 
+
+# Make figure and axes
+fig, axs = plt.subplots(2, 2)
+print(lamda_labels)
+print(lamda_bins)
+print(aeq_labels)
+print(eta_labels)
+print(Ekin_labels)
+# A standard pie plot
+axs[0, 0].pie(lamda_bins, labels=lamda_labels, autopct='%1.1f%%', shadow=True)
+axs[0, 1].pie(aeq_bins, labels=aeq_labels, autopct='%1.1f%%', shadow=True)
+axs[1, 0].pie(eta_bins, labels=eta_labels, autopct='%1.1f%%', shadow=True)
+axs[1, 1].pie(Ekin_bins, labels=Ekin_labels, autopct='%1.1f%%', shadow=True)
+
+fig.savefig("simulation_MM/Distribution_Pie.png",dpi=200)
+
+
+
+"""
+
+
+
+
+
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 
 #Distribution data in one plot
@@ -80,3 +164,4 @@ ax[1,1].set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-ae
 ax[1,1].axhline(y = 90, color ="b", linestyle="dashed")
 fig.savefig("simulation_MM/Distribution_plot.png",dpi=200)
 
+"""

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import h5py
 import numpy as np
 
-f2 = h5py.File("h5files/1000p_both.h5","r")
+f2 = h5py.File("h5files/100p_nowpi_wpi.h5","r")
 saved_id        = f2["saved_id"][()]
 saved_deta_dt   = f2["saved_deta_dt"][()]
 saved_lamda     = f2["saved_lamda"][()]
