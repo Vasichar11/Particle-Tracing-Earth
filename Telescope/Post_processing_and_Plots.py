@@ -13,7 +13,7 @@ D2R=np.pi/180
 R2D=1/D2R
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/100p_nowpi.h5","r")
+f1 = h5py.File("h5files/10000p_nowpi.h5","r")
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
 detected_id    = f1["ODPT.id"][()]
@@ -32,7 +32,7 @@ high_id        = f1["high_id"][()]
 nan_id         = f1["nan_id"][()]
 f1.close()
 
-f2 = h5py.File("h5files/100p_nowpi_wpi.h5","r")
+f2 = h5py.File("h5files/10000p_nowpi_wpi.h5","r")
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
 detected_id_both    = f2["ODPT.id"][()]
@@ -49,6 +49,10 @@ precip_time_both    = f2["precip_time"][()]
 neg_id_both         = f2["neg_id"][()]
 high_id_both        = f2["high_id"][()]
 nan_id_both         = f2["nan_id"][()]
+saved_id            = f2["saved_id"][()]
+saved_deta_dt       = f2["saved_deta_dt"][()]
+saved_lamda         = f2["saved_lamda"][()]
+saved_Ekin          = f2["saved_Ekin"][()]
 f2.close()
 
 ######################### TELESCOPE SPECIFICATION -- BINNING PARAMETERS ###############################
@@ -84,7 +88,7 @@ print(" ",len(high_id),"     ",len(high_id_both),"  particles developed high P.A
 print(" ",len(nan_id),"     ",len(nan_id_both),"  particles developed nan P.A") 
 print("These particles will be excluded from the bining population losing:", ((len(neg_id)+len(neg_id_both)+len(nan_id)+len(nan_id_both)+len(high_id)+len(high_id_both))/population)*100,"% of the population\n")
 #Create directory for plots
-filepath_plots = 'simulation_MM_'+str(population)+"p_"+str(int(t))+"s_"+"with_NaN"
+filepath_plots = 'simulation_MM/'+str(population)+"p_"+str(int(t))+"s"
 if (os.path.exists(filepath_plots)):
     print ("The directory %s already exists" % filepath_plots)
 else:
@@ -126,6 +130,19 @@ ax.ticklabel_format(useOffset=False)    #disable e notation.
 ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
 plt.savefig(filepath_plots+"/Crossing_particles_both.png", dpi=100)
 #"""
+
+########################################## MINIMUM DETA_DT ################################################
+#For every particle in the population the state for minimum deta_dt is saved. 
+fix,ax = plt.subplots()
+cc = ax.scatter(np.rad2deg(saved_lamda),saved_deta_dt,s=1, c=saved_Ekin,cmap='jet')
+ax.axhline(y = 0 ,color="b", linestyle="dashed")
+ax.set(xlabel="latitude[deg]",ylabel="deta_dt")
+cbar=plt.colorbar(cc)
+cbar.ax.set_title('Ekin[keV]')
+plt.savefig(filepath_plots+"/min_deta_dt.png")
+########################################## MINIMUM DETA_DT ################################################
+
+
 ############################################## BINNING ####################################################
 ###BINNING WITH LOCAL PITCH ANGLE: detected_alpha not detected_aeq
 #Formula for aeq is not valid. Do the binning with local P.A since satellite is @0deg aeq~=alpha.
@@ -147,8 +164,8 @@ def thread_noWPI_binning():
             raise Exception("Negative pa")
         if(sector>=sectors or timestep>=timesteps): #Uneeded? Happens when NAN particles are kept in the simulation(jumping steps) or when initializing close to 0 and 180 aeq. WHY?
             raise Exception("noWPI Particle",id,"at time",time,"needs sector",sector,"in timestep",timestep)
-        #if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
-        #    continue #don't include these particles in the binning process
+        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+            continue #don't include these particles in the binning process
         if(pa*R2D==180):
             sector = sectors-1 #to include particles with p.a==180 in the last sector. Is this needed?
         sctr_flux[sector][timestep] += 1              #Number of detected particles in this sector-timestep.
@@ -164,8 +181,8 @@ def thread_both_binning():
             raise Exception("Negative pa")
         if(sector>=sectors or timestep>=timesteps): 
             raise Exception("WPI Particle",id,"with pa",pa*R2D,"at time",time,"needs sector",sector,"in timestep",timestep)
-        #if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
-        #    continue
+        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+            continue
         if(pa*R2D==180):
             sector = sectors-1 
         sctr_flux_both[sector][timestep] += 1              
@@ -182,8 +199,8 @@ def thread_precip_binning():
             raise Exception("Negative pa")
         if(sector>=sectors or timestep>=timesteps): 
             raise Exception("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
-        #if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
-        #    continue
+        if( (id in neg_id) or (id in high_id) or (id in nan_id) or (id in neg_id_both) or (id in high_id_both) or (id in nan_id_both)):
+            continue
         if(pa*R2D==180):
             sector = sectors-1 
         sctr_flux_precip[sector][timestep] += 1           

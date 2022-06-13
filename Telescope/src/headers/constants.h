@@ -43,7 +43,7 @@ const real m_res=1;                             //WPI resonance number (0=Landau
 const real theta0_deg=0.001;            		//Initial wave normal angle.
 const real theta0=theta0_deg*D2R;   
 //Li && ray tracing
-const real pwr = pow(10,-2);                    //From the power we get the intensity of the ray. Poynting flux [W/m 2].
+const real pwr = pow(10,-1);                     //From the power we get the intensity of the ray. Poynting flux [W/m 2].
 const real pulse_duration=0.1;          		//Wave pulse duration in seconds.
 
 //Bell code ONLY. Wave is everywhere0
@@ -57,7 +57,7 @@ const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
 const real telescope_lamda = 0; 
 
 //--Distribution parameters--//
-const int64_t aeq_dstr    = 10000;  	    		    
+const int64_t aeq_dstr    = 50000;  	    		    
 const int64_t lamda_dstr  = 1; //only one latitude per aeq	
 const int64_t eta_dstr    = 1; 	    		    
 const int64_t Ekin_dstr   = 1;  	    		    

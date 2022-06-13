@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv 
 import math
+import threading
 D2R=np.pi/180
 R2D=1/D2R
 
@@ -21,7 +22,7 @@ eta0          = f1["eta0"][()]
 Ekin0         = f1["Ekin0"][()]
 time0         = f1["time0"][()]
 aeq0_bins     = f1["aeq0_bins"][()]
-
+population    = len(lamda0) 
 f1.close()
 #
 #f2 = h5py.File("h5files/5000p_both.h5","r")
@@ -46,7 +47,7 @@ header = ['id', 'aeq0_deg', 'lamda0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'eta0'
 data = []
 id=0
 for aq0,l0,par0,per0,a0,e0,E0 in zip(aeq0, lamda0, ppar0, pper0, alpha0, eta0, Ekin0):
-    data.extend([[id,aq0*R2D,l0*R2D,par0,per0,a0*R2D,e0,Ekin0]])
+    data.extend([[id,aq0*R2D,l0*R2D,par0,per0,a0*R2D,e0,E0]])
     id=id+1 #id is the element's location in the list since the particles were saved like that
 with open("dstr_data.csv", "w") as file1:
     writer = csv.writer(file1)
@@ -58,110 +59,121 @@ with open("dstr_data.csv", "w") as file1:
 ###################################### PLOT PIE INITIAL DISTRIBUTION ####################################
 
 ##BINNING
-lamda_range = 10
-aeq_range = 10
-eta_range = 10
-Ekin_range = 10
+lamda_range   = 5 #Bins of 10 degrees
+lamda_domain  = (max(lamda0)-min(lamda0))*R2D
+lamda_sectors = math.ceil(lamda_domain/lamda_range) #Ceil because we have also the "0" bin.
+lamda_bins    = [0 for i in range (lamda_sectors)]
+lamda_labels  = np.arange(min(lamda0*R2D),max(lamda0*R2D)+lamda_range,lamda_range) #np.arange doesn't include endpoint
+lamda_labels2 = []
+for i in range(len(lamda_labels)-1):
+    temp_tuple = (str(int(lamda_labels[i])),str(int(lamda_labels[i+1])) )
+    lamda_labels2.append(" to ".join(temp_tuple)) #Round labels - make them ranges
+
+aeq_range    = 20
+aeq_domain   = (max(aeq0)-min(aeq0))*R2D
+aeq_sectors  = math.ceil(aeq_domain / aeq_range)
+aeq_bins     = [0 for i in range (aeq_sectors)]
+aeq_labels   = np.arange(min(aeq0*R2D),max(aeq0*R2D),aeq_range)
+aeq_labels   = [str(int(n)) for n in aeq_labels] 
+aeq_labels2  = []
+for i in range(len(aeq_labels)-1):
+    temp_tuple = (str(int(aeq_labels[i])),str(int(aeq_labels[i+1])) )
+    aeq_labels2.append(" to ".join(temp_tuple)) 
+
+eta_range    = 40
+eta_domain   = (max(eta0)-min(eta0))*R2D
+eta_sectors  = math.ceil(eta_domain / eta_range)
+eta_bins     = [0 for i in range (eta_sectors)]
+eta_labels   = np.arange(min(eta0*R2D),max(eta0*R2D),eta_range)
+eta_labels   = [str(int(n)) for n in eta_labels] 
+eta_labels2  = []
+for i in range(len(eta_labels)-1):
+    temp_tuple = (str(int(eta_labels[i])),str(int(eta_labels[i+1])) )
+    eta_labels2.append(" to ".join(temp_tuple)) 
+
+Ekin_range   = 100 #Bins of 100kev 
+Ekin_domain  = (max(Ekin0)-min(Ekin0))
+Ekin_sectors = math.ceil(Ekin_domain / Ekin_range)
+Ekin_bins    = [0 for i in range (Ekin_sectors)]
+Ekin_labels  = np.arange(min(Ekin0),max(Ekin0),Ekin_range)
+Ekin_labels  = [str(int(n)) for n in Ekin_labels] 
+Ekin_labels2 = []
+for i in range(len(Ekin_labels)-1):
+    temp_tuple = (str(int(Ekin_labels[i])),str(int(Ekin_labels[i+1])) )
+    Ekin_labels2.append(" to ".join(temp_tuple)) 
 
 
-lamda_sectors = int((max(lamda0)-min(lamda0))*R2D / lamda_range)
-aeq_sectors   = int((max(aeq0)-min(aeq0))*R2D / aeq_range)
-eta_sectors   = int((max(eta0)-min(eta0))*R2D  / eta_range)
-Ekin_sectors  = int((max(Ekin0)-min(Ekin0))*R2D / Ekin_range)
-print(lamda_sectors, aeq_sectors, eta_sectors, Ekin_sectors)
 
 
-def thread1_binning(lamda_range): 
-    lamda_bins = [0 for i in range (lamda_sectors)]
+def thread1_binning(): 
     for lamda in lamda0: 
-        lamda_bins[math.floor(lamda*R2D/lamda_range)] += 1  
-    return lamda_bins
-
-
-def thread2_binning(aeq_range): 
-    aeq_bins   = [0 for i in range (aeq_sectors)]
+        lamda_bins[math.floor((lamda-min(lamda0))*R2D/lamda_range)] += 1  
+def thread2_binning(): 
     for aeq in aeq0: 
-        aeq_bins  [math.floor(aeq/aeq_range)] += 1
-    return aeq_bins
-
-
-def thread3_binning(eta_range): 
-    eta_bins   = [0 for i in range (eta_sectors)]
+        aeq_bins[math.floor((aeq-min(aeq0))*R2D/aeq_range)] += 1  
+def thread3_binning(): 
     for eta in eta0: 
-        eta_bins  [math.floor(eta/eta_range)] += 1
-    return eta_bins
-
-
-def thread4_binning(Ekin_range): 
-    Ekin_bins  = [0 for i in range (Ekin_sectors) ]
+        eta_bins  [math.floor((eta-min(eta0))*R2D/eta_range)] += 1
+def thread4_binning(): 
     for Ekin in Ekin0: 
-        Ekin_bins [math.floor(Ekin/Ekin_range)] += 1
-    return Ekin_bins
-
-lamda_bins=thread1_binning(lamda_range)
-aeq_bins=thread2_binning(aeq_range)
-eta_bins=thread3_binning(eta_range)
-Ekin_bins=thread4_binning(Ekin_range)
+        Ekin_bins  [math.floor((Ekin-min(Ekin0))/Ekin_range)] += 1
 
 
-lamda_labels = np.arange(min(lamda0*R2D),max(lamda0*R2D),lamda_range) 
-lamda_labels = [str(round(n,2)) for n in lamda_labels] 
-aeq_labels   = np.arange(min(aeq0*R2D),max(aeq0*R2D),lamda_range)
-aeq_labels   = [str(round(n,2)) for n in aeq_labels] 
-eta_labels   = np.arange(min(eta0*R2D),max(eta0*R2D),lamda_range)
-eta_labels   = [str(round(n,2)) for n in eta_labels] 
-Ekin_labels  = np.arange(min(Ekin0),max(Ekin0),lamda_range)
-Ekin_labels  = [str(round(n,2)) for n in Ekin_labels] 
 
-# Make figure and axes
+
+th1 = threading.Thread(target=thread1_binning)
+th2 = threading.Thread(target=thread2_binning)
+th3 = threading.Thread(target=thread3_binning)
+th4 = threading.Thread(target=thread4_binning)
+
+th1.start()
+th2.start()
+th3.start()
+th4.start()
+th1.join()
+th2.join()
+th3.join()
+th4.join()
+
+
 fig, axs = plt.subplots(2, 2)
-print(lamda_labels)
-print(lamda_bins)
-print(aeq_labels)
-print(eta_labels)
-print(Ekin_labels)
-# A standard pie plot
-axs[0, 0].pie(lamda_bins, labels=lamda_labels, autopct='%1.1f%%', shadow=True)
-axs[0, 1].pie(aeq_bins, labels=aeq_labels, autopct='%1.1f%%', shadow=True)
-axs[1, 0].pie(eta_bins, labels=eta_labels, autopct='%1.1f%%', shadow=True)
-axs[1, 1].pie(Ekin_bins, labels=Ekin_labels, autopct='%1.1f%%', shadow=True)
+fig.suptitle('Particle Distribution Pies',weight="bold")
 
-fig.savefig("simulation_MM/Distribution_Pie.png",dpi=200)
+axs[0,0].pie(lamda_bins)
+fig.legend(labels=lamda_labels2,loc="upper left")
+axs[0,0].set(title="lamda dstr(deg)")
 
+axs[0,1].pie(aeq_bins)
+fig.legend(labels=aeq_labels2,loc="upper right")
+axs[0,1].set(title="aeq dstr(deg)")
 
+axs[1,0].pie(eta_bins)
+fig.legend(labels=eta_labels2,loc="lower left")
+axs[1,0].set(title="eta dstr(deg)")
 
-"""
+axs[1,1].pie(Ekin_bins)
+fig.legend(labels=Ekin_labels2,loc="lower right")
+axs[1,1].set(title="Ekin dstr(keV)")
 
-
+fig.savefig("simulation_MM/Distribution_Pies.png",dpi=200)
 
 
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
-
-#Distribution data in one plot
-fig, ax = plt.subplots(2,2)
-
-#Ekin and eta distribution
-ax[0,0].scatter(aeq0*R2D,Ekin0)
-ax[0,0].grid(alpha=.3)
-ax[0,0].set(xlabel="Aeq(deg)",ylabel="Ekin",title="Initial aeq-Ekin of simulated particles")
-ax[1,0].scatter(aeq0*R2D,eta0)
-ax[1,0].grid(alpha=.3)
-ax[1,0].set(xlabel="Aeq(deg)",ylabel="eta",title="Initial aeq-eta of simulated particles")
+fig, ax = plt.subplots(2)
 
 #P.A distribution in bins
 for sec in range(0,sectors):
-    ax[0,1].scatter(sec,aeq0_bins[sec],s=2,alpha=1)
-ax[0,1].grid(alpha=.3)
-ax[0,1].set(xlabel="Sectors",xlim=(0,sectors-1),xticks=np.arange(0,sectors,10),ylabel="dN",title="Aeq0 distribution, sector range "+str(sector_range)+" degrees")
-ax[0,1].set_yscale("log")
-
+    ax[0].scatter(sec,aeq0_bins[sec],s=2,alpha=1)
+ax[0].grid(alpha=.3)
+ax[0].set(xlim=(0,sectors-1),xticks=np.arange(0,sectors,10),ylabel="dN",title="Sector range "+str(sector_range)+" deg")
+ax[0].set_yscale("log")
 
 #P.A and latitude distribution
-ax[1,1].scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
-ax[1,1].grid(alpha=.3)
-ax[1,1].set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",title="Initial lat-aeq of simulated particles",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
-ax[1,1].axhline(y = 90, color ="b", linestyle="dashed")
-fig.savefig("simulation_MM/Distribution_plot.png",dpi=200)
+ax[1].scatter(lamda0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
+ax[1].grid(alpha=.3)
+ax[1].set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
+ax[1].axhline(y = 90, color ="b", linestyle="dashed")
 
-"""
+fig.suptitle('Particle aeq-lamda distributions',weight="bold")
+fig.savefig("simulation_MM/Distribution_Plots.png",dpi=200)
