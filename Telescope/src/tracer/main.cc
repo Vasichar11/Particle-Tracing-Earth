@@ -181,7 +181,7 @@ int main(int argc, char **argv)
 			std::cout<<"\nForked...";
 			//--READ HDF5 files from disk to pass them to the WPI function instead of reading them in every thread - every time - accessing disk frequently --//
 			//read_hdf5() is a function to read HDF5 dataset as vectors. 
-			std::vector <real> lat_int       =   read_hdf5("lat_int",       "h5files/interpolated_ray.h5");
+			std::vector <real> lat_int       =   read_hdf5("lat_int",       "h5files/interpolated_ray_pwr1.000000.h5");
 			const std::vector <real> kx_ray        =   read_hdf5("kx_ray",        "h5files/interpolated_ray.h5");    
 			const std::vector <real> kz_ray        =   read_hdf5("kz_ray",        "h5files/interpolated_ray.h5");   
 			const std::vector <real> kappa_ray     =   read_hdf5("kappa_ray",     "h5files/interpolated_ray.h5");       

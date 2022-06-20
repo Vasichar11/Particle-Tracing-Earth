@@ -210,10 +210,10 @@ for(size_t i=0; i<time_new.size(); i++)
 
     auto start4 = std::chrono::high_resolution_clock::now();
 
-
+    std::cout<<"\n"<<Constants::pwr;
 //------------------------------------------------- WRITE HDF5 FILE ------------------------------------------------- //
 
-    h5::File file_out("h5files/interpolated_ray.h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+    h5::File file_out("h5files/interpolated_ray_pwr" + std::to_string(Constants::pwr) + ".h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
     //Vectors from interpolation
     //h5::DataSet dataset_posx_int =      file_out.createDataSet("posx_int", posx_int);

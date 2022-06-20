@@ -12,7 +12,7 @@ sector_range = 1 #P.A bins #1deg
 sectors = int(view/sector_range)
 
 #Distribution read
-f1 = h5py.File("h5files/10000p_normalAEQ_normalLAMDA_uniformETA_uniformEKIN.h5","r")
+f1 = h5py.File("h5files/50000p_normalAEQ_normalLAMDA_uniformETA_uniformEKIN.h5","r")
 lamda0        = f1["lamda0"][()] #states when noWPI starts
 ppar0         = f1["ppar0"][()]
 pper0         = f1["pper0"][()]
@@ -63,7 +63,7 @@ lamda_range   = 5 #Bins of 10 degrees
 lamda_domain  = (max(lamda0)-min(lamda0))*R2D
 lamda_sectors = math.ceil(lamda_domain/lamda_range) #Ceil because we have also the "0" bin.
 lamda_bins    = [0 for i in range (lamda_sectors)]
-lamda_labels  = np.arange(min(lamda0*R2D),max(lamda0*R2D)+lamda_range,lamda_range) #np.arange doesn't include endpoint
+lamda_labels  = np.arange(min(lamda0*R2D),max(lamda0*R2D)+  lamda_range,lamda_range) #np.arange doesn't include endpoint
 lamda_labels2 = []
 for i in range(len(lamda_labels)-1):
     temp_tuple = (str(int(lamda_labels[i])),str(int(lamda_labels[i+1])) )
@@ -155,7 +155,7 @@ axs[1,1].pie(Ekin_bins)
 fig.legend(labels=Ekin_labels2,loc="lower right")
 axs[1,1].set(title="Ekin dstr(keV)")
 
-fig.savefig("simulation_MM/Distribution_Pies.png",dpi=200)
+fig.savefig("simulation_MM/"+str(population)+"p_Distribution_Pies.png",dpi=200)
 
 
 
@@ -176,4 +176,4 @@ ax[1].set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",ylim=(1,179),xlim=(-90,
 ax[1].axhline(y = 90, color ="b", linestyle="dashed")
 
 fig.suptitle('Particle aeq-lamda distributions',weight="bold")
-fig.savefig("simulation_MM/Distribution_Plots.png",dpi=200)
+fig.savefig("simulation_MM/"+str(population)+"p_Distribution_Plots.png",dpi=200)

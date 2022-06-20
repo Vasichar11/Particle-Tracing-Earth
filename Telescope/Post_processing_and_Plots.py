@@ -13,7 +13,7 @@ D2R=np.pi/180
 R2D=1/D2R
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/10000p_nowpi.h5","r")
+f1 = h5py.File("h5files/50000p_nowpi.h5","r")
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
 detected_id    = f1["ODPT.id"][()]
@@ -32,7 +32,7 @@ high_id        = f1["high_id"][()]
 nan_id         = f1["nan_id"][()]
 f1.close()
 
-f2 = h5py.File("h5files/10000p_nowpi_wpi.h5","r")
+f2 = h5py.File("h5files/50000p_nowpi_wpi.h5","r")
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
 detected_id_both    = f2["ODPT.id"][()]
@@ -56,7 +56,7 @@ saved_Ekin          = f2["saved_Ekin"][()]
 f2.close()
 
 ######################### TELESCOPE SPECIFICATION -- BINNING PARAMETERS ###############################
-time_bin  = 0.5                #seconds to distinquish events(time resolution)
+time_bin  = 2                #seconds to distinquish events(time resolution)
 timesteps = math.ceil(t / time_bin) # t stops at the last timestep (e.g 14.9)
 view = 180
 sector_range = 2 #P.A bins, look directions
