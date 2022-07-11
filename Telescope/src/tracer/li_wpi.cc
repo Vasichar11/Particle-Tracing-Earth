@@ -19,11 +19,6 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
     real eta        =  single.eta00; 
     real Ekin       =  single.Ekin00; 
     real deta_dt;
-    real min_deta_dt = 1000000;
-    real min_lamda   = lamda;
-    real min_Ekin    = Ekin;
-    real min_alpha   = alpha;
-    real min_eta     = eta;
     //real zeta       =  single.zeta00; 
     //real upar       =  single.upar00; 
     //real uper       =  single.uper00;
@@ -31,13 +26,15 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
 //------------------------------------------------- LOOP DECLARATIONS -------------------------------------------------//
     int index;                              //To find minimum difference between latitudes
     int i=0;
-
     real min_lat,max_lat;
     real p_mag,gama,w_h,dwh_ds,kz,Fpar,Fper,Ftheta;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
-    real new_lamda, new_aeq, new_ppar;
-
-
+    real new_lamda, new_aeq, new_ppar, new_Ekin;
+    real min_detadt, mindetadt_time,  max_dEkin, max_dPA, maxdPA_time, maxEkin_time;
+    max_dEkin = max_dPA = 0;
+    maxEkin_time = maxdPA_time = 0;
+    min_detadt = 1; //What would be the minimum detadt value that gives resonance? Only 0?
+    mindetadt_time = 0;
 //----------------------------------------------------- WPI -----------------------------------------------------------//
 
     while(i<Nsteps_wpi)          
@@ -52,7 +49,6 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         f_always(p_mag, gama, w_h, dwh_ds, lamda, ppar, pper); 
         kz = Ftheta = Fpar = Fper = q1 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda, i, lat_int);  //is_in_packet returns "if and where" WPI happens. 
-
         if(index>=0) { //Do only if there's WPI
             f_packet(Fpar, Fper, Ftheta, q1, kz, pper, ppar, eta, aeq, alpha, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
@@ -95,6 +91,10 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         new_lamda = lamda + (Constants::h/6)*(o1+2*o2+2*o3+o4);
         new_aeq   = aeq   + (Constants::h/6)*(q1+2*q2+2*q3+q4);
         new_ppar  = ppar  + (Constants::h/6)*(l1+2*l2+2*l3+l4);
+        new_Ekin   = ((gama-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;
+        //Calculate Energy(???)
+        //p_mag  =  sqrt(ppar*ppar + pper*pper);
+        //(???)Ekin   = std::sqrt( (p_mag*p_mag*Constants::c*Constants::c) + pow((Constants::c*Constants::c*Constants::m_e),2) ) / 1.602176487E-16;
         
 
 
@@ -147,10 +147,24 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
             }
         }
 
+
+        //Save state where particle has the maximum(abs) dEkin or dPA
+        if(std::abs(new_Ekin - Ekin)>max_dEkin)
+        {
+            max_dEkin   = new_Ekin - Ekin; 
+            maxEkin_time = time;
+        }
+        if(std::abs(new_aeq - aeq)>max_dPA)
+        {
+            max_dPA   = new_aeq - aeq*Constants::R2D; 
+            maxdPA_time = time;
+        }
+
         //Runge kutta 4 estimations:
         lamda   = new_lamda;
         aeq     = new_aeq;
         ppar    = new_ppar;
+        Ekin    = new_Ekin;
         //Rest increments for the next step:
         pper   +=  (Constants::h/6)*(m1+2*m2+2*m3+m4);
         eta    +=  (Constants::h/6)*(n1+2*n2+2*n3+n4);
@@ -158,31 +172,29 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         alpha  +=  (Constants::h/6)*(p1+2*p2+2*p3+p4);
         time  = time + Constants::h; 
 
-        //Calculate Energy
-        //p_mag  =  sqrt(ppar*ppar + pper*pper);
-        //Ekin   = std::sqrt( (p_mag*p_mag*Constants::c*Constants::c) + pow((Constants::c*Constants::c*Constants::m_e),2) ) / 1.602176487E-16;
-        Ekin   = ((gama-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;
-        
-        i++;  
 
-        //Save state where particle has the minimum(abs) deta/dt, i.e close to 0
-        if(std::abs(deta_dt)<min_deta_dt)
+
+        if(std::abs(deta_dt)<min_detadt)
         {
-            min_deta_dt = deta_dt;
-            min_lamda   = lamda;
-            min_Ekin    = Ekin;
-            min_alpha   = alpha;
-            min_eta     = eta;
-
+            min_detadt     = std::abs(deta_dt);
+            mindetadt_time = time;
         }
+
+
+        if(lamda*Constants::R2D>=0) //Loop until they reach the equator
+        {
+            break;
+        }
+
+        i++;  
         //std::cout<<"\n\ntime " << time << " Ekin " << Ekin << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
-
-
-
-
     }
-    //Save state where we have minimum deta_dt.
-    single.save_state( p,  min_lamda,  min_deta_dt, min_Ekin, min_eta, min_alpha);
+    
+    
+    
+    //Save state when we have deta_dt close to zero, when we have maximum energy diff, and when we have maximum P.A diff(could be the same state?).
+    single.save_state( p,  min_detadt, mindetadt_time, max_dEkin, maxEkin_time, max_dPA, maxdPA_time);
+
 
 }
 

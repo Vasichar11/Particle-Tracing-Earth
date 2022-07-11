@@ -25,12 +25,12 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6m/m-3
 //--Constant parameters--//
 //particle initials
 const real L_shell=5; 			 				//L_shell of particle. Constant for now.
-const real Ekin0=590;               			//Initial energy keV
+const real Ekin0=1300;               			//Initial energy keV
 const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
 const real aeq0_deg=20;                         //If single values are used.
 const real aeq0=aeq0_deg*D2R;
-const real lamda0_deg=10;                       //If single values are used.
+const real lamda0_deg=-9;                       //If single values are used.
 const real lamda0=lamda0_deg*D2R;
 const real hm = 100*pow(10,3);                  //Minimum allowable mirroring altitude in m.
 const real zm = (Re + hm)/(L_shell*Re);
@@ -57,10 +57,10 @@ const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
 const real telescope_lamda = 0; 
 
 //--Distribution parameters--//
-const int64_t aeq_dstr    = 100000;  	    		    
+const int64_t aeq_dstr    = 180;  	    		    
 const int64_t lamda_dstr  = 1; //only one latitude per aeq	
-const int64_t eta_dstr    = 1; 	    		    
-const int64_t Ekin_dstr   = 1;  	    		    
+const int64_t eta_dstr    = 360; 	    		    
+const int64_t Ekin_dstr   = 8;  	    		    
 
 //P.A dstr
 const real aeq_start_d    = 1;     //Degrees 		  			 				
@@ -72,7 +72,7 @@ const real lamda_end_d    = 90;
 const real eta_start_d    = 1;      
 const real eta_end_d      = 359;   //Issue if eta=0 or 360?				 
 //Ekin dstr
-const real Ekin_start      = 200;   //keV 	 
+const real Ekin_start      = 100;   //keV 	 
 const real Ekin_end        = 800;   		
 
 //Normal dstr arguments

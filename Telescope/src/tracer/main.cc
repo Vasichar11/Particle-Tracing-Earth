@@ -244,7 +244,7 @@ int main(int argc, char **argv)
  
 	//Assign from struct to vectors.
 	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00, Ekin00;
-	std::vector<real> saved_deta_dt,saved_id,saved_lamda, saved_Ekin, saved_alpha, saved_eta;
+	std::vector<real> Dsaved_id, Dsaved_max_dEkin, Dsaved_maxEkin_time, Dsaved_max_dPA, Dsaved_maxdPA_time, Dsaved_min_deta_dt, Dsaved_min_deta_dt_time;
 
 	for(int p=0; p<Population; p++) 
 	{
@@ -285,14 +285,14 @@ int main(int argc, char **argv)
 			nan_id.push_back(dstr[p].id_nan);
 		}
 
-		//Minimum deta_dt state 
- 		saved_deta_dt.push_back(dstr[p].saved_deta_dt);
- 		saved_id.push_back(dstr[p].saved_id);
- 		saved_lamda.push_back(dstr[p].saved_lamda);
- 		saved_Ekin.push_back(dstr[p].saved_Ekin);
- 		saved_eta.push_back(dstr[p].saved_eta);
- 		saved_alpha.push_back(dstr[p].saved_alpha);
-
+		//Saved states 
+		Dsaved_id.push_back(dstr[p].saved_id); 
+		Dsaved_max_dEkin.push_back(dstr[p].saved_max_dEkin); 
+		Dsaved_maxEkin_time.push_back(dstr[p].saved_maxEkin_time); 
+		Dsaved_max_dPA.push_back(dstr[p].saved_max_dPA); 
+		Dsaved_maxdPA_time.push_back(dstr[p].saved_maxdPA_time); 
+		Dsaved_min_deta_dt.push_back(dstr[p].saved_min_detadt); 
+		Dsaved_min_deta_dt_time.push_back(dstr[p].saved_mindetadt_time); 
 	}
 
 
@@ -343,12 +343,13 @@ int main(int argc, char **argv)
 
 
 	//Saved Particles
-	h5::DataSet saved_id_data        = file.createDataSet("saved_id", 	  saved_id);
-	h5::DataSet saved_lamda_data     = file.createDataSet("saved_lamda",  saved_lamda);
-	h5::DataSet saved_deta_dt_data   = file.createDataSet("saved_deta_dt",saved_deta_dt);
-	h5::DataSet saved_Ekin_data      = file.createDataSet("saved_Ekin",   saved_Ekin);
-	h5::DataSet saved_eta_data       = file.createDataSet("saved_eta",    saved_eta);
-	h5::DataSet saved_alpha_data     = file.createDataSet("saved_alpha",  saved_alpha);
+	h5::DataSet saved_id = file.createDataSet("saved_id", 	  Dsaved_id);
+	h5::DataSet saved_max_dEkin = file.createDataSet("saved_max_dEkin", 	  Dsaved_max_dEkin);
+	h5::DataSet saved_maxEkin_time = file.createDataSet("saved_maxEkin_time", 	  Dsaved_maxEkin_time);
+	h5::DataSet saved_max_dPA = file.createDataSet("saved_max_dPA", 	  Dsaved_max_dPA);
+	h5::DataSet saved_maxdPA_time = file.createDataSet("saved_maxdPA_time", 	  Dsaved_maxdPA_time);
+	h5::DataSet saved_mindeta_dt = file.createDataSet("saved_mindeta_dt",Dsaved_min_deta_dt);
+	h5::DataSet saved_mindeta_dt_time = file.createDataSet("saved_mindeta_dt_time",Dsaved_min_deta_dt_time);
 //----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
 return 0; 
 

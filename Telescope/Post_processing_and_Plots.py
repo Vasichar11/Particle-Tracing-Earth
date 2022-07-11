@@ -13,7 +13,7 @@ D2R=np.pi/180
 R2D=1/D2R
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/50000p_nowpi.h5","r")
+f1 = h5py.File("h5files/100000p_nowpi.h5","r")
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
 detected_id    = f1["ODPT.id"][()]
