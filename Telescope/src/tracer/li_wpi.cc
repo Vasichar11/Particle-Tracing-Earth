@@ -6,8 +6,8 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
 //Better read out of function and pass vectors as const reference arguments. That way we don't access disc all the time(?)
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
-    //std::cout.precision(64);                //Output 16 decimal precise
-	//std::cout<<std::scientific;		        //For e notation representation
+    std::cout.precision(8);                //Output 16 decimal precise
+	std::cout<<std::scientific;		        //For e notation representation
 
     //Assign last particle states from nowpi simulation.
     real lamda      =  single.lamda00;
@@ -45,7 +45,6 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         //std::cout<<"\n" << lamda*Constants::R2D << " " << min_lat << "" << max_lat << " "<< lat_int.at(i) << " " << lat_int.back(); 
         //std::cout <<"\n\np_mag "<<p_mag<<"\ndwh_ds "<< dwh_ds<<"\nkz "<< kz  <<"\nFpar "<< Fpar <<"\nFper "<< Fper <<"\nFtheta "<< Ftheta <<"\n";  
 
-        
         f_always(p_mag, gama, w_h, dwh_ds, lamda, ppar, pper); 
         kz = Ftheta = Fpar = Fper = q1 = 0; 
         index = is_in_packet(min_lat, max_lat, lamda, i, lat_int);  //is_in_packet returns "if and where" WPI happens. 
@@ -173,7 +172,6 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         time  = time + Constants::h; 
 
 
-
         if(std::abs(deta_dt)<min_detadt)
         {
             min_detadt     = std::abs(deta_dt);
@@ -187,7 +185,8 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         }
 
         i++;  
-        //std::cout<<"\n\ntime " << time << " Ekin " << Ekin << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
+        //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Constants::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlamda " <<lamda*Constants::R2D<< "\naeq "<<aeq*Constants::R2D <<"\neta "<<eta*Constants::R2D ;
+    
     }
     
     

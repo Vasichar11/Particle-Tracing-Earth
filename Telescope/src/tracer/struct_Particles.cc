@@ -2,11 +2,11 @@
 
 void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real zeta0, real time0)
 {
-	
 	int k;
 	const real Beq0 = Bmag_dipole(0);   		    //Beq isn't always Beq0?
 	real Blam0      = Bmag_dipole(lamda0);
 	real salpha0    = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
+	
 	if(aeq0*Constants::R2D>90)   k=1;			   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
 	else					     k=0;			   //This way we distribute them: half upwards, half downwards.
 	//srand (time(NULL)); //random seed using clock of computer
@@ -14,7 +14,6 @@ void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real z
 	//If aeq<90 then k=0 then alpha0<90 <--> particle is northward, ppar>0
 	//If aeq>90 then k=1 then alpha0>90 <--> particle is southward, ppar<0
 	alpha0 = pow(-1,k)*asin(salpha0)+k*M_PI;       // sinx = a => x=(-1)^k * asin(a) + k*pi
-	
 	
 	//Find momentum from energy.
 	real Ejoule0=1.602176487E-16*Ekin0; //Kev to Joule
