@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Jun 10 14:35:42 2022
+# Make data base, printed on Mon Jul 11 11:04:31 2022
 
 # Variables
 
@@ -24,8 +24,6 @@ DESKTOP_SESSION = gnome-xorg
 .SHELLFLAGS := -c
 # environment
 XDG_SESSION_TYPE = x11
-# environment
-VSCODE_LOG_NATIVE = false
 # environment
 MODULEPATH = /etc/scl/modulefiles:/etc/scl/modulefiles:/usr/share/Modules/modulefiles:/etc/modulefiles:/usr/share/modulefiles
 # automatic
@@ -63,9 +61,7 @@ XDG_DATA_DIRS = /home/bill-centos/.local/share/flatpak/exports/share:/var/lib/fl
 # environment
 DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
-VSCODE_VERBOSE_LOGGING = true
-# environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-0a93e480-8bde-49d2-a176-b1a8fb3201f5.sock
+USER = bill-centos
 # environment
 VSCODE_CWD = /home/bill-centos
 # environment
@@ -77,7 +73,7 @@ PATH = /home/bill-centos/scripts:/usr/sue/bin:/usr/share/Modules/bin:/usr/local/
 # environment
 LSCOLORS = Gxfxcxdxbxegedabagacad
 # environment
-SESSION_MANAGER = local/unix:@/tmp/.ICE-unix/6852,unix/unix:/tmp/.ICE-unix/6852
+SESSION_MANAGER = local/unix:@/tmp/.ICE-unix/6096,unix/unix:/tmp/.ICE-unix/6096
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -86,8 +82,6 @@ MODULES_CMD = /usr/share/Modules/libexec/modulecmd.tcl
 FPATH = /home/bill-centos/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting:/home/bill-centos/.oh-my-zsh/custom/plugins/zsh-autosuggestions:/home/bill-centos/.oh-my-zsh/plugins/git:/home/bill-centos/.oh-my-zsh/functions:/home/bill-centos/.oh-my-zsh/completions:/home/bill-centos/.oh-my-zsh/cache/completions:/usr/share/Modules/init/zsh-functions:/usr/local/share/zsh/site-functions:/usr/share/zsh/site-functions:/usr/share/zsh/5.5.1/functions
 # environment
 XDG_MENU_PREFIX = gnome-
-# environment
-VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # default
@@ -99,15 +93,13 @@ XDG_SESSION_DESKTOP = gnome-xorg
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 720331
+GIO_LAUNCHED_DESKTOP_FILE_PID = 20719
 # automatic
 %F = $(notdir $%)
 # environment
 KDEDIRS = /usr
 # environment
 DISPLAY = :0
-# environment
-VSCODE_PIPE_LOGGING = true
 # environment
 PWD = /home/bill-centos/Documents/Particle-Tracing-Earth
 # default
@@ -125,13 +117,13 @@ VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
 HOME = /home/bill-centos
 # environment
-MODULEPATH_modshare = /usr/share/modulefiles:1:/usr/share/Modules/modulefiles:1:/etc/modulefiles:1
+MODULEPATH_modshare = /usr/share/Modules/modulefiles:2:/etc/modulefiles:2:/usr/share/modulefiles:2
 # environment
-VSCODE_CODE_CACHE_PATH = /home/bill-centos/.config/Code/CachedData/4af164ea3a06f701fe3e89a2bcbb421d2026b68f
+VSCODE_CODE_CACHE_PATH = /home/bill-centos/.config/Code/CachedData/92d25e35d9bf1a6b16f7d0758f25d48ace11e5b9
 # environment
 LOGNAME = bill-centos
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 ZSH = /home/bill-centos/.oh-my-zsh
 # environment
@@ -149,6 +141,7 @@ XDG_VTNR = 2
 # environment
 MAKELEVEL := 0
 # environment
+ 
 SSH_ASKPASS = /usr/libexec/openssh/gnome-ssh-askpass
 # default
 MAKE = $(MAKE_COMMAND)
@@ -183,7 +176,7 @@ TMPDIR = /tmp/bill-centos
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-c323ba59-1.68.0-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-c323ba59-1.69.0-main.sock
 # makefile
 MAKEFLAGS = pqrR
 # environment
@@ -210,8 +203,6 @@ S_COLORS = auto
 MAKEFILES := 
 # automatic
 <F = $(notdir $<)
-# environment
-USER = bill-centos
 # environment
 PAGER = less
 # environment
@@ -241,9 +232,9 @@ LANG = C
 # environment
 which_declare = typeset -f
 # environment
-VSCODE_PID = 720331
+VSCODE_PID = 20719
 # variable set hash-table stats:
-# Load=115/1024=11%, Rehash=0, Collisions=16/137=12%
+# Load=110/1024=11%, Rehash=0, Collisions=15/132=11%
 
 # Pattern-specific Variable Values
 
@@ -251,7 +242,7 @@ VSCODE_PID = 720331
 
 # Directories
 
-# . (device 64770, inode 402696217): 8 files, no impossibilities.
+# . (device 64770, inode 402668530): 8 files, no impossibilities.
 
 # 8 files, no impossibilities in 1 directories.
 
@@ -262,6 +253,7 @@ VSCODE_PID = 720331
 # Files
 
 # Not a target:
+ 
 all:
 #  Command line target.
 #  Implicit rule search has been done.
@@ -305,11 +297,10 @@ GNUmakefile:
 
 # strcache buffers: 1 (0) / strings = 16 / storage = 139 B / avg = 8 B
 # current buf: size = 8162 B / used = 139 B / count = 16 / avg = 8 B
- 
 
 # strcache performance: lookups = 19 / hit rate = 15%
 # hash-table stats:
 # Load=16/8192=0%, Rehash=0, Collisions=1/19=5%
-# Finished Make data base on Fri Jun 10 14:35:42 2022
+# Finished Make data base on Mon Jul 11 11:04:31 2022
 
  

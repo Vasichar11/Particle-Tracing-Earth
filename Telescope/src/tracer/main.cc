@@ -58,13 +58,13 @@ int main(int argc, char **argv)
 	std::cout << "\nPick a particle distribution file from the below\n";
 	for (const auto & entry : std::filesystem::directory_iterator("h5files")) {
         std::cout << entry.path() << std::endl; }
-	std::string str;
+	std::string file_dstr;
 	std::cout<<"\n";
-	std::getline(std::cin, str);
-	std::cout << "\n\nParticle distribution file: "<<str;
+	std::getline(std::cin, file_dstr);
+	std::cout << "\n\nParticle distribution file: "<<file_dstr;
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file(str, h5::File::ReadOnly);
+	h5::File distribution_file(file_dstr, h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
@@ -173,6 +173,8 @@ int main(int argc, char **argv)
 	omp_set_num_threads(20); //Better performance for more threads
 	if(t_wpi>0)//Run if WPI time is more than 0 seconds.
 	{
+
+
 		//---LI---//
 		if(argc==3)//Default implementation. Means there's no option '-bell' as command line argument.
 		{
@@ -181,17 +183,29 @@ int main(int argc, char **argv)
 			std::cout<<"\nForked...";
 			//--READ HDF5 files from disk to pass them to the WPI function instead of reading them in every thread - every time - accessing disk frequently --//
 			//read_hdf5() is a function to read HDF5 dataset as vectors. 
-			std::vector <real> lat_int       =   read_hdf5("lat_int",       "h5files/interpolated_ray_pwr1.000000.h5");
-			const std::vector <real> kx_ray        =   read_hdf5("kx_ray",        "h5files/interpolated_ray.h5");    
-			const std::vector <real> kz_ray        =   read_hdf5("kz_ray",        "h5files/interpolated_ray.h5");   
-			const std::vector <real> kappa_ray     =   read_hdf5("kappa_ray",     "h5files/interpolated_ray.h5");       
-			const std::vector <real> Bzw           =   read_hdf5("Bzw",           "h5files/interpolated_ray.h5");
-			const std::vector <real> Ezw           =   read_hdf5("Ezw",           "h5files/interpolated_ray.h5");
-			const std::vector <real> Bw_ray        =   read_hdf5("Bw_ray",        "h5files/interpolated_ray.h5");    
-			const std::vector <real> w1            =   read_hdf5("w1",            "h5files/interpolated_ray.h5");
-			const std::vector <real> w2            =   read_hdf5("w2",            "h5files/interpolated_ray.h5");
-			const std::vector <real> R1            =   read_hdf5("R1",            "h5files/interpolated_ray.h5");
-			const std::vector <real> R2            =   read_hdf5("R2",            "h5files/interpolated_ray.h5");
+			
+			//std::cout << "\nPick Ray file from the below\n";
+			//for (const auto & entry : std::filesystem::directory_iterator("h5files")) {
+			//	std::cout << entry.path() << std::endl; }
+			std::string file_ray;
+			std::cout<<"\n";
+			//std::getline(std::cin, file_ray);
+			file_ray = "h5files/interpolated_ray_pwr1.000000.h5";
+			std::cout << "\n\nRay file: "<<file_ray;
+			
+
+			std::vector <real> lat_int       	   =   read_hdf5("lat_int",       file_ray);
+			const std::vector <real> kx_ray        =   read_hdf5("kx_ray",        file_ray);    
+			const std::vector <real> kz_ray        =   read_hdf5("kz_ray",        file_ray);   
+			const std::vector <real> kappa_ray     =   read_hdf5("kappa_ray",     file_ray);       
+			const std::vector <real> Bzw           =   read_hdf5("Bzw",           file_ray);
+			const std::vector <real> Ezw           =   read_hdf5("Ezw",           file_ray);
+			const std::vector <real> Bw_ray        =   read_hdf5("Bw_ray",        file_ray);    
+			const std::vector <real> w1            =   read_hdf5("w1",            file_ray);
+			const std::vector <real> w2            =   read_hdf5("w2",            file_ray);
+			const std::vector <real> R1            =   read_hdf5("R1",            file_ray);
+			const std::vector <real> R2            =   read_hdf5("R2",            file_ray);
+
 			//---PARALLELISM Work sharing---//
 			#pragma omp parallel
 			{

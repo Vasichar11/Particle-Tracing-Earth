@@ -4,7 +4,7 @@
 void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, const std::vector <real> &kx_ray, const std::vector <real> &kz_ray, const std::vector <real> &kappa_ray, const std::vector <real> &Bzw, const std::vector <real> &Ezw, const std::vector <real> &Bw_ray, const std::vector <real> &w1, const std::vector <real> &w2, const std::vector <real> &R1, const std::vector <real> &R2, Particles &single, Telescope &ODPT)
 {
 //---------------------------------------------------- READ RAY HDF5 ----------------------------------------------------//
-//Better read out of function and pass vectors as const reference arguments. That way we don't access disk all the time(?)
+//Better read out of function and pass vectors as const reference arguments. That way we don't access disc all the time(?)
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
     //std::cout.precision(64);                //Output 16 decimal precise
 	//std::cout<<std::scientific;		        //For e notation representation
