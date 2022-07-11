@@ -57,9 +57,9 @@ const real puls_dur=int(pulse_duration/h);		//Wave pulse duration in stepsize.
 const real telescope_lamda = 0; 
 
 //--Distribution parameters--//
-const int64_t aeq_dstr    = 360;  	    		    
+const int64_t aeq_dstr    = 36;  	    		    
 const int64_t lamda_dstr  = 1; //only one latitude per aeq	
-const int64_t eta_dstr    = 120; 	    		    
+const int64_t eta_dstr    = 12; 	    		    
 const int64_t Ekin_dstr   = 5;  	    		    
 
 //P.A dstr

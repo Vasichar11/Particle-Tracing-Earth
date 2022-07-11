@@ -40,8 +40,8 @@ void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODP
     real ns_e,w_h, wps_e, ns_O, wc_O, wps_O ,ns_H, wc_H, wps_H, ns_He, wc_He, wps_He;
     real Bmag;
     real k1,k2,k3,k4,l1,l2,l3,l4,m1,m2,m3,m4,n1,n2,n3,n4,o1,o2,o3,o4,p1,p2,p3,p4,q1,q2,q3,q4;
-    //real l1_old,l2_old,l3_old,l4_old,m1_old,m2_old,m3_old,m4_old,n1_old,n2_old,n3_old,n4_old,o1_old,o2_old,o3_old,o4_old,p1_old,p2_old,p3_old,p4_old,q1_old,q2_old,q3_old,q4_old;
-    //l1_old=l2_old=l3_old=l4_old=m1_old=m2_old=m3_old=m4_old=n1_old=n2_old=n3_old=n4_old=o1_old=o2_old=o3_old=o4_old=p1_old=p2_old=p3_old=p4_old=q1_old=q2_old=q3_old=q4_old=0;
+    real l1_old,l2_old,l3_old,l4_old,m1_old,m2_old,m3_old,m4_old,n1_old,n2_old,n3_old,n4_old,o1_old,o2_old,o3_old,o4_old,p1_old,p2_old,p3_old,p4_old,q1_old,q2_old,q3_old,q4_old;
+    l1_old=l2_old=l3_old=l4_old=m1_old=m2_old=m3_old=m4_old=n1_old=n2_old=n3_old=n4_old=o1_old=o2_old=o3_old=o4_old=p1_old=p2_old=p3_old=p4_old=q1_old=q2_old=q3_old=q4_old=0;
     real gama,w1,w2,R1,R2,beta,wtau_sq;
     real S,D,P,R,L,mu,dwh_ds,kappa,kx,kz;
     //real vres, Eres;
@@ -151,12 +151,12 @@ void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODP
         // Old slope values kept in memory to encounter the NAN case
         // isnan(mu) --> step once more using old slopes to reach to a valid state
         // i.e when NAN, step of h becomes 2*h, 3*h ... until valid.
-        //l1_old = l1 ; l2_old = l2 ; l3_old = l3 ; l4_old = l4 ;  
-        //m1_old = m1 ; m2_old = m2 ; m3_old = m3 ; m4_old = m4 ;  
-        //n1_old = n1 ; n2_old = n2 ; n3_old = n3 ; n4_old = n4 ;  
-        //o1_old = o1 ; o2_old = o2 ; o3_old = o3 ; o4_old = o4 ;  
-        //p1_old = p1 ; p2_old = p2 ; p3_old = p3 ; p4_old = p4 ;  
-        //q1_old = q1 ; q2_old = q2 ; q3_old = q3 ; q4_old = q4 ; 
+        l1_old = l1 ; l2_old = l2 ; l3_old = l3 ; l4_old = l4 ;  
+        m1_old = m1 ; m2_old = m2 ; m3_old = m3 ; m4_old = m4 ;  
+        n1_old = n1 ; n2_old = n2 ; n3_old = n3 ; n4_old = n4 ;  
+        o1_old = o1 ; o2_old = o2 ; o3_old = o3 ; o4_old = o4 ;  
+        p1_old = p1 ; p2_old = p2 ; p3_old = p3 ; p4_old = p4 ;  
+        q1_old = q1 ; q2_old = q2 ; q3_old = q3 ; q4_old = q4 ; 
 
         //Runge kutta 4 first estimations:
         //First make the next step increments(lamda,aeq,ppar) that are needed to characterize crossing-validity-trapping. 

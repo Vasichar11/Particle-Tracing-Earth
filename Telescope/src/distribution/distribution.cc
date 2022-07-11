@@ -150,8 +150,8 @@ int main(int argc, char **argv)
 			if(argv[2]==string_evenly)   
 			{
 				//Step for linspace(start,end,aeq_dstr) 
-				const real lamda_step_d	  = (Constants::lamda_end_d - Constants::lamda_start_d)/(Constants::lamda_dstr-1);						
-				lamda0 = (Constants::lamda_start_d + lamda_count*lamda_step_d) * Constants::D2R;	  					
+				const real lamda_step_d	  = (lamda_end_d - lamda_start_d)/(Constants::lamda_dstr-1);						
+				lamda0 = (lamda_start_d + lamda_count*lamda_step_d) * Constants::D2R;	  					
 			}
 			//UNIFORMLY. Goal is: randomness
 			else if (argv[2]==string_uniform)   			
