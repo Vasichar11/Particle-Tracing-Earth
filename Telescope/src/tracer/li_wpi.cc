@@ -193,7 +193,7 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
     
     
     //Save state when we have deta_dt close to zero, when we have maximum energy diff, and when we have maximum P.A diff(could be the same state?).
-    single.save_state( p,  min_detadt, mindetadt_time, max_dEkin, maxEkin_time, max_dPA, maxdPA_time);
+    single.save_state( p, max_dEkin, maxEkin_time, max_dPA, maxdPA_time);
 
 
 }

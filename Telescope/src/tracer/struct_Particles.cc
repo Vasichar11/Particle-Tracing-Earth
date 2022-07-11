@@ -86,15 +86,15 @@ void Particles::nan_state(int id)
 //Member function to save particle states(if needed).
 //If need many values use vectors.
 
-void Particles::save_state( int p,  real min_detadt, real mindetadt_time, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time)
+void Particles::save_state( int p, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time)
 {
 	saved_id = p;
 	saved_max_dEkin = max_dEkin;
 	saved_maxEkin_time = maxEkin_time;
 	saved_max_dPA = max_dPA;
 	saved_maxdPA_time = maxdPA_time;
-	saved_min_detadt = min_detadt;
-	saved_mindetadt_time = mindetadt_time;
+	//saved_min_detadt = min_detadt;
+	//saved_mindetadt_time = mindetadt_time;
 	//this->id.push_back(id);
 	//this->lamda.push_back(new_lamda);      				
 	//this->ppar.push_back(new_ppar);		 

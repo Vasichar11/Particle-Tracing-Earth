@@ -21,7 +21,8 @@ struct Particles
 	void high_state(int id);
 	void nan_state(int id);
 	//If vectors for save_state are needed;
-	void save_state( int p,  real min_detadt, real mindetadt_time, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time);
+	//void save_state( int p,  real min_detadt, real mindetadt_time, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time);
+	void save_state( int p, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time);
 	
 
 	void lamda_domain(real aeq0);
