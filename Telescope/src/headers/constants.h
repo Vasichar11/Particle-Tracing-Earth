@@ -25,7 +25,7 @@ const real ne_0=3*pow(10,6);                  	// 10/cm-3 => 10*10^6m/m-3
 
 //--Constant parameters--//
 //particle initials
-const real L_shell=5; 			 				//L_shell of particle. Constant for now.
+const real L_shell=2; 			 				//L_shell of particle. Constant for now.
 const real Ekin0=590;               			//Initial energy keV
 const real eta0_deg=30;	   		  				//Initial particle phase (angle between Vperp and BwR).
 const real eta0=eta0_deg*D2R;
@@ -60,8 +60,8 @@ const real telescope_lamda = 0;
 //--Distribution parameters--//
 const int64_t aeq_dstr    = 10;  	    		    
 const int64_t lamda_dstr  = 1; //only one latitude per aeq	
-const int64_t eta_dstr    = 10; 	    		    
-const int64_t Ekin_dstr   = 10;  	    		    
+const int64_t eta_dstr    = 1; 	    		    
+const int64_t Ekin_dstr   = 1;  	    		    
 
 //P.A dstr
 const real aeq_start_d    = 1;     //Degrees 		  			 				
