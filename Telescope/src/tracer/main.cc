@@ -32,6 +32,7 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {
+	std::cout<<"Loss for Lshell"<<Constants::L_shell<<" is " << Constants::alpha_lc*Constants::R2D;
 	//Simulation time and steps, read from command line.
 	real t_nowpi = atoi(argv[1]);    //No WPI time from command line 
 	real t_wpi   = atoi(argv[2]);	 //WPI time from command line
