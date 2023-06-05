@@ -13,7 +13,7 @@ D2R=np.pi/180
 R2D=1/D2R
 ############################################# READ HDF5 ###################################################
 #noWPI read
-f1 = h5py.File("h5files/100000p_nowpi.h5","r")
+f1 = h5py.File("h5files/1p_nowpi.h5","r")
 detected_lamda = f1["ODPT.lamda"][()]
 detected_time  = f1["ODPT.time"][()]
 detected_id    = f1["ODPT.id"][()]
@@ -31,7 +31,7 @@ neg_id         = f1["neg_id"][()]
 high_id        = f1["high_id"][()]
 nan_id         = f1["nan_id"][()]
 f1.close()
-
+"""
 f2 = h5py.File("h5files/50000p_nowpi_wpi.h5","r")
 detected_lamda_both = f2["ODPT.lamda"][()]
 detected_time_both  = f2["ODPT.time"][()]
@@ -87,7 +87,7 @@ print(" ",len(neg_id),"     ",len(neg_id_both),"particles developed negative P.A
 print(" ",len(high_id),"     ",len(high_id_both),"  particles developed high P.A")
 print(" ",len(nan_id),"     ",len(nan_id_both),"  particles developed nan P.A") 
 print("These particles will be excluded from the bining population losing:", ((len(neg_id)+len(neg_id_both)+len(nan_id)+len(nan_id_both)+len(high_id)+len(high_id_both))/population)*100,"% of the population\n")
-#Create directory for plots
+#Create directory for plots"""
 filepath_plots = 'simulation_MM/'+str(population)+"p_"+str(int(t))+"s"
 if (os.path.exists(filepath_plots)):
     print ("The directory %s already exists" % filepath_plots)
@@ -98,7 +98,8 @@ else:
         print(error)
         print ("Creation of the directory %s failed, " % filepath_plots)
     else:
-        print ("Successfully created the directory %s" % filepath_plots)  
+        print ("Successfully created the directory %s" % filepath_plots)
+"""
 ########################################### FONTS AND COLORS #############################################
 font = {'family': 'serif',
         'color':  'blue',
@@ -106,12 +107,12 @@ font = {'family': 'serif',
         'size': 12}
 colors = []
 for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or sectors.
-    colors.append('#%06X' % randint(0, 0xFFFFFF))
+    colors.append('#%06X' % randint(0, 0xFFFFFF))"""
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
 #noWPI
 #"""
 fig, ax = plt.subplots()
-ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=0.3, cmap="viridis")
+ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=10, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
 plt.title("$Population$: " +str(population)+"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")

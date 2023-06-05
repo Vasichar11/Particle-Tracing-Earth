@@ -255,9 +255,6 @@ int main(int argc, char **argv)
 		//-------------------------------------------- DISTRIBUTE EKIN -------------------------------------------------//
 			
 
-
-
-
 					//Initialize particle.
 					dstr[p].initialize(eta0,aeq0,lamda0,Ekin0,0,0);
 					std::cout<<"\nParticle"<<p<<" aeq0: "<< dstr[p].aeq0*Constants::R2D <<", lamda0: "<< dstr[p].lamda0*Constants::R2D<<" eta0: "<< dstr[p].eta0*Constants::R2D <<", Ekin0: "<< dstr[p].Ekin0;	

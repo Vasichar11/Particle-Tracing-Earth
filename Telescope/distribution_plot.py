@@ -12,7 +12,7 @@ sector_range = 1 #P.A bins #1deg
 sectors = int(view/sector_range)
 
 #Distribution read
-f1 = h5py.File("h5files/1000p_evenlyAEQ_constantLAMDA_evenlyETA_evenlyEKIN.h5","r")
+f1 = h5py.File("h5files/10000p_normalAEQ_normalLAMDA_constantETA_constantEKIN.h5","r")
 lamda0        = f1["lamda0"][()] #states when noWPI starts
 ppar0         = f1["ppar0"][()]
 pper0         = f1["pper0"][()]
@@ -152,7 +152,7 @@ fig.legend(labels=eta_labels2,loc="lower left")
 axs[1,0].set(title="eta dstr(deg)")
 
 axs[1,1].pie(Ekin_bins)
-fig.legend(labels=Ekin_labels2,loc="lower right")
+fig.legend(labels=Ekin_labels2,loc="lower right", prop={'size': 8})
 axs[1,1].set(title="Ekin dstr(keV)")
 
 fig.savefig("simulation_MM/"+str(population)+"p_Distribution_Pies.png",dpi=200)
