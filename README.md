@@ -1,10 +1,7 @@
 # Particle-Tracing-Earth
+Stelios Tourgaidis code py to c++ conversion.
 
-The single particle simulation for the wave-particle interaction simulation was made in Python and from Stelios Tourgaidis.
-It was converted first in C++ to increase the performance and to parallelize the execution in a hybrid way (with OpenMP and MPI).
-
-To understand better the code structure, a flow diagram that also leads to the corresponding GitHub modules has been created.
-Download and open in browser the following pdf documents to use their hyperlinks 
+Download Flow-Charts pdfs and open them in browser to use the hyperlinks
 
 [code.pdf](https://github.com/Vasichar11/Particle-Tracing-Earth/blob/main/More/code.drawio.pdf)
 

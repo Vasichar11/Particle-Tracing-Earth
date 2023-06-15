@@ -1,12 +1,6 @@
-**/obj
-**/simulation_MM*
-**/h5files
-**/*.exe
-**/*.mp4
-**/*.png
-**/*.out
-**/*.h5
-**/*.csv#
+obj
+output
+*.exe
 
 
 
