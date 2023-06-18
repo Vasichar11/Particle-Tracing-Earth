@@ -32,13 +32,13 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {
-	std::cout<<"Loss for Lshell"<<Constants::L_shell<<" is " << Constants::alpha_lc*Constants::R2D;
+	std::cout<<"Loss for Lshell"<<Particle_init::L_shell<<" is " << Particle_init::alpha_lc*Universal::R2D;
 	//Simulation time and steps, read from command line.
 	real t_nowpi = atoi(argv[1]);    //No WPI time from command line 
 	real t_wpi   = atoi(argv[2]);	 //WPI time from command line
 	real t = t_nowpi + t_wpi;  //Total simulation time
-	int64_t Nsteps_wpi  = t_wpi/Constants::h; 	 //WPI step count
-	int64_t Nsteps_nowpi= t_nowpi/Constants::h; //noWPI step count
+	int64_t Nsteps_wpi  = t_wpi/Simulation::h; 	 //WPI step count
+	int64_t Nsteps_nowpi= t_nowpi/Simulation::h; //noWPI step count
 	
 	std::string bell = "-bell";
 	/*//---ARGV ERROR---//
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
 
 
 	//Object for Particle Telescope.		
-	Telescope ODPT(Constants::telescope_lamda, Constants::L_shell);	
+	Telescope ODPT(Satellite::telescope_lamda, Particle_init::L_shell);	
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 		//---BELL---//
 		else if(argc==4 && argv[3]==bell)
 		{
-			std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation(Bell).\nWave magnitude(T): "<<Constants::By_wave<<std::endl;
+			std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation(Bell).\nWave magnitude(T): "<<Wave_init::By_wave<<std::endl;
 			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Population*0.036/60) * t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
 			//---PARALLELISM Work sharing---//
@@ -312,7 +312,7 @@ int main(int argc, char **argv)
 
 
 	//File name based on the argument variables
-	std::string  save_file = "output/files/" + std::to_string(Constants::population) + "p";  
+	std::string  save_file = "output/files/" + std::to_string(Distribution::population) + "p";  
 	if  (atoi(argv[1])>0) save_file += std::string("_nowpi"); 
 	if 	(atoi(argv[2])>0) save_file += std::string("_wpi");
 	save_file = save_file + ".h5";

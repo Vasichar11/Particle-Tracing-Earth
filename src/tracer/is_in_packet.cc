@@ -9,12 +9,12 @@ int is_in_packet(const real min_lat, const real max_lat, const real lamda_tmp, c
 	real diff, min_diff;                                  //To find minimum difference between latitudes
 
 
-    if(min_lat < (lamda_tmp*Constants::R2D) && (lamda_tmp*Constants::R2D) < max_lat)
+    if(min_lat < (lamda_tmp*Universal::R2D) && (lamda_tmp*Universal::R2D) < max_lat)
     {       
 		min_diff = 100 ; 
-		for(ptr = wave_lat.begin() + i; ptr < wave_lat.begin() + (Constants::puls_dur + i); ptr++)
+		for(ptr = wave_lat.begin() + i; ptr < wave_lat.begin() + (Simulation::puls_dur + i); ptr++)
         {
-       	    diff = std::abs(*ptr - lamda_tmp*Constants::R2D) ;        //Return abs of difference
+       	    diff = std::abs(*ptr - lamda_tmp*Universal::R2D) ;        //Return abs of difference
        	    if(diff < min_diff) 
        	    {          
 			    requested_index = ptr; //Current requested index
@@ -22,7 +22,7 @@ int is_in_packet(const real min_lat, const real max_lat, const real lamda_tmp, c
        	    }
        	}
 	index = distance(wave_lat.begin(), requested_index); //Final requested index
-	//std::cout<<"\nindex "<<int(index-Constants::puls_dur)<<"\n";
+	//std::cout<<"\nindex "<<int(index-Simulation::puls_dur)<<"\n";
 	}
 	else
 	{

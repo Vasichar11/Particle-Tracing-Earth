@@ -7,7 +7,7 @@ void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real z
 	real Blam0      = Bmag_dipole(lamda0);
 	real salpha0    = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
 	
-	if(aeq0*Constants::R2D>90)   k=1;			   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
+	if(aeq0*Universal::R2D>90)   k=1;			   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
 	else					     k=0;			   //This way we distribute them: half upwards, half downwards.
 	//srand (time(NULL)); //random seed using clock of computer
 	//int k = rand() % 2; //rand number, 0 or 1.
@@ -17,9 +17,9 @@ void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real z
 	
 	//Find momentum from energy.
 	real Ejoule0=1.602176487E-16*Ekin0; //Kev to Joule
-	real gama0=(Ejoule0/(Constants::m_e*pow(Constants::c,2))) + 1;
-	real speed0=sqrt( 1 - (1/pow(gama0,2)) ) * Constants::c;
-	std::cout<<"\nBouncing period estimation: "<< (4*Constants::L_shell*Constants::Re/speed0)*(1.3 - 0.5*sin(aeq0)); //[Orlova1,Shprits2,2011]
+	real gama0=(Ejoule0/(Universal::m_e*pow(Universal::c,2))) + 1;
+	real speed0=sqrt( 1 - (1/pow(gama0,2)) ) * Universal::c;
+	//std::cout<<"\nBouncing period estimation: "<< (4*Particle_init::L_shell*Universal::Re/speed0)*(1.3 - 0.5*sin(aeq0)); //[Orlova1,Shprits2,2011]
 
 	//Assign initial state.
 	this->lamda0 = lamda0;
@@ -28,11 +28,11 @@ void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real z
 	this->alpha0 = alpha0;
 	this->upar0  = speed0*cos(alpha0) ;
 	this->uper0  = speed0*sin(alpha0) ;
-	this->pper0  = gama0*Constants::m_e*uper0 ;
-	this->ppar0  = gama0*Constants::m_e*upar0 ;
+	this->pper0  = gama0*Universal::m_e*uper0 ;
+	this->ppar0  = gama0*Universal::m_e*upar0 ;
 	this->zeta0  = zeta0 ;
-	this->M_adiabatic0 = (pper0*pper0) / (2*Constants::m_e*Blam0) ;	
-	this->Ekin0  = ((gama0-1)*Constants::m_e*Constants::c*Constants::c)*6.2415e15;	 //Joule back to Kev
+	this->M_adiabatic0 = (pper0*pper0) / (2*Universal::m_e*Blam0) ;	
+	this->Ekin0  = ((gama0-1)*Universal::m_e*Universal::c*Universal::c)*6.2415e15;	 //Joule back to Kev
 	this->time0  = time0 ;
 	//Particle is trapped, and won't escape until conditions are met.
 	this->trapped  = true;	

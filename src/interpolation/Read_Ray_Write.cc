@@ -109,9 +109,9 @@ int main()
     
     std::vector <real> time_new {0} ;                                   //Initialize to use .back() in first iteration.
     int j=1;
-    while(time_new.back()+(Constants::h) < last_timestep - Constants::h) //Arrange, 0 to last_timestep with stepsize h
+    while(time_new.back()+(Simulation::h) < last_timestep - Simulation::h) //Arrange, 0 to last_timestep with stepsize h
     {                                //Why last_timestep - h ??
-        time_new.push_back(0+j*Constants::h); 
+        time_new.push_back(0+j*Simulation::h); 
         j++ ;
     }  
 
@@ -181,30 +181,30 @@ int main()
         //Calculate more parameters #In[6]:
         mu_ray.push_back( sqrt(nx_int.at(i)*nx_int.at(i)+ny_int.at(i)*ny_int.at(i)+nz_int.at(i)*nz_int.at(i)) );
         mu_sq.push_back(  mu_ray.at(i)*mu_ray.at(i) );
-        spsi.push_back( sin(psi_int.at(i)*Constants::D2R) );
-        cpsi.push_back( cos(psi_int.at(i)*Constants::D2R) );
-        kx_ray.push_back( (nx_int.at(i)*w_int.at(i)) / Constants::c );
-        kz_ray.push_back( (nz_int.at(i)*w_int.at(i)) / Constants::c );
-        kappa_ray.push_back( (mu_ray.at(i)*w_int.at(i)) / Constants::c );
+        spsi.push_back( sin(psi_int.at(i)*Universal::D2R) );
+        cpsi.push_back( cos(psi_int.at(i)*Universal::D2R) );
+        kx_ray.push_back( (nx_int.at(i)*w_int.at(i)) / Universal::c );
+        kz_ray.push_back( (nz_int.at(i)*w_int.at(i)) / Universal::c );
+        kappa_ray.push_back( (mu_ray.at(i)*w_int.at(i)) / Universal::c );
         X_stix.push_back( P_stix_int.at(i)/(P_stix_int.at(i)-mu_sq.at(i)*spsi.at(i)*spsi.at(i)) );
         rho1.push_back( ((mu_sq.at(i)-S_stix_int.at(i))*mu_sq.at(i)*spsi.at(i)*cpsi.at(i)) / (D_stix_int.at(i)*(mu_sq.at(i)*spsi.at(i)*spsi.at(i)-P_stix_int.at(i))) );
         rho2.push_back( (mu_sq.at(i)-S_stix_int.at(i)) / D_stix_int.at(i) );
 
         //Define whistler waves #In[7]:R1
-        Byw_sq.push_back( ((2.0*Constants::mu_0/Constants::c)*((Constants::pwr*damp_int.at(i))*X_stix.at(i)*X_stix.at(i)*rho2.at(i)*rho2.at(i)*std::abs(cos(psi_int.at(i)*Constants::D2R)))
-                        /sqrt(pow((tan(psi_int.at(i)*Constants::D2R)-rho1.at(i)*rho2.at(i)*X_stix.at(i)),2) + pow((1+rho2.at(i)*rho2.at(i)*X_stix.at(i)),2))) );
-        fac1.push_back( (P_stix_int.at(i)-mu_sq.at(i)*pow(sin(psi_int.at(i)*Constants::D2R),2)) );
+        Byw_sq.push_back( ((2.0*Universal::mu_0/Universal::c)*((Wave_init::pwr*damp_int.at(i))*X_stix.at(i)*X_stix.at(i)*rho2.at(i)*rho2.at(i)*std::abs(cos(psi_int.at(i)*Universal::D2R)))
+                        /sqrt(pow((tan(psi_int.at(i)*Universal::D2R)-rho1.at(i)*rho2.at(i)*X_stix.at(i)),2) + pow((1+rho2.at(i)*rho2.at(i)*X_stix.at(i)),2))) );
+        fac1.push_back( (P_stix_int.at(i)-mu_sq.at(i)*pow(sin(psi_int.at(i)*Universal::D2R),2)) );
         Byw.push_back( sqrt(Byw_sq.at(i)) );
         Bxw.push_back( std::abs((-(D_stix_int.at(i)*fac1.at(i))/(P_stix_int.at(i)*(S_stix_int.at(i)-mu_sq.at(i))))*Byw.at(i)) );
-        Bzw.push_back( std::abs(((D_stix_int.at(i)*sin(psi_int.at(i)*Constants::D2R)*fac1.at(i))/(P_stix_int.at(i)*cos(psi_int.at(i)*Constants::D2R)*(S_stix_int.at(i)-mu_sq.at(i))))*Byw.at(i)) );
-        Exw.push_back( std::abs(((Constants::c*fac1.at(i))/(mu_ray.at(i)*P_stix_int.at(i)*cos(psi_int.at(i)*Constants::D2R))*Byw.at(i))) );
-        Eyw.push_back( std::abs(((D_stix_int.at(i)*Constants::c*fac1.at(i))/(mu_ray.at(i)*P_stix_int.at(i)*cos(psi_int.at(i)*Constants::D2R)*(pow(mu_ray.at(i),2)-S_stix_int.at(i))))*Byw.at(i)) );
-        Ezw.push_back( std::abs((-(Constants::c*mu_ray.at(i)*sin(psi_int.at(i)))/P_stix_int.at(i))*Byw.at(i)) );
+        Bzw.push_back( std::abs(((D_stix_int.at(i)*sin(psi_int.at(i)*Universal::D2R)*fac1.at(i))/(P_stix_int.at(i)*cos(psi_int.at(i)*Universal::D2R)*(S_stix_int.at(i)-mu_sq.at(i))))*Byw.at(i)) );
+        Exw.push_back( std::abs(((Universal::c*fac1.at(i))/(mu_ray.at(i)*P_stix_int.at(i)*cos(psi_int.at(i)*Universal::D2R))*Byw.at(i))) );
+        Eyw.push_back( std::abs(((D_stix_int.at(i)*Universal::c*fac1.at(i))/(mu_ray.at(i)*P_stix_int.at(i)*cos(psi_int.at(i)*Universal::D2R)*(pow(mu_ray.at(i),2)-S_stix_int.at(i))))*Byw.at(i)) );
+        Ezw.push_back( std::abs((-(Universal::c*mu_ray.at(i)*sin(psi_int.at(i)))/P_stix_int.at(i))*Byw.at(i)) );
         //std::cout<<"\n"<<Byw.at(i);
         Bw_ray.push_back( sqrt(Bxw.at(i)*Bxw.at(i) + Byw.at(i)*Bzw.at(i) + Byw.at(i)*Bzw.at(i)) );
         //From Bell parameters
-        w1.push_back( (Constants::q_e/(2*Constants::m_e))*(Bxw.at(i)+Byw.at(i)) );
-        w2.push_back( (Constants::q_e/(2*Constants::m_e))*(Bxw.at(i)-Byw.at(i)) );
+        w1.push_back( (Universal::q_e/(2*Universal::m_e))*(Bxw.at(i)+Byw.at(i)) );
+        w2.push_back( (Universal::q_e/(2*Universal::m_e))*(Bxw.at(i)-Byw.at(i)) );
         R1.push_back( (Exw.at(i)+Eyw.at(i))/(Bxw.at(i)+Byw.at(i)) );   
         R2.push_back( (Exw.at(i)-Eyw.at(i))/(Bxw.at(i)-Byw.at(i)) );
     }
@@ -218,7 +218,7 @@ int main()
 
 //------------------------------------------------- WRITE HDF5 FILE ------------------------------------------------- //
 
-    h5::File file_out("output/files/interpolated_ray_pwr" + std::to_string(Constants::pwr) + ".h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+    h5::File file_out("output/files/interpolated_ray_pwr" + std::to_string(Wave_init::pwr) + ".h5", h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
     //Vectors from interpolation
     //h5::DataSet dataset_posx_int =      file_out.createDataSet("posx_int", posx_int);
@@ -288,7 +288,7 @@ int main()
     h5::DataSet dataset_R2 =            file_out.createDataSet("R2", R2 );
     h5::DataSet dataset_Byw =           file_out.createDataSet("Byw", Byw);
     h5::DataSet dataset_time =          file_out.createDataSet("time", time_new );
-    h5::DataSet dataset_pwr =           file_out.createDataSet("pwr", Constants::pwr);
+    h5::DataSet dataset_pwr =           file_out.createDataSet("pwr", Wave_init::pwr);
  
 
 //----------------------------------------------- WRITE HDF5 FILE: DONE -------------------------------------------- //

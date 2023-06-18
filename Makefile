@@ -44,7 +44,7 @@ OBJ_DSTR := $(patsubst ${SRCDIR_DSTR}/%.cc, ${OBJDIR_DSTR}/%.o, $(SRC_DSTR))
 
 #Default Rule
 default: directories dstr ray tracer
-	@printf "\nEverything is builded\n"
+	@printf "\nEverything is Built\n"
 
 debug: default
 	@printf "\nEverything is built in DEBUG mode\n"
@@ -53,13 +53,13 @@ debug: default
 
 ray: ${OBJ_INTERP}
 	${LNK} -o $@ ${OBJ_INTERP} ${INC_H5} ${CPPFLAGS} 
-	@printf "\nBuilded to interpolate ray\n\n" ;
+	@printf "\nBuilt to interpolate ray\n\n" ;
 dstr: ${OBJ_DSTR}
 	${LNK} -o $@ ${OBJ_DSTR} ${INC_H5} ${CPPFLAGS} 
-	@printf "\nBuilded to distribute particles\n\n" ;
+	@printf "\nBuilt to distribute particles\n\n" ;
 tracer: ${OBJ_TRACER}
 	${LNK} -o $@ ${OBJ_TRACER} ${INC_H5} ${CPPFLAGS}
-	@printf "\nBuilded to trace particles\n" ;
+	@printf "\nBuilt to trace particles\n" ;
 	
 #Phony Targets(Just recipes)
 directories:
