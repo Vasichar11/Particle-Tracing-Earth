@@ -1,6 +1,7 @@
 obj
 output
 *.exe
-
+.vscode
+**/__pycache__/
 
 
