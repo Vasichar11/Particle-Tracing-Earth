@@ -14,16 +14,16 @@ R2D=1/D2R
 ############################################# READ HDF5 ###################################################
 #noWPI read
 f1 = h5py.File("output/files/1p_nowpi.h5","r")
-detected_lamda = f1["ODPT.lamda"][()]
+detected_latitude = f1["ODPT.latitude"][()]
 detected_time  = f1["ODPT.time"][()]
 detected_id    = f1["ODPT.id"][()]
 detected_alpha = f1["ODPT.alpha"][()]
 detected_aeq   = f1["ODPT.aeq"][()]
-telescope_lamda= f1["ODPT.latitude"][()]
+telescope_latitude= f1["ODPT.latitude"][()]
 population     = f1["population"][()]
 t              = f1["t"][()]
 precip_id      = f1["precip_id"][()]
-precip_lamda   = f1["precip_lamda"][()]
+precip_latitude   = f1["precip_latitude"][()]
 precip_aeq     = f1["precip_aeq"][()]
 precip_alpha   = f1["precip_alpha"][()]
 precip_time    = f1["precip_time"][()] 
@@ -33,16 +33,16 @@ nan_id         = f1["nan_id"][()]
 f1.close()
 """
 f2 = h5py.File("output/files/50000p_nowpi_wpi.h5","r")
-detected_lamda_both = f2["ODPT.lamda"][()]
+detected_latitude_both = f2["ODPT.latitude"][()]
 detected_time_both  = f2["ODPT.time"][()]
 detected_id_both    = f2["ODPT.id"][()]
 detected_alpha_both = f2["ODPT.alpha"][()]
 detected_aeq_both   = f2["ODPT.aeq"][()]
-telescope_lamda_both= f2["ODPT.latitude"][()]
+telescope_latitude_both= f2["ODPT.latitude"][()]
 population_both     = f2["population"][()]
 t_both              = f2["t"][()]
 precip_id_both      = f2["precip_id"][()]
-precip_lamda_both   = f2["precip_lamda"][()]
+precip_latitude_both   = f2["precip_latitude"][()]
 precip_aeq_both     = f2["precip_aeq"][()]
 precip_alpha_both   = f2["precip_alpha"][()]
 precip_time_both    = f2["precip_time"][()] 
@@ -51,7 +51,7 @@ high_id_both        = f2["high_id"][()]
 nan_id_both         = f2["nan_id"][()]
 saved_id            = f2["saved_id"][()]
 saved_deta_dt       = f2["saved_deta_dt"][()]
-saved_lamda         = f2["saved_lamda"][()]
+saved_latitude         = f2["saved_latitude"][()]
 saved_Ekin          = f2["saved_Ekin"][()]
 f2.close()
 
@@ -112,30 +112,30 @@ for i in range(max(timesteps,sectors)):      #colors to seperate timesteps or se
 #noWPI
 #"""
 fig, ax = plt.subplots()
-ax.scatter(detected_time, detected_lamda*R2D, c = detected_id, s=10, cmap="viridis")
+ax.scatter(detected_time, detected_latitude*R2D, c = detected_id, s=10, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
 plt.title("$Population$: " +str(population)+"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
-plt.annotate("SATELLITE",xy=(t/2,telescope_lamda+0.0002),color="blue",weight="semibold")
+plt.annotate("SATELLITE",xy=(t/2,telescope_latitude+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
-ax.axhline(y = telescope_lamda ,color="b", linestyle="dashed")
+ax.axhline(y = telescope_latitude ,color="b", linestyle="dashed")
 plt.savefig(filepath_plots+"/Crossing_particles.png", dpi=100)
 #BOTH
 fig, ax = plt.subplots()
-ax.scatter(detected_time_both, detected_lamda_both*R2D, c = detected_id_both, s=0.3, cmap="viridis")
+ax.scatter(detected_time_both, detected_latitude_both*R2D, c = detected_id_both, s=0.3, cmap="viridis")
 ax.grid(alpha=0.8)
 ax.set(xlabel="time(s)", ylabel="latitude(deg)")
 plt.title("$Population$: " +str(population_both)+"\nNorthward particles are captured below the satellite.\nSouthward particles are captured above the satellite",size="medium")
-plt.annotate("SATELLITE",xy=(t_both/2,telescope_lamda_both+0.0002),color="blue",weight="semibold")
+plt.annotate("SATELLITE",xy=(t_both/2,telescope_latitude_both+0.0002),color="blue",weight="semibold")
 ax.ticklabel_format(useOffset=False)    #disable e notation.
-ax.axhline(y = telescope_lamda_both ,color="b", linestyle="dashed")
+ax.axhline(y = telescope_latitude_both ,color="b", linestyle="dashed")
 plt.savefig(filepath_plots+"/Crossing_particles_both.png", dpi=100)
 #"""
 
 ########################################## MINIMUM DETA_DT ################################################
 #For every particle in the population the state for minimum deta_dt is saved. 
 fix,ax = plt.subplots()
-cc = ax.scatter(np.rad2deg(saved_lamda),saved_deta_dt,s=1, c=saved_Ekin,cmap='jet')
+cc = ax.scatter(np.rad2deg(saved_latitude),saved_deta_dt,s=1, c=saved_Ekin,cmap='jet')
 ax.axhline(y = 0 ,color="b", linestyle="dashed")
 ax.set(xlabel="latitude[deg]",ylabel="deta_dt")
 cbar=plt.colorbar(cc)
@@ -224,7 +224,7 @@ th3.join()
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
 #"""
 fig, ax = plt.subplots()
-plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_lamda)+" deg")
+plt.title("Detected particle sum in all look_dirs for "+str(t)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_latitude)+" deg")
 ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flux")
 #ax.set_xticks(ticks=np.arange(0,t+time_bin,time_bin),minor=True) #ticks for time_bin seperation
 ax.xaxis.grid(True, which='both')

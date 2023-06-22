@@ -1,8 +1,11 @@
 import sys
 import os
 import subprocess
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, QRadioButton, QScrollArea, QTabWidget, QProgressBar
-from PyQt5.QtCore import QThread, pyqtSignal, QThread
+import xml.etree.ElementTree as ET
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QVBoxLayout, QSizePolicy, QHBoxLayout, QPushButton, QRadioButton, QScrollArea, QTabWidget, QProgressBar, QGroupBox
+
+from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtGui import QIcon
 
 class MakeThread(QThread):
     make_finished = pyqtSignal(bool, str, str)
@@ -63,6 +66,14 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(800, 600)  # Set the minimum window size
         self.setMaximumSize(800, 600)  # Set the maximum window size
 
+        current_directory = os.getcwd()
+        app_directory = os.path.join(current_directory, "app")
+
+        # Set app icon
+        icon_path = os.path.join(app_directory, "resources", "icons", "icon.png")
+        app_icon = QIcon(icon_path)
+        self.setWindowIcon(app_icon)
+
         # Create the main widget and layout
         self.main_widget = QWidget(self)
         self.layout = QVBoxLayout(self.main_widget)
@@ -82,23 +93,36 @@ class MainWindow(QMainWindow):
         # Read constant values from "constants.h" file
         constant_values = self.read_constants_file("headers/constants.h")
 
-        # Add labels and line edits for constant values
-        self.constant_labels = []
-        self.constant_lineedits = []
-        # Add labels and line edits for constant values
-        for label_text, default_value, comment in constant_values:
-            label = QLabel(label_text, self.tab1_widget)
-            label.setToolTip(comment)  # Set the comment as a tooltip
-            lineedit = QLineEdit(default_value, self.tab1_widget)
-            self.constant_labels.append(label)
-            self.constant_lineedits.append(lineedit)
+        # Group constants by namespace
+        constants_by_namespace = {}
+        for namespace, constant_name, default_value, comment in constant_values:
+            if namespace not in constants_by_namespace:
+                constants_by_namespace[namespace] = []
+            constants_by_namespace[namespace].append((constant_name, default_value, comment))
 
-            # Create a horizontal layout for each constant value
-            constant_layout = QHBoxLayout()
-            constant_layout.addWidget(label)
-            constant_layout.addWidget(lineedit)
+        # Add group boxes and layouts for each namespace
+        for namespace, constants in constants_by_namespace.items():
+            if namespace == "Universal": # don't show the universal constants, they should be always the same
+                continue 
+            group_box = QGroupBox(namespace)
+            group_layout = QVBoxLayout(group_box)
 
-            self.tab1_layout.addLayout(constant_layout)
+            for constant_name, default_value, comment in constants:
+                label = QLabel(constant_name, self.tab1_widget)
+                label.setToolTip(comment)  # Set the comment as a tooltip
+                lineedit = QLineEdit(default_value, self.tab1_widget)
+                self.apply_line_edit_styles(lineedit)
+                lineedit.setMaximumWidth(150)  # Adjust the maximum width to your desired size
+                lineedit.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
+
+                # Create a horizontal layout for each constant value
+                constant_layout = QHBoxLayout()
+                constant_layout.addWidget(label)
+                constant_layout.addWidget(lineedit)
+
+                group_layout.addLayout(constant_layout)
+
+            self.tab1_layout.addWidget(group_box)
 
         # Add buttons for make, make allclean, and simulate
         make_button = QPushButton("Build", self.tab1_widget)
@@ -118,7 +142,6 @@ class MainWindow(QMainWindow):
         self.progress_bar = QProgressBar(self.tab1_widget)
         self.tab1_layout.addWidget(self.progress_bar)
 
-
         # Add labels and line edits for simulation time
         no_wpi_label = QLabel("No WPI simulation time", self.tab1_widget)
         self.no_wpi_lineedit = QLineEdit(self.tab1_widget)
@@ -129,13 +152,18 @@ class MainWindow(QMainWindow):
         self.tab1_layout.addWidget(wpi_label)
         self.tab1_layout.addWidget(self.wpi_lineedit)
 
+        # Apply styles to line edits
+        self.apply_line_edit_styles(self.no_wpi_lineedit)
+        self.apply_line_edit_styles(self.wpi_lineedit)
+
+
         # Add radio button for simulation type
         self.simulation_radio = QRadioButton("Bell equations")
         self.tab1_layout.addWidget(self.simulation_radio)
-        
+
         # Run simulation button
         simulate_button = QPushButton("Simulate", self.tab1_widget)
-        simulate_button.clicked.connect(self.simulate_clicked)  
+        simulate_button.clicked.connect(self.simulate_clicked)
         self.tab1_layout.addWidget(simulate_button)
 
         # Add the first tab to the tab widget
@@ -161,28 +189,36 @@ class MainWindow(QMainWindow):
         self.allclean_thread.allclean_finished.connect(self.handle_allclean_finished)
         self.make_thread.make_progress.connect(self.update_progress_bar)
 
+    def apply_line_edit_styles(self, line_edit):
+        line_edit.setStyleSheet("""
+            QLineEdit {
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                background-color: #fff;
+                font-size: 14px;
+                width: 400px; 
+            }
+            QLineEdit:focus {
+                border: 1px solid #6e98e0;
+                outline: none;
+            }
+        """)
+
     def update_progress_bar(self, progress):
         self.progress_bar.setValue(progress)
 
-    def read_constants_file(self, filename):
-        constants_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), filename)
-        constant_values = []
-        with open(constants_path, "r") as file:
-            for line in file:
-                if line.strip().startswith("const"):
-                    parts = line.strip().split("=")
-                    if len(parts) == 2:
-                        constant_name = parts[0].split()[-1].strip()
-                        constant_value = parts[1].split(";")[0].strip()
+    def read_constants_file(xml_filepath):
+        constants = {}
+        tree = ET.parse(xml_filepath)
+        root = tree.getroot()
 
-                        comment_start_index = line.find("//")
-                        if comment_start_index != -1:
-                            comment = line[comment_start_index+2:].strip()
-                        else:
-                            comment = ""
+        for constant in root.findall('constant'):
+            name = constant.get('name')
+            value = constant.text
+            constants[name] = value
 
-                        constant_values.append((constant_name, constant_value, comment))
-        return constant_values
+        return constants
 
     def make_clicked(self):
         # Handle the make button click event
@@ -256,7 +292,7 @@ class MainWindow(QMainWindow):
         print(message)
         print("STDOUT:", stdout.decode("utf-8"))
         print("STDERR:", stderr.decode("utf-8"))
-        
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()

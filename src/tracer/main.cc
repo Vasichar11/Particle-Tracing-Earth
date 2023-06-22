@@ -32,7 +32,7 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {
-	std::cout<<"Loss for Lshell"<<Particle_init::L_shell<<" is " << Particle_init::alpha_lc*Universal::R2D;
+	std::cout<<"Loss for Lshell"<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D;
 	//Simulation time and steps, read from command line.
 	real t_nowpi = atoi(argv[1]);    //No WPI time from command line 
 	real t_wpi   = atoi(argv[2]);	 //WPI time from command line
@@ -67,9 +67,9 @@ int main(int argc, char **argv)
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
 	h5::File distribution_file(file_dstr, h5::File::ReadOnly);
 	//Vectors to save temporarily
-	std::vector<real> lamda_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
+	std::vector<real> latitude_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
-	h5::DataSet data_lat 	     = distribution_file.getDataSet("lamda0");
+	h5::DataSet data_lat 	     = distribution_file.getDataSet("latitude0");
 	h5::DataSet data_aeq	     = distribution_file.getDataSet("aeq0");
 	h5::DataSet data_alpha 		 = distribution_file.getDataSet("alpha0");
 	h5::DataSet data_upar 		 = distribution_file.getDataSet("upar0");
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	h5::DataSet data_negative	 = distribution_file.getDataSet("negative0");
 	h5::DataSet data_high    	 = distribution_file.getDataSet("high0");
 	//Convert to single vector.
-	data_lat.read(lamda_0);
+	data_lat.read(latitude_0);
 	data_aeq.read(aeq_0);
 	data_alpha.read(alpha_0);
 	data_upar.read(upar_0);
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	data_escaped.read(high_0);
 
 
-	int Population = lamda_0.size(); //Take the population from the h5 file to avoid mistakes.
+	int Population = latitude_0.size(); //Take the population from the h5 file to avoid mistakes.
 	//Single particle struct.
 	Particles single; 
 	//Vector of structs. Has initial states and function to save particle states in vectors.
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 	//Append to struct from single vector.
 	for(int p=0; p<Population; p++)
 	{
-		dstr[p].lamda0  	  	  = lamda_0.at(p);
+		dstr[p].latitude0  	  	  = latitude_0.at(p);
 		dstr[p].alpha0  	  	  = alpha_0.at(p);  
 		dstr[p].aeq0    	  	  = aeq_0.at(p);
 		dstr[p].ppar0   	  	  = ppar_0.at(p);
@@ -137,7 +137,7 @@ int main(int argc, char **argv)
 
 
 	//Object for Particle Telescope.		
-	Telescope ODPT(Satellite::telescope_lamda, Particle_init::L_shell);	
+	Telescope ODPT(Satellite::telescope_latitude, Distribution::L_shell);	
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 		//---BELL---//
 		else if(argc==4 && argv[3]==bell)
 		{
-			std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation(Bell).\nWave magnitude(T): "<<Wave_init::By_wave<<std::endl;
+			std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation(Bell).\nWave magnitude(T): "<<Wave::By_wave<<std::endl;
 			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Population*0.036/60) * t_wpi <<" minutes."<<std::endl;
 			std::cout<<"\nForked...";
 			//---PARALLELISM Work sharing---//
@@ -258,13 +258,13 @@ int main(int argc, char **argv)
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
  
 	//Assign from struct to vectors.
-	std::vector<real> precip_id, precip_lamda, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, lamda00, ppar00, pper00, alpha00, aeq00, eta00, time00, Ekin00;
+	std::vector<real> precip_id, precip_latitude, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, latitude00, ppar00, pper00, alpha00, aeq00, eta00, time00, Ekin00;
 	std::vector<real> Dsaved_id, Dsaved_max_dEkin, Dsaved_maxEkin_time, Dsaved_max_dPA, Dsaved_maxdPA_time, Dsaved_min_deta_dt, Dsaved_min_deta_dt_time;
 
 	for(int p=0; p<Population; p++) 
 	{
 		//Last particle states(that can become first states for next simulation).
-		lamda00.push_back(dstr[p].lamda00);
+		latitude00.push_back(dstr[p].latitude00);
     	ppar00.push_back(dstr[p].ppar00); 
     	pper00.push_back(dstr[p].pper00); 
     	alpha00.push_back(dstr[p].alpha00); 
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
 		if(dstr[p].escaped) 
 		{
 			precip_id.push_back(dstr[p].id_lost);
-			precip_lamda.push_back(dstr[p].lamda_lost); 
+			precip_latitude.push_back(dstr[p].latitude_lost); 
 			precip_alpha.push_back(dstr[p].alpha_lost);
 			precip_aeq.push_back(dstr[p].aeq_lost);
 			precip_time.push_back(dstr[p].time_lost);
@@ -320,12 +320,12 @@ int main(int argc, char **argv)
 	h5::File file(save_file, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 	
 	//Simulation data and Telescope specification - Scalars 
-	h5::DataSet telescope_lamda = file.createDataSet("ODPT.latitude", ODPT.latitude);
+	h5::DataSet telescope_latitude = file.createDataSet("ODPT.latitude", ODPT.latitude);
 	h5::DataSet data_population = file.createDataSet("population", 	Population);
 	h5::DataSet simulation_time = file.createDataSet("t", 			t);
 	
 	//Detected particles from the satellite
-	h5::DataSet detected_lamda  = file.createDataSet("ODPT.lamda", ODPT.lamda);
+	h5::DataSet detected_latitude  = file.createDataSet("ODPT.latitude", ODPT.latitude);
 	h5::DataSet detected_time   = file.createDataSet("ODPT.time", ODPT.time);
 	h5::DataSet detected_id     = file.createDataSet("ODPT.id", ODPT.id);
 	h5::DataSet detected_alpha  = file.createDataSet("ODPT.alpha", ODPT.alpha);
@@ -333,7 +333,7 @@ int main(int argc, char **argv)
 
 	//Precipitating Particles
 	h5::DataSet precipitated_id    = file.createDataSet("precip_id", 	 precip_id);
-	h5::DataSet precipitated_lamda = file.createDataSet("precip_lamda",  precip_lamda);
+	h5::DataSet precipitated_latitude = file.createDataSet("precip_latitude",  precip_latitude);
 	h5::DataSet precipitated_aeq   = file.createDataSet("precip_aeq", 	 precip_aeq);
 	h5::DataSet precipitated_alpha = file.createDataSet("precip_alpha",  precip_alpha);
 	h5::DataSet precipitated_time  = file.createDataSet("precip_time",	 precip_time);
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
 
 
 	//Particles states at noWPI end.
-	h5::DataSet ending_lamda   = file.createDataSet("lamda00", lamda00);
+	h5::DataSet ending_latutide   = file.createDataSet("latitude00", latitude00);
 	h5::DataSet ending_ppar    = file.createDataSet("ppar00",  ppar00);
 	h5::DataSet ending_pper    = file.createDataSet("pper00",  pper00);
 	h5::DataSet ending_alpha   = file.createDataSet("alpha00", alpha00);

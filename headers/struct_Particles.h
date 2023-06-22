@@ -13,10 +13,10 @@
 struct Particles
 { 				
 	//Member function to initialize particle population.
-	void initialize(real eta0, real aeq0, real lamda0, real Ekin0, real zeta0, real time0);
+	void initialize(real eta0, real aeq0, real latitude0, real Ekin0, real zeta0, real time0);
 		
 	//Member function to save particle states.
-	void escaping_state(int id,real new_lamda, real new_aeq, real new_alpha, real new_time);
+	void escaping_state(int id,real new_latitude, real new_aeq, real new_alpha, real new_time);
 	void negative_state(int id);
 	void high_state(int id);
 	void nan_state(int id);
@@ -25,17 +25,17 @@ struct Particles
 	void save_state( int p, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time);
 	
 
-	void lamda_domain(real aeq0);
+	void latitude_domain(real aeq0);
 
 
 	//Member variables.
 	bool escaped,trapped,negative,nan,high; //Characterize particle
 	//Starting noWPI states
-	real lamda0, zeta0, uper0, upar0, ppar0, pper0, alpha0, aeq0, eta0, M_adiabatic0, Ekin0, time0;
+	real latitude0, zeta0, uper0, upar0, ppar0, pper0, alpha0, aeq0, eta0, M_adiabatic0, Ekin0, time0;
 	//Ending noWPI and Starting WPI states
-	real lamda00, zeta00, uper00, upar00, ppar00, pper00, alpha00, aeq00, eta00, M_adiabatic00, Ekin00, time00;
+	real latitude00, zeta00, uper00, upar00, ppar00, pper00, alpha00, aeq00, eta00, M_adiabatic00, Ekin00, time00;
 	//If lost
-	real lamda_lost, alpha_lost, aeq_lost, time_lost, id_lost;  //, ppar_lost, pper_lost, zeta_lost, uper_lost, upar_lost,  eta_lost, M_adiabatic_lost, Ekin_lost;
+	real latitude_lost, alpha_lost, aeq_lost, time_lost, id_lost;  //, ppar_lost, pper_lost, zeta_lost, uper_lost, upar_lost,  eta_lost, M_adiabatic_lost, Ekin_lost;
 	//If negative P.A
 	real id_neg;
 	//If higher than 180 P.A
@@ -48,7 +48,7 @@ struct Particles
 	int saved_id;
 	real saved_max_dEkin, saved_maxEkin_time, saved_max_dPA, saved_maxdPA_time, saved_mindetadt_time, saved_min_detadt;
 	//If vectors for save_state are needed;
-	//std::vector<real> id, lamda , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, deta_dt, Ekin, time; 
-	std::vector<real> id, lamda, deta_dt, Ekin; 
+	//std::vector<real> id, latitude , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, deta_dt, Ekin, time; 
+	std::vector<real> id, latitude, deta_dt, Ekin; 
 
 };  	

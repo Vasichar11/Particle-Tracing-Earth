@@ -17,7 +17,7 @@ print("Keys: %s" % f.keys())
 aeqsu = f["aeqsu 2D"][()]
 eta0 = f["initial_etas"][()]
 time_sim = f["simulation time"][()]
-lamda = f["lamda 2D"][()]
+latitude = f["latitude 2D"][()]
 mu_ad_li = f["mu_ad_li 2D"][()]
 alpha = f["alpha 2D"][()]
 Ftheta_o = f["Ftheta 2D"][()]

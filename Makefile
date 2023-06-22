@@ -80,13 +80,15 @@ allclean:
 ${OBJDIR_TRACER}/%.o: ${SRCDIR_TRACER}/%.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5MIN}
 
-# Distribution. Avoiding use of symbolic links.
-${OBJDIR_DSTR}/distribution.o: ${SRCDIR_DSTR}/distribution.cc
+# Distribution
+
+${OBJDIR_DSTR}/functions.o: ${SRCDIR_TRACER}/functions.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5MIN}
 ${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_TRACER}/struct_Particles.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5MIN}
-${OBJDIR_DSTR}/functions.o: ${SRCDIR_TRACER}/functions.cc
+${OBJDIR_DSTR}/distribution.o: ${SRCDIR_DSTR}/distribution.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5MIN}
+
 
 # Interpolation
 $(OBJDIR_INTERP)/%.o: $(SRCDIR_INTERP)/%.cc

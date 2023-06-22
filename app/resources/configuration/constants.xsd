@@ -1,0 +1,50 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Define common simple types -->
+  <xs:simpleType name="metricUnitType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[PTGK1mμnp]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="WaveType">
+    <xs:sequence>
+      <xs:element name="f_wave">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="f_wave" type="xs:string"/>
+            <xs:element name="value" type="xs:float"/>
+            <xs:element name="metric_unit" type="metricUnitType"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="physical_unit" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="frequency">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="value" type="xs:float"/>
+            <xs:element name="metric_unit" type="metricUnitType"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="physical_unit" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+
+
+  <xs:element name="constants">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="Wave" type="WaveType"/>
+            <xs:element name="Simulation" type="SimulationType"/>
+            <xs:element name="Satellite" type="SatelliteType"/>
+            <xs:element name="Distribution" type="DistributionType"/>
+        </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

@@ -3,54 +3,41 @@
 #include <cinttypes>  
 #include <vector> 
 #include <random> 
-#include <iomanip>  //For std::setprecision()
+#include <iomanip>  
 #include <omp.h>
+#include <H5Cpp.h>
+#include <algorithm>
 
 #include "common.h"
-#include "struct_Particles.h"   
-#include "functions.h"
+#include "../headers/struct_Particles.h"
+#include "../headers/functions.h"
 #include "constants.h"
-
-//HDF5 I/O
-#include <highfive/H5File.hpp>          
-#include <highfive/H5DataSet.hpp>
-#include <highfive/H5DataSpace.hpp>
-
-
-namespace h5 = HighFive;
-
-
 
 
 //Member function to find valid latitude range
-void lamda_domain(real aeq0, real &lamda_start_d, real &lamda_end_d)
+void latitude_domain(real aeq0, real &latitude_start_d, real &latitude_end_d)
 {
 	const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
-	lamda_end_d     = 0;
-	lamda_start_d   = 0;
+	latitude_end_d     = 0;
+	latitude_start_d   = 0;
 	real salpha0;
 	do
 	{
-		lamda_end_d += Distribution::lamda_domain_step; 
+		latitude_end_d += Distribution::latitude_domain_step; 
 		//Gradually increase and check if salpha0 is valid.
 		//("Brute Force domain validation")
-		real Blam0   = Bmag_dipole(lamda_end_d*Universal::D2R);
+		real Blam0   = Bmag_dipole(latitude_end_d*Universal::D2R);
 		salpha0      = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
 							  
-	}					//e.g aeq0_deg=89.9989367479725, lamda0_deg=0.000514656086141539 
-	while( (salpha0<=1) && (salpha0>=-1) && (salpha0!=0) ) ; // &&lamda0<M_PI
+	}					//e.g aeq0_deg=89.9989367479725, latitude0_deg=0.000514656086141539 
+	while( (salpha0<=1) && (salpha0>=-1) && (salpha0!=0) ) ; // &&latitude0<M_PI
 	//Else Invalid
 	/*-1<salpha || salpha>1 => domain error
 	aeq0=0||180 => salpha0 = 0 => alpha0 = 0 => pper0 = 0 => PROBLEM IN Bell_param, a2(division with 0).
 	sin(pi) is actually not zero in C++... */
-	lamda_end_d   -= Distribution::lamda_domain_step;     //This is the last (positive) valid value.
-	lamda_start_d  = -lamda_end_d;	 //This would be the first (negative) valid value. 		
+	latitude_end_d   -= Distribution::latitude_domain_step;     //This is the last (positive) valid value.
+	latitude_start_d  = -latitude_end_d;	 //This would be the first (negative) valid value. 		
 }
-
-
-
-
-
 
 
 
@@ -78,7 +65,7 @@ int main(int argc, char **argv)
 	std::cout<<"\n\nParticle population: " << Distribution::population;
 	std::cout<<"\nDistributed as: |From    To|"<<"    (evenly, uniform, normal, test) \n";
 	std::cout<<"\nEquatorial P.A: |"<<Distribution::aeq_start_d<<" "<<Distribution::aeq_end_d<<"|      "<< argv[1];
-	std::cout<<"\nLatitude:       |"<<Distribution::lamda_start_d<<" "<<Distribution::lamda_end_d<<"|     "<< argv[2];
+	std::cout<<"\nLatitude:       |"<<Distribution::latitude_start_d<<" "<<Distribution::latitude_end_d<<"|     "<< argv[2];
 	std::cout<<"\nEta:            |"<<Distribution::eta_start_d<<" "<<Distribution::eta_end_d<<"|      "<< argv[3];
 	std::cout<<"\nEkin:           |"<<Distribution::Ekin_start<<" "<<Distribution::Ekin_end<<"|    "<< argv[4]<< std::endl;
 
@@ -86,34 +73,37 @@ int main(int argc, char **argv)
 
 	Particles single; //Single particle struct.
 	std::vector<Particles> dstr(Distribution::population, single);	//Vector of structs for particle distribution.
-	real lamda0,aeq0,eta0,Ekin0;
-	lamda0=aeq0=eta0=Ekin0=0;
+	real latitude0,aeq0,eta0,Ekin0;
+	latitude0=aeq0=eta0=Ekin0=0;
 	//const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
 	std::random_device seed;         //Random seed. 
 	std::mt19937 generator(seed());  //PRNG initialized with seed.
 	int p=0;
-	
+	int aeq_count = 0 ;
+	int latitude_count = 0 ;
+	int eta_count = 0;
+	int Ekin_count = 0;
 
 
-	for(int aeq_count=0; aeq_count<Distribution::aeq_dstr; aeq_count++)
+	for(int particle_count=0; particle_count<Distribution::population; particle_count++)
 	{
-
 		//------------------------------------------- DISTRIBUTE P.A ------------------------------------------------//
-		//EVENLY. Goal is: symmetry	
+		// Evenly with goal: symmetry	
 		if(argv[1]==string_evenly)   
 		{
-			//Step for linspace(start,end,aeq_dstr) 
-			const real aeq_step_d	  = (Distribution::aeq_end_d - Distribution::aeq_start_d)/(Distribution::aeq_dstr-1); 	
-			aeq0 = (Distribution::aeq_start_d + aeq_count*aeq_step_d) * Universal::D2R;			
+			// Step for linspace(start, end, aeq_groups) 
+			const real aeq_step_d	  = (Distribution::aeq_end_d - Distribution::aeq_start_d)/(Distribution::aeq_steps-1); 	
+			aeq0 = (Distribution::aeq_start_d + aeq_count*aeq_step_d) * Universal::D2R;		
+			aeq_count++;	
 		}
-		//UNIFORMLY. Goal is: randomness
+		// Uniformly with goal: randomness
 		else if (argv[1]==string_uniform)   			
 		{
 			//All values in this range are equally probable.
 			std::uniform_real_distribution <real> uniform_aeq  (Distribution::aeq_start_d, Distribution::aeq_end_d);
 			aeq0  = uniform_aeq(generator) * Universal::D2R; 	
 		}
-		//NORMALLY. Goal is: reach normal dstr in logarithm scale.
+		// Normally with goal: reach normal dstr in logarithm scale
 		else if (argv[1]==string_normal)   			
 		{
 			real number;
@@ -125,144 +115,122 @@ int main(int argc, char **argv)
 			}while(number<=0 || number>=180); //Until valid aeq=(0,180).
 			aeq0  = number * Universal::D2R; 	
 		}
-		//CONSTANT. Goal is: testing
+		// Constant with goal: testing
 		else if (argv[1]==string_constant)
 		{
-			aeq0 = Particle_init::aeq0;
+			aeq0 = Distribution::aeq0;
 		}
-		//------------------------------------------- DISTRIBUTE P.A ------------------------------------------------//
-
-
 		//----------------------------------------- DISTRIBUTE LATITUDE ----------------------------------------------//
-		
 		//-------------Latitude domain-------------//
-		real lamda_end_d, lamda_start_d;
-		lamda_domain(aeq0, lamda_start_d, lamda_end_d); //Finds lamda_start_d && lamda_end_d. 
-		//std::cout<<"\nFor aeq0 = "<<aeq0*Universal::R2D<<" degrees\nThe latitude domain in degrees"<<"\n|From "<<" To|\n| "<<lamda_start_d << "  "<< " " << lamda_end_d <<"|\n";
+		real latitude_end_d, latitude_start_d;
+		latitude_domain(aeq0, latitude_start_d, latitude_end_d); //Finds latitude_start_d && latitude_end_d. 
+		//std::cout<<"\nFor aeq0 = "<<aeq0*Universal::R2D<<" degrees\nThe latitude domain in degrees"<<"\n|From "<<" To|\n| "<<latitude_start_d << "  "<< " " << latitude_end_d <<"|\n";
 		//-------------Latitude domain-------------//
-
-
-		for(int lamda_count=0; lamda_count<Distribution::lamda_dstr; lamda_count++)
+		// Evenly with goal: symmetry	
+		if(argv[2]==string_evenly)   
 		{
-			//EVENLY. Goal is: symmetry	
-			if(argv[2]==string_evenly)   
+			//Step for linspace(start,end,aeq_groups) 
+			const real latitude_step_d	  = (latitude_end_d - latitude_start_d)/(Distribution::latitude_steps-1);						
+			latitude0 = (latitude_start_d + latitude_count*latitude_step_d) * Universal::D2R;	  					
+		}
+		// Uniformly with goal: randomness
+		else if (argv[2]==string_uniform)   			
+		{
+			//All latitudes in this range are equally probable. 
+			std::uniform_real_distribution <real> uniform_latitude(latitude_start_d, latitude_end_d); 
+			latitude0  = uniform_latitude(generator) * Universal::D2R; 							 
+		}
+		// Normally with goal: reach normal dstr in logarithm scale.
+		else if (argv[2]==string_normal)   			
+		{
+			real number;
+			do
 			{
-				//Step for linspace(start,end,aeq_dstr) 
-				const real lamda_step_d	  = (lamda_end_d - lamda_start_d)/(Distribution::lamda_dstr-1);						
-				lamda0 = (lamda_start_d + lamda_count*lamda_step_d) * Universal::D2R;	  					
-			}
-			//UNIFORMLY. Goal is: randomness
-			else if (argv[2]==string_uniform)   			
-			{
-				//All latitudes in this range are equally probable. 
-				std::uniform_real_distribution <real> uniform_lamda(lamda_start_d, lamda_end_d); 
-				lamda0  = uniform_lamda(generator) * Universal::D2R; 							 
-			}
-			//NORMALLY. Goal is: reach normal dstr in logarithm scale.
-			else if (argv[2]==string_normal)   			
-			{
-				real number;
-				do
-				{
-					//Adaptive stdev according to the lamda domain range. Domain range (min,max) = (0,90+90).
-					//That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
-					real stdev =((lamda_end_d-lamda_start_d)/180) * Distribution::max_stdev_lamda;
-					std::normal_distribution <real> normal_lamda(Distribution::mean_lamda, stdev);
-					number = normal_lamda(generator);
+				//Adaptive stdev according to the latitude domain range. Domain range (min,max) = (0,90+90).
+				//That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
+				real stdev =((latitude_end_d-latitude_start_d)/180) * Distribution::max_stdev_latitude;
+				std::normal_distribution <real> normal_latitude(Distribution::mean_latitude, stdev);
+				number = normal_latitude(generator);
 
-				}while(number<lamda_start_d || number>lamda_end_d); //Until valid lamda=(-90,90).
-				lamda0  = number * Universal::D2R; 	
-			}
-			//CONSTANT. Goal is: testing
-			else if (argv[2]==string_constant)
-			{
-				lamda0 = Particle_init::lamda0;
-			}
-		//----------------------------------------- DISTRIBUTE LATITUDE ----------------------------------------------//
-
-			
+			}while(number<latitude_start_d || number>latitude_end_d); //Until valid latitude=(-90,90).
+			latitude0  = number * Universal::D2R; 	
+		}
+		// Constant with goal: testing
+		else if (argv[2]==string_constant)
+		{
+			latitude0 = Distribution::latitude0;
+		}
 		//-------------------------------------------- DISTRIBUTE ETA --------------------------------------------------//
-			for(int eta_count=0; eta_count<Distribution::eta_dstr; eta_count++)
+		// Evenly with goal: symmetry	
+		if(argv[3]==string_evenly)   
+		{
+			//Step for linspace(start,end,eta_steps) 
+			const real eta_step_d	  = (Distribution::eta_end_d - Distribution::eta_start_d)/(Distribution::eta_steps-1); 	
+			eta0 = (Distribution::eta_start_d + eta_count*eta_step_d) * Universal::D2R;			
+		}
+		// Uniformly with goal: randomness
+		else if (argv[3]==string_uniform)   			
+		{
+			//All values in this range are equally probable.
+			std::uniform_real_distribution <real> uniform_eta  (Distribution::eta_start_d, Distribution::eta_end_d);
+			eta0  = uniform_eta(generator) * Universal::D2R; 	
+		}
+		// Normally with goal: reach normal dstr 
+		else if (argv[3]==string_normal)   			
+		{
+			real number;
+			do
 			{
-				//EVENLY. Goal is: symmetry	
-				if(argv[3]==string_evenly)   
-				{
-					//Step for linspace(start,end,eta_dstr) 
-					const real eta_step_d	  = (Distribution::eta_end_d - Distribution::eta_start_d)/(Distribution::eta_dstr-1); 	
-					eta0 = (Distribution::eta_start_d + eta_count*eta_step_d) * Universal::D2R;			
-				}
-				//UNIFORMLY. Goal is: randomness
-				else if (argv[3]==string_uniform)   			
-				{
-					//All values in this range are equally probable.
-					std::uniform_real_distribution <real> uniform_eta  (Distribution::eta_start_d, Distribution::eta_end_d);
-					eta0  = uniform_eta(generator) * Universal::D2R; 	
-				}
-				//NORMALLY. Goal is: reach normal dstr 
-				else if (argv[3]==string_normal)   			
-				{
-					real number;
-					do
-					{
-						std::normal_distribution <real> normal_eta(Distribution::mean_eta, Distribution::stdev_eta);
-						number = normal_eta(generator);
+				std::normal_distribution <real> normal_eta(Distribution::mean_eta, Distribution::stdev_eta);
+				number = normal_eta(generator);
 
-					}while(number<=0 || number>=180); //Until valid eta=(0,180).
-					eta0  = number * Universal::D2R; 	
-				}
-				//CONSTANT. Goal is: testing
-				else if (argv[3]==string_constant)
-				{
-					eta0 = Particle_init::eta0;
-				}
-		//-------------------------------------------- DISTRIBUTE ETA --------------------------------------------------//
-				
-
+			}while(number<=0 || number>=180); //Until valid eta=(0,180).
+			eta0  = number * Universal::D2R; 	
+		}
+		// Constant with goal: testing
+		else if (argv[3]==string_constant)
+		{
+			eta0 = Distribution::eta0;
+		}
 		//-------------------------------------------- DISTRIBUTE EKIN -------------------------------------------------//
-				for(int Ekin_count=0; Ekin_count<Distribution::Ekin_dstr; Ekin_count++)
-				{
-					//EVENLY. Goal is: symmetry	
-					if(argv[4]==string_evenly)   
-					{
-						//Step for linspace(start,end,Ekin_dstr) 
-						const real Ekin_step = (Distribution::Ekin_end - Distribution::Ekin_start)/(Distribution::Ekin_dstr-1); 	
-						Ekin0 = (Distribution::Ekin_start + Ekin_count*Ekin_step);			
-					}
-					//UNIFORMLY. Goal is: randomness
-					else if (argv[4]==string_uniform)   			
-					{
-						//All values in this range are equally probable.
-						std::uniform_real_distribution <real> uniform_Ekin  (Distribution::Ekin_start, Distribution::Ekin_end);
-						Ekin0  = uniform_Ekin(generator); 	
-					}
-					//NORMALLY. Goal is: reach normal dstr 
-					else if (argv[4]==string_normal)   			
-					{
-						real number;
-						do
-						{
-							std::normal_distribution <real> normal_Ekin(Distribution::mean_Ekin, Distribution::stdev_Ekin);
-							number = normal_Ekin(generator);
+		// Evenly with goal: symmetry	
+		if(argv[4]==string_evenly)   
+		{
+			//Step for linspace(start,end,Ekin_steps) 
+			const real Ekin_step = (Distribution::Ekin_end - Distribution::Ekin_start)/(Distribution::Ekin_steps-1); 	
+			Ekin0 = (Distribution::Ekin_start + Ekin_count*Ekin_step);			
+		}
+		// Uniformly with goal: randomness
+		else if (argv[4]==string_uniform)   			
+		{
+			//All values in this range are equally probable.
+			std::uniform_real_distribution <real> uniform_Ekin  (Distribution::Ekin_start, Distribution::Ekin_end);
+			Ekin0  = uniform_Ekin(generator); 	
+		}
+		// Normally with goal: reach normal dstr 
+		else if (argv[4]==string_normal)   			
+		{
+			real number;
+			do
+			{
+				std::normal_distribution <real> normal_Ekin(Distribution::mean_Ekin, Distribution::stdev_Ekin);
+				number = normal_Ekin(generator);
 
-						}while(number<=0 || number>=180); //Until valid Ekin=(0,180).
-						Ekin0  = number; 	
-					}
-					//CONSTANT. Goal is: testing
-					else if (argv[4]==string_constant)
-					{
-						Ekin0 = Particle_init::Ekin0;
-					}
-		//-------------------------------------------- DISTRIBUTE EKIN -------------------------------------------------//
-			
+			}while(number<=0 || number>=180); //Until valid Ekin=(0,180).
+			Ekin0  = number; 	
+		}
+		// Constant with goal: testing
+		else if (argv[4]==string_constant)
+		{
+			Ekin0 = Distribution::Ekin0;
+		}
 
-					//Initialize particle.
-					dstr[p].initialize(eta0,aeq0,lamda0,Ekin0,0,0);
-					std::cout<<"\nParticle"<<p<<" aeq0: "<< dstr[p].aeq0*Universal::R2D <<", lamda0: "<< dstr[p].lamda0*Universal::R2D<<" eta0: "<< dstr[p].eta0*Universal::R2D <<", Ekin0: "<< dstr[p].Ekin0;	
-					p++; //Next particle
+		//-------------------------------------------- FINALLY INITIALIZE -------------------------------------------------//
 
-				}
-			}
-		}	
+		dstr[p].initialize(eta0,aeq0,latitude0,Ekin0,0,0);
+		// std::cout<<"\nParticle"<<p<<" aeq0: "<< dstr[p].aeq0*Universal::R2D <<", latitude0: "<< dstr[p].latitude0*Universal::R2D<<" eta0: "<< dstr[p].eta0*Universal::R2D <<", Ekin0: "<< dstr[p].Ekin0;	
+		p++; //Next particle
+
 	}
 	std::cout<<"\nDistribution done!";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
@@ -284,55 +252,123 @@ int main(int argc, char **argv)
 		std::cout<<"\naeq0 range: "<<sector*sector_range<< " - " <<(sector+1)*sector_range<< " has " << aeq0_bins.at(sector) << " particles.";
 	}
 
-//----------------------------------------WRITE TO HDF5 FILE------------------------------------//
+//---------------------------------------------------------------WRITE TO HDF5 FILE---------------------------------------------------------------------//
+	// Assign from struct to 1d vectors. Trying std::execution::par
+
+	// Create vectors
+	std::vector<real> alpha0_dstr(Distribution::population);
+	std::vector<real> latitude0_dstr(Distribution::population);
+	std::vector<real> aeq0_dstr(Distribution::population);
+	std::vector<real> ppar0_dstr(Distribution::population);
+	std::vector<real> pper0_dstr(Distribution::population);
+	std::vector<real> upar0_dstr(Distribution::population);
+	std::vector<real> uper0_dstr(Distribution::population);
+	std::vector<real> eta0_dstr(Distribution::population);
+	std::vector<real> zeta0_dstr(Distribution::population);
+	std::vector<real> Ekin0_dstr(Distribution::population);
+	std::vector<real> M_adiabatic0_dstr(Distribution::population);
+	std::vector<real> time0_dstr(Distribution::population);
+	std::vector<real> trapped_dstr(Distribution::population);
+	std::vector<real> escaped_dstr(Distribution::population);
+	std::vector<real> negative_dstr(Distribution::population);
+	std::vector<real> nan_dstr(Distribution::population);
+	std::vector<real> high_dstr(Distribution::population);
+
+
+	std::transform(dstr.begin(), dstr.end(), alpha0_dstr.begin(), [](const auto& d) { return d.alpha0; });
+	std::transform(dstr.begin(), dstr.end(), latitude0_dstr.begin(), [](const auto& d) { return d.latitude0; });
+	std::transform(dstr.begin(), dstr.end(), aeq0_dstr.begin(), [](const auto& d) { return d.aeq0; });
+	std::transform(dstr.begin(), dstr.end(), ppar0_dstr.begin(), [](const auto& d) { return d.ppar0; });
+	std::transform(dstr.begin(), dstr.end(), pper0_dstr.begin(), [](const auto& d) { return d.pper0; });
+	std::transform(dstr.begin(), dstr.end(), upar0_dstr.begin(), [](const auto& d) { return d.upar0; });
+	std::transform(dstr.begin(), dstr.end(), uper0_dstr.begin(), [](const auto& d) { return d.uper0; });
+	std::transform(dstr.begin(), dstr.end(), eta0_dstr.begin(), [](const auto& d) { return d.eta0; });
+	std::transform(dstr.begin(), dstr.end(), zeta0_dstr.begin(), [](const auto& d) { return d.zeta0; });
+	std::transform(dstr.begin(), dstr.end(), Ekin0_dstr.begin(), [](const auto& d) { return d.Ekin0; });
+	std::transform(dstr.begin(), dstr.end(), M_adiabatic0_dstr.begin(), [](const auto& d) { return d.M_adiabatic0; });
+	std::transform(dstr.begin(), dstr.end(), time0_dstr.begin(), [](const auto& d) { return d.time0; });
+	std::transform(dstr.begin(), dstr.end(), trapped_dstr.begin(), [](const auto& d) { return d.trapped; });
+	std::transform(dstr.begin(), dstr.end(), escaped_dstr.begin(), [](const auto& d) { return d.escaped; });
+	std::transform(dstr.begin(), dstr.end(), negative_dstr.begin(), [](const auto& d) { return d.negative; });
+	std::transform(dstr.begin(), dstr.end(), nan_dstr.begin(), [](const auto& d) { return d.nan; });
+	std::transform(dstr.begin(), dstr.end(), high_dstr.begin(), [](const auto& d) { return d.high; });
+
 	
-	std::vector<real> lamda_dstr(Distribution::population), alpha_dstr(Distribution::population), aeq_dstr(Distribution::population), upar_dstr(Distribution::population), uper_dstr(Distribution::population), ppar_dstr(Distribution::population), pper_dstr(Distribution::population), eta_dstr(Distribution::population), M_adiabatic_dstr(Distribution::population), time_dstr(Distribution::population), Ekin_dstr(Distribution::population), zeta_dstr(Distribution::population), trapped_dstr(Distribution::population), escaped_dstr(Distribution::population), nan_dstr(Distribution::population), negative_dstr(Distribution::population), high_dstr(Distribution::population);
+	// File name
+	std::string file_name = "output/files/dstr" + std::to_string(Distribution::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA_" +std::string(argv[3])+"ETA_"+std::string(argv[4]) + "EKIN.h5";
+	// Create instance of hdf5 file.
+	//H5F_ACC_TRUNC flag -> new file or overwritei
+	H5::H5File file(file_name, H5F_ACC_TRUNC);
 
-	//Assign from struct to 1d vectors.
-	for(int p=0; p<Distribution::population; p++)
-	{
-		alpha_dstr[p]      = dstr[p].alpha0;
-		lamda_dstr[p]      = dstr[p].lamda0;
-		aeq_dstr[p]        = dstr[p].aeq0;
-		ppar_dstr[p]       = dstr[p].ppar0;
-		pper_dstr[p]       = dstr[p].pper0;
-		upar_dstr[p]       = dstr[p].upar0;
-		uper_dstr[p]       = dstr[p].uper0;
-		eta_dstr[p]        = dstr[p].eta0;
-		zeta_dstr[p]       = dstr[p].zeta0;
-		Ekin_dstr[p]       = dstr[p].Ekin0;
-		M_adiabatic_dstr[p]= dstr[p].M_adiabatic0;
-		time_dstr[p]       = dstr[p].time0;
-		trapped_dstr[p]    = dstr[p].trapped;
-		escaped_dstr[p]    = dstr[p].escaped;
-		negative_dstr[p]   = dstr[p].negative;
-		nan_dstr[p]    	   = dstr[p].nan;
-		high_dstr[p]	   = dstr[p].high;
-	}
+	// Create dataspace and datatype
+	hsize_t dim = Distribution::population;
+	H5::DataSpace data_space(1,&dim);
+	H5::DataType data_type(H5::PredType::NATIVE_DOUBLE);
+
+	// Create the datasets
+	H5::DataSet dataset_latitude0 = file.createDataSet("latitude0", data_type, data_space);
+	H5::DataSet dataset_aeq0 = file.createDataSet("aeq0", data_type, data_space);
+	H5::DataSet dataset_alpha0 = file.createDataSet("alpha0", data_type, data_space);
+	H5::DataSet dataset_upar0 = file.createDataSet("upar0", data_type, data_space);
+	H5::DataSet dataset_uper0 = file.createDataSet("uper0", data_type, data_space);
+	H5::DataSet dataset_ppar0 = file.createDataSet("ppar0", data_type, data_space);
+	H5::DataSet dataset_pper0 = file.createDataSet("pper0", data_type, data_space);
+	H5::DataSet dataset_eta0 = file.createDataSet("eta0", data_type, data_space);
+	H5::DataSet dataset_zeta0 = file.createDataSet("zeta0", data_type, data_space);
+	H5::DataSet dataset_time0 = file.createDataSet("time0", data_type, data_space);
+	H5::DataSet dataset_M_adiabatic0 = file.createDataSet("M_adiabatic0", data_type, data_space);
+	H5::DataSet dataset_Ekin0 = file.createDataSet("Ekin0", data_type, data_space);
+	H5::DataSet dataset_trapped0 = file.createDataSet("trapped0", data_type, data_space);
+	H5::DataSet dataset_escaped0 = file.createDataSet("escaped0", data_type, data_space);
+	H5::DataSet dataset_nan0 = file.createDataSet("nan0", data_type, data_space);
+	H5::DataSet dataset_negative0 = file.createDataSet("negative0", data_type, data_space);
+	H5::DataSet dataset_high0 = file.createDataSet("high0", data_type, data_space);
+	H5::DataSet dataset_aeq0_bins = file.createDataSet("aeq0_bins", data_type, data_space);
+
+	// Write
+	dataset_latitude0.write(latitude0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_aeq0.write(aeq0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_alpha0.write(alpha0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_upar0.write(upar0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_uper0.write(uper0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_ppar0.write(ppar0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_pper0.write(pper0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_eta0.write(eta0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_zeta0.write(zeta0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_time0.write(time0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_M_adiabatic0.write(M_adiabatic0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_Ekin0.write(Ekin0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_trapped0.write(trapped_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_escaped0.write(escaped_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_nan0.write(nan_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_negative0.write(negative_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_high0.write(high_dstr.data(), H5::PredType::NATIVE_DOUBLE);
 	
-	std::string file_name = "output/files/" + std::to_string(Distribution::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA_" +std::string(argv[3])+"ETA_"+std::string(argv[4]) + "EKIN.h5";
-	h5::File file(file_name, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
-	h5::DataSet data_lat            = file.createDataSet("lamda0", lamda_dstr);
-	h5::DataSet data_aeq            = file.createDataSet("aeq0", aeq_dstr);
-	h5::DataSet data_alpha          = file.createDataSet("alpha0", alpha_dstr);
-	h5::DataSet data_upar           = file.createDataSet("upar0", upar_dstr);
-	h5::DataSet data_uper           = file.createDataSet("uper0", uper_dstr);
-	h5::DataSet data_ppar           = file.createDataSet("ppar0", ppar_dstr);
-	h5::DataSet data_pper           = file.createDataSet("pper0", pper_dstr);
-	h5::DataSet data_eta            = file.createDataSet("eta0",  eta_dstr);
-	h5::DataSet data_zeta           = file.createDataSet("zeta0", zeta_dstr);
-	h5::DataSet data_time           = file.createDataSet("time0", time_dstr);
-	h5::DataSet data_M_adiabatic    = file.createDataSet("M_adiabatic0", M_adiabatic_dstr);
-	h5::DataSet data_Ekin           = file.createDataSet("Ekin0", Ekin_dstr);
-	h5::DataSet data_trapped        = file.createDataSet("trapped0", trapped_dstr);
-	h5::DataSet data_escaped        = file.createDataSet("escaped0", escaped_dstr);
-	h5::DataSet data_nan       	    = file.createDataSet("nan0", nan_dstr);
-	h5::DataSet data_negative       = file.createDataSet("negative0", negative_dstr);
-	h5::DataSet data_high      	    = file.createDataSet("high0", high_dstr);
-	h5::DataSet aeq0bins            = file.createDataSet("aeq0_bins", aeq0_bins);
+	// Close datasets
+	dataset_latitude0.close();
+	dataset_aeq0.close();
+	dataset_alpha0.close();
+	dataset_upar0.close();
+	dataset_uper0.close();
+	dataset_ppar0.close();
+	dataset_pper0.close();
+	dataset_eta0.close();
+	dataset_zeta0.close();
+	dataset_time0.close();
+	dataset_M_adiabatic0.close();
+	dataset_Ekin0.close();
+	dataset_trapped0.close();
+	dataset_escaped0.close();
+	dataset_nan0.close();
+	dataset_negative0.close();
+	dataset_high0.close();
+	dataset_aeq0_bins.close();
+	
+	
+	
+//---------------------------------------------------------------WRITE TO HDF5 FILE: END---------------------------------------------------------------//
 
-//----------------------------------------WRITE TO HDF5 FILE------------------------------------//
 
     return 0;
 }

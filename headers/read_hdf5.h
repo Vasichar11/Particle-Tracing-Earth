@@ -1,11 +1,10 @@
 #pragma once
-#include <highfive/H5File.hpp>                                      
-#include <highfive/H5DataSet.hpp>
-#include <highfive/H5DataSpace.hpp>
 #include <string>
 #include <vector>
+#include <iostream>
 #include "common.h"
+#include <H5Cpp.h>
 
-namespace h5 = HighFive;
+using namespace H5;
 
  std::vector<real> read_hdf5(const std::string& dataset_name, const std::string& file_name);

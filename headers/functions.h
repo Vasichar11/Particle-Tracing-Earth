@@ -13,7 +13,7 @@ std::tuple<real, real, real, real, real> stix_parameters(real wce, real wcO, rea
     //returns tuple(S, D, P, R, L).
 
 //Magnetic dipole field
-real Bmag_dipole(real lamda);
+real Bmag_dipole(real latitude);
     //returns Bmag.
 
 //Solve dispersion relation.
@@ -21,7 +21,7 @@ std::tuple<real, real, real, real> dispersion(real S, real P, real R, real L, re
     //returns tuple(mu, kappa, kx, kz). 
 
 //Estimate dwh_ds
-real dwh_dsf(real w_h, real lamda);
+real dwh_dsf(real w_h, real latitude);
     //returns dwh_ds.
 
 //Estimate Bell parameters.
@@ -45,7 +45,7 @@ void f_packet (real &Fpar, real &Fper, real &Ftheta, real &aeq_rk, real &kz, con
 
 
 //Returns quantities needed, regardless WPI.
-void f_always(real &p_mag, real &gama, real &w_h, real &dwh_ds, const real lamda_tmp, const real ppar_tmp, const real pper_tmp);
+void f_always(real &p_mag, real &gama, real &w_h, real &dwh_ds, const real latitude_tmp, const real ppar_tmp, const real pper_tmp);
 
 
 //Estimate resonant velocity 

@@ -11,7 +11,7 @@ struct Species
 	Species(real type_mass, real type_charge, real type_n_factor);
 
 
-	//Returns specie's lamda dependent density(estimation)
+	//Returns specie's latitude dependent density(estimation)
 	real density(real l);
 
 	//Returns specie's plasma frequency squared

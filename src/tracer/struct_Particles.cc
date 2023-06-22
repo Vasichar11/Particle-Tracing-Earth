@@ -1,10 +1,10 @@
 #include "struct_Particles.h"
 
-void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real zeta0, real time0)
+void Particles::initialize(real eta0, real aeq0, real latitude0, real Ekin0, real zeta0, real time0)
 {
 	int k;
 	const real Beq0 = Bmag_dipole(0);   		    //Beq isn't always Beq0?
-	real Blam0      = Bmag_dipole(lamda0);
+	real Blam0      = Bmag_dipole(latitude0);
 	real salpha0    = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
 	
 	if(aeq0*Universal::R2D>90)   k=1;			   //Both k=1 and k=0 are valid for every particle!!(?). This basically defines if its upward or downward.
@@ -19,10 +19,10 @@ void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real z
 	real Ejoule0=1.602176487E-16*Ekin0; //Kev to Joule
 	real gama0=(Ejoule0/(Universal::m_e*pow(Universal::c,2))) + 1;
 	real speed0=sqrt( 1 - (1/pow(gama0,2)) ) * Universal::c;
-	//std::cout<<"\nBouncing period estimation: "<< (4*Particle_init::L_shell*Universal::Re/speed0)*(1.3 - 0.5*sin(aeq0)); //[Orlova1,Shprits2,2011]
+	//std::cout<<"\nBouncing period estimation: "<< (4*Distribution::L_shell*Universal::Re/speed0)*(1.3 - 0.5*sin(aeq0)); //[Orlova1,Shprits2,2011]
 
 	//Assign initial state.
-	this->lamda0 = lamda0;
+	this->latitude0 = latitude0;
 	this->aeq0   = aeq0;
 	this->eta0   = eta0;
 	this->alpha0 = alpha0;
@@ -46,10 +46,10 @@ void Particles::initialize(real eta0, real aeq0, real lamda0, real Ekin0, real z
 
 
 //Member function to save precipitating particle states. No need for vectors, just one saved value.
-void Particles::escaping_state(int id, real new_lamda, real new_aeq, real new_alpha, real new_time)
+void Particles::escaping_state(int id, real new_latitude, real new_aeq, real new_alpha, real new_time)
 {	
 	id_lost     =	id;
-	lamda_lost  =	new_lamda;
+	latitude_lost  =	new_latitude;
 	aeq_lost  	=	new_aeq	;
 	alpha_lost  =	new_alpha;
 	time_lost   =	new_time;
@@ -95,7 +95,7 @@ void Particles::save_state( int p, real max_dEkin, real maxEkin_time, real  max_
 	//saved_min_detadt = min_detadt;
 	//saved_mindetadt_time = mindetadt_time;
 	//this->id.push_back(id);
-	//this->lamda.push_back(new_lamda);      				
+	//this->latitude.push_back(new_latitude);      				
 	//this->ppar.push_back(new_ppar);		 
 	//this->pper.push_back(new_pper);
 	//this->alpha.push_back(new_alpha);	
