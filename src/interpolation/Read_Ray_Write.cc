@@ -95,20 +95,15 @@ int main()
 //------------------------------------------------- INTERPOLATE RAY --------------------------------------------------//
     //std::cout << timef.at(0) << " " << timef.back();                  //Csv's first and last time value.
         
-    int t_size = timef.size();      
-    real last_timestep = timef.at(t_size - 2);                          //Second to last element.
-    last_timestep = (int)(last_timestep*100 + 0.5) ;                    //Integer (value*100 + 0.5)
-    last_timestep = last_timestep/100 ;                                 //---> Round last_timestep, 2 decimals.
-        
-    
-    //std::cout<< "\nlast timestep " << last_timestep ;                 //Simulation's last timestep.
-    
-    std::vector <real> time_new {0} ;                                   //Initialize to use .back() in first iteration.
-    int j=1;
-    while(time_new.back()+(Simulation::h) < last_timestep - Simulation::h) //Arrange, 0 to last_timestep with stepsize h
-    {                                //Why last_timestep - h ??
-        time_new.push_back(0+j*Simulation::h); 
-        j++ ;
+    size_t size = timef.size();
+    real last_timestep = timef.at(size - 2); // Second to last element.
+    int rounded_last_timestep = static_cast<int>(std::round(last_timestep));
+
+    std::vector<real> time_new;
+    time_new.reserve(static_cast<size_t>(rounded_last_timestep / Simulation::h));
+
+    for (real t = 0; t < rounded_last_timestep - Simulation::h; t += Simulation::h) {
+        time_new.push_back(t);
     }  
 
     std::vector <real> posx_int      =   interpolate(time_new, timef, posx);

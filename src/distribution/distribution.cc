@@ -23,7 +23,7 @@ void latitude_domain(real aeq0, real &latitude_start_d, real &latitude_end_d)
 	real salpha0;
 	do
 	{
-		latitude_end_d += Distribution::latitude_domain_step; 
+		latitude_end_d += Lat_dstr::domain_step; 
 		//Gradually increase and check if salpha0 is valid.
 		//("Brute Force domain validation")
 		real Blam0   = Bmag_dipole(latitude_end_d*Universal::D2R);
@@ -35,7 +35,7 @@ void latitude_domain(real aeq0, real &latitude_start_d, real &latitude_end_d)
 	/*-1<salpha || salpha>1 => domain error
 	aeq0=0||180 => salpha0 = 0 => alpha0 = 0 => pper0 = 0 => PROBLEM IN Bell_param, a2(division with 0).
 	sin(pi) is actually not zero in C++... */
-	latitude_end_d   -= Distribution::latitude_domain_step;     //This is the last (positive) valid value.
+	latitude_end_d   -= Lat_dstr::domain_step;     //This is the last (positive) valid value.
 	latitude_start_d  = -latitude_end_d;	 //This would be the first (negative) valid value. 		
 }
 
@@ -64,10 +64,10 @@ int main(int argc, char **argv)
 
 	std::cout<<"\n\nParticle population: " << Distribution::population;
 	std::cout<<"\nDistributed as: |From    To|"<<"    (evenly, uniform, normal, test) \n";
-	std::cout<<"\nEquatorial P.A: |"<<Distribution::aeq_start_d<<" "<<Distribution::aeq_end_d<<"|      "<< argv[1];
-	std::cout<<"\nLatitude:       |"<<Distribution::latitude_start_d<<" "<<Distribution::latitude_end_d<<"|     "<< argv[2];
-	std::cout<<"\nEta:            |"<<Distribution::eta_start_d<<" "<<Distribution::eta_end_d<<"|      "<< argv[3];
-	std::cout<<"\nEkin:           |"<<Distribution::Ekin_start<<" "<<Distribution::Ekin_end<<"|    "<< argv[4]<< std::endl;
+	std::cout<<"\nEquatorial P.A: |"<<Aeq_dstr::start_deg<<" "<<Aeq_dstr::end_deg<<"|      "<< argv[1];
+	std::cout<<"\nLatitude:       |"<<Lat_dstr::start_deg<<" "<<Lat_dstr::end_deg<<"|     "<< argv[2];
+	std::cout<<"\nEta:            |"<<Eta_dstr::start_deg<<" "<<Eta_dstr::end_deg<<"|      "<< argv[3];
+	std::cout<<"\nEkin:           |"<<Ekin_dstr::start<<" "<<Ekin_dstr::end<<"|    "<< argv[4]<< std::endl;
 
 
 
@@ -92,15 +92,15 @@ int main(int argc, char **argv)
 		if(argv[1]==string_evenly)   
 		{
 			// Step for linspace(start, end, aeq_groups) 
-			const real aeq_step_d	  = (Distribution::aeq_end_d - Distribution::aeq_start_d)/(Distribution::aeq_steps-1); 	
-			aeq0 = (Distribution::aeq_start_d + aeq_count*aeq_step_d) * Universal::D2R;		
+			const real aeq_step_d	  = (Aeq_dstr::end_deg - Aeq_dstr::start_deg)/(Aeq_dstr::steps-1); 	
+			aeq0 = (Aeq_dstr::start_deg + aeq_count*aeq_step_d) * Universal::D2R;		
 			aeq_count++;	
 		}
 		// Uniformly with goal: randomness
 		else if (argv[1]==string_uniform)   			
 		{
 			//All values in this range are equally probable.
-			std::uniform_real_distribution <real> uniform_aeq  (Distribution::aeq_start_d, Distribution::aeq_end_d);
+			std::uniform_real_distribution <real> uniform_aeq  (Aeq_dstr::start_deg, Aeq_dstr::end_deg);
 			aeq0  = uniform_aeq(generator) * Universal::D2R; 	
 		}
 		// Normally with goal: reach normal dstr in logarithm scale
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 			real number;
 			do
 			{
-				std::normal_distribution <real> normal_aeq(Distribution::mean_aeq, Distribution::stdev_aeq);
+				std::normal_distribution <real> normal_aeq(Aeq_dstr::mean, Aeq_dstr::stdev);
 				number = normal_aeq(generator);
 
 			}while(number<=0 || number>=180); //Until valid aeq=(0,180).
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 		// Constant with goal: testing
 		else if (argv[1]==string_constant)
 		{
-			aeq0 = Distribution::aeq0;
+			aeq0 = Aeq_dstr::value;
 		}
 		//----------------------------------------- DISTRIBUTE LATITUDE ----------------------------------------------//
 		//-------------Latitude domain-------------//
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 		if(argv[2]==string_evenly)   
 		{
 			//Step for linspace(start,end,aeq_groups) 
-			const real latitude_step_d	  = (latitude_end_d - latitude_start_d)/(Distribution::latitude_steps-1);						
+			const real latitude_step_d	  = (latitude_end_d - latitude_start_d)/(Lat_dstr::steps-1);						
 			latitude0 = (latitude_start_d + latitude_count*latitude_step_d) * Universal::D2R;	  					
 		}
 		// Uniformly with goal: randomness
@@ -148,8 +148,8 @@ int main(int argc, char **argv)
 			{
 				//Adaptive stdev according to the latitude domain range. Domain range (min,max) = (0,90+90).
 				//That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
-				real stdev =((latitude_end_d-latitude_start_d)/180) * Distribution::max_stdev_latitude;
-				std::normal_distribution <real> normal_latitude(Distribution::mean_latitude, stdev);
+				real stdev =((latitude_end_d-latitude_start_d)/180) * Lat_dstr::max_stdev;
+				std::normal_distribution <real> normal_latitude(Lat_dstr::mean, stdev);
 				number = normal_latitude(generator);
 
 			}while(number<latitude_start_d || number>latitude_end_d); //Until valid latitude=(-90,90).
@@ -158,21 +158,21 @@ int main(int argc, char **argv)
 		// Constant with goal: testing
 		else if (argv[2]==string_constant)
 		{
-			latitude0 = Distribution::latitude0;
+			latitude0 = Lat_dstr::value;
 		}
 		//-------------------------------------------- DISTRIBUTE ETA --------------------------------------------------//
 		// Evenly with goal: symmetry	
 		if(argv[3]==string_evenly)   
 		{
 			//Step for linspace(start,end,eta_steps) 
-			const real eta_step_d	  = (Distribution::eta_end_d - Distribution::eta_start_d)/(Distribution::eta_steps-1); 	
-			eta0 = (Distribution::eta_start_d + eta_count*eta_step_d) * Universal::D2R;			
+			const real eta_step_d	  = (Eta_dstr::end_deg - Eta_dstr::start_deg)/(Eta_dstr::steps-1); 	
+			eta0 = (Eta_dstr::start_deg + eta_count*eta_step_d) * Universal::D2R;			
 		}
 		// Uniformly with goal: randomness
 		else if (argv[3]==string_uniform)   			
 		{
 			//All values in this range are equally probable.
-			std::uniform_real_distribution <real> uniform_eta  (Distribution::eta_start_d, Distribution::eta_end_d);
+			std::uniform_real_distribution <real> uniform_eta  (Eta_dstr::start_deg, Eta_dstr::end_deg);
 			eta0  = uniform_eta(generator) * Universal::D2R; 	
 		}
 		// Normally with goal: reach normal dstr 
@@ -181,7 +181,7 @@ int main(int argc, char **argv)
 			real number;
 			do
 			{
-				std::normal_distribution <real> normal_eta(Distribution::mean_eta, Distribution::stdev_eta);
+				std::normal_distribution <real> normal_eta(Eta_dstr::mean, Eta_dstr::stdev);
 				number = normal_eta(generator);
 
 			}while(number<=0 || number>=180); //Until valid eta=(0,180).
@@ -190,21 +190,21 @@ int main(int argc, char **argv)
 		// Constant with goal: testing
 		else if (argv[3]==string_constant)
 		{
-			eta0 = Distribution::eta0;
+			eta0 = Eta_dstr::value;
 		}
 		//-------------------------------------------- DISTRIBUTE EKIN -------------------------------------------------//
 		// Evenly with goal: symmetry	
 		if(argv[4]==string_evenly)   
 		{
 			//Step for linspace(start,end,Ekin_steps) 
-			const real Ekin_step = (Distribution::Ekin_end - Distribution::Ekin_start)/(Distribution::Ekin_steps-1); 	
-			Ekin0 = (Distribution::Ekin_start + Ekin_count*Ekin_step);			
+			const real Ekin_step = (Ekin_dstr::end - Ekin_dstr::start)/(Ekin_dstr::steps-1); 	
+			Ekin0 = (Ekin_dstr::start + Ekin_count*Ekin_step);			
 		}
 		// Uniformly with goal: randomness
 		else if (argv[4]==string_uniform)   			
 		{
 			//All values in this range are equally probable.
-			std::uniform_real_distribution <real> uniform_Ekin  (Distribution::Ekin_start, Distribution::Ekin_end);
+			std::uniform_real_distribution <real> uniform_Ekin  (Ekin_dstr::start, Ekin_dstr::end);
 			Ekin0  = uniform_Ekin(generator); 	
 		}
 		// Normally with goal: reach normal dstr 
@@ -213,7 +213,7 @@ int main(int argc, char **argv)
 			real number;
 			do
 			{
-				std::normal_distribution <real> normal_Ekin(Distribution::mean_Ekin, Distribution::stdev_Ekin);
+				std::normal_distribution <real> normal_Ekin(Ekin_dstr::mean, Ekin_dstr::stdev);
 				number = normal_Ekin(generator);
 
 			}while(number<=0 || number>=180); //Until valid Ekin=(0,180).
@@ -222,7 +222,7 @@ int main(int argc, char **argv)
 		// Constant with goal: testing
 		else if (argv[4]==string_constant)
 		{
-			Ekin0 = Distribution::Ekin0;
+			Ekin0 = Ekin_dstr::value;
 		}
 
 		//-------------------------------------------- FINALLY INITIALIZE -------------------------------------------------//

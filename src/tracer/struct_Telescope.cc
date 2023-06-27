@@ -1,20 +1,18 @@
 #include"struct_Telescope.h"
 
-//Constructor. Initialize position.
-Telescope::Telescope(real latitude, real L_shell)
-{
-	L_shell   = L_shell;
-	latitude  = latitude;
-}
-			
+// Constructor - Initialize position of satellite
+Telescope::Telescope(real lat, real L) : latitude_deg(lat), L_shell(L) {}
+
+// Particle position on the input - before and after position
+// Returns true if particle crossed satellite
 bool Telescope::crossing(real p1_latitude, real p2_latitude, real p_L_shell)
 {
 	bool crossed = false;
 
 	if(p_L_shell == L_shell)
 	{
-		if( (latitude-p1_latitude)*(latitude-p2_latitude) < 0 ) 
-		{ //e.g if particle was below satellite and then above, product would be negative.
+		if ((p1_latitude - latitude_deg) * (p2_latitude - latitude_deg) < 0) 
+		{ // if particle was below satellite and then above, product would be negative
 			crossed = true;
 		}
 	}
@@ -22,6 +20,7 @@ bool Telescope::crossing(real p1_latitude, real p2_latitude, real p_L_shell)
 	return crossed;
 }
 
+// Store detected particles in satellite's memory
 void Telescope::store(int id, real latitude, real aeq, real alpha, real time)
 {
 	this->id.push_back(id);

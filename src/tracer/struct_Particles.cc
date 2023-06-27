@@ -82,18 +82,18 @@ void Particles::nan_state(int id)
 	id_nan    =	id;
 }
 
-//Member function to save particle states(if needed).
-//If need many values use vectors.
+// Member function to save particle states (if needed)
+// If need many values use vectors
 
-void Particles::save_state( int p, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time)
+void Particles::save_state(int p, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time, real min_detadt, real min_detadt_time)
 {
 	saved_id = p;
 	saved_max_dEkin = max_dEkin;
 	saved_maxEkin_time = maxEkin_time;
 	saved_max_dPA = max_dPA;
 	saved_maxdPA_time = maxdPA_time;
-	//saved_min_detadt = min_detadt;
-	//saved_mindetadt_time = mindetadt_time;
+	saved_min_detadt = min_detadt;
+	saved_mindetadt_time = min_detadt_time;
 	//this->id.push_back(id);
 	//this->latitude.push_back(new_latitude);      				
 	//this->ppar.push_back(new_ppar);		 

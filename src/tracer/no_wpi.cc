@@ -158,17 +158,17 @@ void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODP
     
 
     //Save last state to return values and continue the simulation with wave (if needed). 
-    single.latitude00 = latitude;
-    single.ppar00  = ppar;
-    single.pper00  = pper;
-    single.alpha00 = alpha;
-    single.aeq00   = aeq;
-    single.time00  = time;
-    single.Ekin00  = Ekin;
-    single.eta00   = Distribution::eta0; //Particle "gyrophase" initialization 
-    //single.zeta00 = zeta;
-    //single.upar00 = upar;
-    //single.uper00 = uper;
+    single.latitude_end = latitude;
+    single.ppar_end  = ppar;
+    single.pper_end  = pper;
+    single.alpha_end = alpha;
+    single.aeq_end   = aeq;
+    single.time_end  = time;
+    single.Ekin_end  = Ekin;
+    single.eta_end   = Eta_dstr::value; //Particle "gyrophase" initialization 
+    //single.zeta_end = zeta;
+    //single.upar_end = upar;
+    //single.uper_end = uper;
 }
 
 

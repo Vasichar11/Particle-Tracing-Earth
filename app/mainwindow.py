@@ -90,32 +90,20 @@ class MainWindow(QMainWindow):
         tab1_scroll_area.setWidgetResizable(True)
         tab1_scroll_area.setWidget(self.tab1_widget)
 
-        # Read constant values from "constants.h" file
-        constant_values = self.read_constants_file("headers/constants.h")
-
-        # Group constants by namespace
-        constants_by_namespace = {}
-        for namespace, constant_name, default_value, comment in constant_values:
-            if namespace not in constants_by_namespace:
-                constants_by_namespace[namespace] = []
-            constants_by_namespace[namespace].append((constant_name, default_value, comment))
+        self.xml_filepath = os.path.join(current_directory, "app", "resources", "configuration", "constants.xml")
+        # Read constant values from "constants.xml" file
+        constant_values = self.read_constants_file(self.xml_filepath)
 
         # Add group boxes and layouts for each namespace
-        for namespace, constants in constants_by_namespace.items():
-            if namespace == "Universal": # don't show the universal constants, they should be always the same
-                continue 
+        for namespace, constants in constant_values.items():
             group_box = QGroupBox(namespace)
             group_layout = QVBoxLayout(group_box)
 
-            for constant_name, default_value, comment in constants:
+            for constant_name, constant_value, constant_description in constants:
                 label = QLabel(constant_name, self.tab1_widget)
-                label.setToolTip(comment)  # Set the comment as a tooltip
-                lineedit = QLineEdit(default_value, self.tab1_widget)
-                self.apply_line_edit_styles(lineedit)
-                lineedit.setMaximumWidth(150)  # Adjust the maximum width to your desired size
-                lineedit.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
-
-                # Create a horizontal layout for each constant value
+                label.setToolTip(constant_description)  # Set the description as a tooltip
+                lineedit = QLineEdit(constant_value, self.tab1_widget)
+                # ... Apply styles and customize line edits as desired ...
                 constant_layout = QHBoxLayout()
                 constant_layout.addWidget(label)
                 constant_layout.addWidget(lineedit)
@@ -208,17 +196,26 @@ class MainWindow(QMainWindow):
     def update_progress_bar(self, progress):
         self.progress_bar.setValue(progress)
 
-    def read_constants_file(xml_filepath):
-        constants = {}
+    def read_constants_file(self,xml_filepath):
+        constants_by_namespace = {}
+
         tree = ET.parse(xml_filepath)
         root = tree.getroot()
 
-        for constant in root.findall('constant'):
-            name = constant.get('name')
-            value = constant.text
-            constants[name] = value
+        for namespace_element in root:
+            namespace = namespace_element.tag
+            constants = []
 
-        return constants
+            for constant_element in namespace_element:
+                constant_name = constant_element.find("name").text
+                constant_value = constant_element.find("value").text
+                constant_description = constant_element.find("description").text
+
+                constants.append((constant_name, constant_value, constant_description))
+
+            constants_by_namespace[namespace] = constants
+
+        return constants_by_namespace
 
     def make_clicked(self):
         # Handle the make button click event

@@ -32,13 +32,13 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {
-	std::cout<<"Loss for Lshell"<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D;
-	//Simulation time and steps, read from command line.
-	real t_nowpi = atoi(argv[1]);    //No WPI time from command line 
-	real t_wpi   = atoi(argv[2]);	 //WPI time from command line
+	std::cout<<"Loss cone angle, for Lshell "<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D;
+	//Simulation time and steps, read from command line
+	real t_nowpi = atoi(argv[1]); //No WPI time from command line 
+	real t_wpi   = atoi(argv[2]); //WPI time from command line
 	real t = t_nowpi + t_wpi;  //Total simulation time
-	int64_t Nsteps_wpi  = t_wpi/Simulation::h; 	 //WPI step count
-	int64_t Nsteps_nowpi= t_nowpi/Simulation::h; //noWPI step count
+	const int64_t Nsteps_wpi  = t_wpi/Simulation::h; //WPI step count
+	const int64_t Nsteps_nowpi= t_nowpi/Simulation::h; //noWPI step count
 	
 	std::string bell = "-bell";
 	/*//---ARGV ERROR---//
@@ -57,15 +57,59 @@ int main(int argc, char **argv)
 
 
 	std::cout << "\nPick a particle distribution file from the below\n";
-	for (const auto & entry : std::filesystem::directory_iterator("output/files")) {
-        std::cout << entry.path() << std::endl; }
-	std::string file_dstr;
-	std::cout<<"\n";
-	std::getline(std::cin, file_dstr);
-	std::cout << "\n\nParticle distribution file: "<<file_dstr;
+    std::vector<std::string> files;
+    const std::string directory = "output/files"; // Input file directory
+    const std::string extension = ".h5"; // Input file needs to be hdf5 format
+    const std::string prefix = "dstr"; // Input file prefix, defined in distribution.cc
+	std::string selectedFilepath;
+	std::string selectedFilename;
+
+    // Iterate over the directory and store files that much the distribution hdf5 files
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+        const std::string filename = entry.path().filename().string();
+        const std::string stem = entry.path().stem().string();
+
+        if (entry.path().extension() == extension && stem.substr(0, prefix.size()) == prefix) {
+            files.push_back(filename);
+        }
+    }
+
+    int selection;
+    bool validSelection = false;
+
+	// Loop until valid file selection
+    do {
+        // Display the files
+        std::cout << "Distribution files in directory \"" << directory << "\":\n";
+        for (size_t i = 0; i < files.size(); ++i) {
+            std::cout << i + 1 << ". " << files[i] << '\n';
+        }
+
+        // Prompt the user to select a file
+        std::cout << "Enter the number of the file you want to select: ";
+
+        if (std::cin >> selection) {
+            if (selection >= 1 && selection <= static_cast<int>(files.size())) {
+                validSelection = true;
+                std::string selectedFilename = files[selection - 1];
+				std::filesystem::path selectedFilepath = std::filesystem::path(directory) / std::filesystem::path(selectedFilename);
+                selectedFilename = selectedFilepath.string();
+                std::cout << "You selected filepath: " << selectedFilepath << '\n';
+            } else {
+                std::cout << "Invalid selection.\n";
+            }
+        } else {
+            std::cout << "Invalid input. Please enter a valid number.\n";
+            std::cin.clear(); // Clear the error state
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
+        }
+    } while (!validSelection);
+
+
+
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file(file_dstr, h5::File::ReadOnly);
+	h5::File distribution_file(selectedFilename, h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> latitude_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
@@ -137,7 +181,7 @@ int main(int argc, char **argv)
 
 
 	//Object for Particle Telescope.		
-	Telescope ODPT(Satellite::telescope_latitude, Distribution::L_shell);	
+	Telescope ODPT(Satellite::latitude_deg, Satellite::L_shell);	
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
@@ -258,20 +302,20 @@ int main(int argc, char **argv)
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
  
 	//Assign from struct to vectors.
-	std::vector<real> precip_id, precip_latitude, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, latitude00, ppar00, pper00, alpha00, aeq00, eta00, time00, Ekin00;
+	std::vector<real> precip_id, precip_latitude, precip_alpha, precip_aeq, precip_time, neg_id, nan_id, high_id, latitude_end, ppar_end, pper_end, alpha_end, aeq_end, eta_end, time_end, Ekin_end;
 	std::vector<real> Dsaved_id, Dsaved_max_dEkin, Dsaved_maxEkin_time, Dsaved_max_dPA, Dsaved_maxdPA_time, Dsaved_min_deta_dt, Dsaved_min_deta_dt_time;
 
 	for(int p=0; p<Population; p++) 
 	{
 		//Last particle states(that can become first states for next simulation).
-		latitude00.push_back(dstr[p].latitude00);
-    	ppar00.push_back(dstr[p].ppar00); 
-    	pper00.push_back(dstr[p].pper00); 
-    	alpha00.push_back(dstr[p].alpha00); 
-    	aeq00.push_back(dstr[p].aeq00); 
-    	eta00.push_back(dstr[p].eta00); 
-    	Ekin00.push_back(dstr[p].Ekin00); 
-    	time00.push_back(dstr[p].time00);
+		latitude_end.push_back(dstr[p].latitude_end);
+    	ppar_end.push_back(dstr[p].ppar_end); 
+    	pper_end.push_back(dstr[p].pper_end); 
+    	alpha_end.push_back(dstr[p].alpha_end); 
+    	aeq_end.push_back(dstr[p].aeq_end); 
+    	eta_end.push_back(dstr[p].eta_end); 
+    	Ekin_end.push_back(dstr[p].Ekin_end); 
+    	time_end.push_back(dstr[p].time_end);
 		
 
 		//Precipitating Particles
@@ -347,14 +391,14 @@ int main(int argc, char **argv)
 
 
 	//Particles states at noWPI end.
-	h5::DataSet ending_latutide   = file.createDataSet("latitude00", latitude00);
-	h5::DataSet ending_ppar    = file.createDataSet("ppar00",  ppar00);
-	h5::DataSet ending_pper    = file.createDataSet("pper00",  pper00);
-	h5::DataSet ending_alpha   = file.createDataSet("alpha00", alpha00);
-	h5::DataSet ending_aeq     = file.createDataSet("aeq00",   aeq00);
-	h5::DataSet ending_eta     = file.createDataSet("eta00",   eta00);
-	h5::DataSet ending_Ekin    = file.createDataSet("Ekin00",  Ekin00);
-	h5::DataSet ending_time    = file.createDataSet("time00",  time00);
+	h5::DataSet ending_latutide   = file.createDataSet("latitude_end", latitude_end);
+	h5::DataSet ending_ppar    = file.createDataSet("ppar_end",  ppar_end);
+	h5::DataSet ending_pper    = file.createDataSet("pper_end",  pper_end);
+	h5::DataSet ending_alpha   = file.createDataSet("alpha_end", alpha_end);
+	h5::DataSet ending_aeq     = file.createDataSet("aeq_end",   aeq_end);
+	h5::DataSet ending_eta     = file.createDataSet("eta_end",   eta_end);
+	h5::DataSet ending_Ekin    = file.createDataSet("Ekin_end",  Ekin_end);
+	h5::DataSet ending_time    = file.createDataSet("time_end",  time_end);
 
 
 	//Saved Particles

@@ -56,23 +56,22 @@ Bw_ray = f1["Bw_ray"][()]
 Bzw = f1["Bzw"][()]
 Ezw = f1["Ezw"][()]
 time = f1["time"][()]
-
 fig, ax = plt.subplots(2, 2)
 
 ax[0,0].plot(time, Bw_ray, label="Bw_ray")
 ax[1,1].set(xlabel="time(s)",ylabel="Field(T)",ylim=(min(Bw_ray),max(Bw_ray)))
-ax[0,0].legend()
+ax[0,0].legend(loc="upper right")
 
 ax[0,1].plot(time, Ezw, label="Ezw")
 ax[1,1].set(xlabel="time(s)",ylabel="Field(V/m)",ylim=(min(Ezw),max(Ezw)))
-ax[0,1].legend()
+ax[0,1].legend(loc="upper right")
 
 ax[1,0].plot(time, Bzw, label="Bzw")
 ax[1,1].set(xlabel="time(s)",ylabel="Field(T)",ylim=(min(Bzw),max(Bzw)))
-ax[1,0].legend()
+ax[1,0].legend(loc="upper right")
 
 ax[1,1].plot(time, lat, label="lat")
-ax[1,1].set(xlabel="time(s)",ylabel="Field(deg)",ylim=(min(lat),max(lat)))
-ax[1,1].legend()
+ax[1,1].set(xlabel="time(s)",ylabel="Latitude(deg)",ylim=(min(lat),max(lat)))
+ax[1,1].legend(loc="upper right")
 
 fig.savefig(os.path.join(plots_dir,selected_file.split("/")[-1].split(".h5")[0]+".png"))
