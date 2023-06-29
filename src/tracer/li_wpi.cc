@@ -95,24 +95,24 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         
 
         // Check Validity:
-        if(std::isnan(new_latitude*new_aeq*new_ppar)) {
+        if (std::isnan(new_latitude) || std::isnan(new_aeq) || std::isnan(new_ppar)) {
             single.nan = true;
             single.nan_state(p); // Save id of particle
-            std::cout<<"\nParticleV "<<p<<" nan";
+            std::cout << "\nParticleV " << p << " develops NaN state";
             break; 
         }
         // Check Negative P.A:
         if(alpha<0 || aeq<0) {
             single.negative = true;
             single.negative_state(p); // Save id of particle
-            std::cout<<"\nParticleN "<<p<<" negative p.a";
+            std::cout<<"\nParticleN "<<p<<" negative P.A";
             break;
         }
         // Check higher than 180 P.A:
         if(alpha>M_PI) {
             single.high = true;
             single.high_state(p); // Save id of particle
-            std::cout<<"\nParticleH "<<p<<" above 180 p.a";
+            std::cout<<"\nParticleH "<<p<<" above 180 P.A";
             break;
         }
         // Check Trapping:

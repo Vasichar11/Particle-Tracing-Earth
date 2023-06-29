@@ -29,7 +29,6 @@
 
 namespace h5 = HighFive;
 
-
 int main(int argc, char **argv)
 {
 	std::cout<<"Loss cone angle, for Lshell "<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D;
@@ -61,8 +60,8 @@ int main(int argc, char **argv)
     const std::string directory = "output/files"; // Input file directory
     const std::string extension = ".h5"; // Input file needs to be hdf5 format
     const std::string prefix = "dstr"; // Input file prefix, defined in distribution.cc
-	std::string selectedFilepath;
 	std::string selectedFilename;
+	std::filesystem::path selectedFilepath;
 
     // Iterate over the directory and store files that much the distribution hdf5 files
     for (const auto& entry : std::filesystem::directory_iterator(directory)) {
@@ -73,14 +72,18 @@ int main(int argc, char **argv)
             files.push_back(filename);
         }
     }
-
+	// Check if no files were found
+	if (files.empty()) {
+		std::cerr << "Error: No particle distribution files found in \"" << directory << "\".\nPlease create a particle distribution file with distribution.cc and try again." << std::endl;
+		return -1;
+	}
     int selection;
     bool validSelection = false;
 
 	// Loop until valid file selection
     do {
         // Display the files
-        std::cout << "Distribution files in directory \"" << directory << "\":\n";
+        std::cout << "Particle distribution files in directory \"" << directory << "\":\n";
         for (size_t i = 0; i < files.size(); ++i) {
             std::cout << i + 1 << ". " << files[i] << '\n';
         }
@@ -91,12 +94,12 @@ int main(int argc, char **argv)
         if (std::cin >> selection) {
             if (selection >= 1 && selection <= static_cast<int>(files.size())) {
                 validSelection = true;
-                std::string selectedFilename = files[selection - 1];
-				std::filesystem::path selectedFilepath = std::filesystem::path(directory) / std::filesystem::path(selectedFilename);
-                selectedFilename = selectedFilepath.string();
+                selectedFilename = files[selection - 1];
+				selectedFilepath = std::filesystem::path(directory) / std::filesystem::path(selectedFilename);
                 std::cout << "You selected filepath: " << selectedFilepath << '\n';
+				break;
             } else {
-                std::cout << "Invalid selection.\n";
+                std::cout << "\nInvalid selection.\n";
             }
         } else {
             std::cout << "Invalid input. Please enter a valid number.\n";
@@ -106,10 +109,11 @@ int main(int argc, char **argv)
     } while (!validSelection);
 
 
-
+    std::cout << "You selected filepath: " << selectedFilepath << '\n';
+	
 
 //------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-	h5::File distribution_file(selectedFilename, h5::File::ReadOnly);
+	h5::File distribution_file(selectedFilepath, h5::File::ReadOnly);
 	//Vectors to save temporarily
 	std::vector<real> latitude_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
 	//Read dataset from h5file.
@@ -181,7 +185,10 @@ int main(int argc, char **argv)
 
 
 	//Object for Particle Telescope.		
-	Telescope ODPT(Satellite::latitude_deg, Satellite::L_shell);	
+	Telescope ODPT(Satellite::latitude_deg, Distribution::L_shell);	
+
+
+//--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
 
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
@@ -299,6 +306,7 @@ int main(int argc, char **argv)
 	}
 //------------------------------------------------------------------ SIMULATION: END ---------------------------------------------------------------------//
 
+
 //------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
  
 	//Assign from struct to vectors.
@@ -357,8 +365,8 @@ int main(int argc, char **argv)
 
 	//File name based on the argument variables
 	std::string  save_file = "output/files/" + std::to_string(Distribution::population) + "p";  
-	if  (atoi(argv[1])>0) save_file += std::string("_nowpi"); 
-	if 	(atoi(argv[2])>0) save_file += std::string("_wpi");
+	if (atoi(argv[1])>0) save_file += std::to_string(atoi(argv[1])) + std::string("_nowpi"); 
+	if (atoi(argv[2])>0) save_file += std::to_string(atoi(argv[2])) + std::string("_wpi");
 	save_file = save_file + ".h5";
 
 	h5::File file(save_file, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
