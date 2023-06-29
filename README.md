@@ -3,10 +3,10 @@ This repository contains the code developed for my thesis titled 'Simulation of 
 
 To address the challenges of interacting with waves and handling a large population of particles, the following features were implemented:
 
-    - Different methods for generating particle distributions
-    - Parallel execution of the wave-particle interaction simulation in C++ using powerfull systems and exporting the results in hierarchical data format
-    - Loading these results in Python for further processing and analysis
-    - Extended visualization of the particle distributions using matplotlib library
+- Different methods for generating particle distributions
+- Parallel execution of the wave-particle interaction simulation in C++ using powerfull systems and exporting the results in hierarchical data format
+- Loading these results in Python for further processing and analysis
+- Extended visualization of the particle distributions using matplotlib library
 
 In the end, the effect that waves with different intensities and frequencies have on different particle distributions during their propagation could be evindent.
 
@@ -22,8 +22,8 @@ In the end, the effect that waves with different intensities and frequencies hav
 
 To better understand the code structure, a flow diagram has been created. You can download the following PDF documents to access their hyperlinks and explore the corresponding GitHub modules:
 
-    - code.pdf
-    - Particle_distribution.pdf"
+- code.pdf
+- Particle_distribution.pdf"
 
 ## Installation
 There's support only for Linux at the moment. The intallation procedure is given below, step by step. Start with the dependencies, continue with cloning the repository, then install the python requirements and finally continue to [Usage](#usage).
