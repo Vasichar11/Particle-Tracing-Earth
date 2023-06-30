@@ -1,8 +1,10 @@
 obj
 output
 dstr_data.csv
-**/*.exe
 .vscode
 **/__pycache__/
+tracer
+dstr
+ray
 
 
