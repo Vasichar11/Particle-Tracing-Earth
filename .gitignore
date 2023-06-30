@@ -1,8 +1,8 @@
 obj
 output
-dstr_data.csv
 .vscode
 **/__pycache__/
+tracer_venv
 tracer
 dstr
 ray
