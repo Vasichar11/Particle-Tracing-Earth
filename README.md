@@ -22,7 +22,10 @@ In the end, the effect that propagating waves with different intensities and fre
 
 To better understand the code structure, a flow diagram has been created. You can download the following PDF documents to access their hyperlinks and explore the corresponding GitHub modules:
 
-![code](./doc/code.drawio.svg)
+![code1](./doc/code.drawio1.svg)
+![code2](./doc/code.drawio2.svg)
+![code3](./doc/code.drawio3.svg)
+![code4](./doc/code.drawio4.svg)
 
 
 ## Installation
