@@ -1,0 +1,7 @@
+Ta swmatidia einai katanemimena aeq0 = 1-90 moires kai oxi 1-179 giati ginotan la8os anagwgh tou aeq0 se aeq. 
+Opote prosoxi, polla plot anaferontai se katanomes aeq 0-90(ta opoia den einai simetrika)
+
+
+Meta tin allagh fainetai h summetria gia katanomes lamda(-90,90) kai gia sta8ero lamda ston isimerino. An ksekinane apo 10 lamda ola den exw simetria.
+
+Sto valid alpha dokimasa 200x200=40000 dokimes, dhladi lamda.linspace(-90,90,200) aeq.linspace(0,180,200)

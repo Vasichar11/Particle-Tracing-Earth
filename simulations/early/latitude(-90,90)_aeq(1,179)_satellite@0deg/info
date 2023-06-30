@@ -1,0 +1,24 @@
+
+PARAMETERS: 100 for LATITUDE=(-90,90), 100 for aeq=(1,179), satellite latitude=0deg,
+            100x100 particles = 10000, μονο τα 2896 ειναι εγκυρα.
+            5second simulation
+            all 500kev
+
+
+alter_bins.mp4: αλλαγη του ευρους του καθε sector -> μαζευει σε μεγαλυτερο ευρος
+                και αλλαγή του time resolution -> μαζευει για περισσοτερο χρονο 
+
+PA_binnning.mp4: τα pitch angle distributions σε καθε timestep των 5seconds σταθερο sector_range=15deg και σταθερο time_bin=0.1s
+
+Crossing particles.png: τα σωματιδια που παιρνανε απο τον δορυφορο, ανιχνευονται παντα πριν περασουν συμφωνα με την σχεση :		
+        
+         if( (latitude-p1_lamda)*(latitude-p2_lamda) < 0 ) 
+		{ //e.g if particle was below satellite and then above, product would be negative.
+          //p1_lamda and p2_lamda particle first and second position			
+            crossed = true;
+		}
+Particle_sum.png: Τα σωματιδια που μαζευει απο ολες τις κατευθυνσεις για 5 δευτερολεπτα, με time_bins 0.1s
+
+
+
+

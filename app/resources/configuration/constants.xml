@@ -4,42 +4,42 @@
             <name>f_wave</name>
             <value>2000</value>
             <description>Wave frequency in Hz</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>Hz</physical_unit>
         </f_wave>
         <m_res ray_tracing="True" omnipresent_wave="True">
             <name>m_res</name>
             <value>1</value>
             <description>WPI resonance number (0=Landau resonance, 1=normal, counter-streaming resonance.)</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </m_res>   
         <pwr ray_tracing="True" omnipresent_wave="False">
             <name>pwr</name>
             <value>1</value>
             <description>From the power we get the intensity of the ray. Poynting flux [W/m 2]</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>W/m^2</physical_unit>
         </pwr>
         <pulse_duration ray_tracing="True" omnipresent_wave="False">
             <name>pulse_duration</name>
             <value>0.1</value>
             <description>Wave pulse duration in seconds</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>s</physical_unit>
         </pulse_duration>
         <By_wave ray_tracing="False" omnipresent_wave="True">
             <name>By_wave</name>
             <value>1e-9</value>
             <description />
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>T</physical_unit>
         </By_wave>
         <theta0_deg ray_tracing="False" omnipresent_wave="True">
                 <name>theta0_deg</name>
                 <value>0.001</value>
                 <description>Initial wave norml angle</description>
-                <metric_unit>none</metric_unit>
+                <metric_unit>1</metric_unit>
                 <physical_unit>degrees</physical_unit>
         </theta0_deg> 
     </Wave>
@@ -48,14 +48,14 @@
             <name>hm</name>
             <value>100000</value>
             <description>Minimum allowable mirroring altitude in m</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>m</physical_unit>
         </hm>
         <h>
             <name>h</name>
             <value>0.00001</value>
             <description>Runge kutta stepsize. Should be much smaller than the particle's gyroperiod</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>s</physical_unit>
         </h>
     </Simulation>
@@ -64,14 +64,14 @@
             <name>latitude</name>
             <value>0</value>
             <description>Latitude of the satellite</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </latitude>
         <L_shell>
             <name>L_shell</name>
             <value>2</value>
             <description>L_shell of the satellite. Constant for now</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </L_shell>
     </Satellite>
@@ -80,14 +80,14 @@
             <name>L_shell</name>
             <value>2</value>
             <description>L_shell of particle. Constant for now</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </L_shell>
         <population>
             <name>population</name>
             <value>10000</value>
             <description />
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </population>
     </Distribution>
@@ -96,42 +96,42 @@
             <name>start_deg</name>
             <value>1</value>
             <description />
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </start_deg>
         <end_deg normal="True" uniform="True" even="True" constant="False">
             <name>end_deg</name>
             <value>179</value>
             <description />
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </end_deg>
         <mean normal="True" uniform="False" even="False" constant="False">
             <name>mean</name>
             <value>90</value>
             <description>Mean of the normal dstr</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </mean>
         <stdev normal="True" uniform="False" even="False" constant="False">
             <name>stdev</name>
             <value>20</value>
             <description>Standard deviation of the normal dstr</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </stdev>
         <steps normal="False" uniform="False" even="True" constant="False">
             <name>steps</name>
             <value>10</value>
             <description>To distribute evenly</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </steps>
         <value select="aeq_constant">
             <name>value</name>
             <value>69.844</value>
             <description>If single values are used</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </value>
     </Aeq_dstr>
@@ -140,49 +140,49 @@
             <name>start_deg</name>
             <value>-90</value>
             <description />
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </start_deg>
         <end_deg normal="True" uniform="True" even="True" constant="False">
             <name>end_deg</name>
             <value>90</value>
             <description />
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </end_deg>
         <mean normal="True" uniform="False" even="False" constant="False">
             <name>mean</name>
             <value>0</value>
             <description>Mean of the normal dstr</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </mean>
         <max_stdev select="normal">
             <name>max_stdev</name>
             <value>20</value>
             <description>Standard deviation when latitude domain is the biggest. Is proportional to latitude range</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </max_stdev>
         <domain_step>
             <name>domain_step</name>
             <value>0.001</value>
             <description>Latitude domain range precision</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </domain_step>
         <steps normal="False" uniform="False" even="True" constant="False">
             <name>steps</name>
             <value>10</value>
             <description>To distribute evenly</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </steps>
         <value_deg normal="False" uniform="False" even="False" constant="True">
             <name>value_deg</name>
             <value>-9</value>
             <description>If single values are used</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </value_deg>
     </Lat_dstr>
@@ -191,42 +191,42 @@
             <name>start_deg</name>
             <value>1</value>
             <description />
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </start_deg>
         <end_deg normal="True" uniform="True" even="True" constant="False">
             <name>end_deg</name>
             <value>359</value>
             <description>Issue if eta=0 or 360?</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </end_deg>
         <mean normal="True" uniform="False" even="False" constant="False">
             <name>mean</name>
             <value>180</value>
             <description>Mean of the normal dstr</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </mean>
         <stdev normal="True" uniform="False" even="False" constant="False">
             <name>stdev</name>
             <value>20</value>
             <description>Standard deviation of the normal dstr</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </stdev>
         <steps normal="False" uniform="False" even="True" constant="False">
             <name>steps</name>
             <value>10</value>
             <description>To distribute evenly</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </steps>
         <value_deg normal="False" uniform="False" even="False" constant="True">
             <name>value_deg</name>
             <value>30</value>
             <description>Initial particle phase (angle between Vperp and BwR)</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </value_deg>
     </Eta_dstr>
@@ -235,42 +235,42 @@
             <name>start</name>
             <value>100</value>
             <description>keV</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>keV</physical_unit>
         </start>
         <end normal="True" uniform="True" even="True" constant="False">
             <name>end</name>
             <value>1350</value>
             <description>keV</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>keV</physical_unit>
         </end>
         <mean normal="True" uniform="False" even="False" constant="False">
             <name>mean</name>
             <value>600</value>
             <description>Mean of the normal dstr</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </mean>
         <stdev normal="True" uniform="False" even="False" constant="False">
             <name>stdev</name>
             <value>20</value>
             <description>Standard deviation of the normal dstr</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </stdev>
         <steps normal="False" uniform="False" even="True" constant="False">
             <name>steps</name>
             <value>10</value>
             <description>To distribute evenly</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </steps>
         <value normal="False" uniform="False" even="False" constant="True">
             <name>value</name>
             <value>590</value>
             <description>Initial energy keV</description>
-            <metric_unit>none</metric_unit>
+            <metric_unit>1</metric_unit>
             <physical_unit>keV</physical_unit>
         </value>
     </Ekin_dstr>

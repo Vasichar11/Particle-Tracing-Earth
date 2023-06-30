@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 import xml.etree.ElementTree as ET
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QVBoxLayout, QSizePolicy, QHBoxLayout, QPushButton, QRadioButton, QScrollArea, QTabWidget, QProgressBar, QGroupBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, QRadioButton, QScrollArea, QTabWidget, QProgressBar, QGroupBox, QComboBox
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QIcon
@@ -81,6 +81,7 @@ class MainWindow(QMainWindow):
         # Add a tab widget
         self.tab_widget = QTabWidget(self.main_widget)
 
+
         # Add the first tab
         self.tab1_widget = QWidget(self)
         self.tab1_layout = QVBoxLayout(self.tab1_widget)
@@ -92,23 +93,41 @@ class MainWindow(QMainWindow):
 
         self.xml_filepath = os.path.join(current_directory, "app", "resources", "configuration", "constants.xml")
         # Read constant values from "constants.xml" file
-        constant_values = self.read_constants_file(self.xml_filepath)
+        constants_by_namespace = self.read_config_file()
+        
+        # Dictionary with all the metric units and their multiplication factors
+        self.metric_units = {"T":1000000000000, "G":1000000000, "M":1000000, "K":1000, "1":1, "m":0.001, "μ":0.000001, "n":0.000000001, "p":0.000000000001}
 
         # Add group boxes and layouts for each namespace
-        for namespace, constants in constant_values.items():
+        for namespace, constants in constants_by_namespace.items():
             group_box = QGroupBox(namespace)
             group_layout = QVBoxLayout(group_box)
 
-            for constant_name, constant_value, constant_description in constants:
-                label = QLabel(constant_name, self.tab1_widget)
-                label.setToolTip(constant_description)  # Set the description as a tooltip
-                lineedit = QLineEdit(constant_value, self.tab1_widget)
-                # ... Apply styles and customize line edits as desired ...
-                constant_layout = QHBoxLayout()
-                constant_layout.addWidget(label)
-                constant_layout.addWidget(lineedit)
+            for name, value, description, metric_unit, physical_unit in constants:
+                label = QLabel(name, self.tab1_widget)
+                label.setToolTip(description)  # Set the description as a tooltip
+                lineedit = QLineEdit(value, self.tab1_widget)
 
-                group_layout.addLayout(constant_layout)
+                # Dropdown for Metric Unit
+                combo_box_metric = QComboBox(group_box)
+                for key in self.metric_units:
+                    combo_box_metric.addItem(key)
+                combo_box_metric.setCurrentText(metric_unit)  # Set default value from the XML document
+
+                # Dropdown for Physical Unit
+                lineedit_physical = QLineEdit()
+                lineedit_physical.setReadOnly(True) # The physical value is fixed and comes from the XML document
+                lineedit_physical.setText(physical_unit)  # Set default value
+                lineedit_physical.setFixedWidth(100)  # Set the width of the QLineEdit
+                lineedit_physical.setFixedHeight(30)  # Set the height of the QLineEdit
+
+                layout = QHBoxLayout()
+                layout.addWidget(label)
+                layout.addWidget(lineedit)
+                layout.addWidget(combo_box_metric)
+                layout.addWidget(lineedit_physical)
+
+                group_layout.addLayout(layout)
 
             self.tab1_layout.addWidget(group_box)
 
@@ -156,13 +175,6 @@ class MainWindow(QMainWindow):
 
         # Add the first tab to the tab widget
         self.tab_widget.addTab(tab1_scroll_area, "Simulation")
-
-        # Create the "Visualization" tab
-        self.plots_tab = QWidget(self)
-        self.plots_layout = QVBoxLayout(self.plots_tab)
-        self.tab_widget.addTab(self.plots_tab, "Visualization")
-
-        # Add the tab widget to the main layout
         self.layout.addWidget(self.tab_widget)
 
         # Set the central widget
@@ -196,22 +208,24 @@ class MainWindow(QMainWindow):
     def update_progress_bar(self, progress):
         self.progress_bar.setValue(progress)
 
-    def read_constants_file(self,xml_filepath):
+    def read_config_file(self):
         constants_by_namespace = {}
 
-        tree = ET.parse(xml_filepath)
+        tree = ET.parse(self.xml_filepath)
         root = tree.getroot()
 
         for namespace_element in root:
             namespace = namespace_element.tag
             constants = []
 
-            for constant_element in namespace_element:
-                constant_name = constant_element.find("name").text
-                constant_value = constant_element.find("value").text
-                constant_description = constant_element.find("description").text
+            for element in namespace_element:
+                name = element.find("name").text
+                value = element.find("value").text
+                description = element.find("description").text
+                metric_unit = element.find("metric_unit").text
+                physical_unit = element.find("physical_unit").text
 
-                constants.append((constant_name, constant_value, constant_description))
+                constants.append((name, value, description, metric_unit, physical_unit))
 
             constants_by_namespace[namespace] = constants
 
@@ -231,27 +245,43 @@ class MainWindow(QMainWindow):
         print("STDERR:", stderr)
 
     def apply_line_edit_values(self):
-        constants_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "headers/constants.h")
-        with open(constants_path, "r") as file:
-            lines = file.readlines()
+        edited_xml_filepath = os.path.join(self.xml_filepath.split("constants.xml")[0], "edited_constants.xml")
+        tree = ET.parse(self.xml_filepath)
+        root = tree.getroot()
 
-        for i, line in enumerate(lines):
-            if line.strip().startswith("const"):
-                parts = line.strip().split("=")
-                if len(parts) == 2:
-                    constant_name = parts[0].split()[-1].strip()
-                    constant_value = parts[1].split(";")[0].strip()
+        for namespace_element in root:
+            for element in namespace_element:
+                name = element.find("name").text
+                line_edit_value = self.get_line_edit_value(name)
+                # Edit new value in the new xml configuration file
+                element.find("value").text = line_edit_value
+                # The value is multiplied by the corresponding multiplication factor
+                # That means that the new metric unit will be 1
+                element.find("metric_unit").text = "1"
 
-                    # Find the corresponding line edit for the constant
-                    for j in range(len(self.constant_labels)):
-                        if constant_name == self.constant_labels[j].text():
-                            new_value = self.constant_lineedits[j].text()
+        tree.write(edited_xml_filepath)
 
-                            # Replace the value in the line with the new value
-                            lines[i] = line.replace(constant_value, new_value)
+    def get_line_edit_value(self, name):
+        for group_box in self.tab1_widget.findChildren(QGroupBox):
+            for layout in group_box.findChildren(QVBoxLayout):
+                for index in range(layout.count()):
+                    item = layout.itemAt(index)
+                    if isinstance(item, QHBoxLayout):
+                        label = item.itemAt(0).widget()
+                        line_edit = item.itemAt(1).widget()
+                        combobox = item.itemAt(2).widget()  # Assuming the QComboBox is the third widget in the QHBoxLayout
+                        if isinstance(label, QLabel) and label.text() == name and isinstance(line_edit, QLineEdit) and isinstance(combobox, QComboBox):
+                            # Typecast to float to multiply with the multiplicative factor
+                            value = float(line_edit.text())
+                            unit = combobox.currentText()
+                            multiplication_factor = self.metric_units[unit]
+                            new_value = value * multiplication_factor
+                            # Typecast back to string
+                            new_value = str(new_value)
+                            return new_value
 
-        with open(constants_path, "w") as file:
-            file.writelines(lines)
+        return ""  # Return an empty string if the QLineEdit for the given name is not found
+
 
     def allclean_clicked(self):
         # Reset the progress bar to 0%

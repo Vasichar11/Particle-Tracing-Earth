@@ -87,7 +87,7 @@ namespace Eta_dstr
 namespace Ekin_dstr
 {
     const real start = 100; // keV 	 
-    const real end = 1350;  // keV 
+    const real end = 1350; // keV 
     const real mean = 600; // Mean of the normal dstr		
     const real stdev = 20; // Standard deviation of the normal dstr
     const real steps = 10; // To distribute evenly

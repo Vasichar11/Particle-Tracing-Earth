@@ -9,7 +9,7 @@ struct Telescope
 	real latitude_deg;
 	real L_shell;						 
 	
-	// Vectors to store detected particles.
+	// Vectors to store detected particles
 	std::vector<real> latitude , uper , upar, alpha, aeq, eta, time; 
 	std::vector<int> id;
 
