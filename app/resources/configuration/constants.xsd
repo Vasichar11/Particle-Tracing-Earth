@@ -12,27 +12,564 @@
       <xs:element name="f_wave">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="f_wave" type="xs:string"/>
-            <xs:element name="value" type="xs:float"/>
-            <xs:element name="metric_unit" type="metricUnitType"/>
-            <xs:element name="description" type="xs:string"/>
-            <xs:element name="physical_unit" type="xs:string"/>
+            <xs:element name="name" type="xs:string" default="f_wave"/>
+            <xs:element name="value" type="xs:float" default="2000"/>
+            <xs:element name="description" type="xs:string" fixed="Wave frequency in Hz"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="Hz"/>
           </xs:sequence>
+          <xs:attribute name="ray_tracing" type="xs:boolean" use="required"/>
+          <xs:attribute name="omnipresent_wave" type="xs:boolean" use="required"/>
         </xs:complexType>
       </xs:element>
-      <xs:element name="frequency">
+      <xs:element name="m_res">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="name" type="xs:string"/>
-            <xs:element name="value" type="xs:float"/>
-            <xs:element name="metric_unit" type="metricUnitType"/>
-            <xs:element name="description" type="xs:string"/>
-            <xs:element name="physical_unit" type="xs:string"/>
+            <xs:element name="name" type="xs:string" default="m_res"/>
+            <xs:element name="value" type="xs:float" default="1"/>
+            <xs:element name="description" type="xs:string" fixed="WPI resonance number (0=Landau resonance, 1=normal, counter-streaming resonance.)"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="none"/>
           </xs:sequence>
+          <xs:attribute name="ray_tracing" type="xs:boolean" fixed="true"/>
+          <xs:attribute name="omnipresent_wave" type="xs:boolean" fixed="true"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="pwr">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" default="pwr"/>
+            <xs:element name="value" type="xs:float" default="1"/>
+            <xs:element name="description" type="xs:string" fixed="From the power we get the intensity of the ray. Poynting flux [W/m 2]"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="W/m^2"/>
+          </xs:sequence>
+          <xs:attribute name="ray_tracing" type="xs:boolean" fixed="true"/>
+          <xs:attribute name="omnipresent_wave" type="xs:boolean" fixed="false"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="pulse_duration">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="pulse_duration"/>
+            <xs:element name="value" type="xs:float" default="0.1"/>
+            <xs:element name="description" type="xs:string" fixed="Wave pulse duration in seconds"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="s"/>
+          </xs:sequence>
+          <xs:attribute name="ray_tracing" type="xs:boolean" fixed="true"/>
+          <xs:attribute name="omnipresent_wave" type="xs:boolean" fixed="false"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="By_wave">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="By_wave"/>
+            <xs:element name="value" type="xs:float" default="1e-9"/>
+            <xs:element name="description" type="xs:string" fixed=""/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="T"/>
+          </xs:sequence>
+          <xs:attribute name="ray_tracing" type="xs:boolean" fixed="false"/>
+          <xs:attribute name="omnipresent_wave" type="xs:boolean" fixed="true"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="theta0_deg">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="theta0_deg"/>
+            <xs:element name="value" type="xs:float" default="0.001"/>
+            <xs:element name="description" type="xs:string" fixed="Initial wave norml angle"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+          </xs:sequence>
+          <xs:attribute name="ray_tracing" type="xs:boolean" fixed="false"/>
+          <xs:attribute name="omnipresent_wave" type="xs:boolean" fixed="true"/>
         </xs:complexType>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
+
+  <xs:complexType name="SimulationType">
+    <xs:sequence>
+      <xs:element name="hm">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="hm"/>
+            <xs:element name="value" type="xs:float" default="100000"/>
+            <xs:element name="description" type="xs:string" fixed="Minimum allowable mirroring altitude in m"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="m"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="h">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="h"/>
+            <xs:element name="value" type="xs:float" default="0.00001"/>
+            <xs:element name="description" type="xs:string" fixed="Runge kutta stepsize. Should be much smaller than the particle's gyroperiod"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="s"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="SatelliteType">
+    <xs:sequence>
+      <xs:element name="latitude">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="latitude"/>
+            <xs:element name="value" type="xs:float" default="0"/>
+            <xs:element name="description" type="xs:string" fixed="Latitude of the satellite"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="L_shell">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="L_shell"/>
+            <xs:element name="value" type="xs:float" default="2"/>
+            <xs:element name="description" type="xs:string" fixed="L_shell of the satellite. Constant for now"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="DistributionType">
+    <xs:sequence>
+      <xs:element name="L_shell">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="L_shell"/>
+            <xs:element name="value" type="xs:float" default="2"/>
+            <xs:element name="description" type="xs:string" fixed="L_shell of particle. Constant for now"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="population">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string" fixed="population"/>
+            <xs:element name="value" type="xs:float" default="10000"/>
+            <xs:element name="description" type="xs:string" fixed="Particle population"/>
+            <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+            <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Aeq_dstrType">
+  <xs:sequence>
+    <xs:element name="start_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="start_deg"/>
+          <xs:element name="value" type="xs:float" default="1"/>
+          <xs:element name="description" type="xs:string" fixed="Starting degrees"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="end_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="end_deg"/>
+          <xs:element name="value" type="xs:float" default="1"/>
+          <xs:element name="description" type="xs:string" fixed="Ending degrees"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="mean">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="mean"/>
+          <xs:element name="value" type="xs:float" default="90"/>
+          <xs:element name="description" type="xs:string" fixed="Mean of the normal dstr"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="stdev">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="stdev"/>
+          <xs:element name="value" type="xs:float" default="20"/>
+          <xs:element name="description" type="xs:string" fixed="Standard deviation of the normal dstr"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="steps">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="steps"/>
+          <xs:element name="value" type="xs:float" default="10"/>
+          <xs:element name="description" type="xs:string" fixed="To distribute evenly"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="value_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="value_deg"/>
+          <xs:element name="value" type="xs:float" default="69.844"/>
+          <xs:element name="description" type="xs:string" fixed="If single values are used"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="true"/>
+      </xs:complexType>
+    </xs:element>
+  </xs:sequence>
+</xs:complexType>
+
+
+  <xs:complexType name="Lat_dstrType">
+  <xs:sequence>
+    <xs:element name="start_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="start_deg"/>
+          <xs:element name="value" type="xs:float" default="-90"/>
+          <xs:element name="description" type="xs:string" fixed="Starting degrees"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="end_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="end_deg"/>
+          <xs:element name="value" type="xs:float" default="90"/>
+          <xs:element name="description" type="xs:string" fixed="Ending degrees"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="mean">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="mean"/>
+          <xs:element name="value" type="xs:float" default="0"/>
+          <xs:element name="description" type="xs:string" fixed="Mean of the normal dstr"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="max_stdev">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="max_stdev"/>
+          <xs:element name="value" type="xs:float" default="20"/>
+          <xs:element name="description" type="xs:string" fixed="Standard deviation of the normal dstr"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="domain_step">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="domain_step"/>
+          <xs:element name="value" type="xs:float" default="0.001"/>
+          <xs:element name="description" type="xs:string" fixed="Latitude domain range precision"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="steps">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="steps"/>
+          <xs:element name="value" type="xs:float" default="10"/>
+          <xs:element name="description" type="xs:string" fixed="To distribute evenly"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="value_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="value_deg"/>
+          <xs:element name="value" type="xs:float" default="-9"/>
+          <xs:element name="description" type="xs:string" fixed="If single values are used"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="true"/>
+      </xs:complexType>
+    </xs:element>
+  </xs:sequence>
+</xs:complexType>
+
+
+
+  <xs:complexType name="Eta_dstrType">
+  <xs:sequence>
+    <xs:element name="start_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="start_deg"/>
+          <xs:element name="value" type="xs:float" default="1"/>
+          <xs:element name="description" type="xs:string" fixed="Starting degrees"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="end_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="end_deg"/>
+          <xs:element name="value" type="xs:float" default="359"/>
+          <xs:element name="description" type="xs:string" fixed="Ending degrees"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="mean">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="mean"/>
+          <xs:element name="value" type="xs:float" default="180"/>
+          <xs:element name="description" type="xs:string" fixed="Mean of the normal dstr"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="stdev">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="stdev"/>
+          <xs:element name="value" type="xs:float" default="20"/>
+          <xs:element name="description" type="xs:string" fixed="Standard deviation of the normal dstr"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="steps">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="steps"/>
+          <xs:element name="value" type="xs:float" default="10"/>
+          <xs:element name="description" type="xs:string" fixed="To distribute evenly"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="value_deg">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="value_deg"/>
+          <xs:element name="value" type="xs:float" default="30"/>
+          <xs:element name="description" type="xs:string" fixed="If single values are used"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="true"/>
+      </xs:complexType>
+    </xs:element>
+  </xs:sequence>
+</xs:complexType>
+
+  <xs:complexType name="Ekin_dstrType">
+  <xs:sequence>
+    <xs:element name="start">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="start"/>
+          <xs:element name="value" type="xs:float" default="100"/>
+          <xs:element name="description" type="xs:string" fixed="Starting energy"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="keV"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="end">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="end"/>
+          <xs:element name="value" type="xs:float" default="1350"/>
+          <xs:element name="description" type="xs:string" fixed="Ending energy"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="keV"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="mean">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="mean"/>
+          <xs:element name="value" type="xs:float" default="600"/>
+          <xs:element name="description" type="xs:string" fixed="Mean of the normal dstr"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="degrees"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="stdev">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="stdev"/>
+          <xs:element name="value" type="xs:float" default="20"/>
+          <xs:element name="description" type="xs:string" fixed="Standard deviation of the normal dstr"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="steps">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="steps"/>
+          <xs:element name="value" type="xs:float" default="10"/>
+          <xs:element name="description" type="xs:string" fixed="To distribute evenly"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="none"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="true"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="false"/>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="value">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="name" type="xs:string" fixed="value"/>
+          <xs:element name="value" type="xs:float" default="69.844"/>
+          <xs:element name="description" type="xs:string" fixed="Initial energy keV"/>
+          <xs:element name="metric_unit" type="metricUnitType" default="1"/>
+          <xs:element name="physical_unit" type="xs:string" fixed="keV"/>
+        </xs:sequence>
+        <xs:attribute name="normal" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="uniform" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="even" type="xs:boolean" fixed="false"/>
+        <xs:attribute name="constant" type="xs:boolean" fixed="true"/>
+      </xs:complexType>
+    </xs:element>
+  </xs:sequence>
+</xs:complexType>
 
 
 
@@ -43,6 +580,10 @@
             <xs:element name="Simulation" type="SimulationType"/>
             <xs:element name="Satellite" type="SatelliteType"/>
             <xs:element name="Distribution" type="DistributionType"/>
+            <xs:element name="Aeq_dstr" type="Aeq_dstrType"/>
+            <xs:element name="Lat_dstr" type="Lat_dstrType"/>
+            <xs:element name="Eta_dstr" type="Eta_dstrType"/>
+            <xs:element name="Ekin_dstr" type="Ekin_dstrType"/>
         </xs:sequence>
     </xs:complexType>
   </xs:element>

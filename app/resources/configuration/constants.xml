@@ -1,47 +1,48 @@
-<constants>
+<?xml version="1.0" encoding="UTF-8"?>
+<constants xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="constants.xsd">
     <Wave>
-        <f_wave ray_tracing="True" omnipresent_wave="True">
+        <f_wave ray_tracing="true" omnipresent_wave="true">
             <name>f_wave</name>
             <value>2000</value>
             <description>Wave frequency in Hz</description>
             <metric_unit>1</metric_unit>
             <physical_unit>Hz</physical_unit>
         </f_wave>
-        <m_res ray_tracing="True" omnipresent_wave="True">
+        <m_res ray_tracing="true" omnipresent_wave="true">
             <name>m_res</name>
             <value>1</value>
             <description>WPI resonance number (0=Landau resonance, 1=normal, counter-streaming resonance.)</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
-        </m_res>   
-        <pwr ray_tracing="True" omnipresent_wave="False">
+        </m_res>
+        <pwr ray_tracing="true" omnipresent_wave="false">
             <name>pwr</name>
             <value>1</value>
             <description>From the power we get the intensity of the ray. Poynting flux [W/m 2]</description>
             <metric_unit>1</metric_unit>
             <physical_unit>W/m^2</physical_unit>
         </pwr>
-        <pulse_duration ray_tracing="True" omnipresent_wave="False">
+        <pulse_duration ray_tracing="true" omnipresent_wave="false">
             <name>pulse_duration</name>
             <value>0.1</value>
             <description>Wave pulse duration in seconds</description>
             <metric_unit>1</metric_unit>
             <physical_unit>s</physical_unit>
         </pulse_duration>
-        <By_wave ray_tracing="False" omnipresent_wave="True">
+        <By_wave ray_tracing="false" omnipresent_wave="true">
             <name>By_wave</name>
             <value>1e-9</value>
             <description />
             <metric_unit>1</metric_unit>
             <physical_unit>T</physical_unit>
         </By_wave>
-        <theta0_deg ray_tracing="False" omnipresent_wave="True">
-                <name>theta0_deg</name>
-                <value>0.001</value>
-                <description>Initial wave norml angle</description>
-                <metric_unit>1</metric_unit>
-                <physical_unit>degrees</physical_unit>
-        </theta0_deg> 
+        <theta0_deg ray_tracing="false" omnipresent_wave="true">
+            <name>theta0_deg</name>
+            <value>0.001</value>
+            <description>Initial wave norml angle</description>
+            <metric_unit>1</metric_unit>
+            <physical_unit>degrees</physical_unit>
+        </theta0_deg>
     </Wave>
     <Simulation>
         <hm>
@@ -86,99 +87,99 @@
         <population>
             <name>population</name>
             <value>10000</value>
-            <description />
+            <description>Particle population</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </population>
     </Distribution>
     <Aeq_dstr>
-        <start_deg normal="True" uniform="True" even="True" constant="False">
+        <start_deg normal="true" uniform="true" even="true" constant="false">
             <name>start_deg</name>
             <value>1</value>
-            <description />
+            <description>Starting degrees</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </start_deg>
-        <end_deg normal="True" uniform="True" even="True" constant="False">
+        <end_deg normal="true" uniform="true" even="true" constant="false">
             <name>end_deg</name>
             <value>179</value>
-            <description />
+            <description>Ending degrees</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </end_deg>
-        <mean normal="True" uniform="False" even="False" constant="False">
+        <mean normal="true" uniform="false" even="false" constant="false">
             <name>mean</name>
             <value>90</value>
             <description>Mean of the normal dstr</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </mean>
-        <stdev normal="True" uniform="False" even="False" constant="False">
+        <stdev normal="true" uniform="false" even="false" constant="false">
             <name>stdev</name>
             <value>20</value>
             <description>Standard deviation of the normal dstr</description>
             <metric_unit>1</metric_unit>
-            <physical_unit>degrees</physical_unit>
+            <physical_unit>none</physical_unit>
         </stdev>
-        <steps normal="False" uniform="False" even="True" constant="False">
+        <steps normal="false" uniform="false" even="true" constant="false">
             <name>steps</name>
             <value>10</value>
             <description>To distribute evenly</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </steps>
-        <value select="aeq_constant">
-            <name>value</name>
+        <value_deg normal="false" uniform="false" even="false" constant="true">
+            <name>value_deg</name>
             <value>69.844</value>
             <description>If single values are used</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
-        </value>
+        </value_deg>
     </Aeq_dstr>
     <Lat_dstr>
-        <start_deg normal="True" uniform="True" even="True" constant="False">
+        <start_deg normal="true" uniform="true" even="true" constant="false">
             <name>start_deg</name>
             <value>-90</value>
-            <description />
+            <description>Starting degrees</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </start_deg>
-        <end_deg normal="True" uniform="True" even="True" constant="False">
+        <end_deg normal="true" uniform="true" even="true" constant="false">
             <name>end_deg</name>
             <value>90</value>
-            <description />
+            <description>Ending degrees</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </end_deg>
-        <mean normal="True" uniform="False" even="False" constant="False">
+        <mean normal="true" uniform="false" even="false" constant="false">
             <name>mean</name>
             <value>0</value>
             <description>Mean of the normal dstr</description>
             <metric_unit>1</metric_unit>
-            <physical_unit>none</physical_unit>
+            <physical_unit>degrees</physical_unit>
         </mean>
-        <max_stdev select="normal">
+        <max_stdev normal="true" uniform="false" even="false" constant="false">
             <name>max_stdev</name>
             <value>20</value>
             <description>Standard deviation when latitude domain is the biggest. Is proportional to latitude range</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </max_stdev>
-        <domain_step>
+        <domain_step normal="true" uniform="true" even="true" constant="false">
             <name>domain_step</name>
             <value>0.001</value>
             <description>Latitude domain range precision</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </domain_step>
-        <steps normal="False" uniform="False" even="True" constant="False">
+        <steps normal="false" uniform="false" even="true" constant="false">
             <name>steps</name>
             <value>10</value>
             <description>To distribute evenly</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </steps>
-        <value_deg normal="False" uniform="False" even="False" constant="True">
+        <value_deg normal="false" uniform="false" even="false" constant="true">
             <name>value_deg</name>
             <value>-9</value>
             <description>If single values are used</description>
@@ -187,42 +188,42 @@
         </value_deg>
     </Lat_dstr>
     <Eta_dstr>
-        <start_deg normal="True" uniform="True" even="True" constant="False">
+        <start_deg normal="true" uniform="true" even="true" constant="false">
             <name>start_deg</name>
             <value>1</value>
-            <description />
+            <description>Starting degrees</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </start_deg>
-        <end_deg normal="True" uniform="True" even="True" constant="False">
+        <end_deg normal="true" uniform="true" even="true" constant="false">
             <name>end_deg</name>
             <value>359</value>
-            <description>Issue if eta=0 or 360?</description>
+            <description>Ending degrees</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </end_deg>
-        <mean normal="True" uniform="False" even="False" constant="False">
+        <mean normal="true" uniform="false" even="false" constant="false">
             <name>mean</name>
             <value>180</value>
             <description>Mean of the normal dstr</description>
             <metric_unit>1</metric_unit>
-            <physical_unit>none</physical_unit>
+            <physical_unit>degrees</physical_unit>
         </mean>
-        <stdev normal="True" uniform="False" even="False" constant="False">
+        <stdev normal="true" uniform="false" even="false" constant="false">
             <name>stdev</name>
             <value>20</value>
             <description>Standard deviation of the normal dstr</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </stdev>
-        <steps normal="False" uniform="False" even="True" constant="False">
+        <steps normal="false" uniform="false" even="true" constant="false">
             <name>steps</name>
             <value>10</value>
             <description>To distribute evenly</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </steps>
-        <value_deg normal="False" uniform="False" even="False" constant="True">
+        <value_deg normal="false" uniform="false" even="false" constant="true">
             <name>value_deg</name>
             <value>30</value>
             <description>Initial particle phase (angle between Vperp and BwR)</description>
@@ -231,42 +232,42 @@
         </value_deg>
     </Eta_dstr>
     <Ekin_dstr>
-        <start normal="True" uniform="True" even="True" constant="False">
+        <start normal="true" uniform="true" even="true" constant="false">
             <name>start</name>
             <value>100</value>
-            <description>keV</description>
+            <description>Starting energy</description>
             <metric_unit>1</metric_unit>
             <physical_unit>keV</physical_unit>
         </start>
-        <end normal="True" uniform="True" even="True" constant="False">
+        <end normal="true" uniform="true" even="true" constant="false">
             <name>end</name>
             <value>1350</value>
-            <description>keV</description>
+            <description>Ending energy</description>
             <metric_unit>1</metric_unit>
             <physical_unit>keV</physical_unit>
         </end>
-        <mean normal="True" uniform="False" even="False" constant="False">
+        <mean normal="true" uniform="false" even="false" constant="false">
             <name>mean</name>
             <value>600</value>
             <description>Mean of the normal dstr</description>
             <metric_unit>1</metric_unit>
-            <physical_unit>none</physical_unit>
+            <physical_unit>degrees</physical_unit>
         </mean>
-        <stdev normal="True" uniform="False" even="False" constant="False">
+        <stdev normal="true" uniform="false" even="false" constant="false">
             <name>stdev</name>
             <value>20</value>
             <description>Standard deviation of the normal dstr</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </stdev>
-        <steps normal="False" uniform="False" even="True" constant="False">
+        <steps normal="false" uniform="false" even="true" constant="false">
             <name>steps</name>
             <value>10</value>
             <description>To distribute evenly</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </steps>
-        <value normal="False" uniform="False" even="False" constant="True">
+        <value normal="false" uniform="false" even="false" constant="true">
             <name>value</name>
             <value>590</value>
             <description>Initial energy keV</description>
