@@ -1,22 +1,9 @@
-# Project Description
-
-Code developed for my thesis titled **'Simulation of Wave-Particle Interaction using Parallel Processing'**.
-
-To address the challenges of handling a large population of high-energy particles that may interact with waves in the Earth's radiation zones, the following features were implemented:
-
-## Features 
-
-- Different methods for generating **particle distributions**
-- **Parallel execution** of the wave-particle interaction simulation in **C++** and **export results in hdf5** format
-- Load results in **Python** for **further processing and analysis**
-- **Various visualization methods** for the particle distributions while they interact with waves, using **matplotlib**
-- **PyQt application** for the above: configure, simulate and visualize the interaction
-
-
-In the end, the effect of the propagating waves, which have different intensities and frequencies, on different particle distributions, could be evident.
+# Thesis
+####*Simulation of Wave-Particle Interaction wit the use Parallel Processing*
 
 
 ## Table of Contents
+- [Features](#features)
 - [Workflow](#workflow)
 - [Distribution](#distribution)
 - [Adiabatic Motion](#adiabatic-motion)
@@ -28,6 +15,16 @@ In the end, the effect of the propagating waves, which have different intensitie
 - [Installation](#installation)
 - [Usage](#usage)
 - [Acknowledgments](#acknowledgements)
+
+## Features 
+
+- Different methods for generating **particle distributions**
+- **Parallel execution** of the wave-particle interaction simulation in **C++** and **export results in hdf5** format
+- Load results in **Python** for **further processing and analysis**
+- **Various visualization methods** for the particle distributions while they interact with waves, using **matplotlib**
+- **PyQt application** for the above: configure, simulate, and visualize the interaction
+
+Ultimately, the effects of various propagating waves over different particle distributions could be evident.
 
 ## Workflow
 
@@ -46,6 +43,9 @@ Distribution of 100,000 particles:
 - gyro phase equivalent(eta) - uniform distribution
 
  ![Distribution-Pies](./simulations/useful/20_06_22/100000p_Distribution_Pies.png)
+
+- Plotting number of particles in Pitch Angle equatorial sectors of 1 degree
+- Initial equatorial Pitch Angle - Latitude plot 
 
 ![Latitude-Aeq](./simulations/useful/20_06_22/100000p_Distribution_Plots.png)
 **lamda is latitude, not L_shell**
@@ -98,10 +98,17 @@ Then the particle will then precipitate and escape to the upper ionosphere:
 1) Exits the simulation
 2) The satellite will no longer detect it
 
-
-
 ![WPI-2](./simulations/useful/compare_1nT_2s/aeq_deta_lamda.png)
 
+The particle sum decreases after interaction:
+
+![WPI-3](./simulations/useful/20_06_22/10000p_56s_pow-2/Particle_sum_bins0.5s.png
+
+Particle Pitch Angle distribution across a 1-minute simulation. 
+- 50 seconds Adiabatic motion
+- 10 seconds Wave-particle interaction
+x-axis: Pitch angle bins of 2 degrees 
+y-axis: count of the particles that pass the satellite(equator) across time
 
 
 ## Parallelism
