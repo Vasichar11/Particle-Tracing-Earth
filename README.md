@@ -12,7 +12,8 @@
 - [WPI](#wpi)
 - [Parallelism](#parallelism)
 - [Installation](#installation)
-- [Usage](#usage)
+- [GUI](#gui)
+- [CLI](#cli)
 - [Acknowledgments](#acknowledgements)
 
 ## Features 
@@ -35,7 +36,9 @@ To better understand the code structure, a flow diagram has been created.
 
 
 ## Distribution
-Distribution of 100,000 particles:
+Various distributions can be created:
+
+Example distribution of 100,000 particles:
 - latitude(lamda) - normal distribution(mean=0deg)
 - equatorial pitch angle(aeq) - normal distribution(mean=90deg)
 - energy(Ekin) - uniform distribution
@@ -146,7 +149,6 @@ There are a few requirements for python, listed in the requirements.txt file
 - Upgrade pip: ```python3 -m pip install --upgrade pip```
 - Install requirements: ```python3 -m pip install Particle-Tracing-Earth/requirements.txt``` 
 
-## Usage
 
 ### GUI
 ```python3 Particle-Tracing-Earth\tracer.py``` (Python requirements need to be already installed for the PyQt application to work)
