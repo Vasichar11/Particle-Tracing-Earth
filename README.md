@@ -1,5 +1,5 @@
 # Thesis
-####*Simulation of Wave-Particle Interaction wit the use Parallel Processing*
+#### *Simulation of Wave-Particle Interaction wit the use Parallel Processing*
 
 
 ## Table of Contents
