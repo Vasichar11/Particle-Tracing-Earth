@@ -116,17 +116,55 @@ Then the particle will then precipitate and escape to the upper ionosphere:
 ### Movie gif file
 
 **Particle Pitch Angle distribution across a 1-minute simulation for 50000 particles**
-- 50 seconds Adiabatic motion
-- 10 seconds Wave-particle interaction
+- 50 seconds Adiabatic motion to randomize the motion of the particle population
+- 5 seconds Wave-particle interaction
 x-axis: Pitch angle bins of 2 degrees 
 y-axis: count of the particles that pass the satellite(equator) across time
-Every time frame is 0.5s(time bin) of the simulation.
+Every time frame is 0.5s(time bin) of the simulation. 
+- Gif starts from the 45s of the simulation, to simplify the video.
+- The red dots are for the WPI simulation, while the black ones are for the no WPI simulation. 
+- t<50s Black dots are sitting on top of the red; since both of the simulations are simulating the adiabatic motion.
+- t>50s WPI happens in one of the simulations and we can identify the difference
+- The blue bars are showing the movement of particles in the neighboring Pitch Angle bins. We can see that most of the movement is happening between the sectors 40-50 i.e. 80-100degrees P.A.
+
 
 *Pitch Angle and Time bins are parameters in the postprocessing program.*
 
 ![WPI-3](./simulations/useful/20_06_22/50000p_56s_pow-1/Bins_2deg_0.5s.gif)
 
 ## Parallelism
+
+### OpenMP
+**Selection of THREAD NUM**
+In the master branch it is hard coded for a reason
+
+**Personally, I was executing 2 simulations in parallel, in a system with 20 Threads, both for time "t"**
+
+e.g. Run simultaneously 2 simulations:
+
+- Simulation1 "./tracer 10 5" (The program arguments here mean: 10 seconds for noWPI simulation and 5 seconds for WPI simulation)
+- Simulation2 "./tracer 15 0" (The program arguments here mean: 15 seconds for noWPI simulation)
+- Ultimately, there are two 15-second simulations
+
+Both of the simulations need to run. Eventually, we can find out what is the effect of the wave-particle interaction
+
+- Simulation1 for noWPI(8threads) + WPI(20threads) for t = t_noWPI + t_WPI 
+- Simulation2 for noWPI(8threads) for t = t_noWPI
+
+This selection of threads can ensure that the processors have always work to do, while the simulation's execution time per particle is kept little.
+
+This we can see by reviewing the following diagram that discusses the scalability of the program.
+
+### Visually
+
+**Simulation 1**
+start------------|t_noWPI(8threads)|---------end-start------------------|t_WPI(20threads)|----------------------end
+
+**Simulation 2**
+start-------------------------------|t(8threads)|-----------------------------------end
+
+**Simulation 1+2**
+start----------|16 threads in use|--------end-start--|28 threads in use|--end-start---|20 threads in use|---end
 
 ![Scalability](./simulations/useful/scalling_attempt2.png)
 
