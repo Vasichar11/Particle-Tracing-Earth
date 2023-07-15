@@ -1,4 +1,4 @@
-# Simulation of Wave-Particle Interaction with the use Parallel Processing
+# Simulation of Wave-Particle Interaction with the use of Parallel Processing
 
 
 ## Table of Contents
@@ -36,6 +36,7 @@ To better understand the code structure, a flow diagram has been created.
 
 
 ## Distribution
+
 Various distributions can be created:
 
 Example distribution of 100,000 particles:
@@ -53,12 +54,14 @@ Example distribution of 100,000 particles:
 **lamda is latitude, not L_shell**
 
 ## Adiabatic Motion
+
 When there's **no interaction with a wave**, the particles are following an adiabatic motion and they are bouncing between their mirroring points indefinitely. 
 
 ![Bouncing](./simulations/useful/FFT/latitude.png)
 
 
-The Fast Fourier Transform ![FFT](./simulations/useful/FFT/fft.png) can be derived to validate the simulated motion, transforming the signal from the time domain to the frequency domain.
+The Fast Fourier Transform (FFT) ![FFT](./simulations/useful/FFT/fft.png) can be derived to validate the simulated motion, transforming the signal from the time domain to the frequency domain.
+
 ![Freq](./simulations/useful/FFT/Freq_domain.png)
 
 
@@ -66,12 +69,15 @@ The Fast Fourier Transform ![FFT](./simulations/useful/FFT/fft.png) can be deriv
 - The green one from the online calculator [https://solenelejosne.com/bounce/] uses the same parameters for the particle (L_shell, energy, and particle type) as our simulation
 
 
+![Bouncing-time](./simulations/useful/bouncing_time.png)
+
 ## Satellite
 
 The sensor's pitch angle coverage together with the sector division are parameters of the post-processing program.
 Below you can see 12 sectors of 15 degrees.
 Detected particles will belong to the corresponding 
 This gives full coverage(180deg) - Omni Directional Particle Telescope(ODPT)
+
 ![Sensor sectors](./doc/sectors_PA_correlation.png)
 
 Bo: the vector of the ambient magnetic field is used as a reference
@@ -90,40 +96,47 @@ Ray data is then interpolated to match the time steps of the Runge Kutta method
 
 
 ## WPI
-Particles that interact with the wave can gain energy and reach the satellite in a given location.
+
+### Particles that interact with the wave can gain energy and reach the satellite in a given location
+
 ![WPI-1](./simulations/useful/compare_1nT_2s/aeq_deta_lamda.png)
 
-The wave-particle interaction can cause equatorial pitch angle change and can therefore enter the loss cone. 
+### The wave-particle interaction can cause equatorial pitch angle change and can therefore enter the loss cone
+
 ![WPI-1](./doc/loss_cone.png)
 
 Then the particle will then precipitate and escape to the upper ionosphere:
 1) Exits the simulation
 2) The satellite will no longer detect it
 
-![WPI-2](./simulations/useful/compare_1nT_2s/aeq_deta_lamda.png)
+### In consequence, the particle sum decreases after interaction
 
-The particle sum decreases after interaction:
+![WPI-2](./simulations/useful/20_06_22/10000p_56s_pow-2/Particle_sum_bins0.5s.png)
 
-![WPI-3](./simulations/useful/20_06_22/10000p_56s_pow-2/Particle_sum_bins0.5s.png
+### Movie gif file
 
-Particle Pitch Angle distribution across a 1-minute simulation. 
+**Particle Pitch Angle distribution across a 1-minute simulation for 50000 particles**
 - 50 seconds Adiabatic motion
 - 10 seconds Wave-particle interaction
 x-axis: Pitch angle bins of 2 degrees 
 y-axis: count of the particles that pass the satellite(equator) across time
+Every time frame is 0.5s(time bin) of the simulation.
 
+*Pitch Angle and Time bins are parameters in the postprocessing program.*
+
+![WPI-3](./simulations/useful/20_06_22/50000p_56s_pow-1/Bins_2deg_0.5s.gif)
 
 ## Parallelism
 
 ![Scalability](./simulations/useful/scalling_attempt2.png)
 
 
-
-
 ## Installation
-There's support only for Linux at the moment. The installation procedure is given below, step by step. Start with the dependencies, continue with cloning the repository, then install the python requirements and finally continue to [Usage](#usage).
+
+There's support only for Linux at the moment. The installation procedure is given below, step by step. Start with the dependencies, continue with cloning the repository, then install the Python requirements and finally continue to [Usage](#usage).
 
 ### Dependencies
+
 The commands are given for Debian, Ubuntu, and related distributions. If you have different distribution and/or different package manager, the commands are different but should be as simple as the ones that are listed below.
 - libhdf5: ```sudo apt install libhdf5-dev```
 - HighFive - HDF5 header-only C++ Library (which is a git submodule to the repository, so you don't need to install explicitly)
@@ -138,11 +151,13 @@ Update package manager: ```sudo apt update```
 Install python: ```sudo apt install python3```
 
 ### Clone Repository
+
 Close the repository: ```git clone https://github.com/Vasichar11/Particle-Tracing-Earth```
 Take note that the repository includes a git submodule for hdf5 file reading and writing operations:
 https://github.com/BlueBrain/HighFive
 
 ### Requirements
+
 There are a few requirements for python, listed in the requirements.txt file
 - Create virtualenv: ```python3 -m venv tracer_venv``` (Name the environment 'tracer_venv' to correctly ignore it when using version control)
 - Activate: ```source tracer_venv/bin/activate``` 
@@ -151,8 +166,17 @@ There are a few requirements for python, listed in the requirements.txt file
 
 
 ### GUI
+
 ```python3 Particle-Tracing-Earth\tracer.py``` (Python requirements need to be already installed for the PyQt application to work)
+
+**Configure** the simulation **parameters** in the GUI. **Validation will occur**, using XML-XSD pairs.
+Then you can **build the simulation and execute** it. The results will then be then visible within the GUI and also saved in the output directories.
+
+![GUI](./doc/gui-1.png)
+
+
 ### CLI
+
 1) ```make allclean``` cleans all simulation output data and object file
 2) **Modify the constants.h header file** that includes all the parameter values for the simulation
 3) **```make dstr```** -> To build the distribution
@@ -181,8 +205,8 @@ interpolates the ray values of the input (a file that comes after ray tracing of
 
 5) **```make tracer```** -> to build the tracer for the WPI simulation
     **```./tracer <noWPI_time> <WPI_time> ```** -> to execute the WPI simulation where:
-- <noWPI_time> is the time that the particles oscillate in adiavatic motion (without interacting with a wave). This time should be enough for the particles to be in a randomized state
-- <WPI_time> is the time that the particles have to interact with the wave while bouncing in the Earth's magnetic field. Take note that this time should be much smaller than the noWPI_time sine the execution of the WPI code consumes more resources than the adiavatic motion simulation.
+- <noWPI_time> is the time that the particles oscillate in adiabatic motion (without interacting with a wave). This time should be enough for the particles to be in a randomized state
+- <WPI_time> is the time that the particles have to interact with the wave while bouncing in the Earth's magnetic field. Take note that this time should be much smaller than the noWPI_time since the execution of the WPI code consumes more resources than the adiabatic motion simulation.
 You will be prompted to choose from the files you created earlier:
 - a particle distribution file: "output/files/dstr.h5"
 - an interpolated ray file: "output/files/interpolated_ray_pwr.h5"
@@ -197,7 +221,8 @@ Reads: "output/files/sim.h5."
 
 7) Visualization files have been created in the output/plots directory
 
-## Acknowledgements
+## Acknowledgments
+
 The initial simulation for single particle WPI was implemented serially in Python by Ph.D. candidate Stelios Tourgaidis.
 
 
