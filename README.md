@@ -111,16 +111,26 @@ Then the particle will then precipitate and escape to the upper ionosphere:
 
 ### In consequence, the particle sum decreases after interaction
 
+- The red dots sit upon the black dots for the first 50 seconds
+- Moving on, the red dots can be seen in lower positions since the total flux is being reduced
+- x-axis: Time, divided in bins of 0.5seconds
+- y-axis: Total flux: the sum of all the particles (all look directions) that the sensor detects
+
 ![WPI-2](./simulations/useful/20_06_22/10000p_56s_pow-2/Particle_sum_bins0.5s.png)
 
 ### Movie gif file
 
+*Pitch Angle and Time bins are parameters in the postprocessing program.*
+
+![WPI-3](./simulations/useful/20_06_22/50000p_56s_pow-1/Bins_2deg_0.5s.gif)
+
+
 **Particle Pitch Angle distribution across a 1-minute simulation for 50000 particles**
 - 50 seconds Adiabatic motion to randomize the motion of the particle population
 - 5 seconds Wave-particle interaction
-x-axis: Pitch angle bins of 2 degrees 
-y-axis: count of the particles that pass the satellite(equator) across time
-Every time frame is 0.5s(time bin) of the simulation. 
+- x-axis: Pitch angle bins of 2 degrees 
+- y-axis: count of the particles that pass the satellite(equator) across time.
+- Every time frame is 0.5s(time bin) of the simulation. 
 - Gif starts from the 45s of the simulation, to simplify the video.
 - The red dots are for the WPI simulation, while the black ones are for the no WPI simulation. 
 - t<50s Black dots are sitting on top of the red; since both of the simulations are simulating the adiabatic motion.
@@ -128,9 +138,6 @@ Every time frame is 0.5s(time bin) of the simulation.
 - The blue bars are showing the movement of particles in the neighboring Pitch Angle bins. We can see that most of the movement is happening between the sectors 40-50 i.e. 80-100degrees P.A.
 
 
-*Pitch Angle and Time bins are parameters in the postprocessing program.*
-
-![WPI-3](./simulations/useful/20_06_22/50000p_56s_pow-1/Bins_2deg_0.5s.gif)
 
 ## Parallelism
 
