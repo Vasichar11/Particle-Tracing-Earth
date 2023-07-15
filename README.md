@@ -1,4 +1,4 @@
-# Simulation of Wave-Particle Interaction with the use of Parallel Processing
+# Simulation of Wave-Particle Interaction with Parallel Processing
 
 
 ## Table of Contents
