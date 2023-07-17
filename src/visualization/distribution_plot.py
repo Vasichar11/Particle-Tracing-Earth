@@ -23,9 +23,9 @@ h5_files = [file for file in os.listdir(files_dir) if (file.startswith("dstr") a
 print("Available particle distribution .h5 files:")
 for i, file in enumerate(h5_files):
     print(f"{i+1}. {file}")
-
 # Prompt the user to select a file
 selection = input("Enter the number corresponding to the file you want to select: ")
+
 
 # Validate the user's input and retrieve the selected filepath
 try:
@@ -37,6 +37,7 @@ try:
         print("Invalid selection.")
 except ValueError:
     print("Invalid input. Please enter a number.")
+
 
 
 # Read file
@@ -64,9 +65,10 @@ header = ['id', 'aeq0_deg', 'latitude0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'et
 data = []
 id=0
 for aq0,l0,par0,per0,a0,e0,E0 in zip(aeq0, latitude0, ppar0, pper0, alpha0, eta0, Ekin0):
-    data.extend([[id,aq0*R2D,l0*R2D,par0,per0,a0*R2D,e0,E0]])
+    data.extend([[id,aq0*R2D,l0*R2D,par0,per0,a0*R2D,e0*R2D,E0]])
     id=id+1 #id is the element's location in the list since the particles were saved like that
-csv_file = os.path.join(files_dir, "dstr_data.csv")
+h5_file = selected_file.split()[0].split(".h5")
+csv_file = os.path.join(files_dir, h5_files[selection-1].split("h5")[0] +".csv")
 with open(csv_file, "w") as file1:
     writer = csv.writer(file1)
     writer.writerow(header)

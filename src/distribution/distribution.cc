@@ -44,9 +44,10 @@ void latitude_domain(real aeq0, real &latitude_start_d, real &latitude_end_d)
 
 int main(int argc, char **argv)
 {
+	std::cout<<"TEST\n"<<Eta_dstr::value_deg;
 
-	//std::cout.precision(8);			//Output 16 decimal precise
-	//std::cout<<std::scientific;		//For e notation representation
+	std::cout.precision(8);			//Output precision
+	std::cout<<std::scientific;		//For e notation representation
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
 	
 	std::string string_evenly   = "evenly";
@@ -63,7 +64,7 @@ int main(int argc, char **argv)
 	}
 
 	std::cout<<"\n\nParticle population: " << Distribution::population;
-	std::cout<<"\nDistributed as: |From    To|"<<"    (evenly, uniform, normal, test) \n";
+	std::cout<<"\nDistributed as: |From    To|"<<"    (evenly, uniform, normal, constant) \n";
 	std::cout<<"\nEquatorial P.A: |"<<Aeq_dstr::start_deg<<" "<<Aeq_dstr::end_deg<<"|      "<< argv[1];
 	std::cout<<"\nLatitude:       |"<<Lat_dstr::start_deg<<" "<<Lat_dstr::end_deg<<"|     "<< argv[2];
 	std::cout<<"\nEta:            |"<<Eta_dstr::start_deg<<" "<<Eta_dstr::end_deg<<"|      "<< argv[3];
@@ -191,6 +192,7 @@ int main(int argc, char **argv)
 		else if (argv[3]==string_constant)
 		{
 			eta0 = Eta_dstr::value;
+			std::cout<<"TEST\n"<<eta0;
 		}
 		//-------------------------------------------- DISTRIBUTE EKIN -------------------------------------------------//
 		// Evenly with goal: symmetry	

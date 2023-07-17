@@ -43,7 +43,7 @@ namespace Wave
 namespace Distribution
 {
     const real L_shell = 2; // L_shell of particle. Constant for now
-    const int64_t population = 10000;   
+    const int64_t population = 1;   
 }
 
 // P.A dstr
@@ -54,7 +54,7 @@ namespace Aeq_dstr
     const real mean = 90; // Mean of the normal dstr
     const real stdev = 20; // Standard deviation of the normal dstr
     const real steps = 10; // To distribute evenly
-    const real value_deg = 69.844; // If single values are used
+    const real value_deg = 37.6708693574307; // If single values are used
     const real value = value_deg * Universal::D2R;
 }
     
@@ -67,7 +67,7 @@ namespace Lat_dstr
     const real max_stdev = 20; // Standard deviation when latitude domain is the biggest. Is propotional to latitude range 
     const real domain_step = 0.001; // Latitude domain range precision, degrees
     const real steps = 10; // To distribute evenly
-    const real value_deg = -9; // If single values are used
+    const real value_deg = 16.2782913046611; // If single values are used
     const real value = value_deg * Universal::D2R;
 }
     
@@ -79,7 +79,7 @@ namespace Eta_dstr
     const real mean = 180; // Mean of the normal dstr
     const real stdev = 20; // Standard deviation of the normal dstr
     const real steps = 10; // To distribute evenly
-    const real value_deg = 30; // Initial particle phase (angle between Vperp and BwR)
+    const real value_deg = 5.01547617274519; // Initial particle phase (angle between Vperp and BwR)
     const real value = value_deg * Universal::D2R;
 }
     
@@ -91,7 +91,7 @@ namespace Ekin_dstr
     const real mean = 600; // Mean of the normal dstr		
     const real stdev = 20; // Standard deviation of the normal dstr
     const real steps = 10; // To distribute evenly
-    const real value = 590; // Initial energy keV
+    const real value = 850.508389025729; // Initial energy keV
 }
 
 //--Simulation parameters--// 

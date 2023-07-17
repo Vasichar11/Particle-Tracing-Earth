@@ -132,16 +132,9 @@ void whistlers(int64_t p, int64_t i, real mu, real P, real D, real S, real kz, r
 
 
 //Return Factors, aeq of runge kutta and kz vector, only when particle in packet.
-void f_packet (real &Fpar, real &Fper, real &Ftheta, real &aeq_rk, real &kz, const real pper_tmp, const real ppar_tmp, const real eta_tmp, const real aeqsu_tmp, const real alpha_tmp, const real gama, const real w_h, const real p_mag, const real kx_ray, const real kz_ray, const real kappa_ray, const real Bw_ray, const real Bzw, const real Ezw, const real w1, const real w2, const real R1, const real R2 )
+void f_packet (real &Fpar, real &Fper, real &Ftheta, const real pper_tmp, const real ppar_tmp, const real gama, const real w_h, const real p_mag, const real kx_ray, const real Bzw, const real Ezw, const real w1, const real w2, const real R1, const real R2 )
 {
-    //Takes and returns same value. Change that
-    kz       =    kz_ray; 
-    
-    //Using wave's values where the particle is confined...
-    
-
     //std::cout<<"\npper_tmp "<<pper_tmp<<"\nppar_tmp "<<ppar_tmp<<"\neta_tmp "<<eta_tmp<<"\naeqsu_tmp "<<aeqsu_tmp<<"\nalpha_tmp "<<alpha_tmp<<"\ngama "<<gama<<"\nw_h "<<w_h<<"\np_mag "<<p_mag<<"\nkx_ray "<<kx_ray<<"\nkz_ray "<<kz_ray<<"\nkappa_ray"<<kappa_ray<<"\nBw_ray "<<Bw_ray<<"\nEzw "<<Ezw<<"\nw1 "<<w1<<"\nw2 "<<w2<<"\nR1 "<<R1<<"\nR2 "<<R2<<"\n";
-
 
     //Calculate beta 
     real beta = (kx_ray*pper_tmp)/(Universal::m_e*gama*w_h); //[Bortnic thesis]. No need to return.
@@ -167,9 +160,6 @@ void f_packet (real &Fpar, real &Fper, real &Ftheta, real &aeq_rk, real &kz, con
                   -(ppar_tmp/(gama*Universal::m_e))*BL*jn( (Wave::m_res+1), beta)
                   +(pper_tmp/(gama*Universal::m_e))*Bzw*jn( (Wave::m_res), beta)));
     
-    //Calculate Equatorial P.A change.
-    aeq_rk =((Universal::q_e*Bw_ray)/(pow(p_mag,2)))*(tan(aeqsu_tmp)/tan(alpha_tmp))*(((Wave::w_wave/kappa_ray)-(ppar_tmp/(gama*Universal::m_e)))*ppar_tmp-(pow(pper_tmp,2)/(gama*Universal::m_e)))*sin(eta_tmp);
-    return;
 }
 
 //Returns quantities needed, regardless WPI.
@@ -186,7 +176,6 @@ void f_always(real &p_mag, real &gama, real &w_h, real &dwh_ds, const real latit
     real Bmag = ((Universal::B0)/(pow((Distribution::L_shell),3)))*slat_term/(pow(clat,6));
     w_h = ((Universal::q_e*Bmag)/Universal::m_e);
     dwh_ds = (3.0*w_h/(Distribution::L_shell*Universal::Re)) *(slat/slat_term) * (1.0/(slat_term*slat_term) + 2.0/(clat*clat)); // [Tao et al, 2012]
-    return;
 }
 
 //Estimate resonant velocity

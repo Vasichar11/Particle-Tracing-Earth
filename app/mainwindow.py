@@ -269,7 +269,7 @@ class MainWindow(QMainWindow):
                     if isinstance(item, QHBoxLayout):
                         label = item.itemAt(0).widget()
                         line_edit = item.itemAt(1).widget()
-                        combobox = item.itemAt(2).widget()  # Assuming the QComboBox is the third widget in the QHBoxLayout
+                        combobox = item.itemAt(2).widget()  
                         if isinstance(label, QLabel) and label.text() == name and isinstance(line_edit, QLineEdit) and isinstance(combobox, QComboBox):
                             # Typecast to float to multiply with the multiplicative factor
                             value = float(line_edit.text())
