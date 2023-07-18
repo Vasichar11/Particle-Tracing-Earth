@@ -60,7 +60,7 @@ eta_sectors = int(360/eta_sector)
 Ekin_domain  = np.ptp(Ekin0) # max - min
 Ekin_sectors = math.ceil(Ekin_domain / Ekin_sector)
 ############################################### SAVE CSV FILES ###########################################
-#Initials to CSV file
+# Initials to CSV file
 header = ['id', 'aeq0_deg', 'latitude0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'eta0', 'Ekin(keV)']
 data = []
 id=0
@@ -78,7 +78,6 @@ with open(csv_file, "w") as file1:
 
 ###################################### BINNING BASED ON SECTOR RANGES ####################################
 
-##BINNING
 latitude_bins    = [0 for i in range (latitude_sectors)]
 latitude_labels  = np.arange(min(latitude0*R2D),max(latitude0*R2D)+  latitude_sector,latitude_sector) #np.arange doesn't include endpoint
 latitude_labels2 = []
@@ -166,14 +165,14 @@ fig.savefig("output/plots/"+str(population)+"p_Distribution_Pies.png",dpi=200)
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 fig, ax = plt.subplots(2)
-#P.A distribution in bins
+# P.A distribution in bins
 for i in aeq_bins:
     ax[0].scatter(i*aeq_sector,aeq_bins,s=2,alpha=1)
 ax[0].grid(alpha=.3)
 ax[0].set(ylabel="dN",title="Sector range "+str(aeq_sector)+" deg")
 ax[0].set_yscale("log")
 
-#P.A and latitude distribution
+# P.A and latitude distribution
 ax[1].scatter(latitude0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
 ax[1].grid(alpha=.3)
 ax[1].set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))

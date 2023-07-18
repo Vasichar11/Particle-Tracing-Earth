@@ -4,8 +4,8 @@
 void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, const std::vector <real> &kx_ray, const std::vector <real> &kz_ray, const std::vector <real> &kappa_ray, const std::vector <real> &Bzw, const std::vector <real> &Ezw, const std::vector <real> &Bw_ray, const std::vector <real> &w1, const std::vector <real> &w2, const std::vector <real> &R1, const std::vector <real> &R2, Particles &single, Telescope &ODPT)
 {
 //---------------------------------------------------- ASSIGN OBJECT VALUES ----------------------------------------------------//
-    //std::cout.precision(8);                //Output 16 decimal precise
-	//std::cout<<std::scientific;		        //For e notation representation
+    //std::cout.precision(8); //Output decimal precision
+	//std::cout<<std::scientific; //For e notation representation
 
     //Assign last particle states from nowpi simulation.
     real latitude = single.latitude_end;
@@ -188,7 +188,7 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
     
     
     // Save state when we have deta_dt close to zero, when we have maximum energy diff, and when we have maximum P.A diff.
-    //single.save_state( p, max_dEkin, maxEkin_time, max_dPA, maxdPA_time, min_detadt);
+    // single.save_state( p, max_dEkin, maxEkin_time, max_dPA, maxdPA_time, min_detadt);
 
 
 }

@@ -5,10 +5,10 @@
 #include <algorithm>
 #include <array> 
 #include <random> 
-#include <iomanip>  //For std::setprecision()
+#include <iomanip>  // For std::setprecision()
 #include <omp.h>
-#include <cstdlib> //atoi()
-#include <ctype.h> //isdigit()
+#include <cstdlib> // atoi()
+#include <ctype.h> // isdigit()
 #include <filesystem>
 #include <stdexcept>
 

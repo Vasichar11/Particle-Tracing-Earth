@@ -3,13 +3,12 @@
 #include <vector>
 #include <stdlib.h>
 #include <iostream>
-#include "functions.h" 		//for Bmag_dipole in Particles::u_and_p
-#include "constants.h" 		//only for speed of light(and L_shell, Re ->bounce period)
+#include "functions.h" 		// for Bmag_dipole in Particles::u_and_p
+#include "constants.h" 		// only for speed of light(and L_shell, Re ->bounce period)
 #include "common.h"
 
-//Declaration of struct.
 
-//Struct for particle's state throughout the iterations.
+// Struct for particle's state throughout the iterations.
 struct Particles
 {
 	// Characterize particle
@@ -30,7 +29,7 @@ struct Particles
 	int saved_id;
 	real saved_max_dEkin, saved_maxEkin_time, saved_max_dPA, saved_maxdPA_time, saved_mindetadt_time, saved_min_detadt;
 	// If vectors for save_state are needed
-	//std::vector<real> id, latitude , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, deta_dt, Ekin, time; 
+	// std::vector<real> id, latitude , zeta, uper , upar, ppar, pper, alpha, aeq, eta, M_adiabatic, deta_dt, Ekin, time; 
 	std::vector<real> id, latitude, deta_dt, Ekin; 
 
 	// Member function to initialize particle population
@@ -43,7 +42,7 @@ struct Particles
 	// Member function to save other particle states
 	void save_state(int p, real max_dEkin, real maxEkin_time, real  max_dPA, real maxdPA_time, real min_detadt, real min_detadt_time);
 	
-
+	// Member function to find the latitude domain of validity, given the equatorial P.A value of the particle
 	void latitude_domain(real aeq0);
 
 

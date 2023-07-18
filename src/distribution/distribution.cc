@@ -14,29 +14,29 @@
 #include "constants.h"
 
 
-//Member function to find valid latitude range
+// Member function to find valid latitude range
 void latitude_domain(real aeq0, real &latitude_start_d, real &latitude_end_d)
 {
-	const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
+	const real Beq0 = Bmag_dipole(0); // Beq isn't always Beq0?
 	latitude_end_d     = 0;
 	latitude_start_d   = 0;
 	real salpha0;
 	do
 	{
 		latitude_end_d += Lat_dstr::domain_step; 
-		//Gradually increase and check if salpha0 is valid.
-		//("Brute Force domain validation")
+		// Gradually increase and check if salpha0 is valid.
+		// ("Brute Force domain validation")
 		real Blam0   = Bmag_dipole(latitude_end_d*Universal::D2R);
-		salpha0      = sin(aeq0)*sqrt(Blam0/Beq0);  //salpha = sin(aeq)*sqrt(Blam/Beq)
+		salpha0      = sin(aeq0)*sqrt(Blam0/Beq0);  // salpha = sin(aeq)*sqrt(Blam/Beq)
 							  
-	}					//e.g aeq0_deg=89.9989367479725, latitude0_deg=0.000514656086141539 
-	while( (salpha0<=1) && (salpha0>=-1) && (salpha0!=0) ) ; // &&latitude0<M_PI
-	//Else Invalid
+	}					
+	while( (salpha0<=1) && (salpha0>=-1) && (salpha0!=0) ) ; 
+	// Else Invalid
 	/*-1<salpha || salpha>1 => domain error
 	aeq0=0||180 => salpha0 = 0 => alpha0 = 0 => pper0 = 0 => PROBLEM IN Bell_param, a2(division with 0).
 	sin(pi) is actually not zero in C++... */
-	latitude_end_d   -= Lat_dstr::domain_step;     //This is the last (positive) valid value.
-	latitude_start_d  = -latitude_end_d;	 //This would be the first (negative) valid value. 		
+	latitude_end_d   -= Lat_dstr::domain_step; // This is the last (positive) valid value.
+	latitude_start_d  = -latitude_end_d; // This would be the first (negative) valid value. 		
 }
 
 
@@ -46,16 +46,15 @@ int main(int argc, char **argv)
 {
 	std::cout<<"TEST\n"<<Eta_dstr::value_deg;
 
-	std::cout.precision(8);			//Output precision
-	std::cout<<std::scientific;		//For e notation representation
-//-------------------------------------------------------------DISTRIBUTION OF PARTICLES----------------------------------------------------------------//
-	
+	std::cout.precision(8); // Output precision
+	std::cout<<std::scientific; // For e notation representation
+
 	std::string string_evenly   = "evenly";
 	std::string string_normal   = "normal";
 	std::string string_uniform  = "uniform";
 	std::string string_constant = "constant";
 	
-	//---ARGV ERROR---//
+	// Validate program arguments
 	if(argc!=5) throw std::invalid_argument("\nSet command line arguments from the list:(evenly, uniform, normal, test) to distribute the particles.\nargv[1] is for P.A, argv[2] is for latitude, arg[3] is for eta, argv[4] is for Ekin");
 	for(int arg=1;arg<=4;arg++)
 	{
@@ -72,13 +71,13 @@ int main(int argc, char **argv)
 
 
 
-	Particles single; //Single particle struct.
-	std::vector<Particles> dstr(Distribution::population, single);	//Vector of structs for particle distribution.
+	Particles single; // Single particle struct.
+	std::vector<Particles> dstr(Distribution::population, single);	// Vector of structs for particle distribution.
 	real latitude0,aeq0,eta0,Ekin0;
 	latitude0=aeq0=eta0=Ekin0=0;
-	//const real Beq0 = Bmag_dipole(0);   	 //Beq isn't always Beq0?
-	std::random_device seed;         //Random seed. 
-	std::mt19937 generator(seed());  //PRNG initialized with seed.
+	// const real Beq0 = Bmag_dipole(0);   	 // Beq isn't always Beq0?
+	std::random_device seed;         // Random seed. 
+	std::mt19937 generator(seed());  // PRNG initialized with seed.
 	int p=0;
 	int aeq_count = 0 ;
 	int latitude_count = 0 ;
@@ -122,22 +121,24 @@ int main(int argc, char **argv)
 			aeq0 = Aeq_dstr::value;
 		}
 		//----------------------------------------- DISTRIBUTE LATITUDE ----------------------------------------------//
-		//-------------Latitude domain-------------//
+		
+		//-------------Find Latitude domain-------------//
 		real latitude_end_d, latitude_start_d;
-		latitude_domain(aeq0, latitude_start_d, latitude_end_d); //Finds latitude_start_d && latitude_end_d. 
+		latitude_domain(aeq0, latitude_start_d, latitude_end_d); // Finds latitude_start_d && latitude_end_d. 
 		//std::cout<<"\nFor aeq0 = "<<aeq0*Universal::R2D<<" degrees\nThe latitude domain in degrees"<<"\n|From "<<" To|\n| "<<latitude_start_d << "  "<< " " << latitude_end_d <<"|\n";
-		//-------------Latitude domain-------------//
+		//-------------Find Latitude domain-------------//
+
 		// Evenly with goal: symmetry	
 		if(argv[2]==string_evenly)   
 		{
-			//Step for linspace(start,end,aeq_groups) 
+			// Step for linspace(start,end,aeq_groups) 
 			const real latitude_step_d	  = (latitude_end_d - latitude_start_d)/(Lat_dstr::steps-1);						
 			latitude0 = (latitude_start_d + latitude_count*latitude_step_d) * Universal::D2R;	  					
 		}
 		// Uniformly with goal: randomness
 		else if (argv[2]==string_uniform)   			
 		{
-			//All latitudes in this range are equally probable. 
+			// All latitudes in this range are equally probable. 
 			std::uniform_real_distribution <real> uniform_latitude(latitude_start_d, latitude_end_d); 
 			latitude0  = uniform_latitude(generator) * Universal::D2R; 							 
 		}
@@ -146,9 +147,9 @@ int main(int argc, char **argv)
 		{
 			real number;
 			do
-			{
-				//Adaptive stdev according to the latitude domain range. Domain range (min,max) = (0,90+90).
-				//That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
+			{ 
+				// Adaptive stdev according to the latitude domain range. Domain range (min,max) = (0,90+90).
+				// That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
 				real stdev =((latitude_end_d-latitude_start_d)/180) * Lat_dstr::max_stdev;
 				std::normal_distribution <real> normal_latitude(Lat_dstr::mean, stdev);
 				number = normal_latitude(generator);
@@ -172,7 +173,7 @@ int main(int argc, char **argv)
 		// Uniformly with goal: randomness
 		else if (argv[3]==string_uniform)   			
 		{
-			//All values in this range are equally probable.
+			// All values in this range are equally probable.
 			std::uniform_real_distribution <real> uniform_eta  (Eta_dstr::start_deg, Eta_dstr::end_deg);
 			eta0  = uniform_eta(generator) * Universal::D2R; 	
 		}
@@ -236,20 +237,25 @@ int main(int argc, char **argv)
 	}
 	std::cout<<"\nDistribution done!";
 //-------------------------------------------------------------DISTRIBUTION OF PARTICLES:END------------------------------------------------------------//
-	//AEQ0 DISTRIBUTION CHECK
+	
+
+//----------------------------------------------------------------AEQ0 DISTRIBUTION CHECK---------------------------------------------------------------//
+
 	const int sector_range = 1;
 	const int view = 180;
 	const int sectors = view/sector_range;
 	std::array<int, sectors> aeq0_bins;
-	std::fill(std::begin(aeq0_bins), std::end(aeq0_bins), 0); 		  //Initialize array elements with 0
+	std::fill(std::begin(aeq0_bins), std::end(aeq0_bins), 0);// Initialize array elements with 0
 	int sec;
 	for(int p=0; p<Distribution::population; p++)
 	{
-		sec = floor((dstr[p].aeq0*Universal::R2D)/sector_range); //Which sector has this particle?
-		aeq0_bins.at(sec) ++; 										  //This sector has this particle
+		sec = floor((dstr[p].aeq0*Universal::R2D)/sector_range); // Checking in which sector this particle belongs
+		aeq0_bins.at(sec) ++; // Increasing the population of this sector
 	}
 	std::cout<<"\nEquatorial P.A Initialization: ";
-	for(int sector=0;sector<sectors;sector++)					      //Print population of P.A bins
+	
+	// Print population of P.A bins
+	for(int sector=0;sector<sectors;sector++) 
 	{				
 		std::cout<<"\naeq0 range: "<<sector*sector_range<< " - " <<(sector+1)*sector_range<< " has " << aeq0_bins.at(sector) << " particles.";
 	}
@@ -299,7 +305,7 @@ int main(int argc, char **argv)
 	// File name
 	std::string file_name = "output/files/dstr" + std::to_string(Distribution::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA_" +std::string(argv[3])+"ETA_"+std::string(argv[4]) + "EKIN.h5";
 	// Create instance of hdf5 file.
-	//H5F_ACC_TRUNC flag -> new file or overwritei
+	// H5F_ACC_TRUNC flag -> new file or overwritei
 	H5::H5File file(file_name, H5F_ACC_TRUNC);
 
 	// Create dataspace and datatype
