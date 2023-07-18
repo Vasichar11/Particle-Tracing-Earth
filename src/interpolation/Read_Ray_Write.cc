@@ -6,27 +6,33 @@
 #include <chrono>
 #include <iomanip>  
 #include <iostream>
-#include <H5Cpp.h>
+#include <filesystem>
+#include <iostream>
+#include <highfive/H5File.hpp>                                      
+#include <highfive/H5DataSet.hpp>
+#include <highfive/H5DataSpace.hpp>
+
+namespace h5 = HighFive;
+namespace fs = std::filesystem;
+
 
 int main()
 
 {
-
-
     auto start1 = std::chrono::high_resolution_clock::now();
 
 //-------------------------------------------------- READ CSV --------------------------------------------------------// 
-    //Using function "rcsv" to read Ray data && store values in a single(!) vector.
-
+    // Using function "rcsv" to read Ray data && store values in a single(!) vector.
     std::vector<std::pair<std::string, std::vector<real>>> ray_tracing = rcsv("src/data/L2_freq2500_psi-89_lat_0_damping.csv");
 
-    int column_size = ray_tracing.at(0).second.size() ;       //Size of columns
+    // Size of columns
+    int column_size = ray_tracing.at(0).second.size() ;       
 
-    //Declaring seperate vectors to store Ray data individually.
+    // Declaring seperate vectors to store Ray data individually.
     std::vector <real> timef, posx, posy, posz, vprelx, vprely, vprelz, vgrelx, vgrely, vgrelz, nx, ny, nz;
     std::vector <real> Bx, By, Bz, w, Ns1, Ns2, Ns3, Ns4, psi, theta_res, Y, Lf, alt, lat, lon, damp;
     std::vector <real> S_stix, D_stix, P_stix, R_stix, L_stix, wmega_e ;
-    std::vector <real> Nspec,qs1,qs2,qs3,qs4,ms1,ms2,ms3,ms4,nus1,nus2,nus3,nus4;
+    std::vector <real> Nspec, qs1, qs2, qs3, qs4, ms1, ms2, ms3, ms4, nus1, nus2, nus3, nus4;
 
 
     //Allocation of values inside seperate vectors 
@@ -177,6 +183,7 @@ int main()
         kx_ray.push_back( (nx_int.at(i)*w_int.at(i)) / Universal::c );
         kz_ray.push_back( (nz_int.at(i)*w_int.at(i)) / Universal::c );
         kappa_ray.push_back( (mu_ray.at(i)*w_int.at(i)) / Universal::c );
+        std::cout<<"\n"<<(mu_ray.at(i)*w_int.at(i)) / Universal::c ;
         X_stix.push_back( P_stix_int.at(i)/(P_stix_int.at(i)-mu_sq.at(i)*spsi.at(i)*spsi.at(i)) );
         rho1.push_back( ((mu_sq.at(i)-S_stix_int.at(i))*mu_sq.at(i)*spsi.at(i)*cpsi.at(i)) / (D_stix_int.at(i)*(mu_sq.at(i)*spsi.at(i)*spsi.at(i)-P_stix_int.at(i))) );
         rho2.push_back( (mu_sq.at(i)-S_stix_int.at(i)) / D_stix_int.at(i) );
@@ -206,155 +213,81 @@ int main()
     std::cout << "\nCalculating other vectors. Time elapsed: " << time3 <<" seconds" ;
 
     auto start4 = std::chrono::high_resolution_clock::now();
-
 //------------------------------------------------- WRITE HDF5 FILE ------------------------------------------------- //
+    fs::path outputPath = "output/files/interpolated_ray_pwr" + std::to_string(Wave::pwr) + ".h5";
+    h5::File file_out(outputPath.string(), h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 
-	std::string file_name = "output/files/interpolated_ray_pwr" + std::to_string(Wave::pwr) + ".h5";
-	H5::H5File file(file_name, H5F_ACC_TRUNC);
-    hsize_t dim = Distribution::population;
-	H5::DataSpace data_space(1,&dim);
-	H5::DataType data_type(H5::PredType::NATIVE_DOUBLE);
+    //Vectors from interpolation
+    //h5::DataSet dataset_posx_int =      file_out.createDataSet("posx_int", posx_int);
+    //h5::DataSet dataset_posy_int =      file_out.createDataSet("posy_int", posy_int);
+    //h5::DataSet dataset_posz_int =      file_out.createDataSet("posz_int",posz_int);
+    //h5::DataSet dataset_vprelx_int =    file_out.createDataSet("vprelx_int", vprelx_int);
+    //h5::DataSet dataset_vprely_int =    file_out.createDataSet("vprely_int", vprely_int);
+    //h5::DataSet dataset_vprelz_int =    file_out.createDataSet("vprelz_int", vprelz_int);
+    //h5::DataSet dataset_vgrelx_int =    file_out.createDataSet("vgrelx_int", vgrelx_int);
+    //h5::DataSet dataset_vgrely_int =    file_out.createDataSet("vgrely_int", vgrely_int);
+    //h5::DataSet dataset_vgrelz_int =    file_out.createDataSet("vgrelz_int", vgrelz_int);
+    //h5::DataSet dataset_nx_int =        file_out.createDataSet("nx_int", nx_int);
+    //h5::DataSet dataset_ny_int =        file_out.createDataSet("ny_int", ny_int);
+    //h5::DataSet dataset_nz_int =        file_out.createDataSet("nz_int", nz_int);
+    //h5::DataSet dataset_Bx_int =        file_out.createDataSet("Bx_int", Bx_int);
+    //h5::DataSet dataset_By_int =        file_out.createDataSet("By_int", By_int);
+    //h5::DataSet dataset_Bz_int =        file_out.createDataSet("Bz_int", Bz_int);
+    //h5::DataSet dataset_w_int =         file_out.createDataSet("w_int", w_int);
+    //h5::DataSet dataset_qs1_int =       file_out.createDataSet("qs1_int", qs1_int);
+    //h5::DataSet dataset_qs2_int =       file_out.createDataSet("qs2_int", qs2_int);
+    //h5::DataSet dataset_qs3_int =       file_out.createDataSet("qs3_int", qs3_int);
+    //h5::DataSet dataset_qs4_int =       file_out.createDataSet("qs4_int", qs4_int);
+    //h5::DataSet dataset_ms1_int =       file_out.createDataSet("ms1_int", ms1_int);
+    //h5::DataSet dataset_ms2_int =       file_out.createDataSet("ms2_int", ms2_int);
+    //h5::DataSet dataset_ms3_int =       file_out.createDataSet("ms3_int", ms3_int);
+    //h5::DataSet dataset_ms4_int =       file_out.createDataSet("ms4_int", ms4_int);
+    //h5::DataSet dataset_Ns1_int =       file_out.createDataSet("Ns1_int", Ns1_int);
+    //h5::DataSet dataset_Ns2_int =       file_out.createDataSet("Ns2_int", Ns2_int);
+    //h5::DataSet dataset_Ns3_int =       file_out.createDataSet("Ns3_int", Ns3_int);
+    //h5::DataSet dataset_Ns4_int =       file_out.createDataSet("Ns4_int", Ns4_int);
+    //h5::DataSet dataset_psi_int =       file_out.createDataSet("psi_int", psi_int);
+    //h5::DataSet dataset_theta_res_int = file_out.createDataSet("theta_res_int", theta_res_int);
+    //h5::DataSet dataset_Y_int =         file_out.createDataSet("Y_int", Y_int);
+    //h5::DataSet dataset_Lf_int =        file_out.createDataSet("Lf_int", Lf_int);
+    //h5::DataSet dataset_alt_int =       file_out.createDataSet("alt_int", alt_int);
+    h5::DataSet dataset_lat_int =       file_out.createDataSet("lat_int", lat_int);
+    //h5::DataSet dataset_lon_int =       file_out.createDataSet("lon_int", lon_int);
+    //h5::DataSet dataset_damp_int =      file_out.createDataSet("damp_int", damp_int);
+    //h5::DataSet dataset_S_stix_int =    file_out.createDataSet("S_stix_int", S_stix_int);
+    //h5::DataSet dataset_D_stix_int =    file_out.createDataSet("D_stix_int", D_stix_int);
+    //h5::DataSet dataset_P_stix_int =    file_out.createDataSet("P_stix_int", P_stix_int);
+    //h5::DataSet dataset_R_stix_int =    file_out.createDataSet("R_stix_int", R_stix_int);
+    //h5::DataSet dataset_L_stix_int =    file_out.createDataSet("L_stix_int", L_stix_int);
+    //h5::DataSet dataset_wmega_e_int =   file_out.createDataSet("wmega_e_int", wmega_e_int);
+    //h5::DataSet dataset_mu_ray =        file_out.createDataSet("mu_ray", mu_ray );
+    //h5::DataSet dataset_mu_sq =         file_out.createDataSet("mu_sq", mu_sq );
+    //h5::DataSet dataset_spsi =          file_out.createDataSet("spsi", spsi );
+    //h5::DataSet dataset_cpsi =          file_out.createDataSet("cpsi", cpsi );
+    h5::DataSet dataset_kx_ray =        file_out.createDataSet("kx_ray", kx_ray );
+    h5::DataSet dataset_kz_ray =        file_out.createDataSet("kz_ray", kz_ray );
+    h5::DataSet dataset_kappa_ray =     file_out.createDataSet("kappa_ray", kappa_ray );
+    //h5::DataSet dataset_X_stix =        file_out.createDataSet("X_stix", X_stix );
+    //h5::DataSet dataset_rho1 =          file_out.createDataSet("rho1", rho1 );
+    //h5::DataSet dataset_rho2 =          file_out.createDataSet("rho2", rho2 );
+    //h5::DataSet dataset_Byw_sq =        file_out.createDataSet("Byw_sq", Byw_sq );
+    //h5::DataSet dataset_fac1 =          file_out.createDataSet("fac1", fac1 );
+    //h5::DataSet dataset_Byw =           file_out.createDataSet("Byw", Byw );
+    //h5::DataSet dataset_Bxw =           file_out.createDataSet("Bxw", Bxw );
+    h5::DataSet dataset_Bzw =           file_out.createDataSet("Bzw", Bzw );
+    //h5::DataSet dataset_Exw =           file_out.createDataSet("Exw", Exw );
+    //h5::DataSet dataset_Eyw =           file_out.createDataSet("Eyw", Eyw );
+    h5::DataSet dataset_Ezw =           file_out.createDataSet("Ezw", Ezw );
+    h5::DataSet dataset_Bw_ray =        file_out.createDataSet("Bw_ray", Bw_ray );
+    h5::DataSet dataset_w1 =            file_out.createDataSet("w1", w1 );
+    h5::DataSet dataset_w2 =            file_out.createDataSet("w2", w2 );
+    h5::DataSet dataset_R1 =            file_out.createDataSet("R1", R1 );
+    h5::DataSet dataset_R2 =            file_out.createDataSet("R2", R2 );
+    h5::DataSet dataset_Byw =           file_out.createDataSet("Byw", Byw);
+    h5::DataSet dataset_time =          file_out.createDataSet("time", time_new );
+    h5::DataSet dataset_pwr =           file_out.createDataSet("pwr", Wave::pwr);
+ 
 
-
-	// Create the datasets
-    // Vectors from interpolation
-    //H5::DataSet dataset_posx_int =      file.createDataSet("posx_int", data_type, data_space);
-    //H5::DataSet dataset_posy_int =      file.createDataSet("posy_int", data_type, data_space);
-    //H5::DataSet dataset_posz_int =      file.createDataSet("posz_int",posz_int);
-    //H5::DataSet dataset_vprelx_int =    file.createDataSet("vprelx_int", data_type, data_space);
-    //H5::DataSet dataset_vprely_int =    file.createDataSet("vprely_int", data_type, data_space);
-    //H5::DataSet dataset_vprelz_int =    file.createDataSet("vprelz_int", data_type, data_space);
-    //H5::DataSet dataset_vgrelx_int =    file.createDataSet("vgrelx_int", data_type, data_space);
-    //H5::DataSet dataset_vgrely_int =    file.createDataSet("vgrely_int", data_type, data_space);
-    //H5::DataSet dataset_vgrelz_int =    file.createDataSet("vgrelz_int", data_type, data_space);
-    //H5::DataSet dataset_nx_int =        file.createDataSet("nx_int", data_type, data_space);
-    //H5::DataSet dataset_ny_int =        file.createDataSet("ny_int", data_type, data_space);
-    //H5::DataSet dataset_nz_int =        file.createDataSet("nz_int", data_type, data_space);
-    //H5::DataSet dataset_Bx_int =        file.createDataSet("Bx_int", data_type, data_space);
-    //H5::DataSet dataset_By_int =        file.createDataSet("By_int", data_type, data_space);
-    //H5::DataSet dataset_Bz_int =        file.createDataSet("Bz_int", data_type, data_space);
-    //H5::DataSet dataset_w_int =         file.createDataSet("w_int", data_type, data_space);
-    //H5::DataSet dataset_qs1_int =       file.createDataSet("qs1_int", data_type, data_space);
-    //H5::DataSet dataset_qs2_int =       file.createDataSet("qs2_int", data_type, data_space);
-    //H5::DataSet dataset_qs3_int =       file.createDataSet("qs3_int", data_type, data_space);
-    //H5::DataSet dataset_qs4_int =       file.createDataSet("qs4_int", data_type, data_space);
-    //H5::DataSet dataset_ms1_int =       file.createDataSet("ms1_int", data_type, data_space);
-    //H5::DataSet dataset_ms2_int =       file.createDataSet("ms2_int", data_type, data_space);
-    //H5::DataSet dataset_ms3_int =       file.createDataSet("ms3_int", data_type, data_space);
-    //H5::DataSet dataset_ms4_int =       file.createDataSet("ms4_int", data_type, data_space);
-    //H5::DataSet dataset_Ns1_int =       file.createDataSet("Ns1_int", data_type, data_space);
-    //H5::DataSet dataset_Ns2_int =       file.createDataSet("Ns2_int", data_type, data_space);
-    //H5::DataSet dataset_Ns3_int =       file.createDataSet("Ns3_int", data_type, data_space);
-    //H5::DataSet dataset_Ns4_int =       file.createDataSet("Ns4_int", data_type, data_space);
-    //H5::DataSet dataset_psi_int =       file.createDataSet("psi_int", data_type, data_space);
-    //H5::DataSet dataset_theta_res_int = file.createDataSet("theta_res_int", data_type, data_space);
-    //H5::DataSet dataset_Y_int =         file.createDataSet("Y_int", data_type, data_space);
-    //H5::DataSet dataset_Lf_int =        file.createDataSet("Lf_int", data_type, data_space);
-    //H5::DataSet dataset_alt_int =       file.createDataSet("alt_int", data_type, data_space);
-    H5::DataSet dataset_lat_int =       file.createDataSet("lat_int", data_type, data_space);
-    //H5::DataSet dataset_lon_int =       file.createDataSet("lon_int", data_type, data_space);
-    //H5::DataSet dataset_damp_int =      file.createDataSet("damp_int", data_type, data_space);
-    //H5::DataSet dataset_S_stix_int =    file.createDataSet("S_stix_int", data_type, data_space);
-    //H5::DataSet dataset_D_stix_int =    file.createDataSet("D_stix_int", data_type, data_space);
-    //H5::DataSet dataset_P_stix_int =    file.createDataSet("P_stix_int", data_type, data_space);
-    //H5::DataSet dataset_R_stix_int =    file.createDataSet("R_stix_int", data_type, data_space);
-    //H5::DataSet dataset_L_stix_int =    file.createDataSet("L_stix_int", data_type, data_space);
-    //H5::DataSet dataset_wmega_e_int =   file.createDataSet("wmega_e_int", data_type, data_space);
-    //H5::DataSet dataset_mu_ray =        file.createDataSet("mu_ray", data_type, data_space); 
-    //H5::DataSet dataset_mu_sq =         file.createDataSet("mu_sq", data_type, data_space); 
-    //H5::DataSet dataset_spsi =          file.createDataSet("spsi", data_type, data_space); 
-    //H5::DataSet dataset_cpsi =          file.createDataSet("cpsi", data_type, data_space); 
-    H5::DataSet dataset_kx_ray =        file.createDataSet("kx_ray", data_type, data_space); 
-    H5::DataSet dataset_kz_ray =        file.createDataSet("kz_ray", data_type, data_space); 
-    H5::DataSet dataset_kappa_ray =     file.createDataSet("kappa_ray", data_type, data_space); 
-    //H5::DataSet dataset_X_stix =        file.createDataSet("X_stix", data_type, data_space); 
-    //H5::DataSet dataset_rho1 =          file.createDataSet("rho1", data_type, data_space); 
-    //H5::DataSet dataset_rho2 =          file.createDataSet("rho2", data_type, data_space); 
-    //H5::DataSet dataset_Byw_sq =        file.createDataSet("Byw_sq", data_type, data_space); 
-    //H5::DataSet dataset_fac1 =          file.createDataSet("fac1", data_type, data_space); 
-    //H5::DataSet dataset_Byw =           file.createDataSet("Byw", data_type, data_space); 
-    //H5::DataSet dataset_Bxw =           file.createDataSet("Bxw", data_type, data_space); 
-    H5::DataSet dataset_Bzw =           file.createDataSet("Bzw", data_type, data_space); 
-    //H5::DataSet dataset_Exw =           file.createDataSet("Exw", data_type, data_space); 
-    //H5::DataSet dataset_Eyw =           file.createDataSet("Eyw", data_type, data_space); 
-    H5::DataSet dataset_Ezw =           file.createDataSet("Ezw", data_type, data_space); 
-    H5::DataSet dataset_Bw_ray =        file.createDataSet("Bw_ray", data_type, data_space); 
-    H5::DataSet dataset_w1 =            file.createDataSet("w1", data_type, data_space); 
-    H5::DataSet dataset_w2 =            file.createDataSet("w2", data_type, data_space); 
-    H5::DataSet dataset_R1 =            file.createDataSet("R1", data_type, data_space); 
-    H5::DataSet dataset_R2 =            file.createDataSet("R2", data_type, data_space); 
-    H5::DataSet dataset_Byw =           file.createDataSet("Byw", data_type, data_space);
-    H5::DataSet dataset_time =          file.createDataSet("time", data_type, data_space); 
-    
-
-	// Write
-    //dataset_posx_int.write(posx_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_posy_int.write(posy_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_posz_int.write(posz_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_vprelx_int.write(vprelx_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_vprely_int.write(vprely_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_vprelz_int.write(vprelz_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_vgrelx_int.write(vgrelx_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_vgrely_int.write(vgrely_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_vgrelz_int.write(vgrelz_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_nx_int.write(nx_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_ny_int.write(ny_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_nz_int.write(nz_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Bx_int.write(Bx_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_By_int.write(By_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Bz_int.write(Bz_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_w_int.write(w_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_qs1_int.write(qs1_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_qs2_int.write(qs2_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_qs3_int.write(qs3_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_qs4_int.write(qs4_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_ms1_int.write(ms1_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_ms2_int.write(ms2_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_ms3_int.write(ms3_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_ms4_int.write(ms4_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Ns1_int.write(Ns1_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Ns2_int.write(Ns2_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Ns3_int.write(Ns3_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Ns4_int.write(Ns4_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_psi_int.write(psi_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_theta_res_int.write(theta_res_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Y_int.write(Y_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Lf_int.write(Lf_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_alt_int.write(alt_int.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_lat_int.write(lat_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_lon_int.write(lon_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_damp_int.write(damp_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_S_stix_int.write(S_stix_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_D_stix_int.write(D_stix_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_P_stix_int.write(P_stix_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_R_stix_int.write(R_stix_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_L_stix_int.write(L_stix_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_wmega_e_int.write(wmega_e_int.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_mu_ray.write(mu_ray.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_mu_sq.write(mu_sq.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_spsi.write(spsi.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_cpsi.write(cpsi.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_kx_ray.write(kx_ray.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_kz_ray.write(kz_ray.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_kappa_ray.write(kappa_ray.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_X_stix.write(X_stix.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_rho1.write(rho1.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_rho2.write(rho2.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Byw_sq.write(Byw_sq.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_fac1.write(fac1.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_Byw.write(Byw.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Bxw.write(Bxw.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_Bzw.write(Bzw.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Exw.write(Exw.data(), H5::PredType::NATIVE_DOUBLE);
-    //dataset_Eyw.write(Eyw.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_Ezw.write(Ezw.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_Bw_ray.write(Bw_ray.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_w1.write(w1.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_w2.write(w2.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_R1.write(R1.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_R2.write(R2.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_Byw.write(Byw.data(), H5::PredType::NATIVE_DOUBLE);
-    dataset_time.write(time_new.data(), H5::PredType::NATIVE_DOUBLE);
 //----------------------------------------------- WRITE HDF5 FILE: DONE -------------------------------------------- //
 
     auto stop4= std::chrono::high_resolution_clock::now();
