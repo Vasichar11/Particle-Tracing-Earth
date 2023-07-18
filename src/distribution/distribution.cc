@@ -7,12 +7,14 @@
 #include <omp.h>
 #include <H5Cpp.h>
 #include <algorithm>
+#include <filesystem>
 
 #include "common.h"
 #include "../headers/struct_Particles.h"
 #include "../headers/functions.h"
 #include "constants.h"
 
+namespace fs = std::filesystem;
 
 // Member function to find valid latitude range
 void latitude_domain(real aeq0, real &latitude_start_d, real &latitude_end_d)
@@ -44,10 +46,8 @@ void latitude_domain(real aeq0, real &latitude_start_d, real &latitude_end_d)
 
 int main(int argc, char **argv)
 {
-	std::cout<<"TEST\n"<<Eta_dstr::value_deg;
-
-	std::cout.precision(8); // Output precision
-	std::cout<<std::scientific; // For e notation representation
+	//std::cout.precision(8); // Output precision
+	//std::cout<<std::scientific; // For e notation representation
 
 	std::string string_evenly   = "evenly";
 	std::string string_normal   = "normal";
@@ -241,19 +241,20 @@ int main(int argc, char **argv)
 
 //----------------------------------------------------------------AEQ0 DISTRIBUTION CHECK---------------------------------------------------------------//
 
-	const int sector_range = 1;
+	const float sector_range = 1 ;
 	const int view = 180;
-	const int sectors = view/sector_range;
-	std::array<int, sectors> aeq0_bins;
-	std::fill(std::begin(aeq0_bins), std::end(aeq0_bins), 0);// Initialize array elements with 0
-	int sec;
-	for(int p=0; p<Distribution::population; p++)
-	{
-		sec = floor((dstr[p].aeq0*Universal::R2D)/sector_range); // Checking in which sector this particle belongs
-		aeq0_bins.at(sec) ++; // Increasing the population of this sector
+	const int sectors = static_cast<int>(view / sector_range);
+	std::vector<int> aeq0_bins(sectors, 0); // Initialize vector elements with 0
+
+	for (int p = 0; p < Distribution::population; p++) {
+		int sec = static_cast<int>(std::floor((dstr[p].aeq0 * Universal::R2D) / sector_range));
+		if (sec >= 0 && sec < sectors) {
+			aeq0_bins[sec]++;
+		}
 	}
-	std::cout<<"\nEquatorial P.A Initialization: ";
-	
+
+	std::cout << "\nEquatorial P.A Initialization: ";
+
 	// Print population of P.A bins
 	for(int sector=0;sector<sectors;sector++) 
 	{				
@@ -303,10 +304,10 @@ int main(int argc, char **argv)
 
 	
 	// File name
-	std::string file_name = "output/files/dstr" + std::to_string(Distribution::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA_" +std::string(argv[3])+"ETA_"+std::string(argv[4]) + "EKIN.h5";
+    fs::path outputPath = "output/files/dstr" + std::to_string(Distribution::population) + "p_" + std::string(argv[1]) +"AEQ_" + std::string(argv[2]) + "LAMDA_" +std::string(argv[3])+"ETA_"+std::string(argv[4]) + "EKIN.h5";
 	// Create instance of hdf5 file.
 	// H5F_ACC_TRUNC flag -> new file or overwritei
-	H5::H5File file(file_name, H5F_ACC_TRUNC);
+	H5::H5File file(outputPath.string(), H5F_ACC_TRUNC);
 
 	// Create dataspace and datatype
 	hsize_t dim = Distribution::population;

@@ -9,15 +9,15 @@ D2R=np.pi/180
 R2D=1/D2R
 
 # Parameters
-aeq_sector = 10 
-latitude_sector   = 5 
-eta_sector    = 40
-Ekin_sector   = 100
-
+aeq_sector = 1 
+latitude_sector = 5 
+eta_sector = 40
+Ekin_sector = 100
 
 # Read particle distribution from file entered by user
-files_dir = 'output/files'  # Path to the output directory
+files_dir = os.path.join("output","files")  # Path to the output directory
 h5_files = [file for file in os.listdir(files_dir) if (file.startswith("dstr") and file.endswith('.h5'))]
+plots_dir = os.path.join("output","plots")
 
 # Display the list of .h5 files
 print("Available particle distribution .h5 files:")
@@ -161,15 +161,15 @@ axs[1,1].pie(Ekin_bins)
 fig.legend(labels=Ekin_labels2,loc="lower right", prop={'size': 8})
 axs[1,1].set(title="Ekin dstr(keV)")
 
-fig.savefig("output/plots/"+str(population)+"p_Distribution_Pies.png",dpi=200)
+fig.savefig(os.path.join(plots_dir, str(population) + "p_pies.png"),dpi=200)
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 fig, ax = plt.subplots(2)
 # P.A distribution in bins
-for i in aeq_bins:
-    ax[0].scatter(i*aeq_sector,aeq_bins,s=2,alpha=1)
-ax[0].grid(alpha=.3)
-ax[0].set(ylabel="dN",title="Sector range "+str(aeq_sector)+" deg")
+aeq_sector_list = np.arange(0, 180, aeq_sector)
+ax[0].scatter(aeq_sector_list, aeq_bins, s=2, alpha=1)
+ax[0].grid(alpha=0.3)
+ax[0].set(ylabel="dN", title="Sector range " + str(aeq_sector) + " deg")
 ax[0].set_yscale("log")
 
 # P.A and latitude distribution
@@ -179,4 +179,6 @@ ax[1].set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",ylim=(1,179),xlim=(-90,
 ax[1].axhline(y = 90, color ="b", linestyle="dashed")
 
 fig.suptitle('Particle aeq-latitude distributions',weight="bold")
-fig.savefig("output/plots/"+str(population)+"p_Distribution_Plots.png",dpi=200)
+fig.savefig(os.path.join(plots_dir, str(population) + "p_aeq_lamda.png"),dpi=200)
+
+print("Plots saved at: ",plots_dir)

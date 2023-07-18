@@ -11,9 +11,36 @@ import os
 np.set_printoptions(threshold=sys.maxsize)
 D2R=np.pi/180
 R2D=1/D2R
+
 ############################################# READ HDF5 ###################################################
-#noWPI read
-f1 = h5py.File("output/files/1p_nowpi.h5","r")
+
+# Read particle distribution from file entered by user
+files_dir = os.path.join("output","files")  # Path to the output directory
+h5_files = [file for file in os.listdir(files_dir) if (file.startswith("dstr") and file.endswith('.h5'))]
+
+# Display the list of .h5 files
+print("Available particle distribution .h5 files:")
+for i, file in enumerate(h5_files):
+    print(f"{i+1}. {file}")
+# Prompt the user to select a file
+selection = input("Enter the number corresponding to the file you want to select: ")
+
+
+# Validate the user's input and retrieve the selected filepath
+try:
+    selection = int(selection)
+    if 1 <= selection <= len(h5_files):
+        selected_file = os.path.join(files_dir, h5_files[selection-1])
+        print(f"You selected: {selected_file}")
+    else:
+        print("Invalid selection.")
+except ValueError:
+    print("Invalid input. Please enter a number.")
+
+
+
+# Read file
+f1 = h5py.File(selected_file,"r")
 detected_latitude = f1["ODPT.latitude"][()]
 detected_time  = f1["ODPT.time"][()]
 detected_id    = f1["ODPT.id"][()]
