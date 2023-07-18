@@ -183,7 +183,6 @@ int main()
         kx_ray.push_back( (nx_int.at(i)*w_int.at(i)) / Universal::c );
         kz_ray.push_back( (nz_int.at(i)*w_int.at(i)) / Universal::c );
         kappa_ray.push_back( (mu_ray.at(i)*w_int.at(i)) / Universal::c );
-        std::cout<<"\n"<<(mu_ray.at(i)*w_int.at(i)) / Universal::c ;
         X_stix.push_back( P_stix_int.at(i)/(P_stix_int.at(i)-mu_sq.at(i)*spsi.at(i)*spsi.at(i)) );
         rho1.push_back( ((mu_sq.at(i)-S_stix_int.at(i))*mu_sq.at(i)*spsi.at(i)*cpsi.at(i)) / (D_stix_int.at(i)*(mu_sq.at(i)*spsi.at(i)*spsi.at(i)-P_stix_int.at(i))) );
         rho2.push_back( (mu_sq.at(i)-S_stix_int.at(i)) / D_stix_int.at(i) );

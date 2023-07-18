@@ -52,9 +52,8 @@ void slopes(real &k, real &l, real &m, real &n, real &o, real &p, real &q, real 
 
 // Overloaded Function to calculate all needed slopes for the particular step
 // (WPI Ray Tracing using Li equations)
-void slopes(real &k, real &l, real &m, real &n, real &o, real &p, real &q, const real ppar_tmp, const real pper_tmp, const real alpha_tmp, const real latitude_tmp, const real eta_tmp, const real Fpar, const real Fper, const real Ftheta, const real gama, const real w_h, const real dwh_ds, const real kz, real Bw_ray, real p_mag, real aeqsu_tmp, real kappa_ray)
+void slopes(real &k, real &l, real &m, real &n, real &o, real &p, const real ppar_tmp, const real pper_tmp, const real alpha_tmp, const real latitude_tmp, const real eta_tmp, const real Fpar, const real Fper, const real Ftheta, const real gama, const real w_h, const real dwh_ds, const real kz)
 {	
-
 	// Speed Parallel(to the static magnetic field Bo). 
 	k = ppar_tmp/(gama*Universal::m_e);
 	
@@ -72,8 +71,4 @@ void slopes(real &k, real &l, real &m, real &n, real &o, real &p, real &q, const
 	
 	// P.A variation time rate.                   
 	p = (-(Fpar/pper_tmp)*(1+(cos(alpha_tmp)*cos(alpha_tmp))/(Wave::m_res*(w_h/(gama*Wave::w_wave))-1))*sin(eta_tmp) + ((1/(Universal::m_e*gama))*(pper_tmp/(2*w_h)))*dwh_ds);
-    
-	std::cout<<"\nTHIS:"<<kappa_ray;
-    // Equatorial P.A variation time rate.
-    q =((Universal::q_e*Bw_ray)/(pow(p_mag,2)))*(tan(aeqsu_tmp)/tan(alpha_tmp))*(((Wave::w_wave/kappa_ray)-(ppar_tmp/(gama*Universal::m_e)))*ppar_tmp-(pow(pper_tmp,2)/(gama*Universal::m_e)))*sin(eta_tmp);
 }

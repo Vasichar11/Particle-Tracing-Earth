@@ -91,7 +91,7 @@ As the numerical method for the estimation of the particle variables, a fourth-o
 ## Ray
 
 Ray data is then interpolated to match the time steps of the Runge Kutta method
-
+The wave here is 2KHz
 ![Ray](./simulations/useful/Ray/interpolated_ray_pwr1.000000.png)
 
 

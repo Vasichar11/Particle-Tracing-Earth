@@ -187,21 +187,21 @@ void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODP
         if(std::isnan(new_latitude*new_aeq*new_ppar)) {
             single.nan = true;
             single.nan_state(p); // Save id of particle
-            std::cout<<"\nParticleV "<<p<<" nan";
+            std::cout<<"\nParticle(V) "<<p<<" nan";
             break; 
         }
         // Check Negative P.A:
         if(alpha<0 || aeq<0) {
             single.negative = true;
             single.negative_state(p); // Save id of particle
-            std::cout<<"\nParticleN "<<p<<" negative p.a";
+            std::cout<<"\nParticle(N) "<<p<<" negative p.a";
             break;
         }
         // Check higher than 180 P.A:
         if(alpha>M_PI) {
             single.high = true;
             single.high_state(p); // Save id of particle
-            std::cout<<"\nParticleH "<<p<<" above 180 p.a";
+            std::cout<<"\nParticle(H) "<<p<<" above 180 p.a";
             break;
         }
         // Check Trapping:
@@ -218,7 +218,7 @@ void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODP
         if(!single.trapped && (ppar*new_ppar<0) ) {
             single.escaping_state(p, latitude, aeq, alpha, time);
             single.escaped = true;
-            std::cout<<"\n\nParticleE "<<p<<" escaped with aeq " <<aeq*Universal::R2D<< " at time " << time ;
+            std::cout<<"\n\nParticle(E) "<<p<<" escaped with aeq " <<aeq*Universal::R2D<< " at time " << time ;
             break;
         }
         // Critical Region to push back values in shared memory ODPT object

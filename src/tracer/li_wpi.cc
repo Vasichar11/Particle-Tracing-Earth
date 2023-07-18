@@ -39,8 +39,7 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
     min_detadt = 100; // Just a large value 
 //----------------------------------------------------- WPI -----------------------------------------------------------//
     for(int i=0; i<Nsteps_wpi; i++) {
-        
-        // Take the data from interpolation and return (pulse_dur) of them, moved by "i" each iteration
+        //Take the data from interpolation and return (pulse_dur) of them, moved by "i" each iteration.
         min_lat=*min_element(lat_int.cbegin() + i, lat_int.cbegin() + Simulation::puls_dur + i);  //Minimum lat of wave(in pulse duration).
         max_lat=*max_element(lat_int.cbegin() + i, lat_int.cbegin() + Simulation::puls_dur + i);  //Max lat of wave.
         //std::cout<<"\n" << latitude*Universal::R2D << " " << min_lat << "" << max_lat << " "<< lat_int.at(i) << " " << lat_int.back(); 
@@ -48,39 +47,40 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
 
         f_always(p_mag, gama, w_h, dwh_ds, latitude, ppar, pper); 
         kz = Ftheta = Fpar = Fper = q1 = 0; 
-        index = is_in_packet(min_lat, max_lat, latitude, i, lat_int);  //is_in_packet returns "if and where" WPI happens.
+        index = is_in_packet(min_lat, max_lat, latitude, i, lat_int);  //is_in_packet returns "if and where" WPI happens. 
         if(index>=0) { //Do only if there's WPI
-            f_packet(Fpar, Fper, Ftheta, pper, ppar, gama, w_h, p_mag, kx_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
+            f_packet(Fpar, Fper, Ftheta, q1, kz, pper, ppar, eta, aeq, alpha, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
-        slopes(k1, l1, m1, n1, o1, p1, q1, ppar, pper, alpha, latitude, eta, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz, Bw_ray[index], p_mag, aeq, kappa_ray[index]);
-        std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn1 " << n1<< "\no1 " << o1 << "\np1 " << p1 <<"\nq1 " << q1 <<"\n";
+        slopes(k1,  l1,  m1,  n1,  o1,  p1, ppar, pper, alpha, latitude, eta, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz);
+        //std::cout<<"\n" << "k1 " << k1 << "\nl1 " <<l1 << "\nm1 " << m1 << "\nn1 " << n1<< "\no1 " << o1 << "\np1 " << p1 <<"\nq1 " << q1 <<"\n";
 
         f_always(p_mag, gama, w_h, dwh_ds, latitude+0.5*Simulation::h*o1, ppar+0.5*Simulation::h*l1, pper+0.5*Simulation::h*m1);
         kz = Ftheta = Fpar = Fper = q2 = 0; 
         index = is_in_packet(min_lat, max_lat, latitude+0.5*Simulation::h*o1, i, lat_int);
         if(index>=0) { //Do only if there's WPI
-            f_packet(Fpar, Fper, Ftheta,pper+0.5*Simulation::h*m1, ppar+0.5*Simulation::h*l1, gama, w_h, p_mag, kx_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
+            f_packet(Fpar, Fper, Ftheta, q2, kz, pper+0.5*Simulation::h*m1, ppar+0.5*Simulation::h*l1, eta+0.5*Simulation::h*n1, aeq+0.5*Simulation::h*q1, alpha+0.5*Simulation::h*p1, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
-        slopes(k2, l2, m2, n2, o2, p2, q2, ppar + 0.5*Simulation::h*l1, pper + 0.5*Simulation::h*m1, alpha + 0.5*Simulation::h*p1, latitude + 0.5*Simulation::h*o1, eta + 0.5*Simulation::h*n1, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz , Bw_ray[index], p_mag, aeq, kappa_ray[index]); 
+        slopes( k2, l2, m2, n2, o2, p2, ppar + 0.5*Simulation::h*l1, pper + 0.5*Simulation::h*m1, alpha + 0.5*Simulation::h*p1, latitude + 0.5*Simulation::h*o1, eta + 0.5*Simulation::h*n1, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz ); 
         //std::cout<<"\n" << "k2 " << k2 << "\nl2 " <<l2 << "\nm2 " << m2 << "\nn2 " << n2<< "\no2 " << o2 << "\np2 " << p2 << "\nq2 "<< q2 <<"\n";
 
         f_always(p_mag, gama, w_h, dwh_ds, latitude+0.5*Simulation::h*o2, ppar+0.5*Simulation::h*l2, pper+0.5*Simulation::h*m2);
         kz = Ftheta = Fpar = Fper = q3 = 0; 
         index = is_in_packet(min_lat, max_lat, latitude+0.5*Simulation::h*o2, i, lat_int);
         if(index>=0) { //Do only if there's WPI
-            f_packet(Fpar, Fper, Ftheta, pper+0.5*Simulation::h*m2, ppar+0.5*Simulation::h*l2, gama, w_h, p_mag, kx_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
+            f_packet(Fpar, Fper, Ftheta, q3, kz, pper+0.5*Simulation::h*m2, ppar+0.5*Simulation::h*l2, eta+0.5*Simulation::h*n2, aeq+0.5*Simulation::h*q2, alpha+0.5*Simulation::h*p2, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
-        slopes(k3, l3, m3, n3, o3, p3, q3, ppar + 0.5*Simulation::h*l2, pper + 0.5*Simulation::h*m2, alpha + 0.5*Simulation::h*p2, latitude + 0.5*Simulation::h*o2, eta + 0.5*Simulation::h*n2, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz , Bw_ray[index], p_mag, aeq, kappa_ray[index]);   
+        slopes( k3, l3, m3, n3, o3, p3, ppar + 0.5*Simulation::h*l2, pper + 0.5*Simulation::h*m2, alpha + 0.5*Simulation::h*p2, latitude + 0.5*Simulation::h*o2, eta + 0.5*Simulation::h*n2, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz );   
         //std::cout<<"\n" << "k3 " << k3 << "\nl3 " <<l3 << "\nm3 " << m3 << "\nn3 " << n3<< "\no3 " << o3 << "\np3 " << p3 << "\nq3 "<< q3 <<"\n";
 
         f_always(p_mag, gama, w_h, dwh_ds, latitude+Simulation::h*o3, ppar+Simulation::h*l3, pper+Simulation::h*m3);
         kz = Ftheta = Fpar = Fper = q4 = 0; 
         index = is_in_packet(min_lat, max_lat, latitude+Simulation::h*o3, i, lat_int);
         if(index>=0) { //Do only if there's WPI
-            f_packet(Fpar, Fper, Ftheta, pper+Simulation::h*m3, ppar+Simulation::h*l3, gama, w_h, p_mag, kx_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
+            f_packet(Fpar, Fper, Ftheta, q4, kz, pper+Simulation::h*m3, ppar+Simulation::h*l3, eta+Simulation::h*n3, aeq+Simulation::h*q3, alpha+Simulation::h*p3, gama, w_h, p_mag, kx_ray[index], kz_ray[index], kappa_ray[index], Bw_ray[index], Bzw[index], Ezw[index], w1[index], w2[index], R1[index], R2[index]);
         }
-        slopes(k4, l4, m4, n4, o4, p4, q4, ppar + Simulation::h*l3, pper + Simulation::h*m3, alpha + Simulation::h*p3, latitude + Simulation::h*o3, eta + Simulation::h*n3, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz , Bw_ray[index], p_mag, aeq, kappa_ray[index]); 
+        slopes( k4, l4, m4, n4, o4, p4, ppar + Simulation::h*l3, pper + Simulation::h*m3, alpha + Simulation::h*p3, latitude + Simulation::h*o3, eta + Simulation::h*n3, Fpar, Fper, Ftheta, gama, w_h, dwh_ds, kz ); 
         //std::cout<<"\n" << "k4 " << k4 << "\nl4 " <<l4 << "\nm4 " << m4 << "\nn4 " << n4<< "\no4 " << o4 << "\np4 " << p4 << "\nq4 " << q4 <<"\n";           
+
 
 
         // Runge kutta 4 first estimations:
@@ -98,7 +98,7 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         if (std::isnan(new_latitude) || std::isnan(new_aeq) || std::isnan(new_ppar)) {
             single.nan = true;
             single.nan_state(p); // Save id of particle
-            std::cout << "\nParticleV " << p << " develops NaN state";
+            std::cout << "\nParticle(V) " << p << " develops NaN state";
             std::cout << "\nq1+2*q2+2*q3+q4 " << q1<<" "<<q2<<" "<< q3<< " " <<q4;
             break; 
         }
@@ -106,14 +106,14 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         if(alpha<0 || aeq<0) {
             single.negative = true;
             single.negative_state(p); // Save id of particle
-            std::cout<<"\nParticleN "<<p<<" negative P.A";
+            std::cout<<"\nParticle(N) "<<p<<" negative P.A";
             break;
         }
         // Check higher than 180 P.A:
         if(alpha>M_PI) {
             single.high = true;
             single.high_state(p); // Save id of particle
-            std::cout<<"\nParticleH "<<p<<" above 180 P.A";
+            std::cout<<"\nParticle(H) "<<p<<" above 180 P.A";
             break;
         }
         // Check Trapping:
@@ -130,7 +130,7 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         if(!single.trapped && (ppar*new_ppar<0) ) {
             single.escaping_state(p, latitude, aeq, alpha, time);
             single.escaped = true;
-            std::cout<<"\n\nParticleE "<<p<<" escaped with aeq " <<aeq*Universal::R2D<< " at time " << time ;
+            std::cout<<"\n\nParticle(E) "<<p<<" escaped with aeq " <<aeq*Universal::R2D<< " at time " << time ;
             break;
         }
         // Critical Region to push back values in shared memory ODPT object
@@ -180,8 +180,7 @@ void li_wpi(const int64_t Nsteps_wpi, const int p, std::vector <real> &lat_int, 
         //     break;
         // }
 
-        std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Universal::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlatitude " <<latitude*Universal::R2D<< "\naeq "<<aeq*Universal::R2D <<"\neta "<<eta*Universal::R2D ;
-        std::cout<<"\naeq"<<aeq;
+        //std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Universal::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlatitude " <<latitude*Universal::R2D<< "\naeq "<<aeq*Universal::R2D <<"\neta "<<eta*Universal::R2D ;
     
     }
     
