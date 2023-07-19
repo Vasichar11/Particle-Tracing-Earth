@@ -43,7 +43,7 @@ namespace Wave
 namespace Distribution
 {
     const real L_shell = 2; // L_shell of particle. Constant for now
-    const int64_t population = 1000000;   
+    const int64_t population = 1000;   
 }
 
 // P.A dstr

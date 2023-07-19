@@ -456,8 +456,8 @@ int main(int argc, char **argv)
 
 	// File name based on the argument variables
 	std::string  save_file = "output/files/sim_" + std::to_string(Population) + "p";  
-	if (atoi(argv[1])>0) save_file += std::to_string(atoi(argv[1])) + std::string("_nowpi"); 
-	if (atoi(argv[2])>0) save_file += std::to_string(atoi(argv[2])) + std::string("_wpi");
+	if (atoi(argv[1])>0) save_file += std::string("_nowpi") + std::to_string(atoi(argv[1])) + std::string("s"); 
+	if (atoi(argv[2])>0) save_file += std::string("_wpi") + std::to_string(atoi(argv[2])) + std::string("s");
 	save_file = save_file + ".h5";
 
 	h5::File file(save_file, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);

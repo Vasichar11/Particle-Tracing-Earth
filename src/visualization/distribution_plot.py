@@ -9,9 +9,9 @@ D2R=np.pi/180
 R2D=1/D2R
 
 # Parameters
-aeq_sector = 1 
-latitude_sector = 5 
-eta_sector = 40
+aeq_sector_deg = 4 
+latitude_sector_deg = 4
+eta_sector_deg = 40
 Ekin_sector = 100
 
 # Read particle distribution from file entered by user
@@ -42,22 +42,28 @@ except ValueError:
 
 # Read file
 f1 = h5py.File(selected_file,"r")
-latitude0        = f1["latitude0"][()] 
-ppar0         = f1["ppar0"][()]
-pper0         = f1["pper0"][()]
-alpha0        = f1["alpha0"][()]
-aeq0          = f1["aeq0"][()]
-eta0          = f1["eta0"][()]
-Ekin0         = f1["Ekin0"][()]
-time0         = f1["time0"][()]
-population    = len(latitude0) 
+latitude0 = f1["latitude0"][()] 
+ppar0 = f1["ppar0"][()]
+pper0 = f1["pper0"][()]
+alpha0 = f1["alpha0"][()]
+aeq0 = f1["aeq0"][()]
+eta0 = f1["eta0"][()]
+Ekin0 = f1["Ekin0"][()]
+time0 = f1["time0"][()]
+population = len(latitude0) 
 f1.close()
-
+latitude0_deg = latitude0 * R2D
+aeq0_deg = aeq0 * R2D
+eta0_deg = eta0 * R2D
 # Sectors
-aeq_sectors = int(180/aeq_sector)
-latitude_sectors = int(180/latitude_sector)
-eta_sectors = int(360/eta_sector)
-Ekin_domain  = np.ptp(Ekin0) # max - min
+
+aeq_domain_deg  = np.ptp(aeq0_deg) # max - min
+latitude_domain_deg  = np.ptp(latitude0_deg) 
+eta_domain_deg  = np.ptp(eta0_deg) 
+Ekin_domain  = np.ptp(Ekin0) 
+aeq_sectors = math.ceil(aeq_domain_deg/aeq_sector_deg)
+latitude_sectors = math.ceil(latitude_domain_deg/latitude_sector_deg)
+eta_sectors = math.ceil(eta_domain_deg/eta_sector_deg)
 Ekin_sectors = math.ceil(Ekin_domain / Ekin_sector)
 ############################################### SAVE CSV FILES ###########################################
 # Initials to CSV file
@@ -79,14 +85,14 @@ with open(csv_file, "w") as file1:
 ###################################### BINNING BASED ON SECTOR RANGES ####################################
 
 latitude_bins    = [0 for i in range (latitude_sectors)]
-latitude_labels  = np.arange(min(latitude0*R2D),max(latitude0*R2D)+  latitude_sector,latitude_sector) #np.arange doesn't include endpoint
+latitude_labels  = np.arange(min(latitude0_deg),max(latitude0_deg) + latitude_sector_deg, latitude_sector_deg) #np.arange doesn't include endpoint
 latitude_labels2 = []
 for i in range(len(latitude_labels)-1):
     temp_tuple = (str(int(latitude_labels[i])),str(int(latitude_labels[i+1])) )
-    latitude_labels2.append(" to ".join(temp_tuple)) #Round labels - make them ranges
+    latitude_labels2.append(" to ".join(temp_tuple)) # Round labels - make them ranges
 
 aeq_bins     = [0 for i in range (aeq_sectors)]
-aeq_labels   = np.arange(min(aeq0*R2D),max(aeq0*R2D),aeq_sector)
+aeq_labels   = np.arange(min(aeq0_deg),max(aeq0_deg),aeq_sector_deg)
 aeq_labels   = [str(int(n)) for n in aeq_labels] 
 aeq_labels2  = []
 for i in range(len(aeq_labels)-1):
@@ -94,7 +100,7 @@ for i in range(len(aeq_labels)-1):
     aeq_labels2.append(" to ".join(temp_tuple)) 
 
 eta_bins     = [0 for i in range (eta_sectors)]
-eta_labels   = np.arange(min(eta0*R2D),max(eta0*R2D),eta_sector)
+eta_labels   = np.arange(min(eta0_deg),max(eta0_deg),eta_sector_deg)
 eta_labels   = [str(int(n)) for n in eta_labels] 
 eta_labels2  = []
 for i in range(len(eta_labels)-1):
@@ -112,14 +118,14 @@ for i in range(len(Ekin_labels)-1):
 ###################################### ONE THREAD PER BINNING PROCESS ####################################
 
 def thread1_binning(): 
-    for latitude in latitude0: 
-        latitude_bins[math.floor(latitude*R2D/latitude_sector)-1] += 1  
+    for latitude_deg in latitude0_deg:
+        latitude_bins[math.floor(latitude_deg/latitude_sector_deg)-1] += 1  
 def thread2_binning(): 
-    for aeq in aeq0: 
-        aeq_bins[math.floor(aeq*R2D/aeq_sector)-1] += 1  
+    for aeq_deg in aeq0_deg: 
+        aeq_bins[math.floor(aeq_deg/aeq_sector_deg)-1] += 1  
 def thread3_binning(): 
-    for eta in eta0: 
-        eta_bins[math.floor(eta*R2D/eta_sector)-1] += 1
+    for eta_deg in eta0_deg: 
+        eta_bins[math.floor(eta_deg/eta_sector_deg)-1] += 1
 def thread4_binning(): 
     for Ekin in Ekin0: 
         Ekin_bins[math.floor(Ekin/Ekin_sector)-1] += 1
@@ -166,10 +172,10 @@ fig.savefig(os.path.join(plots_dir, str(population) + "p_pies.png"),dpi=200)
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 fig, ax = plt.subplots(2)
 # P.A distribution in bins
-aeq_sector_list = np.arange(0, 180, aeq_sector)
+aeq_sector_list = np.arange(min(aeq0_deg), max(aeq0_deg), aeq_sector_deg)
 ax[0].scatter(aeq_sector_list, aeq_bins, s=2, alpha=1)
 ax[0].grid(alpha=0.3)
-ax[0].set(ylabel="dN", title="Sector range " + str(aeq_sector) + " deg")
+ax[0].set(ylabel="dN", title="Sector range " + str(aeq_sector_deg) + " deg")
 ax[0].set_yscale("log")
 
 # P.A and latitude distribution
