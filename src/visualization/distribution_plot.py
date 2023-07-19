@@ -9,8 +9,8 @@ D2R=np.pi/180
 R2D=1/D2R
 
 # Parameters
-aeq_sector_deg = 4 
-latitude_sector_deg = 4
+aeq_sector_deg = 10
+latitude_sector_deg = 10
 eta_sector_deg = 40
 Ekin_sector = 100
 
@@ -57,13 +57,13 @@ aeq0_deg = aeq0 * R2D
 eta0_deg = eta0 * R2D
 # Sectors
 
-aeq_domain_deg  = np.ptp(aeq0_deg) # max - min
-latitude_domain_deg  = np.ptp(latitude0_deg) 
-eta_domain_deg  = np.ptp(eta0_deg) 
-Ekin_domain  = np.ptp(Ekin0) 
-aeq_sectors = math.ceil(aeq_domain_deg/aeq_sector_deg)
-latitude_sectors = math.ceil(latitude_domain_deg/latitude_sector_deg)
-eta_sectors = math.ceil(eta_domain_deg/eta_sector_deg)
+aeq_domain  = 180
+latitude_domain  = 180
+eta_domain  = 360
+Ekin_domain  = np.ptp(Ekin0) # max - min
+aeq_sectors = int(aeq_domain/aeq_sector_deg)
+latitude_sectors = int(latitude_domain/latitude_sector_deg)
+eta_sectors = int(eta_domain/eta_sector_deg)
 Ekin_sectors = math.ceil(Ekin_domain / Ekin_sector)
 ############################################### SAVE CSV FILES ###########################################
 # Initials to CSV file
@@ -122,6 +122,7 @@ def thread1_binning():
         latitude_bins[math.floor(latitude_deg/latitude_sector_deg)-1] += 1  
 def thread2_binning(): 
     for aeq_deg in aeq0_deg: 
+        print(aeq_deg)
         aeq_bins[math.floor(aeq_deg/aeq_sector_deg)-1] += 1  
 def thread3_binning(): 
     for eta_deg in eta0_deg: 
@@ -172,7 +173,7 @@ fig.savefig(os.path.join(plots_dir, str(population) + "p_pies.png"),dpi=200)
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
 fig, ax = plt.subplots(2)
 # P.A distribution in bins
-aeq_sector_list = np.arange(min(aeq0_deg), max(aeq0_deg), aeq_sector_deg)
+aeq_sector_list = np.arange(1, 179, aeq_sector_deg)
 ax[0].scatter(aeq_sector_list, aeq_bins, s=2, alpha=1)
 ax[0].grid(alpha=0.3)
 ax[0].set(ylabel="dN", title="Sector range " + str(aeq_sector_deg) + " deg")
