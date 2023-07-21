@@ -211,7 +211,7 @@ There are a few requirements for python, listed in the requirements.txt file
 
 
 ### GUI
-
+The graphical user interface has still some issues and execution with CLI is recommended for the moment.
 ```python3 Particle-Tracing-Earth\tracer.py``` (Python requirements need to be already installed for the PyQt application to work)
 
 **Configure** the simulation **parameters** in the GUI. **Validation will occur**, using XML-XSD pairs.
