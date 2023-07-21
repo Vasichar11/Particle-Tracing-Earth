@@ -16,26 +16,23 @@ class MakeThread(QThread):
         self.window = window
 
     def run(self):
-        # Apply the line edit values to the constants.h file
-        self.window.apply_line_edit_values()
+            # Apply the line edit values to the constants.h file
+            self.window.apply_line_edit_values()
 
-        for progress in range(1, 101):
-            self.make_progress.emit(progress)
-            QThread.msleep(150)  # Sleep for 50 milliseconds (0.05 seconds)
 
-        # Execute the "make" command
-        current_directory = os.getcwd()
-        process = subprocess.Popen(["make"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=current_directory)
-        stdout, stderr = process.communicate()
+            # Execute the "make" command
+            current_directory = os.getcwd()
+            process = subprocess.Popen(["make"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=current_directory)
+            stdout, stderr = process.communicate()
 
-        if process.returncode == 0:
-            success = True
-            message = "Make successful"
-        else:
-            success = False
-            message = "Make failed"
+            if process.returncode == 0:
+                success = True
+                message = "Make successful"
+            else:
+                success = False
+                message = "Make failed"
 
-        self.make_finished.emit(success, stdout.decode("utf-8"), stderr.decode("utf-8"))
+            self.make_finished.emit(success, stdout.decode("utf-8"), stderr.decode("utf-8"))
 
 class AllCleanThread(QThread):
     allclean_finished = pyqtSignal(bool, str, str)
@@ -57,7 +54,6 @@ class AllCleanThread(QThread):
             message = "Make allclean failed"
 
         self.allclean_finished.emit(success, stdout.decode("utf-8"), stderr.decode("utf-8"))
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -205,8 +201,6 @@ class MainWindow(QMainWindow):
             }
         """)
 
-    def update_progress_bar(self, progress):
-        self.progress_bar.setValue(progress)
 
     def read_config_file(self):
         constants_by_namespace = {}
@@ -231,18 +225,24 @@ class MainWindow(QMainWindow):
 
         return constants_by_namespace
 
+    def handle_make_finished(self, success, stdout, stderr):
+            if success:
+                print("Make successful")
+                self.progress_bar.setValue(100)
+            else:
+                print("Make failed")
+            print("STDOUT:", stdout)
+            print("STDERR:", stderr)
+
+    def update_progress_bar(self, progress):
+        self.progress_bar.setValue(progress)
+
     def make_clicked(self):
+        # Reset the progress bar to 0%
+        self.progress_bar.setValue(0)
+
         # Handle the make button click event
         self.make_thread.start()
-
-    def handle_make_finished(self, success, stdout, stderr):
-        if success:
-            print("Make successful")
-            self.progress_bar.setValue(100)
-        else:
-            print("Make failed")
-        print("STDOUT:", stdout)
-        print("STDERR:", stderr)
 
     def apply_line_edit_values(self):
         edited_xml_filepath = os.path.join(self.xml_filepath.split("constants.xml")[0], "edited_constants.xml")
@@ -286,7 +286,6 @@ class MainWindow(QMainWindow):
     def allclean_clicked(self):
         # Reset the progress bar to 0%
         self.progress_bar.setValue(0)
-
         # Handle the make allclean button click event
         self.allclean_thread.start()
 
