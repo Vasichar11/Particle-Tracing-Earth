@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 import xml.etree.ElementTree as ET
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, QRadioButton, QScrollArea, QTabWidget, QProgressBar, QGroupBox, QComboBox
+from PyQt5.QtWidgets import QApplication, QTextEdit, QMainWindow, QWidget, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, QRadioButton, QScrollArea, QTabWidget, QProgressBar, QGroupBox, QComboBox
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QIcon
@@ -10,50 +10,98 @@ from PyQt5.QtGui import QIcon
 class MakeThread(QThread):
     make_finished = pyqtSignal(bool, str, str)
     make_progress = pyqtSignal(int)
+    def __init__(self, window):
+        super().__init__()
+        self.window = window
+
+    def run(self):
+        # Apply the line edit values to the constants.h file
+        self.window.apply_line_edit_values()
+
+        # Execute the "make" command
+        current_directory = os.getcwd()
+        process = subprocess.Popen(["make"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=current_directory)
+
+        # Start the output reader thread to capture the terminal output
+        self.window.start_output_reader(process)
+
+        stdout, stderr = process.communicate()
+        if process.returncode == 0:
+            success = True
+            self.window.progress_bar.setValue(100)
+        else:
+            success = False
+        self.make_finished.emit(success, stdout.decode("utf-8"), stderr.decode("utf-8"))
+
+class AllCleanThread(QThread):
+    allclean_finished = pyqtSignal(bool, str, str)
 
     def __init__(self, window):
         super().__init__()
         self.window = window
 
     def run(self):
-            # Apply the line edit values to the constants.h file
-            self.window.apply_line_edit_values()
 
-
-            # Execute the "make" command
-            current_directory = os.getcwd()
-            process = subprocess.Popen(["make"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=current_directory)
-            stdout, stderr = process.communicate()
-
-            if process.returncode == 0:
-                success = True
-                message = "Make successful"
-            else:
-                success = False
-                message = "Make failed"
-
-            self.make_finished.emit(success, stdout.decode("utf-8"), stderr.decode("utf-8"))
-
-class AllCleanThread(QThread):
-    allclean_finished = pyqtSignal(bool, str, str)
-
-    def __init__(self):
-        super().__init__()
-
-    def run(self):
         # Execute the "make allclean" command
         current_directory = os.getcwd()
         process = subprocess.Popen(["make", "allclean"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=current_directory)
+        
+        # Start the output reader thread to capture the terminal output
+        self.window.start_output_reader(process)
+        
         stdout, stderr = process.communicate()
-
         if process.returncode == 0:
             success = True
-            message = "Make allclean successful"
+            self.window.progress_bar.setValue(0)
         else:
             success = False
-            message = "Make allclean failed"
-
         self.allclean_finished.emit(success, stdout.decode("utf-8"), stderr.decode("utf-8"))
+
+class SimulationThread(QThread):
+    simulate_finished = pyqtSignal(bool, str, str)
+
+    def __init__(self, window):
+        super().__init__()
+        self.window = window
+
+    def run(self):
+        
+        no_wpi_value = self.window.no_wpi_lineedit.text()
+        wpi_value = self.window.wpi_lineedit.text()
+
+        # Execute the "./tracer" command with the provided arguments
+        if self.window.simulation_radio.isChecked():
+            simulation_type = "-bell" 
+            command = ["./tracer", no_wpi_value, wpi_value, simulation_type]
+        else:
+            command = ["./tracer", no_wpi_value, wpi_value]
+        current_directory = os.getcwd()
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=current_directory)
+        
+        # Start the output reader thread to capture the terminal output
+        self.window.start_output_reader(process)
+
+        stdout, stderr = process.communicate()
+        if process.returncode == 0:
+            success = True
+        else:
+            success = False
+        self.simulate_finished.emit(success, stdout.decode("utf-8"), stderr.decode("utf-8"))
+
+
+# Class to read and update terminal output
+class OutputReaderThread(QThread):
+    update_output = pyqtSignal(str)
+
+    def __init__(self, process, parent=None):
+        super().__init__(parent)
+        self.process = process
+
+    def run(self):
+        while self.process.poll() is None:
+            output = self.process.stdout.readline().decode("utf-8")
+            if output:
+                self.update_output.emit(output.strip())
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -141,9 +189,10 @@ class MainWindow(QMainWindow):
         # Add the buttons layout to the main layout
         self.tab1_layout.addLayout(button_layout)
 
-        # Add the progress bar
+        # Add the progress bar and set to 0
         self.progress_bar = QProgressBar(self.tab1_widget)
         self.tab1_layout.addWidget(self.progress_bar)
+        self.progress_bar.setValue(0)
 
         # Add labels and line edits for simulation time
         no_wpi_label = QLabel("No WPI simulation time", self.tab1_widget)
@@ -178,12 +227,16 @@ class MainWindow(QMainWindow):
 
         # Create make and allclean threads
         self.make_thread = MakeThread(self)
-        self.allclean_thread = AllCleanThread()
+        self.allclean_thread = AllCleanThread(self)
+        self.simulate_thread = SimulationThread(self)
 
-        # Connect signals from threads to update GUI
-        self.make_thread.make_finished.connect(self.handle_make_finished)
-        self.allclean_thread.allclean_finished.connect(self.handle_allclean_finished)
-        self.make_thread.make_progress.connect(self.update_progress_bar)
+        # Create a QTextEdit widget to display the terminal output
+        self.output_textedit = QTextEdit(self.main_widget)
+        self.output_textedit.setReadOnly(True)
+        self.output_textedit.setStyleSheet("background-color: black; color: white;")
+
+        # Add the output widget to the main layout
+        self.layout.addWidget(self.output_textedit)
 
     def apply_line_edit_styles(self, line_edit):
         line_edit.setStyleSheet("""
@@ -225,24 +278,24 @@ class MainWindow(QMainWindow):
 
         return constants_by_namespace
 
-    def handle_make_finished(self, success, stdout, stderr):
-            if success:
-                print("Make successful")
-                self.progress_bar.setValue(100)
-            else:
-                print("Make failed")
-            print("STDOUT:", stdout)
-            print("STDERR:", stderr)
-
-    def update_progress_bar(self, progress):
-        self.progress_bar.setValue(progress)
-
+    
     def make_clicked(self):
-        # Reset the progress bar to 0%
-        self.progress_bar.setValue(0)
-
-        # Handle the make button click event
         self.make_thread.start()
+
+    def allclean_clicked(self):
+        self.allclean_thread.start()
+
+    def simulate_clicked(self):
+        self.simulate_thread.start()
+
+
+    def start_output_reader(self, process):
+        self.output_reader = OutputReaderThread(process)
+        self.output_reader.update_output.connect(self.append_output)
+        self.output_reader.start()
+        
+    def append_output(self, output):
+        self.output_textedit.append(output)
 
     def apply_line_edit_values(self):
         edited_xml_filepath = os.path.join(self.xml_filepath.split("constants.xml")[0], "edited_constants.xml")
@@ -283,41 +336,7 @@ class MainWindow(QMainWindow):
         return ""  # Return an empty string if the QLineEdit for the given name is not found
 
 
-    def allclean_clicked(self):
-        # Reset the progress bar to 0%
-        self.progress_bar.setValue(0)
-        # Handle the make allclean button click event
-        self.allclean_thread.start()
 
-    def handle_allclean_finished(self, success, stdout, stderr):
-        if success:
-            print("Make allclean successful")
-        else:
-            print("Make allclean failed")
-        print("STDOUT:", stdout)
-        print("STDERR:", stderr)
-
-    def simulate_clicked(self):
-        no_wpi_value = self.no_wpi_lineedit.text()
-        wpi_value = self.wpi_lineedit.text()
-        simulation_type = "-bell" if self.simulation_radio.isChecked() else ""
-
-        # Execute the "./tracer" command with the provided arguments
-        command = ["./tracer", no_wpi_value, wpi_value, simulation_type]
-        current_directory = os.getcwd()
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=current_directory)
-        stdout, stderr = process.communicate()
-
-        if process.returncode == 0:
-            success = True
-            message = "Simulation successful"
-        else:
-            success = False
-            message = "Simulation failed"
-
-        print(message)
-        print("STDOUT:", stdout.decode("utf-8"))
-        print("STDERR:", stderr.decode("utf-8"))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
