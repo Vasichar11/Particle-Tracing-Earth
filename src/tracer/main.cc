@@ -287,7 +287,7 @@ int main(int argc, char **argv)
 
 
 	//---NOWPI---//
-	omp_set_num_threads(8); // Performance peaks with 8 threads. 
+	omp_set_num_threads(Simulation::num_threads_nowpi); // Performance peaks with 8 threads. 
 		std::cout<<"\n\n"<<t_nowpi<<" sec NoWPI Simulation"<<std::endl;
 		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Population*0.008/60) * t_nowpi <<" minutes."<<std::endl;
 		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.017/60) * t_nowpi <<" minutes."<<std::endl;
@@ -312,7 +312,7 @@ int main(int argc, char **argv)
 	// Now initial_particles have the last state after NoWPI
 
 	//---WPI---//
-	omp_set_num_threads(20); // Better performance for more threads
+	omp_set_num_threads(Simulation::num_threads_wpi); // Better performance for more threads
 	if(t_wpi>0)// Run if WPI time is more than 0 seconds
 	{
 
@@ -336,17 +336,17 @@ int main(int argc, char **argv)
 			std::cout << "\n\nRay file: "<<file_ray;
 			
 
-			std::vector <real> lat_int       	   =   read_hdf5("lat_int",       file_ray);
-			const std::vector <real> kx_ray        =   read_hdf5("kx_ray",        file_ray);    
-			const std::vector <real> kz_ray        =   read_hdf5("kz_ray",        file_ray);   
-			const std::vector <real> kappa_ray     =   read_hdf5("kappa_ray",     file_ray);       
-			const std::vector <real> Bzw           =   read_hdf5("Bzw",           file_ray);
-			const std::vector <real> Ezw           =   read_hdf5("Ezw",           file_ray);
-			const std::vector <real> Bw_ray        =   read_hdf5("Bw_ray",        file_ray);    
-			const std::vector <real> w1            =   read_hdf5("w1",            file_ray);
-			const std::vector <real> w2            =   read_hdf5("w2",            file_ray);
-			const std::vector <real> R1            =   read_hdf5("R1",            file_ray);
-			const std::vector <real> R2            =   read_hdf5("R2",            file_ray);
+			std::vector <real> lat_int = read_hdf5("lat_int", file_ray);
+			const std::vector <real> kx_ray = read_hdf5("kx_ray", file_ray);    
+			const std::vector <real> kz_ray = read_hdf5("kz_ray", file_ray);   
+			const std::vector <real> kappa_ray = read_hdf5("kappa_ray", file_ray);       
+			const std::vector <real> Bzw = read_hdf5("Bzw", file_ray);
+			const std::vector <real> Ezw = read_hdf5("Ezw", file_ray);
+			const std::vector <real> Bw_ray = read_hdf5("Bw_ray", file_ray);    
+			const std::vector <real> w1 = read_hdf5("w1", file_ray);
+			const std::vector <real> w2 = read_hdf5("w2", file_ray);
+			const std::vector <real> R1 = read_hdf5("R1", file_ray);
+			const std::vector <real> R2 = read_hdf5("R2", file_ray);
 
 			//---PARALLELISM Work sharing---//
 			#pragma omp parallel
