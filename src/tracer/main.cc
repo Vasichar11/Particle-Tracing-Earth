@@ -42,7 +42,8 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	// All ranks create a particle distribution
-	std::vector<Particles> dstr
+	std::vector<Particles> dstr;
+	int64_t Population, Nsteps_nowpi, Nsteps_wpi; // Declare Population
 
 	// Only rank 0, the master process, reads the distribution file and constracts the dstr vector
 	if (rank==0) 
@@ -92,9 +93,13 @@ int main(int argc, char **argv)
 		real t_nowpi = std::stof(argv[1]); //No WPI time from command line 
 		real t_wpi   = std::stof(argv[2]); //WPI time from command line
 		real t = t_nowpi + t_wpi;  //Total simulation time
-		const int64_t Nsteps_wpi  = t_wpi/Simulation::h; //WPI step count
-		const int64_t Nsteps_nowpi= t_nowpi/Simulation::h; //noWPI step count
+		int64_t Nsteps_wpi  = t_wpi/Simulation::h; //WPI step count
+		int64_t Nsteps_nowpi= t_nowpi/Simulation::h; //noWPI step count
 
+		std::cout<<"\n\n"<<t_nowpi<<" sec NoWPI Simulation"<<std::endl;
+		std::cout<<"Loss cone angle, for Lshell "<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D;
+		std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation (Li+ray tracing)."<<std::endl;
+		std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation(Bell).\nWave magnitude(T): "<<Wave::By_wave<<std::endl;
 
 
 	//------------------------------------------------------------ READ FILES FROM USER  --------------------------------------------------------------//
@@ -238,7 +243,7 @@ int main(int argc, char **argv)
 		data_escaped.read(high_0);
 
 
-		int Population = latitude_0.size(); // Take the population from the h5 file to avoid mistakes (if value in header file changed unitentionally)
+		Population = latitude_0.size(); // Take the population from the h5 file to avoid mistakes (if value in header file changed unitentionally)
 		// Single particle struct
 		Particles single; 
 		// Vector of structs. Has initial states and function to save particle states in vectors
@@ -290,18 +295,25 @@ int main(int argc, char **argv)
 			counts[i]++;
 		}
 
-		// Rank 0 broadcasts the particle population number
+		std::string Bcast_filepath = selectedFilepathRay;
+        // Rank 0 sents the necessary variables
 	    MPI_Bcast(&Population, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	    MPI_Bcast(&Nsteps_wpi, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	    MPI_Bcast(&Nsteps_nowpi, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	    MPI_Bcast(Bcast_filepath.c_str(), Bcast_filepath.size(), MPI_CHAR, 0, MPI_COMM_WORLD);
 
 		// Rank 0 scatters the dstr vector to all other ranks based on the counts and displacements arrays
 		MPI_Scatter(dstr.data(), portionSize * sizeof(Particles), MPI_BYTE, dstr.data(), counts[rank] * sizeof(Particles), MPI_BYTE, 0, MPI_COMM_WORLD);
 	}
 	// All other ranks receive 
 	else {
-		// Receive the portion of the dstr vector assigned to this rank
+		// All ranks receive the portion of the dstr vector assigned to this rank
    		MPI_Scatter(NULL, 0, MPI_BYTE, dstr.data(), dstr.size() * sizeof(Particles), MPI_BYTE, 0, MPI_COMM_WORLD);
-        // Receive the total number of particles from rank 0
+        // All ranks receive the necessary variables
         MPI_Bcast(&Population, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Bcast(&Nsteps_wpi, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	    MPI_Bcast(&Nsteps_nowpi, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	    MPI_Bcast(&selectedFilepathRay.c_str(), selectedFilepathRay.size(), MPI_CHAR, 0, MPI_COMM_WORLD);
         // Resize the dstr vector to the appropriate size to hold the portion of data for this process
         dstr.resize(Population);
 	}
@@ -309,13 +321,11 @@ int main(int argc, char **argv)
     // All processes create their local ODPT object
     Telescope ODPT(Satellite::latitude_deg, Distribution::L_shell);
 
-return 0
+
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
+	// Number of particles that will be simulated per rank
 	int particlesPerRank = Population / numProcesses;
-	real wtime = std::chrono::high_resolution_clock::now();
-
-	std::cout<<"Loss cone angle, for Lshell "<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D;
 
 	// ---Selection of THREAD NUM---
 	// Reason for being hardcoded
@@ -337,52 +347,47 @@ return 0
 	// start------------|16 threads in use| ------end-start--|28 threads in use|--end-start---|20 threads in use|---end
 
 	//---NOWPI---//
-		std::cout<<"\n\n"<<t_nowpi<<" sec NoWPI Simulation"<<std::endl;
-		std::cout<<"\nExecution time estimation for 8 THREAD run: "<<(Population*0.008/60) * t_nowpi <<" minutes."<<std::endl;
-		std::cout<<"Execution time estimation for 20 THREAD run: "<<(Population*0.017/60) * t_nowpi <<" minutes."<<std::endl;
+	if(Nsteps_nowpi>0)
+	{
 
-		for(int p=0; p<Population; p++)     // dynamic because some chunks may have less workload.(particles can precipitate and break out of loop)
+		auto start = std::chrono::high_resolution_clock::now();
+		for(int p=0; p<particlesPerRank; p++)     // dynamic because some chunks may have less workload.(particles can precipitate and break out of loop)
 		{
 			// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
 			no_wpi(Nsteps_nowpi, p, dstr[p], ODPT);
 		}
-		real time1 =  std::chrono::high_resolution_clock::now();
-		std::cout<<"\nExecution time: "<<time1<<std::endl;
+		auto stop =  std::chrono::high_resolution_clock::now();
 
-	// Now initial_particles have the last state after NoWPI
-
+		// Calculate the duration of the execution in seconds (as double)
+		std::chrono::duration<real> duration = start - stop;
+		std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
+		
+		// Now initial_particles have the last state after NoWPI
+	}
 	//---WPI---//
-	if(t_wpi>0)// Run if WPI time is more than 0 seconds
+	if(Nsteps_wpi>0)// Run if WPI time is more than 0 seconds
 	{
 
 		//---LI---//
 		if(argc==3)//Default implementation. Means there's no option '-bell' as command line argument.
 		{
-			std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation (Li+ray tracing)."<<std::endl;
+			auto start =  std::chrono::high_resolution_clock::now();
+
 			// Read hdf5 files from disk to pass them to the WPI function instead of reading them in every thread - every time - accessing disk frequently
 			// read_hdf5() is a function to read HDF5 dataset as vectors. 
-			
-			//std::cout << "\nPick Ray file from the below\n";
-			//for (const auto & entry : std::filesystem::directory_iterator("output/files")) {
-			//	std::cout << entry.path() << std::endl; }
-			std::string file_ray;
-			std::cout<<"\n";
-			//std::getline(std::cin, file_ray);
-			file_ray = "output/files/interpolated_ray_pwr1.000000.h5";
-			std::cout << "\n\nRay file: "<<file_ray;
-			
+				
 
-			std::vector <real> lat_int = read_hdf5("lat_int", file_ray);
-			const std::vector <real> kx_ray = read_hdf5("kx_ray", file_ray);    
-			const std::vector <real> kz_ray = read_hdf5("kz_ray", file_ray);   
-			const std::vector <real> kappa_ray = read_hdf5("kappa_ray", file_ray);       
-			const std::vector <real> Bzw = read_hdf5("Bzw", file_ray);
-			const std::vector <real> Ezw = read_hdf5("Ezw", file_ray);
-			const std::vector <real> Bw_ray = read_hdf5("Bw_ray", file_ray);    
-			const std::vector <real> w1 = read_hdf5("w1", file_ray);
-			const std::vector <real> w2 = read_hdf5("w2", file_ray);
-			const std::vector <real> R1 = read_hdf5("R1", file_ray);
-			const std::vector <real> R2 = read_hdf5("R2", file_ray);
+			std::vector <real> lat_int = read_hdf5("lat_int", selectedFilepathRay);
+			const std::vector <real> kx_ray = read_hdf5("kx_ray", selectedFilepathRay);    
+			const std::vector <real> kz_ray = read_hdf5("kz_ray", selectedFilepathRay);   
+			const std::vector <real> kappa_ray = read_hdf5("kappa_ray", selectedFilepathRay);       
+			const std::vector <real> Bzw = read_hdf5("Bzw", selectedFilepathRay);
+			const std::vector <real> Ezw = read_hdf5("Ezw", selectedFilepathRay);
+			const std::vector <real> Bw_ray = read_hdf5("Bw_ray", selectedFilepathRay);    
+			const std::vector <real> w1 = read_hdf5("w1", selectedFilepathRay);
+			const std::vector <real> w2 = read_hdf5("w2", selectedFilepathRay);
+			const std::vector <real> R1 = read_hdf5("R1", selectedFilepathRay);
+			const std::vector <real> R2 = read_hdf5("R2", selectedFilepathRay);
 
 			for(int p=0; p<Population; p++)     
 			{
@@ -392,15 +397,17 @@ return 0
 				if(dstr[p].nan 	    == true) continue; // If this particle came out with aeq nan     , continue with next particle
 				li_wpi(Nsteps_wpi, p, lat_int, kx_ray, kz_ray, kappa_ray, Bzw, Ezw, Bw_ray, w1, w2, R1, R2, dstr[p], ODPT);  //LI   + RAY TRACING
 			}
-			real time2 = std::chrono::high_resolution_clock::now();
-			std::cout<<"\nExecution time: "<<time2<<std::endl;
+			auto stop =  std::chrono::high_resolution_clock::now();
+			
+			// Calculate the duration of the execution in seconds (as double)
+			std::chrono::duration<real> duration = time2 - time1;
+			std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
 		}
+
 
 		//---BELL---//
 		else if(argc==4 && argv[3]==bell)
 		{
-			std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation(Bell).\nWave magnitude(T): "<<Wave::By_wave<<std::endl;
-			std::cout<<"Execution time estimation for 8 THREAD run: "<<(Population*0.036/60) * t_wpi <<" minutes."<<std::endl;
 			for(int p=0; p<Population; p++)     
 			{
 				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
@@ -409,8 +416,13 @@ return 0
 				if(dstr[p].nan 	    == true) continue; // If this particle came out with aeq nan     , continue with next particle.
 				bell_wpi(Nsteps_wpi, p, dstr[p], ODPT); 		// BELL + THE WAVE IS EVERYWHERE
 			}
-			real time2 =  std::chrono::high_resolution_clock::now();
-			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
+			auto time3 =  std::chrono::high_resolution_clock::now();
+
+			// Calculate the duration of the execution in seconds (as double)
+			std::chrono::duration<real> duration = time3 - time2;
+
+			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<duration.count()<<std::endl;
+
 		}
 	}
 
