@@ -225,13 +225,10 @@ void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODP
         // Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot
         // This can slow down the parallel process, and will introduce bad scalling 8+ cores, which is sufficient for this simulation
         // Alternative: Detecting first and storing in the end demands more memory per process
-        #pragma omp critical
-        {                    
-            //Check Crossing:
-            if( ODPT.crossing(new_latitude*Universal::R2D, latitude*Universal::R2D, Distribution::L_shell) ) {									
-                ODPT.store( p, latitude, aeq, alpha, time); //Store its state (just before crossing the satellite)	        	
-                //std::cout<<"\nParticle "<< p <<" at: "<<new_latitude*Universal::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-            }
+        //Check Crossing:
+        if( ODPT.crossing(new_latitude*Universal::R2D, latitude*Universal::R2D, Distribution::L_shell) ) {									
+            ODPT.store( p, latitude, aeq, alpha, time); //Store its state (just before crossing the satellite)	        	
+            //std::cout<<"\nParticle "<< p <<" at: "<<new_latitude*Universal::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
         }
         // Save state where particle has the maximum(abs) dEkin or dPA
         // if(std::abs(new_Ekin - Ekin)>max_dEkin) {

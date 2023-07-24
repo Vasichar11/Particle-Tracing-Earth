@@ -128,16 +128,14 @@ void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODP
         }
 
         // Critical Region to push back values in shared memory ODPT object:
-        #pragma omp critical // Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot.
-        {                    // This slows down the parallel process, introduces bad scalling 8+ cores. Detecting first and storing in the end demands more memory per process.
-            // Check Crossing:
-            if( ODPT.crossing(new_latitude*Universal::R2D, latitude*Universal::R2D, Distribution::L_shell) )	
-            {									
-                ODPT.store( p, latitude, aeq, alpha, time); // Store its state(it's before crossing the satellite!).		        	
-                // std::cout<<"\nParticle "<< p <<" at: "<<new_latitude*Universal::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
-            }
 
+        // Check Crossing:
+        if( ODPT.crossing(new_latitude*Universal::R2D, latitude*Universal::R2D, Distribution::L_shell) )	
+        {									
+            ODPT.store( p, latitude, aeq, alpha, time); // Store its state(it's before crossing the satellite!).		        	
+            // std::cout<<"\nParticle "<< p <<" at: "<<new_latitude*Universal::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
         }
+
         
         
         // Runge kutta 4 estimations:

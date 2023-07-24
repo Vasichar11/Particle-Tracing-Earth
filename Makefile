@@ -20,7 +20,7 @@ BIN := tracer ray dstr
 
 # Compiler and linker
 CC  := mpic++
-LNK := g++
+LNK := mpic++
 
 # Optimization level 
 OPT := -O3 
