@@ -1,6 +1,6 @@
 #include "struct_Particles.h"
 
-void Particles::initialize(real eta0, real aeq0, real latitude0, real Ekin0, real zeta0, real time0)
+void Particles::initialize(int id0, real eta0, real aeq0, real latitude0, real Ekin0, real zeta0, real time0)
 {
 	int k;
 	const real Beq0 = Bmag_dipole(0); // Beq isn't always Beq0?
@@ -22,6 +22,7 @@ void Particles::initialize(real eta0, real aeq0, real latitude0, real Ekin0, rea
 	// std::cout<<"\nBouncing period estimation: "<< (4*Distribution::L_shell*Universal::Re/speed0)*(1.3 - 0.5*sin(aeq0)); //[Orlova1,Shprits2,2011]
 
 	// Assign initial state.
+	this->id0 = id0;
 	this->latitude0 = latitude0;
 	this->aeq0   = aeq0;
 	this->eta0   = eta0;

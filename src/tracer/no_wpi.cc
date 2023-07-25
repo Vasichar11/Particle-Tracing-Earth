@@ -93,7 +93,7 @@ void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODP
         if(std::isnan(new_latitude*new_aeq*new_ppar))
         {
             single.nan = true;
-            single.nan_state( p ); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
+            single.nan_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
             std::cout<<"\nParticle(V) "<<p<<" nan";
             break; 
         }
@@ -101,7 +101,7 @@ void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODP
         if(alpha<0 || aeq<0)
         {
             single.negative = true;
-            single.negative_state( p ); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
+            single.negative_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
             std::cout<<"\nParticle(N) "<<p<<" negative p.a";
             break;
         }
@@ -109,7 +109,7 @@ void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODP
         if(alpha>M_PI)
         {
             single.high = true;
-            single.high_state( p ); //Save the initial state (after noWPI) for the particle and the time that P.A turned out higher than 180.
+            single.high_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out higher than 180.
             std::cout<<"\nParticle(H) "<<p<<" above 180 p.a";
             break;
         }

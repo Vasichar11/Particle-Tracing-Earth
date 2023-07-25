@@ -14,7 +14,7 @@ struct Particles
 	// Characterize particle
 	bool escaped, trapped, negative, nan, high; 
 	// Starting noWPI states
-	real latitude0, zeta0, uper0, upar0, ppar0, pper0, alpha0, aeq0, eta0, M_adiabatic0, Ekin0, time0;
+	real id0, latitude0, zeta0, uper0, upar0, ppar0, pper0, alpha0, aeq0, eta0, M_adiabatic0, Ekin0, time0;
 	// Ending noWPI and Starting WPI states
 	real latitude_end, zeta_end, uper_end, upar_end, ppar_end, pper_end, alpha_end, aeq_end, eta_end, M_adiabatic_end, Ekin_end, time_end;
 	// If lost
@@ -33,7 +33,7 @@ struct Particles
 	std::vector<real> id, latitude, deta_dt, Ekin; 
 
 	// Member function to initialize particle population
-	void initialize(real eta0, real aeq0, real latitude0, real Ekin0, real zeta0, real time0);
+	void initialize(int id0, real eta0, real aeq0, real latitude0, real Ekin0, real zeta0, real time0);
 	// Member function to save particles that meet certain conditions
 	void escaping_state(int id,real new_latitude, real new_aeq, real new_alpha, real new_time);
 	void negative_state(int id);
