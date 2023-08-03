@@ -62,9 +62,7 @@ int main(int argc, char **argv)
 	std::string rayFilepathStr;
 	int rayFilepathStrSize;
 	
-	// Rank 0 reads Particle Distribution and Ray
-	if (rank==0) 
-	{
+	if (rank==0) {
 	//-------------------------------------------------------- MANAGE COMMAND LINE 	ARGUMENTS  --------------------------------------------------------//
 
 		InputArguments(argc, argv, setupArgs); // If invalid input, terminates program
@@ -102,14 +100,13 @@ int main(int argc, char **argv)
 			rayFilepathStrSize = rayFilepathStr.size();
 		}
 
-	//------------------------------------------------------------ DEFINE RANK WORKLOAD  --------------------------------------------------------------//
+	//-------------------------------------------------------- CALCULATE NODE WORKLOAD  ----------------------------------------------------------//
 
 		// Calculate the size of the portion for each rank
 		portionSize = Distribution::population / numProcesses;
 		int remainingParticles = Distribution::population % numProcesses;
 
-		// Instead of distributing the particle object, we are distributing based on their size in bytes.
-		// Distribute in sizeInBytes to distribute univenly with Scatterv
+		// Instead of distributing the particle object, we are distributing based on size in bytes (to use Scatterv).
 		for (int i = 0; i < numProcesses; ++i) {
 			sizeInBytes[i] = portionSize * sizeof(Particles);
 		}
@@ -117,7 +114,6 @@ int main(int argc, char **argv)
 		for (int i = 0; i < remainingParticles; ++i) {
 			sizeInBytes[i] += sizeof(Particles);
 		}
-		// Calculate the displacement for every rank
 		displacements[0] = 0;
 		for (int i = 1; i < numProcesses; ++i) {
 			displacements[i] = sizeInBytes[i-1] + displacements[i-1];
@@ -127,18 +123,18 @@ int main(int argc, char **argv)
 
 	//-------------------------------------------------------------- MPI BROADCAST WORKLOAD -----------------------------------------------------------//
 
-	// Master Broadcasts Setup args. (simplified struct broadcast. Works only in single machines/homogeneous clusters)
+	// Master Broadcasts Setup args. (simplified broadcast of a struct. Will work only in single machines/homogeneous clusters)
 	MPI_Bcast(&setupArgs, sizeof(SetupArgs), MPI_BYTE, 0, MPI_COMM_WORLD);
-	// Master Broadcasts workload data
 	MPI_Bcast(&portionSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(sizeInBytes, numProcesses, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(displacements, numProcesses, MPI_INT, 0, MPI_COMM_WORLD);
 		
 	if(setupArgs.wpi) {
+		
 		MPI_Bcast(&rayFilepathStrSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		rayFilepathStr.resize(rayFilepathStrSize);
 		MPI_Bcast(&rayFilepathStr[0], rayFilepathStrSize, MPI_CHAR, 0, MPI_COMM_WORLD);
-		// Construct Ray
+
 		ray.readRay(rayFilepathStr);
 	}
 	
@@ -146,7 +142,7 @@ int main(int argc, char **argv)
 
 	dstr.resize(portionSize);
 
-	// Master Scatters distribution unevenly (remaining particles need to be scattered) -> Scatterv
+	// Master Scatters distribution unevenly (remaining particles need to be scattered as well) -> Scatterv
 	if (rank==0) {
 		MPI_Scatterv(dstr.data(), sizeInBytes, displacements, MPI_BYTE, MPI_IN_PLACE, sizeInBytes[rank], MPI_BYTE, 0, MPI_COMM_WORLD);
 	}
@@ -155,70 +151,54 @@ int main(int argc, char **argv)
 	}
 
 	for (int i = 0; i < numProcesses; i++) {
-		MPI_Barrier(MPI_COMM_WORLD); // Wait for all processes to reach this point
+		MPI_Barrier(MPI_COMM_WORLD); 
 		if (i == rank) {
 			std::cout << "Rank " << rank << " particle counts " << sizeInBytes[rank]/sizeof(Particles) << "\n";
-			std::cout.flush(); // Ensure that the output is immediately written
+			std::cout.flush(); 
 		}
 	}
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
-
-	//---NOWPI---//
-	if(setupArgs.nowpi)
-	{
-		auto start = std::chrono::high_resolution_clock::now();
-		// for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
-		for (auto &particle : dstr)
-		{
+	
+	double start_time = MPI_Wtime();
+	// NoWPI
+	if(setupArgs.nowpi) {
+		for (auto &particle : dstr) {
 			int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
-			// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
 			no_wpi(setupArgs.Nsteps_nowpi, id, particle, ODPT);
 		}
-		auto stop =  std::chrono::high_resolution_clock::now();
-		std::chrono::duration<real> duration = start - stop;
-		std::cout<<"\nExecution time using "<<numProcesses<<" nodes, is: "<<duration.count()<<std::endl;
 	}
-
-	//---WPI---//
-	if(setupArgs.wpi)
-	{
-		//---LI---//
-		if(setupArgs.use_li_equations)
-		{
-			auto start = std::chrono::high_resolution_clock::now();
-			// for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
+	// WPI
+	if(setupArgs.wpi) {
+		// LI EQUATIONS
+		if(setupArgs.use_li_equations) {
 			for (auto &particle : dstr)
 			{
-				if(particle.escaped || particle.negative || particle.nan) continue; // If this particle was lost, negative or nan, continue with next particle 
+				if(particle.escaped || particle.negative || particle.nan) continue; // If particle was lost, negative or nan, continue with next particle 
 				int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
-				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference
-				li_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT, ray);  //LI + RAY TRACING
+				li_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT, ray);  
 			}
-			auto stop =  std::chrono::high_resolution_clock::now();
-			std::chrono::duration<real> duration = start - stop;
-			std::cout<<"\nExecution time using "<<numProcesses<<" nodes, is: "<<duration.count()<<std::endl;
 		}
-
-		//---BELL---//
-		else if(setupArgs.use_bell_equations)
-		{
-			auto start = std::chrono::high_resolution_clock::now();
-			//for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
+		// BELL EQUATIONS
+		else if(setupArgs.use_bell_equations) {
 			for (auto &particle : dstr)
 			{
-				if(particle.escaped || particle.negative || particle.nan) continue; // If this particle was lost, negative or nan, continue with next particle 
+				if(particle.escaped || particle.negative || particle.nan) continue; // If particle was lost, negative or nan, continue with next particle 
 				int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
-				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference
-				bell_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT);  //BELL + WAVE IS EVERYWHERE
+				bell_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT);  
 			}
-			auto stop =  std::chrono::high_resolution_clock::now();
-			std::chrono::duration<real> duration = start - stop;
-			std::cout<<"\nExecution time using "<<numProcesses<<" nodes, is: "<<duration.count()<<std::endl;
 		}
 	}
+	double end_time = MPI_Wtime();
+	double elapsed_time = end_time - start_time;
+	double max_elapsed_time;
+	MPI_Reduce(&elapsed_time, &max_elapsed_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
-//--------------------------------------------------------- MASTER GATHERS PARTICLES -----------------------------------------------------------------------//
+	if (rank == 0) {
+		std::cout<<"\nExecution time using "<<numProcesses<<" nodes, is: "<<elapsed_time<<" seconds"<<std::endl;
+    }
+
+//------------------------------------------------------------ MPI GATHER RESULTS ------------------------------------------------------------------------//
 
 	// Gather data in Master
 	std::vector<Particles> gathered_dstr;
@@ -227,16 +207,16 @@ int main(int argc, char **argv)
 		gathered_dstr.resize(Distribution::population);
 	}
 	MPI_Gatherv(dstr.data(), sizeInBytes[rank], MPI_BYTE, gathered_dstr.data(), sizeInBytes, displacements, MPI_BYTE, 0, MPI_COMM_WORLD);
-    // Only Rank 0 prints the gathered data
-    if (rank == 0)
+
+    /*if (rank == 0)
     {
         for (const auto& particle : gathered_dstr)
         {
             std::cout << "\ngathered particle " << particle.id0 << " " << particle.latitude0 << std::endl;
         }
-    }
+    }*/
 
-//------------------------------------------------------------ MASTER OUTPUTS HDF5 --------------------------------------------------------------------------//
+//------------------------------------------------------------ MASTER SAVES DATA --------------------------------------------------------------------------//
 	
 	if (rank == 0) { 
 		
