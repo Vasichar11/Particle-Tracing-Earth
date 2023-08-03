@@ -160,7 +160,7 @@
         <max_stdev normal="true" uniform="false" even="false" constant="false">
             <name>max_stdev</name>
             <value>20.0</value>
-            <description>Standard deviation when latitude domain is the biggest. Is proportional to latitude range</description>
+            <description>Standard deviation when latitude domain is the most extensive</description>
             <metric_unit>1</metric_unit>
             <physical_unit>none</physical_unit>
         </max_stdev>
@@ -225,7 +225,7 @@
         <value_deg normal="false" uniform="false" even="false" constant="true">
             <name>value_deg</name>
             <value>69.844</value>
-            <description>Initial particle phase (angle between Vperp and BwR)</description>
+            <description>If single values are used</description>
             <metric_unit>1</metric_unit>
             <physical_unit>degrees</physical_unit>
         </value_deg>

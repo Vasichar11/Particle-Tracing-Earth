@@ -20,7 +20,9 @@
 #include "li_wpi.h"
 #include "common.h"
 #include "struct_Particles.h"   		    	
+#include "struct_Ray.h"   		    	
 #include "struct_Telescope.h"  				
+#include "parameters.h"
 #include "constants.h"
 
 //HDF5 I/O
@@ -32,7 +34,6 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {	
-//------------------------------------------------------------ MANAGE COMMAND LINE 	ARGUMENTS  --------------------------------------------------------------//
 	
 	// Initialize MPI
     MPI_Init(&argc, &argv);
@@ -42,344 +43,136 @@ int main(int argc, char **argv)
     MPI_Comm_size(MPI_COMM_WORLD, &numProcesses);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-	int counts[numProcesses];
+	int sizeInBytes[numProcesses];
 	int displacements[numProcesses];
-
-	// All ranks create a particle distribution
+	
 	// Single particle struct
 	Particles single; 
-	// Vector of structs. Has initial states and function to save particle states in vectors
+
+	// Setup arguments
+   	SetupArgs setupArgs;
+
+	// Vector of structs for the Particle Distribution
 	std::vector<Particles> dstr(Distribution::population, single);	
 
-	int64_t Nsteps_nowpi, Nsteps_wpi; 
-	std::filesystem::path selectedFilepathRay;
+	// Detector
+    Telescope ODPT(Satellite::latitude_deg, Distribution::L_shell);
 
-
-	// Only rank 0, the master process, reads the distribution file and constracts the dstr vector
+	// Ray
+	Ray ray;
+	std::string rayFilepathStr;
+	int rayFilepathStrSize;
+	
+	// Rank 0 reads Particle Distribution and Ray
 	if (rank==0) 
 	{
+	//-------------------------------------------------------- MANAGE COMMAND LINE 	ARGUMENTS  --------------------------------------------------------//
+
+		InputArguments(argc, argv, setupArgs); // If invalid input, terminates program
 		
-		// Validate number of arguments
-		if (argc < 3  || argc > 4) {
-			std::cerr << "Invalid number of arguments. Usage: program_name <noWPI_time> <WPI_time> [-bell]\n"
-					<< "\n- Argument variables are the simulation times for the NoWPI and WPI interaction in seconds\n"
-					<< "- First, provide the time(seconds) of NoWPI simulation and then the time(seconds) of the WPI simulation\n"
-					<< "- The default WPI simulation is the one using the Li Formulas (li_wpi.cc)\n"
-					<< "- For WPI using the Bell Formulas (bell_wpi.cc), run with the option -bell as the last command line argument\n";
-			return 1;
-		}
-
-
-		std::string arg1 = argv[1];
-		std::string arg2 = argv[2];
-
-		// Validate arg1 and arg2 as numbers
-		try {
-			float number1 = std::stof(arg1); // Will throw exception if arguments are not numbers
-			float number2 = std::stof(arg2);
-			(void)number1;  // Indicate that they are intentionally unused to avoid warnings
-			(void)number2;  
-		} catch (const std::invalid_argument&) {
-			std::cerr << "Invalid argument. Argument 1 and argument 2 must be number of seconds .\n"
-					<< "\nArgument variables are the simulation times for the NoWPI and WPI interaction in seconds.\n"
-					<< "First, provide the time(seconds) of NoWPI simulation and then the time(seconds) of the WPI simulation.\n"
-					<< std::endl;
-			return 1;
-		}
-
-		std::string bell = "-bell";
-		if (argc == 4) {
-			std::string arg3 = argv[3];
-			if (arg3 != bell) {
-				std::cout << "Invalid argument. Argument 3 may only be \"-bell\".\n"
-						<< "The default WPI simulation is the one using the Li Formulas (li_wpi.cc)\n"
-						<< "For WPI using the Bell Formulas (bell_wpi.cc), run with the option -bell as the last command line argument.\n"
-						<< std::endl;
-				return 1;
-			}
-		}
-		
-		// Assign times from the command line arguments
-		real t_nowpi = std::stof(argv[1]); // No WPI time from command line 
-		real t_wpi   = std::stof(argv[2]); // WPI time from command line
-		real t = t_nowpi + t_wpi;  // Total simulation time
-		int64_t Nsteps_wpi  = t_wpi/Simulation::h; // WPI step count
-		int64_t Nsteps_nowpi= t_nowpi/Simulation::h; // noWPI step count
-
-		std::cout<<"Loss cone angle, for Lshell "<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D;
-		std::cout<<"\n\n"<<t_wpi<<" sec NoWPI Simulation"<<std::endl;
-
-
 	//------------------------------------------------------------ READ FILES FROM USER  --------------------------------------------------------------//
 
-
-		std::cout << "\nPick a particle distribution file from the below\n";
 		std::vector<std::string> dstrFiles, rayFiles;
-		const std::string directory = "output/files"; // Input file directory
-		const std::string extension = ".h5"; // Input file needs to be hdf5 format
-		const std::string dstrPrefix = "dstr"; // Input file prefix, defined in distribution.cc
-		const std::string rayPrefix = "interpolated_ray"; // Input file prefix, defined in Read_Ray_Write.cc
 		std::string selectedFilenameDstr, selectedFilenameRay;
-		std::filesystem::path selectedFilepathDstr, selectedFilepathRay;
+		std::filesystem::path dstrFilepath, rayFilepath;
+		const std::string directory = "output/files"; 
+		const std::string extension = ".h5"; 
+		const std::string dstrPrefix = "dstr"; // Distribution file prefix, defined in distribution.cc
+		const std::string rayPrefix = "interpolated_ray"; // Ray file prefix, defined in Read_Ray_Write.cc
 
-		// Iterate over the directory and store files that match the distribution hdf5 files
-		for (const auto& entry : std::filesystem::directory_iterator(directory)) {
-			const std::string filename = entry.path().filename().string();
-			const std::string stem = entry.path().stem().string();
-
-			if (entry.path().extension() == extension && stem.substr(0, dstrPrefix.size()) == dstrPrefix) {
-				dstrFiles.push_back(filename);
-			}
-			if (entry.path().extension() == extension && stem.substr(0, rayPrefix.size()) == rayPrefix) {
-				rayFiles.push_back(filename);
-			}
-		}
-		// Check if no files were found
-		if (dstrFiles.empty()) {
-			std::cerr << "Error: No particle distribution files found in \"" << directory << "\".\nPlease create a particle distribution file with distribution.cc and try again." << std::endl;
-			return -1;
-		}
-		int selection;
-		bool validSelection1 = false;
-		bool validSelection2 = false;
-
-		// Loop until valid particle distribution file selection
-		do {
-			// Display the files
-			std::cout << "\nParticle distribution files in directory \"" << directory << "\":\n";
-			for (size_t i = 0; i < dstrFiles.size(); ++i) {
-				std::cout << i + 1 << ". " << dstrFiles[i] << '\n';
-			}
-
-			// Prompt the user to select a file
-			std::cout << "Enter the number of the file you want to select: ";
-
-			if (std::cin >> selection) {
-				if (selection >= 1 && selection <= static_cast<int>(dstrFiles.size())) {
-					validSelection1 = true;
-					selectedFilenameDstr = dstrFiles[selection - 1];
-					selectedFilepathDstr = std::filesystem::path(directory) / std::filesystem::path(selectedFilenameDstr);
-					std::cout << "You selected filepath: " << selectedFilepathDstr << '\n';
-					break;
-				} else {
-					std::cout << "\nInvalid selection.\n";
-				}
-			} else {
-				std::cout << "Invalid input. Please enter a valid number.\n";
-				std::cin.clear(); // Clear the error state
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
-			}
-		} while (!validSelection1);
-
+		// Read Particle Distribution
+		std::cout << "\nPick a Particle Distribution file from the below";
+		dstrFilepath = SelectFile(directory, extension, dstrPrefix);
+		std::cout << "You selected Particle Distribution filepath: " << dstrFilepath << '\n';
 		
-		// If WPI then select from the interpolated ray files
-		if(t_wpi>0)
-		{
-		// Loop until valid interpolated ray file selection
-			do {
-				// Display the files
-				std::cout << "\nInterpolated ray files in directory \"" << directory << "\":\n";
-				for (size_t i = 0; i < rayFiles.size(); ++i) {
-					std::cout << i + 1 << ". " << rayFiles[i] << '\n';
-				}
+		readDstr(dstrFilepath, dstr);
 
-				// Prompt the user to select a file
-				std::cout << "Enter the number of the file you want to select: ";
-
-				if (std::cin >> selection) {
-					if (selection >= 1 && selection <= static_cast<int>(rayFiles.size())) {
-						validSelection2 = true;
-						selectedFilenameRay = rayFiles[selection - 1];
-						selectedFilepathRay = std::filesystem::path(directory) / std::filesystem::path(selectedFilenameRay);
-						break;
-					} else {
-						std::cout << "\nInvalid selection.\n";
-					}
-				} else {
-					std::cout << "Invalid input. Please enter a valid number.\n";
-					std::cin.clear(); // Clear the error state
-					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
-				}
-			} while (!validSelection2);
-
-			std::cout << "You selected filepath: " << selectedFilepathRay << '\n';
+		if (dstr.size()!=Distribution::population) {
+			throw std::runtime_error("The parameter for the particle population differs from the population that is defined in the selected hdf5 file! "); 
+		}
+		else {
+			std::cout<<"\nParticle population: "<< Distribution::population <<std::endl;
+		}
+	
+		// If WPI -> Select Ray 
+		if(setupArgs.wpi) {
+			std::cout << "\nPick a Ray file from the below";
+			rayFilepath = SelectFile(directory, extension, rayPrefix);
+			std::cout << "You selected Ray filepath: " << rayFilepath << '\n';
+			rayFilepathStr = rayFilepath.string(); // Convert to string to broadcast
+			rayFilepathStrSize = rayFilepathStr.size();
 		}
 
-
-
-	//------------------------------------------------------------READ AND ASSIGN DISTRIBUTION FROM H5 FILE --------------------------------------------------------------//
-
-		h5::File distribution_file(selectedFilepathDstr, h5::File::ReadOnly);
-		//Vectors to save temporarily
-		std::vector<real> id_0, latitude_0, alpha_0, aeq_0, ppar_0, pper_0, upar_0, uper_0, Ekin_0, time_0, zeta_0, eta_0, M_adiabatic_0, trapped_0, escaped_0, nan_0, negative_0, high_0;
-		//Read dataset from h5file.
-		h5::DataSet data_id = distribution_file.getDataSet("id0");
-		h5::DataSet data_lat = distribution_file.getDataSet("latitude0");
-		h5::DataSet data_aeq = distribution_file.getDataSet("aeq0");
-		h5::DataSet data_alpha = distribution_file.getDataSet("alpha0");
-		h5::DataSet data_upar = distribution_file.getDataSet("upar0");
-		h5::DataSet data_uper = distribution_file.getDataSet("uper0");
-		h5::DataSet data_ppar = distribution_file.getDataSet("ppar0");
-		h5::DataSet data_pper = distribution_file.getDataSet("pper0");
-		h5::DataSet data_eta = distribution_file.getDataSet("eta0");
-		h5::DataSet data_zeta = distribution_file.getDataSet("zeta0");
-		h5::DataSet data_time = distribution_file.getDataSet("time0");
-		h5::DataSet data_M_adiabatic = distribution_file.getDataSet("M_adiabatic0");
-		h5::DataSet data_Ekin = distribution_file.getDataSet("Ekin0");
-		h5::DataSet data_trapped = distribution_file.getDataSet("trapped0");
-		h5::DataSet data_escaped = distribution_file.getDataSet("escaped0");
-		h5::DataSet data_nan = distribution_file.getDataSet("nan0");
-		h5::DataSet data_negative = distribution_file.getDataSet("negative0");
-		h5::DataSet data_high = distribution_file.getDataSet("high0");
-		//Convert to single vector.
-		data_id.read(id_0);
-		data_lat.read(latitude_0);
-		data_aeq.read(aeq_0);
-		data_alpha.read(alpha_0);
-		data_upar.read(upar_0);
-		data_uper.read(uper_0);
-		data_ppar.read(ppar_0);
-		data_pper.read(pper_0);
-		data_eta.read(eta_0);
-		data_zeta.read(zeta_0);
-		data_time.read(time_0);
-		data_M_adiabatic.read(M_adiabatic_0);
-		data_Ekin.read(Ekin_0);
-		data_trapped.read(trapped_0);
-		data_escaped.read(escaped_0);
-		data_escaped.read(nan_0);
-		data_escaped.read(negative_0);
-		data_escaped.read(high_0);
-
-
-		if (latitude_0.size()!=Distribution::population) {
-			throw std::runtime_error("The parameter for the particle population differs from the population that is defined in the selected hdf5 file!"); 
-		}
-
-
-		// Append to struct from single vector
-		for(int p=0; p<Distribution::population; p++)
-		{
-			dstr[p].id0 = id_0.at(p);
-			dstr[p].latitude0 = latitude_0.at(p);
-			dstr[p].alpha0 = alpha_0.at(p);  
-			dstr[p].aeq0 = aeq_0.at(p);
-			dstr[p].ppar0 = ppar_0.at(p);
-			dstr[p].pper0 = pper_0.at(p);
-			dstr[p].upar0 = upar_0.at(p);
-			dstr[p].uper0 = uper_0.at(p);
-			dstr[p].Ekin0 = Ekin_0.at(p);
-			dstr[p].time0 = time_0.at(p);
-			dstr[p].zeta0 = zeta_0.at(p);
-			dstr[p].eta0 = eta_0.at(p);
-			dstr[p].M_adiabatic0 = M_adiabatic_0.at(p);
-			dstr[p].trapped = trapped_0.at(p);
-			dstr[p].escaped = escaped_0.at(p);
-			dstr[p].nan = nan_0.at(p);
-			dstr[p].negative = negative_0.at(p);
-			dstr[p].high = high_0.at(p);
-		}
-		std::cout<<"\nParticle population: "<< Distribution::population <<std::endl;
-
-
+	//------------------------------------------------------------ DEFINE RANK WORKLOAD  --------------------------------------------------------------//
 
 		// Calculate the size of the portion for each rank
 		portionSize = Distribution::population / numProcesses;
-		// Array to hold the number of elements to be sent to each rank
-		counts[numProcesses];
+		int remainingParticles = Distribution::population % numProcesses;
+		// Array to hold the Bytes to be sent to each rank
+		sizeInBytes[numProcesses];
 		// Array to hold the displacement for each rank
 		displacements[numProcesses];
-		// Populate the counts and displacements arrays based on the portion size
+		// Instead of distributing the particle object, we are distributing based on their size in bytes.
+		// Distribute in sizeInBytes to distribute univenly with Scatterv
 		for (int i = 0; i < numProcesses; ++i) {
-			counts[i] = portionSize;
+			sizeInBytes[i] = portionSize * sizeof(Particles);
 		}
-		// Distribute evenly remaining particles
-		int remainingParticles = Distribution::population % numProcesses;
+		// Distribute remaining particle Bytes evenly 
 		for (int i = 0; i < remainingParticles; ++i) {
-			counts[i]++;
+			sizeInBytes[i] += sizeof(Particles);
 		}
 		// Calculate the displacement for every rank
 		displacements[0] = 0;
-		for (int i = 0; i < numProcesses; ++i) {
-			displacements[i+1] = counts[i] + displacements[i];
+		for (int i = 1; i < numProcesses; ++i) {
+			displacements[i] = sizeInBytes[i-1] + displacements[i-1];
 		}
 
-
-        // Rank 0 Broadcasts the necessary variables
-	    MPI_Bcast(&Nsteps_wpi, 1, MPI_INT, 0, MPI_COMM_WORLD);
-	    MPI_Bcast(&Nsteps_nowpi, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		MPI_Bcast(&portionSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		MPI_Bcast(counts, numProcesses, MPI_INT, 0, MPI_COMM_WORLD);
-		MPI_Bcast(displacements, numProcesses, MPI_INT, 0, MPI_COMM_WORLD);
-
-		// Serialise filepath for Ray into string to pass it to other ranks 
-        std::string serializedPath = selectedFilepathRay.string();
-        // Broadcast the serialized string length to other ranks
-        int serializedPathLength = serializedPath.length();
-        MPI_Bcast(&serializedPathLength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        // Broadcast the serialized string to other ranks
-        MPI_Bcast(const_cast<char*>(serializedPath.c_str()), serializedPathLength, MPI_CHAR, 0, MPI_COMM_WORLD);
-		
-		
-        // Temporary buffer to hold Rank 0's portion of the data
-        std::vector<Particles> dstr_tmp(dstr.begin(), dstr.begin() + portionSize);
-
-        MPI_Scatter(dstr.data(), portionSize * sizeof(Particles), MPI_BYTE, MPI_IN_PLACE, counts[rank] * sizeof(Particles), MPI_BYTE, 0, MPI_COMM_WORLD);
-
-        // Now, copy Rank 0's portion from the temporary buffer back to the original dstr vector
-        dstr = dstr_tmp;
 	}
 
-	// All other ranks receive 
-	else {
+	//-------------------------------------------------------------- MPI BROADCAST WORKLOAD -----------------------------------------------------------//
 
-        // All ranks receive the necessary variables
-		MPI_Bcast(&Nsteps_wpi, 1, MPI_INT, 0, MPI_COMM_WORLD);
-	    MPI_Bcast(&Nsteps_nowpi, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		MPI_Bcast(&portionSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		MPI_Bcast(counts, numProcesses, MPI_INT, 0, MPI_COMM_WORLD);
-		MPI_Bcast(displacements, numProcesses, MPI_INT, 0, MPI_COMM_WORLD);
-
-
-        // Resize the dstr vector to the appropriate size to hold the portion of data for this process
-        dstr.resize(portionSize);
-
-        // On other ranks, receive the serialized string length from rank 0
-        int serializedPathLength;
-        MPI_Bcast(&serializedPathLength, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        // Allocate memory to receive the serialized string
-        char* serializedPathBuffer = new char[serializedPathLength];
-        // Receive the serialized string from rank 0
-        MPI_Bcast(serializedPathBuffer, serializedPathLength, MPI_CHAR, 0, MPI_COMM_WORLD);
-        // Convert the received serialized string back to a path object
-        selectedFilepathRay = std::filesystem::path(std::string(serializedPathBuffer, serializedPathLength));
-        // Free the memory used for the buffer
-        delete[] serializedPathBuffer;
+	// Master Broadcasts Setup args. (simplified struct broadcast. Works only in single machines/homogeneous clusters)
+	MPI_Bcast(&setupArgs, sizeof(SetupArgs), MPI_BYTE, 0, MPI_COMM_WORLD);
+	// Master Broadcasts workload data
+	MPI_Bcast(&portionSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Bcast(sizeInBytes, numProcesses, MPI_INT, 0, MPI_COMM_WORLD);
+	MPI_Bcast(displacements, numProcesses, MPI_INT, 0, MPI_COMM_WORLD);
 		
-        // Temporary buffer to hold Rank 0's portion of the data
-        std::vector<Particles> dstr_tmp(dstr.begin(), dstr.begin() + portionSize);
-
-		// All ranks receive the portion of the dstr vector assigned to this rank
-        MPI_Scatter(NULL, 0, MPI_BYTE, dstr.data(), counts[rank] * sizeof(Particles), MPI_BYTE, 0, MPI_COMM_WORLD);
-    }
+	if(setupArgs.wpi) {
+		MPI_Bcast(&rayFilepathStrSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		rayFilepathStr.resize(rayFilepathStrSize);
+		MPI_Bcast(&rayFilepathStr[0], rayFilepathStrSize, MPI_CHAR, 0, MPI_COMM_WORLD);
+		// Construct Ray
+		ray.readRay(rayFilepathStr);
+	}
 	
+	//--------------------------------------------------------------- MPI SCATTER WORKLOAD -------------------------------------------------------------//
 
-	// All processes create their local ODPT object
-    Telescope ODPT(Satellite::latitude_deg, Distribution::L_shell);
-    
-	
-	// Declare gathered data
+	dstr.resize(portionSize);
+
+	// Master Scatters distribution unevenly (remaining particles need to be scattered) -> Scatterv
+	if (rank==0) {
+		MPI_Scatterv(dstr.data(), sizeInBytes, displacements, MPI_BYTE, MPI_IN_PLACE, sizeInBytes[rank], MPI_BYTE, 0, MPI_COMM_WORLD);
+	}
+	else {
+		MPI_Scatterv(NULL, sizeInBytes, displacements, MPI_BYTE, dstr.data(), sizeInBytes[rank], MPI_BYTE, 0, MPI_COMM_WORLD);
+	}
+
+
+	for (int i = 0; i < numProcesses; i++) {
+		MPI_Barrier(MPI_COMM_WORLD); // Wait for all processes to reach this point
+		if (i == rank) {
+			std::cout << "Rank " << rank << " particle counts " << sizeInBytes[rank]/sizeof(Particles) << "\n";
+			std::cout.flush(); // Ensure that the output is immediately written
+		}
+	}
+	/*
 	std::vector<Particles> gathered_dstr;
-
-	// Rank 0 
-    if (rank == 0)
-    {
-        gathered_dstr.resize(Distribution::population);
-    }
-    MPI_Gather(dstr.data(), portionSize * sizeof(Particles), MPI_BYTE,
-               gathered_dstr.data(), portionSize * sizeof(Particles), MPI_BYTE,
-               0, MPI_COMM_WORLD);
-
+	if (rank == 0)
+	{
+		gathered_dstr.resize(Distribution::population);
+	}
+	MPI_Gatherv(dstr.data(), sizeInBytes[rank], MPI_BYTE, gathered_dstr.data(), sizeInBytes, displacements, MPI_BYTE, 0, MPI_COMM_WORLD);
     // Only Rank 0 prints the gathered data
     if (rank == 0)
     {
@@ -387,28 +180,33 @@ int main(int argc, char **argv)
         {
             std::cout << "\ngathered particle " << particle.id0 << " " << particle.latitude0 << std::endl;
         }
-        std::cout << "\nCounts: ";
-        for (int i = 0; i < numProcesses; ++i)
-        {
-            std::cout << counts[i] << " ";
-        }
-        std::cout << std::endl;
     }
+	*/
 
 	MPI_Finalize();
-
-	return 0;
+	return 0 ;
+	
 }
+	/*
+	// Master . Temporary buffer to hold Rank 0's portion of the data
+	//std::vector<Particles> dstr_tmp(dstr.begin(), dstr.begin() + portionSize);
+	//dstr = dstr_tmp;
+	
+	// Tests 
+	// Ensure all processes have the correct portions of the data
+	/*
+
+	}
+	// Gather data in Master
 
 
-/*
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
 	//---NOWPI---//
 	if(Nsteps_nowpi>0)
 	{
 
 		auto start = std::chrono::high_resolution_clock::now();
-		for(int p=displacements[rank]; p<displacements[rank] + counts[rank]; p++)     
+		for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
 		{
 			// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
 			no_wpi(Nsteps_nowpi, p, dstr[p], ODPT);
@@ -430,22 +228,9 @@ int main(int argc, char **argv)
 		{
 			auto start = std::chrono::high_resolution_clock::now();
 
-			// Read hdf5 files from disk to pass them to the WPI function instead of reading them in every thread - every time - accessing disk frequently
-			// read_hdf5() is a function to read HDF5 dataset as vectors. 
 
-			std::vector <real> lat_int = read_hdf5("lat_int", selectedFilepathRay);
-			const std::vector <real> kx_ray = read_hdf5("kx_ray", selectedFilepathRay);    
-			const std::vector <real> kz_ray = read_hdf5("kz_ray", selectedFilepathRay);   
-			const std::vector <real> kappa_ray = read_hdf5("kappa_ray", selectedFilepathRay);       
-			const std::vector <real> Bzw = read_hdf5("Bzw", selectedFilepathRay);
-			const std::vector <real> Ezw = read_hdf5("Ezw", selectedFilepathRay);
-			const std::vector <real> Bw_ray = read_hdf5("Bw_ray", selectedFilepathRay);    
-			const std::vector <real> w1 = read_hdf5("w1", selectedFilepathRay);
-			const std::vector <real> w2 = read_hdf5("w2", selectedFilepathRay);
-			const std::vector <real> R1 = read_hdf5("R1", selectedFilepathRay);
-			const std::vector <real> R2 = read_hdf5("R2", selectedFilepathRay);
 
-			for(int p=displacements[rank]; p<displacements[rank] + counts[rank]; p++)     
+			for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
 			{
 				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference
 				if(dstr[p].escaped == true) continue; // If this particle is lost, continue with next particle
@@ -464,7 +249,7 @@ int main(int argc, char **argv)
 		//---BELL---//
 		else if(argc==4 && argv[3]==bell)
 		{
-			for(int p=displacements[rank]; p<displacements[rank] + counts[rank]; p++)     
+			for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
 			{
 				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
 				if(dstr[p].escaped == true) continue; // If this particle is lost, continue with next particle.

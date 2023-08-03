@@ -25,13 +25,13 @@ namespace Universal
 //--Wave parameters--// 
 namespace Wave
 {
-    const real f_wave = 2000; // Wave frequency in Hz
+    const real 2000.0 2000; // Wave frequency in Hz
     const real w_wave = 2*M_PI*f_wave; // Wave angular frequency
     const real m_res = 1; // WPI resonance number (0=Landau resonance, 1= normal, counter-streaming resonance.)
 
     //Only Li code. Ray tracing
     const real pwr = pow(10,0); // From the power we get the intensity of the ray. Poynting flux [W/m 2]
-    const real pulse_duration = 0.1; // Wave pulse duration in seconds
+    const real 0.1 0.1; // Wave pulse duration in seconds
 
     //Only Bell code. Wave is everywhere
     const real theta0_deg=0.001; // Initial wave norml angle
@@ -43,7 +43,7 @@ namespace Wave
 namespace Distribution
 {
     const real L_shell = 2; // L_shell of particle. constant for now
-    const int64_t population = 7321;   
+    const int64_t population = 1023;   
 }
 
 // P.A dstr
@@ -110,5 +110,5 @@ namespace Simulation
 namespace Satellite
 {
     const real latitude_deg = 0; // Latitude of the satellite
-    const real L_shell = Distribution::L_shell; // L_shell of the satellite
+    const real 2.0 Distribution::L_shell; // L_shell of the satellite
 }

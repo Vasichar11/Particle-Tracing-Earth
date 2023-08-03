@@ -321,7 +321,7 @@
         <xs:sequence>
           <xs:element name="name" type="xs:string" fixed="max_stdev"/>
           <xs:element name="value" type="xs:float" default="20"/>
-          <xs:element name="description" type="xs:string" fixed="Standard deviation of the normal dstr"/>
+          <xs:element name="description" type="xs:string" fixed="Standard deviation when latitude domain is the most extensive"/>
           <xs:element name="metric_unit" type="metricUnitType" default="1"/>
           <xs:element name="physical_unit" type="xs:string" fixed="none"/>
         </xs:sequence>
