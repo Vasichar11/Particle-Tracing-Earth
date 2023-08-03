@@ -57,4 +57,13 @@ struct Particles
 	// Member function to find the latitude domain of validity, given the equatorial P.A value of the particle
 	void latitude_domain(real aeq0);
 
+	// Overload the operator== to compare particles
+    bool operator==(const Particles& other) const
+    {
+        // Compare the relevant particles for equality
+        // Return true if the objects are equal, false otherwise
+        return (id0 == other.id0);
+    }
+
+
 };  	

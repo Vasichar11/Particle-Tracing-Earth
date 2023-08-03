@@ -21,9 +21,11 @@ struct SetupArgs{
     int64_t Nsteps_wpi;
     int64_t Nsteps_nowpi;
     bool use_bell_equations;
+    bool use_li_equations;
     bool wpi;
+    bool nowpi;
 };
 
 void InputArguments(int argc, char** argv, SetupArgs& setupArgs);
-std::filesystem::path SelectFile(const std::string& directory, const std::string& extension, const std::string& prefix);
+std::filesystem::path SelectFile(const std::filesystem::path directory, const std::string& extension, const std::string& prefix);
 void readDstr(const std::string& dstrFilepath, std::vector<Particles>& dstr);

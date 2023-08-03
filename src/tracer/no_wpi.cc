@@ -1,22 +1,22 @@
 #include "no_wpi.h"
 
 // Adiabatic motion.
-void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODPT)
+void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &particle, Telescope &ODPT)
 {
 	// std::cout.precision(64);			// Output precision.
 	// std::cout<<std::scientific;		// For e notation representation
 
     // Assign first particle states.
-    real latitude = single.latitude0;
-    real ppar = single.ppar0;
-    real pper = single.pper0;
-    real alpha = single.alpha0;
-    real aeq = single.aeq0;
-    real time = single.time0;
-    real Ekin = single.Ekin0;
-    // real zeta = single.zeta0;
-    // real upar = single.upar0;
-    // real uper = single.uper0;
+    real latitude = particle.latitude0;
+    real ppar = particle.ppar0;
+    real pper = particle.pper0;
+    real alpha = particle.alpha0;
+    real aeq = particle.aeq0;
+    real time = particle.time0;
+    real Ekin = particle.Ekin0;
+    // real zeta = particle.zeta0;
+    // real upar = particle.upar0;
+    // real uper = particle.uper0;
     // std::cout<<"\n\ntime " << time << "\nalpha "<<alpha*Universal::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlatitude " <<latitude*Universal::R2D<< "\naeq "<<aeq*Universal::R2D;
 
     // Declare function's variables. Once for each particle. When parallel, declare xcore times?
@@ -92,51 +92,47 @@ void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODP
         // Check Validity:
         if(std::isnan(new_latitude*new_aeq*new_ppar))
         {
-            single.nan = true;
-            single.nan_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
+            particle.nan = true;
+            particle.nan_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
             std::cout<<"\nParticle(V) "<<p<<" nan";
             break; 
         }
         // Check Negative P.A:
         if(alpha<0 || aeq<0)
         {
-            single.negative = true;
-            single.negative_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
+            particle.negative = true;
+            particle.negative_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out negative.
             std::cout<<"\nParticle(N) "<<p<<" negative p.a";
             break;
         }
         // Check higher than 180 P.A:
         if(alpha>M_PI)
         {
-            single.high = true;
-            single.high_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out higher than 180.
+            particle.high = true;
+            particle.high_state(p); //Save the initial state (after noWPI) for the particle and the time that P.A turned out higher than 180.
             std::cout<<"\nParticle(H) "<<p<<" above 180 p.a";
             break;
         }
         // Check Trapping:
         if( (0<new_aeq && new_aeq<Simulation::alpha_lc) || (new_aeq>M_PI-Simulation::alpha_lc && new_aeq<M_PI) ) //True if P.A is less than the loss cone angle(for southward particles too).If particle's equator P.A is less than the loss cone angle for this L_shell, then particle is not trapped. hm=100km.
         {
-            single.trapped = false;
+            particle.trapped = false;
         }
         // Check Precipitation:
-        if(!single.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
+        if(!particle.trapped && (ppar*new_ppar<0) ) //Would bounce if ppar is about to change sign.
         {
-            single.escaping_state(p, latitude, aeq, alpha, time);
-            single.escaped = true;
+            particle.escaping_state(p, latitude, aeq, alpha, time);
+            particle.escaped = true;
             std::cout<<"\n\nParticle(E) "<<p<<" escaped with aeq " <<aeq*Universal::R2D<< " at time " << time ;
             break;
         }
 
-        // Critical Region to push back values in shared memory ODPT object:
-
         // Check Crossing:
         if( ODPT.crossing(new_latitude*Universal::R2D, latitude*Universal::R2D, Distribution::L_shell) )	
         {									
-            ODPT.store( p, latitude, aeq, alpha, time); // Store its state(it's before crossing the satellite!).		        	
+            ODPT.store(p, latitude, aeq, alpha, time); // Store its state(it's before crossing the satellite!).		        	
             // std::cout<<"\nParticle "<< p <<" at: "<<new_latitude*Universal::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
         }
-
-        
         
         // Runge kutta 4 estimations:
         latitude = new_latitude;
@@ -150,23 +146,21 @@ void no_wpi(const int64_t Nsteps_nowpi, int p, Particles &single, Telescope &ODP
         time = time + Simulation::h; 
         i++;  
        
-        // std::cout<<"\n\ntime " << time <<" latitude " << latitude*Universal::R2D<< " Ekin " << Ekin << "\nalpha "<<alpha*Universal::R2D << " aeq0 " << single.aeq0 * Universal::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlatitude " <<latitude*Universal::R2D<< "\naeq "<<aeq*Universal::R2D ;
-
+        // std::cout<<"\n\ntime " << time <<" latitude " << latitude*Universal::R2D<< " Ekin " << Ekin << "\nalpha "<<alpha*Universal::R2D << " aeq0 " << particle.aeq0 * Universal::R2D << "\nppar "<< ppar<< "\npper " << pper << "\nlatitude " <<latitude*Universal::R2D<< "\naeq "<<aeq*Universal::R2D ;
     }
-    
 
     // Save last state to return values and continue the simulation with wave (if needed). 
-    single.latitude_end = latitude;
-    single.ppar_end = ppar;
-    single.pper_end = pper;
-    single.alpha_end = alpha;
-    single.aeq_end = aeq;
-    single.time_end = time;
-    single.Ekin_end = Ekin;
-    single.eta_end = Eta_dstr::value; // Particle "gyrophase" initialization 
-    // single.zeta_end = zeta;
-    // single.upar_end = upar;
-    // single.uper_end = uper;
+    particle.latitude_end = latitude;
+    particle.ppar_end = ppar;
+    particle.pper_end = pper;
+    particle.alpha_end = alpha;
+    particle.aeq_end = aeq;
+    particle.time_end = time;
+    particle.Ekin_end = Ekin;
+    particle.eta_end = Eta_dstr::value; // Particle "gyrophase" initialization 
+    // particle.zeta_end = zeta;
+    // particle.upar_end = upar;
+    // particle.uper_end = uper;
 }
 
 

@@ -2,22 +2,22 @@
 
 // For wave-particle interaction using Bell equations
 // For now, the wave is considered to be everywhere
-void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODPT)
+void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &particle, Telescope &ODPT)
 {
 	//std::cout.precision(64); // Output 16 decimal precise
 	//std::cout<<std::scientific;// For e notation representation
     
-    real latitude_end = single.latitude_end;
-    real ppar_end = single.ppar_end; 
-    real pper_end = single.pper_end; 
-    real alpha_end = single.alpha_end; 
-    real aeq_end = single.aeq_end; 
-    real eta_end = single.eta_end; 
-    real time_end = single.time_end;
-    real Ekin_end = single.Ekin_end; 
-    //real zeta_end = single.zeta_end; 
-    //real upar_end = single.upar_end; 
-    //real uper_end = single.uper_end;
+    real latitude_end = particle.latitude_end;
+    real ppar_end = particle.ppar_end; 
+    real pper_end = particle.pper_end; 
+    real alpha_end = particle.alpha_end; 
+    real aeq_end = particle.aeq_end; 
+    real eta_end = particle.eta_end; 
+    real time_end = particle.time_end;
+    real Ekin_end = particle.Ekin_end; 
+    //real zeta_end = particle.zeta_end; 
+    //real upar_end = particle.upar_end; 
+    //real uper_end = particle.uper_end;
     
     real latitude = latitude_end;
     real ppar = ppar_end; 
@@ -185,22 +185,22 @@ void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODP
         
         // Check Validity:
         if(std::isnan(new_latitude*new_aeq*new_ppar)) {
-            single.nan = true;
-            single.nan_state(p); // Save id of particle
+            particle.nan = true;
+            particle.nan_state(p); // Save id of particle
             std::cout<<"\nParticle(V) "<<p<<" nan";
             break; 
         }
         // Check Negative P.A:
         if(alpha<0 || aeq<0) {
-            single.negative = true;
-            single.negative_state(p); // Save id of particle
+            particle.negative = true;
+            particle.negative_state(p); // Save id of particle
             std::cout<<"\nParticle(N) "<<p<<" negative p.a";
             break;
         }
         // Check higher than 180 P.A:
         if(alpha>M_PI) {
-            single.high = true;
-            single.high_state(p); // Save id of particle
+            particle.high = true;
+            particle.high_state(p); // Save id of particle
             std::cout<<"\nParticle(H) "<<p<<" above 180 p.a";
             break;
         }
@@ -208,26 +208,23 @@ void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODP
         // True if P.A is less than the loss cone angle(for southward particles too)
         // While aeq<loss cone P.A for this L_shell the particle continues oscillating
         if( (0<new_aeq && new_aeq<Simulation::alpha_lc) || (new_aeq>M_PI-Simulation::alpha_lc && new_aeq<M_PI) ) {
-            single.trapped = false;
+            particle.trapped = false;
             // If no longer trapped, don't break immediately
             // The particle will follow its trajectory
             // until reaching the moment just before changing its direction of motion, at which point it will precipitate.
         }
         // Check Precipitation:
         // If no longer trapped, and is about to change direction
-        if(!single.trapped && (ppar*new_ppar<0) ) {
-            single.escaping_state(p, latitude, aeq, alpha, time);
-            single.escaped = true;
+        if(!particle.trapped && (ppar*new_ppar<0) ) {
+            particle.escaping_state(p, latitude, aeq, alpha, time);
+            particle.escaped = true;
             std::cout<<"\n\nParticle(E) "<<p<<" escaped with aeq " <<aeq*Universal::R2D<< " at time " << time ;
             break;
         }
-        // Critical Region to push back values in shared memory ODPT object
-        // Only one processor should write at a time. Otherwise there is a chance of 2 processors writing in the same spot
-        // This can slow down the parallel process, and will introduce bad scalling 8+ cores, which is sufficient for this simulation
-        // Alternative: Detecting first and storing in the end demands more memory per process
+
         //Check Crossing:
         if( ODPT.crossing(new_latitude*Universal::R2D, latitude*Universal::R2D, Distribution::L_shell) ) {									
-            ODPT.store( p, latitude, aeq, alpha, time); //Store its state (just before crossing the satellite)	        	
+            ODPT.store(p, latitude, aeq, alpha, time); //Store its state (just before crossing the satellite)	        	
             //std::cout<<"\nParticle "<< p <<" at: "<<new_latitude*Universal::R2D<< " is about to cross the satellite, at: "<< time << " simulation seconds\n";
         }
         // Save state where particle has the maximum(abs) dEkin or dPA
@@ -268,6 +265,6 @@ void bell_wpi(const int64_t Nsteps_wpi, int p, Particles &single, Telescope &ODP
     }
 
     // Save state when we have deta_dt close to zero, when we have maximum energy diff, and when we have maximum P.A diff.
-    //single.save_state( p, max_dEkin, maxEkin_time, max_dPA, maxdPA_time, min_detadt);
+    //particle.save_state( p, max_dEkin, maxEkin_time, max_dPA, maxdPA_time, min_detadt);
 
 }

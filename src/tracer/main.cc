@@ -34,7 +34,6 @@ namespace h5 = HighFive;
 
 int main(int argc, char **argv)
 {	
-	
 	// Initialize MPI
     MPI_Init(&argc, &argv);
 
@@ -47,13 +46,13 @@ int main(int argc, char **argv)
 	int displacements[numProcesses];
 	
 	// Single particle struct
-	Particles single; 
+	Particles particle; 
 
 	// Setup arguments
    	SetupArgs setupArgs;
 
 	// Vector of structs for the Particle Distribution
-	std::vector<Particles> dstr(Distribution::population, single);	
+	std::vector<Particles> dstr(Distribution::population, particle);	
 
 	// Detector
     Telescope ODPT(Satellite::latitude_deg, Distribution::L_shell);
@@ -75,7 +74,7 @@ int main(int argc, char **argv)
 		std::vector<std::string> dstrFiles, rayFiles;
 		std::string selectedFilenameDstr, selectedFilenameRay;
 		std::filesystem::path dstrFilepath, rayFilepath;
-		const std::string directory = "output/files"; 
+		std::filesystem::path directory = std::filesystem::path("output") / "files";
 		const std::string extension = ".h5"; 
 		const std::string dstrPrefix = "dstr"; // Distribution file prefix, defined in distribution.cc
 		const std::string rayPrefix = "interpolated_ray"; // Ray file prefix, defined in Read_Ray_Write.cc
@@ -108,10 +107,7 @@ int main(int argc, char **argv)
 		// Calculate the size of the portion for each rank
 		portionSize = Distribution::population / numProcesses;
 		int remainingParticles = Distribution::population % numProcesses;
-		// Array to hold the Bytes to be sent to each rank
-		sizeInBytes[numProcesses];
-		// Array to hold the displacement for each rank
-		displacements[numProcesses];
+
 		// Instead of distributing the particle object, we are distributing based on their size in bytes.
 		// Distribute in sizeInBytes to distribute univenly with Scatterv
 		for (int i = 0; i < numProcesses; ++i) {
@@ -158,7 +154,6 @@ int main(int argc, char **argv)
 		MPI_Scatterv(NULL, sizeInBytes, displacements, MPI_BYTE, dstr.data(), sizeInBytes[rank], MPI_BYTE, 0, MPI_COMM_WORLD);
 	}
 
-
 	for (int i = 0; i < numProcesses; i++) {
 		MPI_Barrier(MPI_COMM_WORLD); // Wait for all processes to reach this point
 		if (i == rank) {
@@ -166,7 +161,66 @@ int main(int argc, char **argv)
 			std::cout.flush(); // Ensure that the output is immediately written
 		}
 	}
-	/*
+
+//--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
+
+	//---NOWPI---//
+	if(setupArgs.nowpi)
+	{
+		auto start = std::chrono::high_resolution_clock::now();
+		// for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
+		for (auto &particle : dstr)
+		{
+			int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
+			// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
+			no_wpi(setupArgs.Nsteps_nowpi, id, particle, ODPT);
+		}
+		auto stop =  std::chrono::high_resolution_clock::now();
+		std::chrono::duration<real> duration = start - stop;
+		std::cout<<"\nExecution time using "<<numProcesses<<" nodes, is: "<<duration.count()<<std::endl;
+	}
+
+	//---WPI---//
+	if(setupArgs.wpi)
+	{
+		//---LI---//
+		if(setupArgs.use_li_equations)
+		{
+			auto start = std::chrono::high_resolution_clock::now();
+			// for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
+			for (auto &particle : dstr)
+			{
+				if(particle.escaped || particle.negative || particle.nan) continue; // If this particle was lost, negative or nan, continue with next particle 
+				int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
+				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference
+				li_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT, ray);  //LI + RAY TRACING
+			}
+			auto stop =  std::chrono::high_resolution_clock::now();
+			std::chrono::duration<real> duration = start - stop;
+			std::cout<<"\nExecution time using "<<numProcesses<<" nodes, is: "<<duration.count()<<std::endl;
+		}
+
+		//---BELL---//
+		else if(setupArgs.use_bell_equations)
+		{
+			auto start = std::chrono::high_resolution_clock::now();
+			//for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
+			for (auto &particle : dstr)
+			{
+				if(particle.escaped || particle.negative || particle.nan) continue; // If this particle was lost, negative or nan, continue with next particle 
+				int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
+				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference
+				bell_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT);  //BELL + WAVE IS EVERYWHERE
+			}
+			auto stop =  std::chrono::high_resolution_clock::now();
+			std::chrono::duration<real> duration = start - stop;
+			std::cout<<"\nExecution time using "<<numProcesses<<" nodes, is: "<<duration.count()<<std::endl;
+		}
+	}
+
+//--------------------------------------------------------- MASTER GATHERS PARTICLES -----------------------------------------------------------------------//
+
+	// Gather data in Master
 	std::vector<Particles> gathered_dstr;
 	if (rank == 0)
 	{
@@ -181,100 +235,11 @@ int main(int argc, char **argv)
             std::cout << "\ngathered particle " << particle.id0 << " " << particle.latitude0 << std::endl;
         }
     }
-	*/
 
-	MPI_Finalize();
-	return 0 ;
+//------------------------------------------------------------ MASTER OUTPUTS HDF5 --------------------------------------------------------------------------//
 	
-}
-	/*
-	// Master . Temporary buffer to hold Rank 0's portion of the data
-	//std::vector<Particles> dstr_tmp(dstr.begin(), dstr.begin() + portionSize);
-	//dstr = dstr_tmp;
-	
-	// Tests 
-	// Ensure all processes have the correct portions of the data
-	/*
-
-	}
-	// Gather data in Master
-
-
-//--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
-	//---NOWPI---//
-	if(Nsteps_nowpi>0)
-	{
-
-		auto start = std::chrono::high_resolution_clock::now();
-		for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
-		{
-			// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
-			no_wpi(Nsteps_nowpi, p, dstr[p], ODPT);
-		}
-		auto stop =  std::chrono::high_resolution_clock::now();
-
-		// Calculate the duration of the execution in seconds (as double)
-		std::chrono::duration<real> duration = start - stop;
-		std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
+	if (rank == 0) { 
 		
-		// Now initial_particles have the last state after NoWPI
-	}
-	//---WPI---//
-	if(Nsteps_wpi>0)// Run if WPI time is more than 0 seconds
-	{
-
-		//---LI---//
-		if(argc==3)//Default implementation. Means there's no option '-bell' as command line argument.
-		{
-			auto start = std::chrono::high_resolution_clock::now();
-
-
-
-			for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
-			{
-				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference
-				if(dstr[p].escaped == true) continue; // If this particle is lost, continue with next particle
-				if(dstr[p].negative == true) continue; // If this particle came out with aeq negative, continue with next particle
-				if(dstr[p].nan == true) continue; // If this particle came out with aeq nan     , continue with next particle
-				li_wpi(Nsteps_wpi, p, lat_int, kx_ray, kz_ray, kappa_ray, Bzw, Ezw, Bw_ray, w1, w2, R1, R2, dstr[p], ODPT);  //LI + RAY TRACING
-			}
-			auto stop =  std::chrono::high_resolution_clock::now();
-			
-			// Calculate the duration of the execution in seconds (as double)
-			std::chrono::duration<real> duration = time2 - time1;
-			std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
-		}
-
-
-		//---BELL---//
-		else if(argc==4 && argv[3]==bell)
-		{
-			for(int p=displacements[rank]; p<displacements[rank] + sizeInBytes[rank]; p++)     
-			{
-				// Void Function for particle's motion. Involves RK4 for Nsteps. Detected particles are saved in ODPT object, which is passed here by reference.
-				if(dstr[p].escaped == true) continue; // If this particle is lost, continue with next particle.
-				if(dstr[p].negative == true) continue; // If this particle came out with aeq negative, continue with next particle.
-				if(dstr[p].nan == true) continue; // If this particle came out with aeq nan     , continue with next particle.
-				bell_wpi(Nsteps_wpi, p, dstr[p], ODPT); // BELL + THE WAVE IS EVERYWHERE
-			}
-			auto time3 =  std::chrono::high_resolution_clock::now();
-
-			// Calculate the duration of the execution in seconds (as double)
-			std::chrono::duration<real> duration = time3 - time2;
-
-			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<duration.count()<<std::endl;
-
-		}
-	}
-
-
-//------------------------------------------------------------ OUTPUT DATA HDF5 --------------------------------------------------------------------------//
-	
-
-	// Rank0 saves data to HDF5
-
-	if (rank == 0)
-		{ 
 		std::cout<<"\nSaving output data to HDF5..."<<std::endl;
 		// Assign from struct to vectors.
 		std::vector<real> precip_id, precip_latitude, precip_alpha, precip_aeq, precip_time;
@@ -282,68 +247,64 @@ int main(int argc, char **argv)
 		std::vector<real> latitude_end, ppar_end, pper_end, alpha_end, aeq_end, eta_end, time_end, Ekin_end;
 		std::vector<real> Dsaved_id, Dsaved_max_dEkin, Dsaved_maxEkin_time, Dsaved_max_dPA, Dsaved_maxdPA_time, Dsaved_min_deta_dt, Dsaved_min_deta_dt_time;
 
-		for(int p=0; p<Distribution::population; p++) 
-		{
+		for(int p=0; p<Distribution::population; p++) {
+			
 			// Last particle states(that can become first states for next simulation).
-			latitude_end.push_back(dstr[p].latitude_end);
-			ppar_end.push_back(dstr[p].ppar_end); 
-			pper_end.push_back(dstr[p].pper_end); 
-			alpha_end.push_back(dstr[p].alpha_end); 
-			aeq_end.push_back(dstr[p].aeq_end); 
-			eta_end.push_back(dstr[p].eta_end); 
-			Ekin_end.push_back(dstr[p].Ekin_end); 
-			time_end.push_back(dstr[p].time_end);
+			latitude_end.push_back(gathered_dstr[p].latitude_end);
+			ppar_end.push_back(gathered_dstr[p].ppar_end); 
+			pper_end.push_back(gathered_dstr[p].pper_end); 
+			alpha_end.push_back(gathered_dstr[p].alpha_end); 
+			aeq_end.push_back(gathered_dstr[p].aeq_end); 
+			eta_end.push_back(gathered_dstr[p].eta_end); 
+			Ekin_end.push_back(gathered_dstr[p].Ekin_end); 
+			time_end.push_back(gathered_dstr[p].time_end);
 			
 
 			// Precipitating Particles
-			if(dstr[p].escaped) 
-			{
-				precip_id.push_back(dstr[p].id_lost);
-				precip_latitude.push_back(dstr[p].latitude_lost); 
-				precip_alpha.push_back(dstr[p].alpha_lost);
-				precip_aeq.push_back(dstr[p].aeq_lost);
-				precip_time.push_back(dstr[p].time_lost);
+			if(gathered_dstr[p].escaped) {
+				precip_id.push_back(gathered_dstr[p].id_lost);
+				precip_latitude.push_back(gathered_dstr[p].latitude_lost); 
+				precip_alpha.push_back(gathered_dstr[p].alpha_lost);
+				precip_aeq.push_back(gathered_dstr[p].aeq_lost);
+				precip_time.push_back(gathered_dstr[p].time_lost);
 			}
-
+			
 			// Negative P.A Particles
-			if(dstr[p].negative) 
-			{
-				neg_id.push_back(dstr[p].id_neg);
-			}
+			if(gathered_dstr[p].negative) neg_id.push_back(gathered_dstr[p].id_neg);
 			// High P.A Particles
-			if(dstr[p].high) 
-			{
-				high_id.push_back(dstr[p].id_neg);
-			}
+			if(gathered_dstr[p].high) high_id.push_back(gathered_dstr[p].id_neg);
 			// High P.A Particles
-			if(dstr[p].nan) 
-			{
-				nan_id.push_back(dstr[p].id_nan);
-			}
+			if(gathered_dstr[p].nan) nan_id.push_back(gathered_dstr[p].id_nan);
 
 			// Saved states 
-			Dsaved_id.push_back(dstr[p].saved_id); 
-			Dsaved_max_dEkin.push_back(dstr[p].saved_max_dEkin); 
-			Dsaved_maxEkin_time.push_back(dstr[p].saved_maxEkin_time); 
-			Dsaved_max_dPA.push_back(dstr[p].saved_max_dPA); 
-			Dsaved_maxdPA_time.push_back(dstr[p].saved_maxdPA_time); 
-			Dsaved_min_deta_dt.push_back(dstr[p].saved_min_detadt); 
-			Dsaved_min_deta_dt_time.push_back(dstr[p].saved_mindetadt_time); 
+			Dsaved_id.push_back(gathered_dstr[p].saved_id); 
+			Dsaved_max_dEkin.push_back(gathered_dstr[p].saved_max_dEkin); 
+			Dsaved_maxEkin_time.push_back(gathered_dstr[p].saved_maxEkin_time); 
+			Dsaved_max_dPA.push_back(gathered_dstr[p].saved_max_dPA); 
+			Dsaved_maxdPA_time.push_back(gathered_dstr[p].saved_maxdPA_time); 
+			Dsaved_min_deta_dt.push_back(gathered_dstr[p].saved_min_detadt); 
+			Dsaved_min_deta_dt_time.push_back(gathered_dstr[p].saved_mindetadt_time); 
 		}
 
 
 		// File name based on the argument variables
-		std::string  save_file = "output/files/sim_" + std::to_string(Distribution::population) + "p";  
-		if (atoi(argv[1])>0) save_file += std::string("_nowpi") + std::to_string(atoi(argv[1])) + std::string("s"); 
-		if (atoi(argv[2])>0) save_file += std::string("_wpi") + std::to_string(atoi(argv[2])) + std::string("s");
-		save_file = save_file + ".h5";
+		std::filesystem::path directory = std::filesystem::path("output") / "files";
+		std::filesystem::path outputFile = directory / ("sim_" + std::to_string(Distribution::population) + "p");
 
-		h5::File file(save_file, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
+		if (setupArgs.nowpi) outputFile += std::string("_nowpi") + std::to_string(setupArgs.t_nowpi) + std::string("s");
+		if (setupArgs.wpi) outputFile += std::string("_wpi") + std::to_string(setupArgs.t_wpi) + std::string("s");
+
+		outputFile.replace_extension(".h5");
+
+		// To get the string representation of the path
+		std::string outputFile_str = outputFile.string();
+
+		h5::File file(outputFile, h5::File::ReadWrite | h5::File::Create | h5::File::Truncate);
 		
 		// Simulation data and Telescope specification - Scalars 
 		h5::DataSet telescope_latitude = file.createDataSet("ODPT.latitude_deg", ODPT.latitude_deg);
 		h5::DataSet data_population = file.createDataSet("population", Distribution::population);
-		h5::DataSet simulation_time = file.createDataSet("t", t);
+		h5::DataSet simulation_time = file.createDataSet("t", setupArgs.t);
 		
 		// Detected particles from the satellite
 		h5::DataSet detected_latitude = file.createDataSet("ODPT.latitude", ODPT.latitude);
@@ -386,26 +347,11 @@ int main(int argc, char **argv)
 		h5::DataSet saved_mindeta_dt_time = file.createDataSet("saved_mindeta_dt_time", Dsaved_min_deta_dt_time);
 		std::cout<<"\nData saved!"<<std::endl;
 
-	//----------------------------------------------------------- OUTPUT DATA HDF5 : END -------------------------------------------------------------//
 		std::cout<<"\nSimulation end"<<std::endl;
 
 	}
-
-
-	// Prepare a buffer to hold the received data on rank 0
-std::vector<Particles> gatheredData;
-
-// Rank 0 gathers the dstr data from all other ranks
-if (rank == 0) {
-    // Resize the vector to hold all the data from all ranks
-    gatheredData.resize(Distribution::population);
-}
-
-
-	F();
-
-
+	
+	MPI_Finalize();
 	return 0; 
-
+	
 }
-*/
