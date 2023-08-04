@@ -1,6 +1,4 @@
 # Simulation of Wave-Particle Interaction with Parallel Processing
-
-
 ## Table of Contents
 - [Features](#features)
 - [Workflow](#workflow)
@@ -17,7 +15,6 @@
 - [Acknowledgments](#acknowledgements)
 
 ## Features 
-
 - Different methods for generating **particle distributions**
 - **Parallel execution** of the wave-particle interaction simulation in **C++** and **export results in hdf5** format
 - Load results in **Python** for **further processing and analysis**
@@ -27,7 +24,6 @@
 Ultimately, the effects of various propagating waves over different particle distributions could be evident.
 
 ## Workflow
-
 To better understand the code structure, a flow diagram has been created.
 
 **Click on the image if you wish to use the hyperlinks to easily browse through the code in GitHub**.
@@ -36,7 +32,6 @@ To better understand the code structure, a flow diagram has been created.
 
 
 ## Distribution
-
 Various distributions can be created:
 
 Example distribution of 100,000 particles:
@@ -54,7 +49,6 @@ Example distribution of 100,000 particles:
 **lamda is latitude, not L_shell**
 
 ## Adiabatic Motion
-
 When there's **no interaction with a wave**, the particles are following an adiabatic motion and they are bouncing between their mirroring points indefinitely. 
 
 ![Bouncing](./simulations/useful/FFT/latitude.png)
@@ -72,7 +66,6 @@ The Fast Fourier Transform (FFT) ![FFT](./simulations/useful/FFT/fft.png) can be
 ![Bouncing-time](./simulations/useful/bouncing_time.png)
 
 ## Satellite
-
 The sensor's pitch angle coverage together with the sector division are parameters of the post-processing program.
 Below you can see 12 sectors of 15 degrees.
 Detected particles will belong to the corresponding 
@@ -84,25 +77,20 @@ Bo: the vector of the ambient magnetic field is used as a reference
 
 
 ## RK4
-
 As the numerical method for the estimation of the particle variables, a fourth-order method of [Runge Kutta](https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods) has been used
 
 
 ## Ray
-
 Ray data is then interpolated to match the time steps of the Runge Kutta method
 The wave here is 2KHz
 ![Ray](./simulations/useful/Ray/interpolated_ray_pwr1.000000.png)
 
 
 ## WPI
-
 ### Particles that interact with the wave can gain energy and reach the satellite in a given location
-
 ![WPI-1](./simulations/useful/compare_1nT_2s/aeq_deta_lamda.png)
 
 ### The wave-particle interaction can cause equatorial pitch angle change and can therefore enter the loss cone
-
 ![WPI-1](./doc/loss_cone.png)
 
 Then the particle will then precipitate and escape to the upper ionosphere:
@@ -110,7 +98,6 @@ Then the particle will then precipitate and escape to the upper ionosphere:
 2) The satellite will no longer detect it
 
 ### In consequence, the particle sum decreases after interaction
-
 - The red dots sit upon the black dots for the first 50 seconds
 - Moving on, the red dots can be seen in lower positions since the total flux is being reduced
 - x-axis: Time, divided in bins of 0.5seconds
@@ -119,7 +106,6 @@ Then the particle will then precipitate and escape to the upper ionosphere:
 ![WPI-2](./simulations/useful/20_06_22/10000p_56s_pow-2/Particle_sum_bins0.5s.png)
 
 ### Movie gif file
-
 *Pitch Angle and Time bins are parameters in the postprocessing program.*
 
 ![WPI-3](./simulations/useful/20_06_22/50000p_56s_pow-1/Bins_2deg_0.5s.gif)
@@ -140,30 +126,34 @@ Then the particle will then precipitate and escape to the upper ionosphere:
 
 
 ## Parallelism
+### MPI
+- Master node reads the distribution and shares evenly the workload i.e. particles.
+- All nodes have their own detector that saves a portion of the detected particles of the whole simulation
+- All nodes perform the simulation on their bunches of particles.
+- Master gathers all the particles back (their states after the simulation)
+- Master gathers the detector data from all the nodes and creates the global detector that holds all the detected particles
+- Master saves output 
+
+You can define the number of the processors while executing:
+```mpirun -np <p> ./tracer <arg1> <arg2> <arg3>```
 
 ### OpenMP
-**Selection of THREAD NUM**
-In the master branch it is hard coded for a reason
-
-**Personally, I was executing 2 simulations in parallel, in a system with 20 Threads, both for time "t"**
+**THREAD NUM**
+In the OpenMP branch, THREAD NUM is hard coded to facilitate the concurrent or parallel execution of 2 simulations.
 
 e.g. Run simultaneously 2 simulations:
-
-- Simulation1 "./tracer 10 5" (The program arguments here mean: 10 seconds for noWPI simulation and 5 seconds for WPI simulation)
-- Simulation2 "./tracer 15 0" (The program arguments here mean: 15 seconds for noWPI simulation)
+- Simulation1 "./tracer 10 5" (10 seconds noWPI simulation and 5 seconds WPI simulation)
+- Simulation2 "./tracer 15 0" (15 seconds noWPI simulation)
 - Ultimately, there are two 15-second simulations
 
-Both of the simulations need to run. Eventually, we can find out what is the effect of the wave-particle interaction
+Both of the simulations need to run to eventually conclude on what is the effect of the wave-particle interaction.
 
 - Simulation1 for noWPI(8threads) + WPI(20threads) for t = t_noWPI + t_WPI 
 - Simulation2 for noWPI(8threads) for t = t_noWPI
 
-This selection of threads can ensure that the processors have always work to do, while the simulation's execution time per particle is kept little.
-
-This we can see by reviewing the following diagram that discusses the scalability of the program.
+This selection of threads can ensure that the processors have always work to do, while the simulation's execution time per particle is kept little. This is evident after reviewing the following diagram that discusses the scalability of the program.
 
 ### Visually
-
 **Simulation 1**
 start------------|t_noWPI(8threads)|---------end-start------------------|t_WPI(20threads)|----------------------end
 
@@ -177,11 +167,9 @@ start----------|16 threads in use|--------end-start--|28 threads in use|--end-st
 
 
 ## Installation
-
 There's support only for Linux at the moment. The installation procedure is given below, step by step. Start with the dependencies, continue with cloning the repository, then install the Python requirements and finally continue to [Usage](#usage).
 
 ### Dependencies
-
 The commands are given for Debian, Ubuntu, and related distributions. If you have different distribution and/or different package manager, the commands are different but should be as simple as the ones that are listed below.
 - libhdf5: ```sudo apt install libhdf5-dev```
 - HighFive - HDF5 header-only C++ Library (which is a git submodule to the repository, so you don't need to install explicitly)
@@ -236,7 +224,7 @@ As the names suggest:
 
 - normal is to create a normal distribution for the particles on the corresponding variable
 - uniform is to create a uniform distribution for the particles on the corresponding variable
-- evenly is to distribute the particles in evenly i.e. with a fixed step within a range on the corresponding variable
+- evenly is to distribute the particles evenly i.e. with a fixed step within a range on the corresponding variable
 - constant is to distribute the particles in a constant value
  **Will produce the file "output/files/dstr.h5".**
 Consider jumping to step 6 to **visualize the distribution** before running the simulation.
@@ -249,13 +237,17 @@ interpolates the ray values of the input (a file that comes after ray tracing of
  Consider jumping to step 6 to **visualize the ray** before running the simulation.
 
 5) **```make tracer```** -> to build the tracer for the WPI simulation
-    **```./tracer <noWPI_time> <WPI_time> ```** -> to execute the WPI simulation where:
+    **To execute the simulation**
+    **OpenMP: ```./tracer <noWPI_time> <WPI_time> ```** (threads are currently hardcoded for convenience)
+    **MPI: ```mpirun -np <p> ./tracer <noWPI_time> <WPI_time> ```** 
+- <p> Number of MPI nodes 
 - <noWPI_time> is the time that the particles oscillate in adiabatic motion (without interacting with a wave). This time should be enough for the particles to be in a randomized state
 - <WPI_time> is the time that the particles have to interact with the wave while bouncing in the Earth's magnetic field. Take note that this time should be much smaller than the noWPI_time since the execution of the WPI code consumes more resources than the adiabatic motion simulation.
 You will be prompted to choose from the files you created earlier:
 - a particle distribution file: "output/files/dstr.h5"
 - an interpolated ray file: "output/files/interpolated_ray_pwr.h5"
  **Will produce the file "output/files/sim.h5."**
+
 6) Visualize
 - **```python3 src/visualization/distribution_plot.py```** to visualize the initial distribution. 
 Reads: "output/files/dstr.h5"
@@ -267,7 +259,6 @@ Reads: "output/files/sim.h5."
 7) Visualization files have been created in the output/plots directory
 
 ## Acknowledgments
-
 The initial simulation for single particle WPI was implemented serially in Python by Ph.D. candidate Stelios Tourgaidis.
 
 
