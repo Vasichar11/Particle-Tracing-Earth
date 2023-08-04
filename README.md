@@ -9,6 +9,8 @@
 - [Ray](#ray)
 - [WPI](#wpi)
 - [Parallelism](#parallelism)
+    - [MPI](#mpi)
+    - [OpenMP](#openmp)
 - [Installation](#installation)
 - [GUI](#gui)
 - [CLI](#cli)
@@ -153,7 +155,7 @@ Both of the simulations need to run to eventually conclude on what is the effect
 
 This selection of threads can ensure that the processors have always work to do, while the simulation's execution time per particle is kept little. This is evident after reviewing the following diagram that discusses the scalability of the program.
 
-### Visually
+##### Visually :
 **Simulation 1**
 start------------|t_noWPI(8threads)|---------end-start------------------|t_WPI(20threads)|----------------------end
 
