@@ -12,8 +12,7 @@
 #include <highfive/H5DataSpace.hpp>
 
 // Struct for particle's state throughout the iterations.
-struct Particles
-{
+struct Particles {
 	// Characterize particle
 	bool escaped, trapped, negative, nan, high; 
 	
@@ -58,12 +57,10 @@ struct Particles
 	void latitude_domain(real aeq0);
 
 	// Overload the operator== to compare particles
-    bool operator==(const Particles& other) const
-    {
+    bool operator==(const Particles& other) const {
         // Compare the relevant particles for equality
         // Return true if the objects are equal, false otherwise
         return (id0 == other.id0);
     }
-
 
 };  	

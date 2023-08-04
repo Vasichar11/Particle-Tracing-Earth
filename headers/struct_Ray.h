@@ -4,8 +4,8 @@
 #include "common.h"
 #include "read_hdf5.h"
 
-struct Ray
-{
+struct Ray{
+    
     std::vector<real> lat_int;
     std::vector<real> kx_ray;
     std::vector<real> kz_ray;

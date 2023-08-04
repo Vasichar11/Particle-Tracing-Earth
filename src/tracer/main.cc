@@ -52,11 +52,11 @@ int main(int argc, char **argv)
    	SetupArgs setupArgs;
 
 	// Vector of structs for the Particle Distribution
-	std::vector<Particles> dstr(Distribution::population, particle);	
+	std::vector<Particles> dstr_local(Distribution::population, particle);	
 
 	// Detector
-    Telescope ODPT(Satellite::latitude_deg, Distribution::L_shell);
-
+	Telescope ODPT_local(Satellite::latitude_deg, Distribution::L_shell);
+	
 	// Ray
 	Ray ray;
 	std::string rayFilepathStr;
@@ -78,13 +78,12 @@ int main(int argc, char **argv)
 		const std::string rayPrefix = "interpolated_ray"; // Ray file prefix, defined in Read_Ray_Write.cc
 
 		// Read Particle Distribution
-		std::cout << "\nPick a Particle Distribution file from the below";
+		std::cout << "\nPick a Particle Distribution file:\n";
 		dstrFilepath = SelectFile(directory, extension, dstrPrefix);
-		std::cout << "You selected Particle Distribution filepath: " << dstrFilepath << '\n';
 		
-		readDstr(dstrFilepath, dstr);
+		readDstr(dstrFilepath, dstr_local);
 
-		if (dstr.size()!=Distribution::population) {
+		if (dstr_local.size()!=Distribution::population) {
 			throw std::runtime_error("The parameter for the particle population differs from the population that is defined in the selected hdf5 file! "); 
 		}
 		else {
@@ -93,9 +92,8 @@ int main(int argc, char **argv)
 	
 		// If WPI -> Select Ray 
 		if(setupArgs.wpi) {
-			std::cout << "\nPick a Ray file from the below";
+			std::cout << "\nPick a Ray file:\n";
 			rayFilepath = SelectFile(directory, extension, rayPrefix);
-			std::cout << "You selected Ray filepath: " << rayFilepath << '\n';
 			rayFilepathStr = rayFilepath.string(); // Convert to string to broadcast
 			rayFilepathStrSize = rayFilepathStr.size();
 		}
@@ -140,52 +138,45 @@ int main(int argc, char **argv)
 	
 	//--------------------------------------------------------------- MPI SCATTER WORKLOAD -------------------------------------------------------------//
 
-	dstr.resize(portionSize);
+	dstr_local.resize(portionSize);
 
 	// Master Scatters distribution unevenly (remaining particles need to be scattered as well) -> Scatterv
 	if (rank==0) {
-		MPI_Scatterv(dstr.data(), sizeInBytes, displacements, MPI_BYTE, MPI_IN_PLACE, sizeInBytes[rank], MPI_BYTE, 0, MPI_COMM_WORLD);
+		MPI_Scatterv(dstr_local.data(), sizeInBytes, displacements, MPI_BYTE, MPI_IN_PLACE, sizeInBytes[rank], MPI_BYTE, 0, MPI_COMM_WORLD);
 	}
 	else {
-		MPI_Scatterv(NULL, sizeInBytes, displacements, MPI_BYTE, dstr.data(), sizeInBytes[rank], MPI_BYTE, 0, MPI_COMM_WORLD);
-	}
-
-	for (int i = 0; i < numProcesses; i++) {
-		MPI_Barrier(MPI_COMM_WORLD); 
-		if (i == rank) {
-			std::cout << "Rank " << rank << " particle counts " << sizeInBytes[rank]/sizeof(Particles) << "\n";
-			std::cout.flush(); 
-		}
+		MPI_Scatterv(NULL, sizeInBytes, displacements, MPI_BYTE, dstr_local.data(), sizeInBytes[rank], MPI_BYTE, 0, MPI_COMM_WORLD);
 	}
 
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
+    if (rank==0) std::cout << "\nSimulation starts...\n";
 	
 	double start_time = MPI_Wtime();
 	// NoWPI
 	if(setupArgs.nowpi) {
-		for (auto &particle : dstr) {
-			int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
-			no_wpi(setupArgs.Nsteps_nowpi, id, particle, ODPT);
+		for (auto &particle : dstr_local) {
+			int id = std::distance(dstr_local.begin(), std::find(dstr_local.begin(), dstr_local.end(), particle));
+			no_wpi(setupArgs.Nsteps_nowpi, id, particle, ODPT_local);
 		}
 	}
 	// WPI
 	if(setupArgs.wpi) {
 		// LI EQUATIONS
 		if(setupArgs.use_li_equations) {
-			for (auto &particle : dstr)
+			for (auto &particle : dstr_local)
 			{
 				if(particle.escaped || particle.negative || particle.nan) continue; // If particle was lost, negative or nan, continue with next particle 
-				int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
-				li_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT, ray);  
+				int id = std::distance(dstr_local.begin(), std::find(dstr_local.begin(), dstr_local.end(), particle));
+				li_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT_local, ray);  
 			}
 		}
 		// BELL EQUATIONS
 		else if(setupArgs.use_bell_equations) {
-			for (auto &particle : dstr)
+			for (auto &particle : dstr_local)
 			{
 				if(particle.escaped || particle.negative || particle.nan) continue; // If particle was lost, negative or nan, continue with next particle 
-				int id = std::distance(dstr.begin(), std::find(dstr.begin(), dstr.end(), particle));
-				bell_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT);  
+				int id = std::distance(dstr_local.begin(), std::find(dstr_local.begin(), dstr_local.end(), particle));
+				bell_wpi(setupArgs.Nsteps_wpi, id, particle, ODPT_local);  
 			}
 		}
 	}
@@ -198,23 +189,38 @@ int main(int argc, char **argv)
 		std::cout<<"\nExecution time using "<<numProcesses<<" nodes, is: "<<elapsed_time<<" seconds"<<std::endl;
     }
 
-//------------------------------------------------------------ MPI GATHER RESULTS ------------------------------------------------------------------------//
+//------------------------------------------------------------ MPI GATHER WORKLOAD ------------------------------------------------------------------------//
 
-	// Gather data in Master
-	std::vector<Particles> gathered_dstr;
+	// Gather distribution data
+	std::vector<Particles> dstr;
 	if (rank == 0)
 	{
-		gathered_dstr.resize(Distribution::population);
+		dstr.resize(Distribution::population);
 	}
-	MPI_Gatherv(dstr.data(), sizeInBytes[rank], MPI_BYTE, gathered_dstr.data(), sizeInBytes, displacements, MPI_BYTE, 0, MPI_COMM_WORLD);
+	MPI_Gatherv(dstr_local.data(), sizeInBytes[rank], MPI_BYTE, dstr.data(), sizeInBytes, displacements, MPI_BYTE, 0, MPI_COMM_WORLD);
 
-    /*if (rank == 0)
-    {
-        for (const auto& particle : gathered_dstr)
-        {
-            std::cout << "\ngathered particle " << particle.id0 << " " << particle.latitude0 << std::endl;
-        }
-    }*/
+	// Gather detector data
+	int totalRecvCount = 0;
+	int recvcounts[numProcesses];
+	int displs[numProcesses];
+	recvcounts[rank] = ODPT_local.latitude.size();
+	MPI_Allgather(&recvcounts[rank], 1, MPI_INT, recvcounts, 1, MPI_INT, MPI_COMM_WORLD);
+	for (int i = 0; i < numProcesses; ++i) {
+		displs[i] = totalRecvCount;
+		totalRecvCount += recvcounts[i];
+	}
+	
+	Telescope ODPT(Satellite::latitude_deg, Distribution::L_shell);
+
+	if (rank == 0) {
+		ODPT.resize(totalRecvCount);
+	}
+
+	MPI_Gatherv(ODPT_local.latitude.data(), ODPT_local.latitude.size(), MPI_DOUBLE,	ODPT.latitude.data(), recvcounts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Gatherv(ODPT_local.alpha.data(), ODPT_local.alpha.size(), MPI_DOUBLE, ODPT.alpha.data(), recvcounts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Gatherv(ODPT_local.aeq.data(), ODPT_local.aeq.size(), MPI_DOUBLE, ODPT.aeq.data(), recvcounts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Gatherv(ODPT_local.time.data(), ODPT_local.time.size(), MPI_DOUBLE, ODPT.time.data(), recvcounts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Gatherv(ODPT_local.id.data(), ODPT_local.id.size(), MPI_INT, ODPT.id.data(), recvcounts, displs, MPI_INT, 0, MPI_COMM_WORLD);
 
 //------------------------------------------------------------ MASTER SAVES DATA --------------------------------------------------------------------------//
 	
@@ -230,42 +236,41 @@ int main(int argc, char **argv)
 		for(int p=0; p<Distribution::population; p++) {
 			
 			// Last particle states(that can become first states for next simulation).
-			latitude_end.push_back(gathered_dstr[p].latitude_end);
-			ppar_end.push_back(gathered_dstr[p].ppar_end); 
-			pper_end.push_back(gathered_dstr[p].pper_end); 
-			alpha_end.push_back(gathered_dstr[p].alpha_end); 
-			aeq_end.push_back(gathered_dstr[p].aeq_end); 
-			eta_end.push_back(gathered_dstr[p].eta_end); 
-			Ekin_end.push_back(gathered_dstr[p].Ekin_end); 
-			time_end.push_back(gathered_dstr[p].time_end);
+			latitude_end.push_back(dstr[p].latitude_end);
+			ppar_end.push_back(dstr[p].ppar_end); 
+			pper_end.push_back(dstr[p].pper_end); 
+			alpha_end.push_back(dstr[p].alpha_end); 
+			aeq_end.push_back(dstr[p].aeq_end); 
+			eta_end.push_back(dstr[p].eta_end); 
+			Ekin_end.push_back(dstr[p].Ekin_end); 
+			time_end.push_back(dstr[p].time_end);
 			
 
 			// Precipitating Particles
-			if(gathered_dstr[p].escaped) {
-				precip_id.push_back(gathered_dstr[p].id_lost);
-				precip_latitude.push_back(gathered_dstr[p].latitude_lost); 
-				precip_alpha.push_back(gathered_dstr[p].alpha_lost);
-				precip_aeq.push_back(gathered_dstr[p].aeq_lost);
-				precip_time.push_back(gathered_dstr[p].time_lost);
+			if(dstr[p].escaped) {
+				precip_id.push_back(dstr[p].id_lost);
+				precip_latitude.push_back(dstr[p].latitude_lost); 
+				precip_alpha.push_back(dstr[p].alpha_lost);
+				precip_aeq.push_back(dstr[p].aeq_lost);
+				precip_time.push_back(dstr[p].time_lost);
 			}
 			
 			// Negative P.A Particles
-			if(gathered_dstr[p].negative) neg_id.push_back(gathered_dstr[p].id_neg);
+			if(dstr[p].negative) neg_id.push_back(dstr[p].id_neg);
 			// High P.A Particles
-			if(gathered_dstr[p].high) high_id.push_back(gathered_dstr[p].id_neg);
+			if(dstr[p].high) high_id.push_back(dstr[p].id_neg);
 			// High P.A Particles
-			if(gathered_dstr[p].nan) nan_id.push_back(gathered_dstr[p].id_nan);
+			if(dstr[p].nan) nan_id.push_back(dstr[p].id_nan);
 
 			// Saved states 
-			Dsaved_id.push_back(gathered_dstr[p].saved_id); 
-			Dsaved_max_dEkin.push_back(gathered_dstr[p].saved_max_dEkin); 
-			Dsaved_maxEkin_time.push_back(gathered_dstr[p].saved_maxEkin_time); 
-			Dsaved_max_dPA.push_back(gathered_dstr[p].saved_max_dPA); 
-			Dsaved_maxdPA_time.push_back(gathered_dstr[p].saved_maxdPA_time); 
-			Dsaved_min_deta_dt.push_back(gathered_dstr[p].saved_min_detadt); 
-			Dsaved_min_deta_dt_time.push_back(gathered_dstr[p].saved_mindetadt_time); 
+			Dsaved_id.push_back(dstr[p].saved_id); 
+			Dsaved_max_dEkin.push_back(dstr[p].saved_max_dEkin); 
+			Dsaved_maxEkin_time.push_back(dstr[p].saved_maxEkin_time); 
+			Dsaved_max_dPA.push_back(dstr[p].saved_max_dPA); 
+			Dsaved_maxdPA_time.push_back(dstr[p].saved_maxdPA_time); 
+			Dsaved_min_deta_dt.push_back(dstr[p].saved_min_detadt); 
+			Dsaved_min_deta_dt_time.push_back(dstr[p].saved_mindetadt_time); 
 		}
-
 
 		// File name based on the argument variables
 		std::filesystem::path directory = std::filesystem::path("output") / "files";
