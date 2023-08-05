@@ -18,7 +18,6 @@ class MakeThread(QThread):
 
     def run(self):
         
-        
         # Function to
         # a) Apply the line edit value
         # b) and converts the input xml to the corresponding one that uses only base units
@@ -151,7 +150,7 @@ class MainWindow(QMainWindow):
         self.xml_filepath = os.path.join(current_directory, "app", "resources", "configuration", "constants.xml")
         self.xsd_filepath = os.path.join(current_directory, "app", "resources", "configuration", "constants.xsd")
         self.edited_xml_filepath = os.path.join(self.xml_filepath.split("constants.xml")[0], "edited_constants.xml")
-        self.header_filepath = os.path.join(current_directory, "headers", "constants.h")
+        self.header_filepath = os.path.join(current_directory, "app", "resouces", "configuration", "constants.h")
         # Read constant values from "constants.xml" file
         constants_by_namespace = self.read_config_file()
         
