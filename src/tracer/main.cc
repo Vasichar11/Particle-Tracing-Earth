@@ -276,11 +276,15 @@ int main(int argc, char **argv)
 		std::filesystem::path directory = std::filesystem::path("output") / "files";
 		std::filesystem::path outputFile = directory / ("sim_" + std::to_string(Distribution::population) + "p");
 
-		if (setupArgs.nowpi) outputFile += std::string("_nowpi") + std::to_string(setupArgs.t_nowpi) + std::string("s");
-		if (setupArgs.wpi) outputFile += std::string("_wpi") + std::to_string(setupArgs.t_wpi) + std::string("s");
+		std::ostringstream t_nowpi, t_wpi;
+		t_nowpi << setupArgs.t_nowpi; 
+		t_wpi << setupArgs.t_wpi; 
 
-		outputFile.replace_extension(".h5");
+		if (setupArgs.nowpi) outputFile += std::string("_nowpi") + t_nowpi.str()+ std::string("s");
+		if (setupArgs.wpi) outputFile += std::string("_wpi") + t_wpi.str() + std::string("s");
 
+		outputFile += std::string(".h5");
+		
 		// To get the string representation of the path
 		std::string outputFile_str = outputFile.string();
 

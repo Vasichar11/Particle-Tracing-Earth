@@ -56,7 +56,7 @@ void InputArguments(int argc, char** argv, SetupArgs& setupArgs) {
     setupArgs.use_bell_equations = BooleanBell; // To use Bell equations
 
     if (setupArgs.t_wpi > 0) setupArgs.wpi = true; else setupArgs.wpi = false;
-    if (setupArgs.t_nowpi > 0) setupArgs.nowpi = true; else setupArgs.wpi = false;
+    if (setupArgs.t_nowpi > 0) setupArgs.nowpi = true; else setupArgs.nowpi = false;
     if (setupArgs.use_bell_equations) setupArgs.use_li_equations = false; else setupArgs.use_li_equations = true;
 
     std::cout<<"Loss cone angle, for Lshell: "<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D<< " degrees"<<std::endl;
