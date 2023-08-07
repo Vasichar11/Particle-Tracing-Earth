@@ -1,5 +1,5 @@
 # Function to read particle distribution from file entered by user
-
+import os
 def get_file_selection(h5_files, files_dir):
     # Display the list of .h5 files
     print("Available simulation .h5 files:")

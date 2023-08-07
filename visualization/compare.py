@@ -225,7 +225,7 @@ th3.join()
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t1)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_latitude1)+" deg")
 ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flux")
-ax.set_xticks(ticks=np.arange(0,t+time_bin,time_bin),minor=True) #ticks for time_bin seperation
+ax.set_xticks(ticks=np.arange(0,t1+time_bin,time_bin),minor=True) #ticks for time_bin seperation
 ax.xaxis.grid(True, which='both')
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
