@@ -22,8 +22,8 @@ PLOTSDIR 	  := $(OUTDIR)/plots
 BIN := tracer ray dstr
 
 # Compiler and linker
-CC  := mpic++
-LNK := mpic++
+CC  := g++
+LNK := g++
 
 # Optimization level 
 OPT := -O3 

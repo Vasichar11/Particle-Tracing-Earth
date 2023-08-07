@@ -19,8 +19,8 @@ void InputArguments(int argc, char** argv, SetupArgs& setupArgs) {
 
     // Validate arg1 and arg2 as numbers
     try {
-        float number1 = std::stof(arg1); // Exception if arguments are not numbers
-        float number2 = std::stof(arg2);
+        real number1 = std::stof(arg1); // Exception if arguments are not numbers
+        real number2 = std::stof(arg2);
         (void)number1;  // Intentionally unused to avoid warnings
         (void)number2;  
     } catch (const std::invalid_argument&) {
@@ -56,7 +56,7 @@ void InputArguments(int argc, char** argv, SetupArgs& setupArgs) {
     setupArgs.use_bell_equations = BooleanBell; // To use Bell equations
 
     if (setupArgs.t_wpi > 0) setupArgs.wpi = true; else setupArgs.wpi = false;
-    if (setupArgs.t_nowpi > 0) setupArgs.nowpi = true; else setupArgs.wpi = false;
+    if (setupArgs.t_nowpi > 0) setupArgs.nowpi = true; else setupArgs.nowpi = false;
     if (setupArgs.use_bell_equations) setupArgs.use_li_equations = false; else setupArgs.use_li_equations = true;
 
     std::cout<<"Loss cone angle, for Lshell: "<<Distribution::L_shell<<" is " << Simulation::alpha_lc*Universal::R2D<< " degrees"<<std::endl;
