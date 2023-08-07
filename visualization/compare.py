@@ -7,6 +7,7 @@ import matplotlib.animation as manimation
 from random import randint
 import threading
 import os
+import utils
 
 ############################################### CONSTANTS ###############################################
 
@@ -18,34 +19,12 @@ plots_dir = os.path.join("output","plots")  # Filepath for plots
 
 ############################################# READ HDF5 ###################################################
 
-# Function to read particle distribution from file entered by user
-def get_file_selection(h5_files, files_dir):
-    # Display the list of .h5 files
-    print("Available simulation .h5 files:")
-    for i, file in enumerate(h5_files):
-        print(f"{i+1}. {file}")
-    
-    # Prompt the user to select a file
-    selection = input("Enter the number corresponding to the file you want to select: ")
-    
-    # Validate the user's input and retrieve the selected filepath
-    try:
-        selection = int(selection)
-        if 1 <= selection <= len(h5_files):
-            selected_file = os.path.join(files_dir, h5_files[selection-1])
-            print(f"You selected: {selected_file}")
-            return selected_file
-        else:
-            print("Invalid selection.")
-    except ValueError:
-        print("Invalid input. Please enter a number.")
-
 # Get the list of Simulation1 .h5 files
 print("Select Simulation1 simulation")
 h5_files = [file for file in os.listdir(files_dir) if (file.startswith("sim") and file.endswith('.h5'))]
 
 # Prompt the user for the first simulation file selection
-first_file = get_file_selection(h5_files, files_dir)
+first_file = utils.get_file_selection(h5_files, files_dir)
 
 # Read file
 f1 = h5py.File(first_file,"r")
@@ -76,11 +55,10 @@ excluded_ids.extend(high_id1)
 read_second_file = None
 comparing_simulations = False
 while read_second_file!="yes" and read_second_file!="no":
-
     read_second_file = input("Do you want to compare this simulation with another simulation? (yes/no): ")
-    
     if read_second_file.lower() == "yes":
-        second_file = get_file_selection(h5_files, files_dir)
+        h5_files.remove(os.path.basename(first_file)) # remove first simulation file from list
+        second_file = utils.get_file_selection(h5_files, files_dir)
         comparing_simulations = True
         break
     elif read_second_file.lower() == "no":
@@ -122,7 +100,6 @@ if comparing_simulations:
     excluded_ids.extend(nan_id2)
     excluded_ids.extend(high_id2)
 
-
 ############################ TELESCOPE SPECIFICATION -- BINNING PARAMETERS ################################
 
 time_bin  = 0.1                # seconds to distinquish events(time resolution)
@@ -131,9 +108,7 @@ view = 180
 sector_range = 2 # P.A bins, look directions
 sectors = int(view/sector_range)
 
-
-
-###################################### POST PROCESSING - PLOTS ###########################################
+########################################### PRINT SUMMARY ##############################################
 
 print()
 print("Population     :",population1)
@@ -143,7 +118,7 @@ print("Timesteps      :",timesteps)
 print("P.A bins       :",sector_range,"degrees")
 print("Sectors        :",sectors)
 print()
-print("|Sim1   Simu2|")
+print("|Sim1   Sim2|")
 print(" ",len(precip_id1),"     ",len(precip_id2)," particles escaped")
 print()
 print("|Sim1   Sim2|")
@@ -152,17 +127,7 @@ print(" ",len(high_id1),"     ",len(high_id2),"  particles developed high P.A")
 print(" ",len(nan_id1),"     ",len(nan_id2),"  particles developed nan P.A") 
 print("These particles will be excluded from the bining population losing:", ((len(neg_id1)+len(neg_id2)+len(nan_id1)+len(nan_id2)+len(high_id1)+len(high_id2))/population1)*100,"% of the population\n")
 
-########################################### FONTS AND COLORS #############################################
-font = {'family': 'serif',
-        'color':  'blue',
-        'weight': 'bold',
-        'size': 2}
-colors = []
-for i in range(max(timesteps,sectors)):      # Colors to seperate timesteps or sectors.
-    colors.append('#%06X' % randint(0, 0xFFFFFF))
 ################################### CROSSING PARTICLES LAMDA-TIME PLOT ####################################
-#Simulation1
-#"""
 
 # Find fixed limits for y axis:
 y_max = max(np.max(detected_latitude1), np.max(detected_latitude2)) * R2D
@@ -177,8 +142,8 @@ plt.annotate("SATELLITE",xy=(t1/2,telescope_latitude1+0.0002),color="blue",weigh
 ax.ticklabel_format(useOffset=False)  # Disable e notation.
 ax.axhline(y = telescope_latitude1 ,color="b", linestyle="dashed")
 plt.savefig(plots_dir+"/Crossing_particles.png", dpi=100)
+
 if comparing_simulations:
-    #BOTH
     fig, ax = plt.subplots()
     ax.scatter(detected_time2, detected_latitude2*R2D, c = detected_id2, s=0.3, facecolors='none', edgecolors='r')
     ax.grid(alpha=0.8)
@@ -188,19 +153,6 @@ if comparing_simulations:
     ax.ticklabel_format(useOffset=False)  # Disable e notation.
     ax.axhline(y = telescope_latitude2 , color="b", linestyle="dashed")
     plt.savefig(plots_dir+"/Crossing_particles2.png", dpi=100)
-#"""
-
-"""
-########################################## MINIMUM DETA_DT ################################################
-#For every particle in the population the state for minimum deta_dt is saved. 
-fix,ax = plt.subplots()
-cc = ax.scatter(np.rad2deg(saved_latitude),saved_deta_dt,s=1, c=saved_Ekin,cmap='jet')
-ax.axhline(y = 0 ,color="b", linestyle="dashed")
-ax.set(xlabel="latitude[deg]",ylabel="deta_dt")
-cbar=plt.colorbar(cc)
-cbar.ax.set_title('Ekin[keV]')
-plt.savefig(plots_dir+"/min_deta_dt.png")
-"""
 
 ############################################## BINNING ####################################################
 ###BINNING WITH LOCAL PITCH ANGLE: detected_alpha1 not detected_aeq1
@@ -233,7 +185,6 @@ def thread2_binning():
         sector   = math.floor(pa*R2D/sector_range)
         if(sector>=sectors or timestep>=timesteps): 
             raise Exception("Simulation2 Particle",id,"with pa",pa*R2D,"at time",time,"needs sector",sector,"in timestep",timestep)
-        # Do not include these particles
         if id in excluded_ids:
             continue
         sctr_flux2[sector][timestep] += 1              
@@ -242,11 +193,11 @@ def thread2_binning():
 
 def thread_precip_binning():
 # Prepitating particles. Just iterating for the latter simulation(Simulation1 and then Simulation2) is enough.
-# Particles cannot precipitate in Simulation1 simulation. They can only get lost before the first bounce.
+# Particles cannot precipitate in Simulation1. They can only get lost before the first bounce.
 # These particles escape with alpha close to 90(?), pitch angle binning to compare them with the particles that are crossing the equator
-    for time,pa in zip(precip_time2,precip_aeq2):
+    for time,paEQ in zip(precip_time2,precip_aeq2):
         timestep = math.floor(time/time_bin)
-        sector   = math.floor(pa*R2D/sector_range)
+        sector   = math.floor(paEQ*R2D/sector_range)
         if(sector>=sectors or timestep>=timesteps): 
             raise Exception("Precipitating Particle at time",time,"needs sector",sector,"in timestep",timestep)
         if id in excluded_ids:
@@ -268,14 +219,13 @@ if comparing_simulations:
 th1.join()
 th2.join()
 th3.join()
-# main waits until all threads are done
 
 ######################################### PARTICLE SUM - 360 PLOT ###########################################
-#"""
+
 fig, ax = plt.subplots()
 plt.title("Detected particle sum in all look_dirs for "+str(t1)+" seconds, in "+str(timesteps)+" timesteps\n Satellite @"+str(telescope_latitude1)+" deg")
 ax.set(xlabel="Time(s), in time_bins of "+str(time_bin)+"(s)", ylabel="Total Flux")
-#ax.set_xticks(ticks=np.arange(0,t+time_bin,time_bin),minor=True) #ticks for time_bin seperation
+ax.set_xticks(ticks=np.arange(0,t+time_bin,time_bin),minor=True) #ticks for time_bin seperation
 ax.xaxis.grid(True, which='both')
 for timestep in range(0,timesteps):
     if sum_flux[timestep]!=0:
@@ -285,9 +235,9 @@ for timestep in range(0,timesteps):
     if timestep==0:# plot legend once
         ax.legend()
 plt.savefig(plots_dir+"/Particle_sum_bins"+str(time_bin)+"s.png", dpi=100)
-#"""
-##################################### Simulation2-Simulation1 DIFF FOR HISTOGRAM #########################################
-#"""
+
+######################### LOST/PRECIPITATED/MOVED PARTICLES FOR HISTOGRAM ##################################
+
 moved = np.zeros((timesteps, sectors))
 precip = np.zeros((timesteps, sectors))
 lost = np.zeros(sectors)
@@ -297,9 +247,8 @@ for sector in range(0,sectors):
         precip[timestep][sector] = sctr_flux_precip[sector][timestep] # Particles lost in this timestep and sector.
         lost[sector] += precip[timestep][sector]                      # Particles lost until this timestep,for this sector.
         moved[timestep][sector]  = abs(sctr_flux[sector][timestep] - sctr_flux2[sector][timestep]) - lost[sector] # Find difference between simulations and remove lost particles until this timestep for this sector
-#"""       
+
 ###################################### (FLUX-P.A)*TIMESTEPS MOVIE ##########################################
-#"""
 fig,ax = plt.subplots()
 FFMpegWriter = manimation.writers["ffmpeg"]
 metadata2 = dict(title="P.A binning",comment="P.A bins of"+str(sector_range)+"degrees")
