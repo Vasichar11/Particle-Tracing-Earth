@@ -3,24 +3,27 @@ OBJDIR := obj
 SRCDIR := src
 OUTDIR := output
 INCDIR := headers 
+
 # Source directories
 SRCDIR_TRACER := $(SRCDIR)/tracer
 SRCDIR_INTERP := $(SRCDIR)/interpolation
 SRCDIR_DSTR   := $(SRCDIR)/distribution
+
 # Object directories
 OBJDIR_TRACER := $(OBJDIR)/tracer
 OBJDIR_INTERP := $(OBJDIR)/interpolation
 OBJDIR_DSTR   := $(OBJDIR)/distribution
+
 # Output directories
-OFILESDIR     := $(OUTDIR)/files
+FILESDIR     := $(OUTDIR)/files
 PLOTSDIR 	  := $(OUTDIR)/plots
 
 # Targets
 BIN := tracer ray dstr
 
 # Compiler and linker
-CC  := g++
-LNK := g++
+CC  := mpic++
+LNK := mpic++
 
 # Optimization level 
 OPT := -O3 
@@ -33,14 +36,15 @@ INC_H5MIN := -I/usr/include/hdf5/serial -Wdate-time -D_FORTIFY_SOURCE=2 -g  -fde
 CPPFLAGS := -std=c++17 -lstdc++fs -Wall -g -fopenmp -I$(INCDIR)
 debug: CPPFLAGS += -DDEBUG
 
+# Source files
 SRC_TRACER := $(wildcard ${SRCDIR_TRACER}/*.cc)
 SRC_INTERP := $(wildcard ${SRCDIR_INTERP}/*.cc)
 SRC_DSTR   := $(wildcard ${SRCDIR_DSTR}/*.cc)
 
+# Object files
 OBJ_TRACER := $(patsubst ${SRCDIR_TRACER}/%.cc, ${OBJDIR_TRACER}/%.o, $(SRC_TRACER))
 OBJ_INTERP := $(patsubst ${SRCDIR_INTERP}/%.cc, ${OBJDIR_INTERP}/%.o, $(SRC_INTERP))
 OBJ_DSTR   := $(patsubst ${SRCDIR_DSTR}/%.cc, ${OBJDIR_DSTR}/%.o, $(SRC_DSTR))
-
 
 # Default Rule
 default: directories dstr ray tracer
@@ -62,26 +66,22 @@ tracer: ${OBJ_TRACER}
 		
 # Phony Targets(Just recipes)
 directories:
-	@mkdir -p ${OFILESDIR} ${PLOTSDIR} ${OBJDIR_TRACER} ${OBJDIR_INTERP} ${OBJDIR_DSTR}
+	@mkdir -p ${FILESDIR} ${PLOTSDIR} ${OBJDIR_TRACER} ${OBJDIR_INTERP} ${OBJDIR_DSTR}
 	@printf "Directories are made\n\n" ;
 clean: 
-	@rm  -rf ${OBJDIR} ${BIN}
+	@rm  -rf  ${BIN} ${OBJDIR}
 	@echo Removed objects and executables ;
 allclean:
-	@rm -rf **.out ${BIN} ${OBJDIR} ${OFILESDIR} ${PLOTSDIR}
+	@rm -rf **.out ${BIN} ${OBJDIR} ${OUTDIR}
 	@echo Removed all. Restored to default ;
 
 .PHONY: directories clean allclean
 
-
-# Compiling
-
-# Tracer
+# Compile Tracer
 ${OBJDIR_TRACER}/%.o: ${SRCDIR_TRACER}/%.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5MIN}
 
-# Distribution
-
+# Compile Distribution
 ${OBJDIR_DSTR}/functions.o: ${SRCDIR_TRACER}/functions.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5MIN}
 ${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_TRACER}/struct_Particles.cc
@@ -89,8 +89,7 @@ ${OBJDIR_DSTR}/struct_Particles.o: ${SRCDIR_TRACER}/struct_Particles.cc
 ${OBJDIR_DSTR}/distribution.o: ${SRCDIR_DSTR}/distribution.cc
 	${CC} ${CPPFLAGS} ${OPT} -c $< -o $@ ${INC_H5MIN}
 
-
-# Interpolation
+# Compile Ray Interpolation
 $(OBJDIR_INTERP)/%.o: $(SRCDIR_INTERP)/%.cc
 	$(CC) $(CPPFLAGS) $(OPT) -c $< -o $@ ${INC_H5MIN}
 

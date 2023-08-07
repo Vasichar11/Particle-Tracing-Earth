@@ -2,7 +2,9 @@ import sys
 import os
 import subprocess
 import xml.etree.ElementTree as ET
+from lxml import etree
 from PyQt5.QtWidgets import QApplication, QTextEdit, QMainWindow, QWidget, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, QRadioButton, QScrollArea, QTabWidget, QProgressBar, QGroupBox, QComboBox
+import re 
 
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QIcon
@@ -15,8 +17,18 @@ class MakeThread(QThread):
         self.window = window
 
     def run(self):
-        # Apply the line edit values to the constants.h file
-        self.window.apply_line_edit_values()
+        
+        # Function to
+        # a) Apply the line edit value
+        # b) and converts the input xml to the corresponding one that uses only base units
+        self.window.create_base_xml()
+
+        # Function to validate the new XML against the XSD
+        self.window.validate_xml()
+
+        # Function to modify the header file that is used for the simulation execution
+        self.window.modify_header_from_xml()
+
 
         # Execute the "make" command
         current_directory = os.getcwd()
@@ -136,6 +148,9 @@ class MainWindow(QMainWindow):
         tab1_scroll_area.setWidget(self.tab1_widget)
 
         self.xml_filepath = os.path.join(current_directory, "app", "resources", "configuration", "constants.xml")
+        self.xsd_filepath = os.path.join(current_directory, "app", "resources", "configuration", "constants.xsd")
+        self.edited_xml_filepath = os.path.join(self.xml_filepath.split("constants.xml")[0], "edited_constants.xml")
+        self.header_filepath = os.path.join(current_directory, "app", "resouces", "configuration", "constants.h")
         # Read constant values from "constants.xml" file
         constants_by_namespace = self.read_config_file()
         
@@ -297,24 +312,100 @@ class MainWindow(QMainWindow):
     def append_output(self, output):
         self.output_textedit.append(output)
 
-    def apply_line_edit_values(self):
-        edited_xml_filepath = os.path.join(self.xml_filepath.split("constants.xml")[0], "edited_constants.xml")
+    # Function that converts the input xml to the corresponding one that uses only base units.
+    def create_base_xml(self):
         tree = ET.parse(self.xml_filepath)
         root = tree.getroot()
 
         for namespace_element in root:
             for element in namespace_element:
                 name = element.find("name").text
-                line_edit_value = self.get_line_edit_value(name)
+                line_edit_value = self.multiply_value(name)
                 # Edit new value in the new xml configuration file
                 element.find("value").text = line_edit_value
                 # The value is multiplied by the corresponding multiplication factor
                 # That means that the new metric unit will be 1
                 element.find("metric_unit").text = "1"
 
-        tree.write(edited_xml_filepath)
+        tree.write(self.edited_xml_filepath)
 
-    def get_line_edit_value(self, name):
+    # Function to validate the edited base xml against the XSD file
+    def validate_xml(self):
+        try:
+            # Parse the XML and XSD files
+            xml_tree = etree.parse(self.xml_filepath)
+            xsd_tree = etree.parse(self.xsd_filepath)
+            
+            # Create a schema validator from the XSD
+            schema = etree.XMLSchema(xsd_tree)
+            
+            # Validate the XML against the schema
+            is_valid = schema.validate(xml_tree)
+            
+            if is_valid:
+                self.append_output("XML is valid against the XSD.")
+            else:
+                self.append_output("XML is not valid against the XSD.")
+                self.append_output("Validation errors:")
+                for error in schema.error_log:
+                    self.append_output(f"- {error}")
+        except etree.XMLSyntaxError as e:
+            self.append_output("Error parsing XML:", e)
+        except etree.XMLSchemaParseError as e:
+            self.append_output("Error parsing XSD:", e)
+
+
+    def modify_header_from_xml(self):
+        # Parse the XML file
+        tree = etree.parse(self.edited_xml_filepath)
+        root = tree.getroot()
+
+    # Create a dictionary to store the values from the XML file with (name, grandparent_tag) as the key
+        values_dict = {}
+        for element in root.iter():
+            if element.tag == "value" and element.text is not None:
+                parent_name = element.getparent().tag
+                grandparent_name = element.getparent().getparent().tag
+                value = element.text
+                key = (parent_name, grandparent_name)
+                values_dict[key] = value
+
+        # Read the header file content
+        with open(self.header_filepath, "r") as header_file:
+            header_lines = header_file.readlines()
+
+        # Collect all occurrences of the variable names and grandparent tags in the header file
+        occurrences = set()
+        for line in header_lines:
+            for (name, grandparent_name), value in values_dict.items():
+                if f"{name} =" in line and grandparent_name in line:
+                    occurrences.add((name, grandparent_name))
+
+        # Replace the value with the new value from the
+        modified_header_lines = []
+        for line in header_lines:
+            for (name, grandparent_name) in occurrences:
+                full_name = f"{name} = "
+                if full_name in line and grandparent_name in line:
+                    placeholder = f"__{name}_{grandparent_name}__"
+                    line = line.replace(full_name, f"{placeholder} ")
+
+            modified_header_lines.append(line)
+
+        # Replace placeholders with actual values
+        for i, line in enumerate(modified_header_lines):
+            for (name, grandparent_name), value in values_dict.items():
+                placeholder = f"__{name}_{grandparent_name}__"
+                modified_header_lines[i] = modified_header_lines[i].replace(placeholder, value)
+
+
+        # Write the modified content back to the header file
+        with open("test2.h", "w") as header_file:
+            header_file.writelines(modified_header_lines)
+
+
+
+    def multiply_value(self, name):
         for group_box in self.tab1_widget.findChildren(QGroupBox):
             for layout in group_box.findChildren(QVBoxLayout):
                 for index in range(layout.count()):

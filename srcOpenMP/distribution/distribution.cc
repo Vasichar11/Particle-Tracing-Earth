@@ -74,6 +74,7 @@ int main(int argc, char **argv)
 	Particles single; // Single particle struct.
 	std::vector<Particles> dstr(Distribution::population, single);	// Vector of structs for particle distribution.
 	real latitude0,aeq0,eta0,Ekin0;
+	int id0;
 	latitude0=aeq0=eta0=Ekin0=0;
 	// const real Beq0 = Bmag_dipole(0);   	 // Beq isn't always Beq0?
 	std::random_device seed;         // Random seed. 
@@ -87,6 +88,7 @@ int main(int argc, char **argv)
 
 	for(int particle_count=0; particle_count<Distribution::population; particle_count++)
 	{
+		id0 = particle_count;
 		//------------------------------------------- DISTRIBUTE P.A ------------------------------------------------//
 		// Evenly with goal: symmetry	
 		if(argv[1]==string_evenly)   
@@ -229,8 +231,7 @@ int main(int argc, char **argv)
 		}
 
 		//-------------------------------------------- FINALLY INITIALIZE -------------------------------------------------//
-
-		dstr[p].initialize(eta0,aeq0,latitude0,Ekin0,0,0);
+		dstr[p].initialize(id0, eta0,aeq0,latitude0,Ekin0,0,0);
 		// std::cout<<"\nParticle"<<p<<" aeq0: "<< dstr[p].aeq0*Universal::R2D <<", latitude0: "<< dstr[p].latitude0*Universal::R2D<<" eta0: "<< dstr[p].eta0*Universal::R2D <<", Ekin0: "<< dstr[p].Ekin0;	
 		p++; //Next particle
 
@@ -265,6 +266,7 @@ int main(int argc, char **argv)
 	// Assign from struct to 1d vectors. Trying std::execution::par
 
 	// Create vectors
+	std::vector<real> id0_dstr(Distribution::population);
 	std::vector<real> alpha0_dstr(Distribution::population);
 	std::vector<real> latitude0_dstr(Distribution::population);
 	std::vector<real> aeq0_dstr(Distribution::population);
@@ -284,6 +286,7 @@ int main(int argc, char **argv)
 	std::vector<real> high_dstr(Distribution::population);
 
 
+	std::transform(dstr.begin(), dstr.end(), id0_dstr.begin(), [](const auto& d) { return d.id0; });
 	std::transform(dstr.begin(), dstr.end(), alpha0_dstr.begin(), [](const auto& d) { return d.alpha0; });
 	std::transform(dstr.begin(), dstr.end(), latitude0_dstr.begin(), [](const auto& d) { return d.latitude0; });
 	std::transform(dstr.begin(), dstr.end(), aeq0_dstr.begin(), [](const auto& d) { return d.aeq0; });
@@ -312,49 +315,52 @@ int main(int argc, char **argv)
 	// Create dataspace and datatype
 	hsize_t dim = Distribution::population;
 	H5::DataSpace data_space(1,&dim);
-	H5::DataType data_type(H5::PredType::NATIVE_DOUBLE);
+	H5::DataType double_type(H5::PredType::NATIVE_DOUBLE);
 
 	// Create the datasets
-	H5::DataSet dataset_latitude0 = file.createDataSet("latitude0", data_type, data_space);
-	H5::DataSet dataset_aeq0 = file.createDataSet("aeq0", data_type, data_space);
-	H5::DataSet dataset_alpha0 = file.createDataSet("alpha0", data_type, data_space);
-	H5::DataSet dataset_upar0 = file.createDataSet("upar0", data_type, data_space);
-	H5::DataSet dataset_uper0 = file.createDataSet("uper0", data_type, data_space);
-	H5::DataSet dataset_ppar0 = file.createDataSet("ppar0", data_type, data_space);
-	H5::DataSet dataset_pper0 = file.createDataSet("pper0", data_type, data_space);
-	H5::DataSet dataset_eta0 = file.createDataSet("eta0", data_type, data_space);
-	H5::DataSet dataset_zeta0 = file.createDataSet("zeta0", data_type, data_space);
-	H5::DataSet dataset_time0 = file.createDataSet("time0", data_type, data_space);
-	H5::DataSet dataset_M_adiabatic0 = file.createDataSet("M_adiabatic0", data_type, data_space);
-	H5::DataSet dataset_Ekin0 = file.createDataSet("Ekin0", data_type, data_space);
-	H5::DataSet dataset_trapped0 = file.createDataSet("trapped0", data_type, data_space);
-	H5::DataSet dataset_escaped0 = file.createDataSet("escaped0", data_type, data_space);
-	H5::DataSet dataset_nan0 = file.createDataSet("nan0", data_type, data_space);
-	H5::DataSet dataset_negative0 = file.createDataSet("negative0", data_type, data_space);
-	H5::DataSet dataset_high0 = file.createDataSet("high0", data_type, data_space);
-	H5::DataSet dataset_aeq0_bins = file.createDataSet("aeq0_bins", data_type, data_space);
+	H5::DataSet dataset_id0 = file.createDataSet("id0", double_type, data_space);
+	H5::DataSet dataset_latitude0 = file.createDataSet("latitude0", double_type, data_space);
+	H5::DataSet dataset_aeq0 = file.createDataSet("aeq0", double_type, data_space);
+	H5::DataSet dataset_alpha0 = file.createDataSet("alpha0", double_type, data_space);
+	H5::DataSet dataset_upar0 = file.createDataSet("upar0", double_type, data_space);
+	H5::DataSet dataset_uper0 = file.createDataSet("uper0", double_type, data_space);
+	H5::DataSet dataset_ppar0 = file.createDataSet("ppar0", double_type, data_space);
+	H5::DataSet dataset_pper0 = file.createDataSet("pper0", double_type, data_space);
+	H5::DataSet dataset_eta0 = file.createDataSet("eta0", double_type, data_space);
+	H5::DataSet dataset_zeta0 = file.createDataSet("zeta0", double_type, data_space);
+	H5::DataSet dataset_time0 = file.createDataSet("time0", double_type, data_space);
+	H5::DataSet dataset_M_adiabatic0 = file.createDataSet("M_adiabatic0", double_type, data_space);
+	H5::DataSet dataset_Ekin0 = file.createDataSet("Ekin0", double_type, data_space);
+	H5::DataSet dataset_trapped0 = file.createDataSet("trapped0", double_type, data_space);
+	H5::DataSet dataset_escaped0 = file.createDataSet("escaped0", double_type, data_space);
+	H5::DataSet dataset_nan0 = file.createDataSet("nan0", double_type, data_space);
+	H5::DataSet dataset_negative0 = file.createDataSet("negative0", double_type, data_space);
+	H5::DataSet dataset_high0 = file.createDataSet("high0", double_type, data_space);
+	H5::DataSet dataset_aeq0_bins = file.createDataSet("aeq0_bins", double_type, data_space);
 
 	// Write
-	dataset_latitude0.write(latitude0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_aeq0.write(aeq0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_alpha0.write(alpha0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_upar0.write(upar0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_uper0.write(uper0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_ppar0.write(ppar0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_pper0.write(pper0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_eta0.write(eta0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_zeta0.write(zeta0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_time0.write(time0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_M_adiabatic0.write(M_adiabatic0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_Ekin0.write(Ekin0_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_trapped0.write(trapped_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_escaped0.write(escaped_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_nan0.write(nan_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_negative0.write(negative_dstr.data(), H5::PredType::NATIVE_DOUBLE);
-	dataset_high0.write(high_dstr.data(), H5::PredType::NATIVE_DOUBLE);
+	dataset_id0.write(id0_dstr.data(), double_type);
+	dataset_latitude0.write(latitude0_dstr.data(), double_type);
+	dataset_aeq0.write(aeq0_dstr.data(), double_type);
+	dataset_alpha0.write(alpha0_dstr.data(), double_type);
+	dataset_upar0.write(upar0_dstr.data(), double_type);
+	dataset_uper0.write(uper0_dstr.data(), double_type);
+	dataset_ppar0.write(ppar0_dstr.data(), double_type);
+	dataset_pper0.write(pper0_dstr.data(), double_type);
+	dataset_eta0.write(eta0_dstr.data(), double_type);
+	dataset_zeta0.write(zeta0_dstr.data(), double_type);
+	dataset_time0.write(time0_dstr.data(), double_type);
+	dataset_M_adiabatic0.write(M_adiabatic0_dstr.data(), double_type);
+	dataset_Ekin0.write(Ekin0_dstr.data(), double_type);
+	dataset_trapped0.write(trapped_dstr.data(), double_type);
+	dataset_escaped0.write(escaped_dstr.data(), double_type);
+	dataset_nan0.write(nan_dstr.data(), double_type);
+	dataset_negative0.write(negative_dstr.data(), double_type);
+	dataset_high0.write(high_dstr.data(), double_type);
 	
 
 	// Close datasets
+	dataset_id0.close();
 	dataset_latitude0.close();
 	dataset_aeq0.close();
 	dataset_alpha0.close();

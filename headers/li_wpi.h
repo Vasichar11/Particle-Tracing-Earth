@@ -11,8 +11,9 @@
 #include "time_rates.h"
 #include "struct_Telescope.h"
 #include "struct_Particles.h"
+#include "struct_Ray.h"
 
 // Function for WPI. Involves RK4 for Nsteps. 
-void li_wpi(const int64_t Nstep_wpi, const int p, std::vector <real> &lat_int, const std::vector <real> &kx_ray, const std::vector <real> &kz_ray, const std::vector <real> &kappa_ray, const std::vector <real> &Bzw, const std::vector <real> &Ezw, const std::vector <real> &Bw_ray, const std::vector <real> &w1, const std::vector <real> &w2, const std::vector <real> &R1, const std::vector <real> &R2, Particles &single, Telescope &ODPT);
+void li_wpi(const int64_t Nstep_wpi, const int p, Particles &single, Telescope &ODPT, Ray &ray);
 
 
