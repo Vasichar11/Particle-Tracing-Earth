@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 //--------------------------------------------------------------------SIMULATION------------------------------------------------------------------------//
     std::cout << "\nSimulation starts...\n";
 	int realthreads;   
-	real wtime = omp_get_wtime();
+	real wtime1 = omp_get_wtime();
 	
 	//---NOWPI---//
 	if(setupArgs.nowpi) {
@@ -107,11 +107,12 @@ int main(int argc, char **argv)
 		}
 		
 		std::cout<<"\n\n"<<"Joined"<<std::endl;
-		real time1 = omp_get_wtime()-wtime;
+		real time1 = omp_get_wtime()-wtime1;
 		std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time1<<std::endl;
 	}
 
 	//---WPI---//
+	real wtime2 = omp_get_wtime();
 	if(setupArgs.wpi) {
 		
 		//---LI---//
@@ -135,7 +136,7 @@ int main(int argc, char **argv)
 			}
 
 			std::cout<<"\n\n"<<"Joined"<<std::endl;
-			real time2 = omp_get_wtime()-wtime ;
+			real time2 = omp_get_wtime()-wtime2 ;
 			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
 		}
 
@@ -168,7 +169,6 @@ int main(int argc, char **argv)
 //-------------------------------------------------------------------- SAVE DATA --------------------------------------------------------------------------//
 	
 	
-	std::cout<<"\nStrings: "<<std::to_string(setupArgs.t_nowpi)<< " " << std::to_string(setupArgs.t_wpi)<<std::endl;
 	std::cout<<"\nSaving output data to HDF5..."<<std::endl;
 	// Assign from struct to vectors.
 	std::vector<real> precip_id, precip_latitude, precip_alpha, precip_aeq, precip_time;
