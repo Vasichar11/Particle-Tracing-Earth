@@ -122,7 +122,6 @@ def thread1_binning():
         latitude_bins[math.floor(latitude_deg/latitude_sector_deg)-1] += 1  
 def thread2_binning(): 
     for aeq_deg in aeq0_deg: 
-        print(aeq_deg)
         aeq_bins[math.floor(aeq_deg/aeq_sector_deg)-1] += 1  
 def thread3_binning(): 
     for eta_deg in eta0_deg: 

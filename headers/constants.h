@@ -43,7 +43,7 @@ namespace Wave
 namespace Distribution
 {
     const real L_shell = 2; // L_shell of particle. constant for now
-    const int64_t population = 100;   
+    const int64_t population = 10000;   
 }
 
 // P.A dstr
@@ -102,7 +102,8 @@ namespace Simulation
     const real alpha_lc = asin(sqrt(pow(zm,3)/sqrt(1+3*(1-zm)))); // Loss cone angle in radians
     const real h = 0.00001; // Runge kutta stepsize. Should be much smaller than the particle's gyroperiod
     const real puls_dur = int(Wave::pulse_duration/h); // Wave pulse duration in stepsize
-    const int num_threads_wpi = 16;
+    const int num_threads_wpi_bell = 16;
+    const int num_threads_wpi_li = 16;
     const int num_threads_nowpi = 8;
 }
 
