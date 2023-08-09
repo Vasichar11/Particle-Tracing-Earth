@@ -187,8 +187,9 @@ Install python: ```sudo apt install python3```
 
 ### Clone Repository
 
-Close the repository: ```git clone https://github.com/Vasichar11/Particle-Tracing-Earth```
-Take note that the repository includes a git submodule for hdf5 file reading and writing operations:
+Close the repository: ```git clone --recursive https://github.com/Vasichar11/Particle-Tracing-Earth```
+Use the --recursive flag to ensure that submodules are initialized and updated (cloned) as well
+The repository includes a git submodule for hdf5 file reading and writing operations:
 https://github.com/BlueBrain/HighFive
 
 ### Requirements
