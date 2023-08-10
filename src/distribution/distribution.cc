@@ -8,6 +8,9 @@
 #include <H5Cpp.h>
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
+#include <string>
+#include <map>
 
 #include "common.h"
 #include "../headers/struct_Particles.h"
@@ -150,9 +153,7 @@ int main(int argc, char **argv)
 			real number;
 			do
 			{ 
-				// Adaptive stdev according to the latitude domain range. Domain range (min,max) = (0,90+90).
-				// That way for bigger domain ranges we have extended gausian, while for less wide ranges we have more "sharp".
-				real stdev =((latitude_end_d-latitude_start_d)/180) * Lat_dstr::max_stdev;
+				real stdev =((latitude_end_d-latitude_start_d)/180) * Lat_dstr::stdev;
 				std::normal_distribution <real> normal_latitude(Lat_dstr::mean, stdev);
 				number = normal_latitude(generator);
 
@@ -358,7 +359,6 @@ int main(int argc, char **argv)
 	dataset_negative0.write(negative_dstr.data(), double_type);
 	dataset_high0.write(high_dstr.data(), double_type);
 	
-
 	// Close datasets
 	dataset_id0.close();
 	dataset_latitude0.close();
@@ -379,7 +379,25 @@ int main(int argc, char **argv)
 	dataset_negative0.close();
 	dataset_high0.close();
 	dataset_aeq0_bins.close();
-	
+
+	// Read configuration from header file
+    std::ifstream headerFile("headers/constants.h");
+    std::string configurationText;
+	std::string line;
+	while (std::getline(headerFile, line)) {
+		configurationText += line + "\n";
+	}
+	headerFile.close();
+
+	H5::Group configGroup = file.createGroup("/configuration");
+
+	H5::StrType strType(H5::PredType::C_S1, H5T_VARIABLE);
+
+	H5::DataSpace dataSpace(H5S_SCALAR);
+
+	// Create the attribute within the configGroup and write the configuration text
+	configGroup.createAttribute("configuration", strType, dataSpace).write(strType, configurationText);
+
 	
 	
 //---------------------------------------------------------------WRITE TO HDF5 FILE: END---------------------------------------------------------------//
