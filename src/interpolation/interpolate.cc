@@ -9,7 +9,7 @@ std::vector <real> interpolate(std::vector <real> time_new, std::vector <real> t
     
     int x=1;
     real yp;
-	for(size_t p=1; p<time_new.size(); p++)                        
+	for(std::size_t p=1; p<time_new.size(); p++)                        
     {             
 		if(timef[x-1]<=time_new[p] && time_new[p]<=timef[x])      
         {   //Independent variable: time_new -> x
