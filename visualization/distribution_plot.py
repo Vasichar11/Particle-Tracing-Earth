@@ -9,7 +9,7 @@ D2R=np.pi/180
 R2D=1/D2R
 
 # Parameters
-aeq_sector_deg = 10
+aeq_sector_deg = 1
 latitude_sector_deg = 10
 eta_sector_deg = 40
 Ekin_sector = 100
@@ -18,6 +18,7 @@ Ekin_sector = 100
 files_dir = os.path.join("output","files")  # Path to the output directory
 h5_files = [file for file in os.listdir(files_dir) if (file.startswith("dstr") and file.endswith('.h5'))]
 plots_dir = os.path.join("output","plots")
+
 
 # Display the list of .h5 files
 print("Available particle distribution .h5 files:")
@@ -38,7 +39,7 @@ try:
 except ValueError:
     print("Invalid input. Please enter a number.")
 
-
+distribution_name = os.path.basename(selected_file).split(".h5")[0]
 
 # Read file
 f1 = h5py.File(selected_file,"r")
@@ -55,17 +56,19 @@ f1.close()
 latitude0_deg = latitude0 * R2D
 aeq0_deg = aeq0 * R2D
 eta0_deg = eta0 * R2D
-# Sectors
 
+# Sectors
 aeq_domain  = 180
 latitude_domain  = 180
 eta_domain  = 360
-Ekin_domain  = np.ptp(Ekin0) # max - min
-aeq_sectors = int(aeq_domain/aeq_sector_deg)
-latitude_sectors = int(latitude_domain/latitude_sector_deg)
-eta_sectors = int(eta_domain/eta_sector_deg)
+Ekin_domain  = np.ptp(Ekin0) 
+aeq_sectors = math.ceil(aeq_domain/aeq_sector_deg)
+latitude_sectors = math.ceil(latitude_domain/latitude_sector_deg)
+eta_sectors = math.ceil(eta_domain/eta_sector_deg)
 Ekin_sectors = math.ceil(Ekin_domain / Ekin_sector)
-############################################### SAVE CSV FILES ###########################################
+
+############################################### SAVE CSV FILE ###########################################
+
 # Initials to CSV file
 header = ['id', 'aeq0_deg', 'latitude0_deg', 'ppar0', 'pper0', 'alpha0_deg', 'eta0', 'Ekin(keV)']
 data = []
@@ -74,46 +77,29 @@ for aq0,l0,par0,per0,a0,e0,E0 in zip(aeq0, latitude0, ppar0, pper0, alpha0, eta0
     data.extend([[id,aq0*R2D,l0*R2D,par0,per0,a0*R2D,e0*R2D,E0]])
     id=id+1 #id is the element's location in the list since the particles were saved like that
 h5_file = selected_file.split()[0].split(".h5")
-csv_file = os.path.join(files_dir, h5_files[selection-1].split("h5")[0] +".csv")
+csv_file = os.path.join(files_dir, h5_files[selection-1].split("h5")[0] +"csv")
 with open(csv_file, "w") as file1:
     writer = csv.writer(file1)
     writer.writerow(header)
     writer.writerows(data)
 
-
-
 ###################################### BINNING BASED ON SECTOR RANGES ####################################
 
-latitude_bins    = [0 for i in range (latitude_sectors)]
-latitude_labels  = np.arange(min(latitude0_deg),max(latitude0_deg) + latitude_sector_deg, latitude_sector_deg) #np.arange doesn't include endpoint
-latitude_labels2 = []
-for i in range(len(latitude_labels)-1):
-    temp_tuple = (str(int(latitude_labels[i])),str(int(latitude_labels[i+1])) )
-    latitude_labels2.append(" to ".join(temp_tuple)) # Round labels - make them ranges
+latitude_bins = [0] * latitude_sectors
+latitude_labels = np.linspace(min(latitude0_deg), max(latitude0_deg), latitude_sectors)
+latitude_labels2 = [f"{int(start)} to {int(end)}" for start, end in zip(latitude_labels[:-1], latitude_labels[1:])]
 
-aeq_bins     = [0 for i in range (aeq_sectors)]
-aeq_labels   = np.arange(min(aeq0_deg),max(aeq0_deg),aeq_sector_deg)
-aeq_labels   = [str(int(n)) for n in aeq_labels] 
-aeq_labels2  = []
-for i in range(len(aeq_labels)-1):
-    temp_tuple = (str(int(aeq_labels[i])),str(int(aeq_labels[i+1])) )
-    aeq_labels2.append(" to ".join(temp_tuple)) 
+aeq_bins = [0] * aeq_sectors
+aeq_labels = np.linspace(min(aeq0_deg), max(aeq0_deg), aeq_sectors)
+aeq_labels2 = [f"{int(start)} to {int(end)}" for start, end in zip(aeq_labels[:-1], aeq_labels[1:])]
 
-eta_bins     = [0 for i in range (eta_sectors)]
-eta_labels   = np.arange(min(eta0_deg),max(eta0_deg),eta_sector_deg)
-eta_labels   = [str(int(n)) for n in eta_labels] 
-eta_labels2  = []
-for i in range(len(eta_labels)-1):
-    temp_tuple = (str(int(eta_labels[i])),str(int(eta_labels[i+1])) )
-    eta_labels2.append(" to ".join(temp_tuple)) 
+eta_bins = [0] * eta_sectors
+eta_labels = np.linspace(min(eta0_deg), max(eta0_deg), eta_sectors)
+eta_labels2 = [f"{int(start)} to {int(end)}" for start, end in zip(eta_labels[:-1], eta_labels[1:])]
 
-Ekin_bins    = [0 for i in range (Ekin_sectors)]
-Ekin_labels  = np.arange(min(Ekin0),max(Ekin0),Ekin_sector)
-Ekin_labels  = [str(int(n)) for n in Ekin_labels] 
-Ekin_labels2 = []
-for i in range(len(Ekin_labels)-1):
-    temp_tuple = (str(int(Ekin_labels[i])),str(int(Ekin_labels[i+1])) )
-    Ekin_labels2.append(" to ".join(temp_tuple)) 
+Ekin_bins = [0] * Ekin_sectors
+Ekin_labels = np.linspace(min(Ekin0), max(Ekin0), Ekin_sectors)
+Ekin_labels2 = [f"{int(start)} to {int(end)}" for start, end in zip(Ekin_labels[:-1], Ekin_labels[1:])]
 
 ###################################### ONE THREAD PER BINNING PROCESS ####################################
 
@@ -122,7 +108,6 @@ def thread1_binning():
         latitude_bins[math.floor(latitude_deg/latitude_sector_deg)-1] += 1  
 def thread2_binning(): 
     for aeq_deg in aeq0_deg: 
-        print(aeq_deg)
         aeq_bins[math.floor(aeq_deg/aeq_sector_deg)-1] += 1  
 def thread3_binning(): 
     for eta_deg in eta0_deg: 
@@ -130,7 +115,6 @@ def thread3_binning():
 def thread4_binning(): 
     for Ekin in Ekin0: 
         Ekin_bins[math.floor(Ekin/Ekin_sector)-1] += 1
-
 
 th1 = threading.Thread(target=thread1_binning)
 th2 = threading.Thread(target=thread2_binning)
@@ -146,12 +130,10 @@ th2.join()
 th3.join()
 th4.join()
 
-
 ###################################### PLOT PIES OF INITIAL DISTRIBUTION ####################################
 
 fig, axs = plt.subplots(2, 2)
 fig.suptitle('Particle Distribution Pies',weight="bold")
-
 axs[0,0].pie(latitude_bins)
 fig.legend(labels=latitude_labels2,loc="upper left")
 axs[0,0].set(title="latitude dstr(deg)")
@@ -168,24 +150,26 @@ axs[1,1].pie(Ekin_bins)
 fig.legend(labels=Ekin_labels2,loc="lower right", prop={'size': 8})
 axs[1,1].set(title="Ekin dstr(keV)")
 
-fig.savefig(os.path.join(plots_dir, str(population) + "p_pies.png"),dpi=200)
+fig.savefig(os.path.join(plots_dir, distribution_name + "p_pies.png"),dpi=200)
 
 ######################################## PLOT INITIAL DISTRIBUTION #######################################
+
 fig, ax = plt.subplots(2)
-# P.A distribution in bins
-aeq_sector_list = np.arange(1, 179, aeq_sector_deg)
-ax[0].scatter(aeq_sector_list, aeq_bins, s=2, alpha=1)
+for sec in range(0,aeq_sectors):
+    if aeq_bins[sec] > 0:
+        ax[0].scatter(sec,aeq_bins[sec],s=2,alpha=1, color="blue")
 ax[0].grid(alpha=0.3)
-ax[0].set(ylabel="dN", title="Sector range " + str(aeq_sector_deg) + " deg")
+ax[0].set(ylabel="dN", title="Sector range " + str(aeq_sector_deg) + " deg", xlim=(np.min(aeq0_deg), np.max(aeq0_deg)))
+ax[0].axvline(x = 90, color ="r", linestyle="dashed")
 ax[0].set_yscale("log")
 
 # P.A and latitude distribution
-ax[1].scatter(latitude0*R2D,aeq0*R2D,s=0.5,alpha=0.1)
+ax[1].scatter(latitude0*R2D,aeq0*R2D,s=0.5,alpha=0.1, color="blue")
 ax[1].grid(alpha=.3)
-ax[1].set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",ylim=(1,179),xlim=(-90,90),xticks=np.linspace(-90,90,5))
-ax[1].axhline(y = 90, color ="b", linestyle="dashed")
+ax[1].set(xlabel="Latitude(deg)",ylabel="Equatorial P.A",ylim=(np.min(aeq0_deg),np.max(aeq0_deg)),xlim=(-90,90),xticks=np.linspace(-90,90,5))
+ax[1].axhline(y = 90, color ="r", linestyle="dashed")
 
 fig.suptitle('Particle aeq-latitude distributions',weight="bold")
-fig.savefig(os.path.join(plots_dir, str(population) + "p_aeq_lamda.png"),dpi=200)
+fig.savefig(os.path.join(plots_dir, distribution_name + "p_aeq_lamda.png"),dpi=200)
 
 print("Plots saved at: ",plots_dir)
