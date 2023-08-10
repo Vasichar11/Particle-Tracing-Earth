@@ -161,7 +161,7 @@ int main(int argc, char **argv)
 			}
 
 			std::cout<<"\n\n"<<"Joined"<<std::endl;
-			real time2 = omp_get_wtime()-wtime ;
+			real time2 = omp_get_wtime()-wtime2 ;
 			std::cout<<"\nExecution time using "<<realthreads<<" thread(s), is: "<<time2<<std::endl;
 		}
 	}
