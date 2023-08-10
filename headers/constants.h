@@ -43,14 +43,14 @@ namespace Wave
 namespace Distribution
 {
     const real L_shell = 2; // L_shell of particle. constant for now
-    const int64_t population = 10000;   
+    const int64_t population = 100000;   
 }
 
 // P.A dstr
 namespace Aeq_dstr
 {
-    const real start_deg = 1;  		  			 				
-    const real end_deg = 179;  
+    const real start_deg = 0;  		  			 				
+    const real end_deg = 180;  
     const real mean = 90; // Mean of the normal dstr
     const real stdev = 20; // Standard deviation of the normal dstr
     const real steps = 10; // To distribute evenly
@@ -64,7 +64,7 @@ namespace Lat_dstr
     const real start_deg = -90;    		  			 				
     const real end_deg = 90;  	
     const real mean = 0; // Mean of the normal dstr
-    const real max_stdev = 20; // Standard deviation when latitude domain is the most extensive
+    const real stdev = 20; 
     const real domain_step = 0.001; // Latitude domain range precision, degrees
     const real steps = 10; // To distribute evenly
     const real value_deg = 16.2782913046611; // If single values are used
@@ -74,8 +74,8 @@ namespace Lat_dstr
 // Eta dstr
 namespace Eta_dstr
 {
-    const real start_deg = 1;      
-    const real end_deg = 359; // Issue if eta=0 or 360?				 
+    const real start_deg = 0;      
+    const real end_deg = 360; // Issue if eta=0 or 360?				 
     const real mean = 180; // Mean of the normal dstr
     const real stdev = 20; // Standard deviation of the normal dstr
     const real steps = 10; // To distribute evenly
