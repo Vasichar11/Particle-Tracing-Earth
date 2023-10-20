@@ -18,11 +18,11 @@
 
 ## Features 
 - Generate various **particle distributions**
-- **Parallel execution (C++ with OpenMP or MPI)** of the wave-particle interaction simulation
+- **Parallel execution (C++ with OpenMP or MPI)** 
 - Post-processing and Visualization in **Python**
-- **PyQt GUI application** for the above: configure - simulate - visualize 
+- **PyQt GUI application** to configure - simulate - visualize 
 
-The effects of various propagating waves over different particle distributions are evident.
+The effects of various propagating Electromagnetic Waves over different particle distributions are evident.
 
 ## Workflow
 **Click on the enriched flow diagram** to browse through the code in Git.
@@ -31,25 +31,24 @@ The effects of various propagating waves over different particle distributions a
 
 
 ## Distribution
-Various distributions can be created:
+Various distributions can be generated:
 
+
+### Example
 Distribution of 1,000,000 particles:
 
 ![PAD](./simulations/useful/10e6normal.png)
-- Top diagram: PAD (Pitch Angle Distribution) - particle count in equatorial pitch angle bins (1 degree)
+- Top diagram: Initial PAD (Pitch Angle Distribution) - particle count in equatorial pitch angle bins (1 degree)
 - Bottom diagram: Relation Equatorial P.A - Latitude 
 
-
-### Pies
+ ![Distribution-Pies](./simulations/useful/20_06_22/100000p_Distribution_Pies.png)
 - latitude (*lamda*) - normal distribution (mean=0deg)
 - equatorial pitch angle (*aeq*) - normal distribution (mean=90deg)
 - energy (*Ekin*) - uniform distribution
 - gyro phase equivalent (*eta*) - uniform distribution
 
- ![Distribution-Pies](./simulations/useful/20_06_22/100000p_Distribution_Pies.png)
-
 ## Adiabatic Motion
-When there's **no interaction with a wave**, the particles are following an adiabatic motion and they are bouncing between their mirroring points indefinitely. In the following Figure a particle oscillates between the latitudes 25 and -25 degrees for a minute.
+When there's **no interaction with a wave**, the particles are following an adiabatic motion. They are bouncing between their mirroring points indefinitely. In the following Figure a particle oscillates between the latitudes 25 and -25 degrees for a minute.
 
 ![Bouncing](./simulations/useful/FFT/latitude.png)
 
