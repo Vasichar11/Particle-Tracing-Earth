@@ -1,5 +1,6 @@
 # Simulation of Wave-Particle Interaction with Parallel Processing
 ## Table of Contents
+- [Documentation](#documentation)
 - [Features](#features)
 - [Workflow](#workflow)
 - [Distribution](#distribution)
@@ -15,6 +16,11 @@
 - [GUI](#gui)
 - [CLI](#cli)
 - [Acknowledgments](#acknowledgements)
+
+
+## Documentation 
+The thesis document in English
+- [Documentation](./doc/CharitonV_2023.pdf)
 
 ## Features 
 - Generate various **particle distributions**
